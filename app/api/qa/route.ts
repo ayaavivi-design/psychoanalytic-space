@@ -3,6 +3,8 @@ import Anthropic from '@anthropic-ai/sdk';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 
+export const maxDuration = 300; // 5 דקות — מקסימום Vercel Pro
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -289,12 +291,11 @@ export async function GET(req: NextRequest) {
   }
 
   const question = getTodaysQuestion();
-  const results: TheoristResult[] = [];
 
-  for (const theorist of THEORISTS) {
-    const result = await testTheorist(theorist, question);
-    results.push(result);
-  }
+  // מקביל — כל 8 תיאוריסטים רצים יחד במקום בסדרה
+  const results = await Promise.all(
+    THEORISTS.map(theorist => testTheorist(theorist, question))
+  );
 
   const date = new Date().toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' });
   const passed = results.filter(r => r.ok).length;
