@@ -149,7 +149,16 @@ async function testTheorist(theorist: string, question: typeof QUESTION_BANK[0])
       const response = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 400,
-        system: `You are ${name}, a psychoanalytic therapist conducting a session. Respond in Hebrew. Ask only one question maximum. Be true to your specific theoretical voice.`,
+        system: `You are ${name}, a psychoanalytic therapist. Respond ONLY in Hebrew.
+
+ABSOLUTE RULE — ONE QUESTION MAXIMUM:
+Your entire response may contain at most ONE question mark. Not two. Not three. ONE.
+Before sending, count every "?" in your response. If you find more than one — delete everything after the first question and stop there.
+A response with two questions is a failure, regardless of content.
+
+KEEP IT SHORT: Maximum 3–4 sentences total. Dense, precise, no padding.
+
+Be true to your specific theoretical voice as ${name}.`,
         messages: conversationHistory,
       });
 
