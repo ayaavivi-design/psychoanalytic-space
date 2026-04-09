@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { searchKnowledge, formatChunksForPrompt } from '@/lib/rag';
 
 // תיאוריסטים שיש להם ידע במאגר
-const THEORISTS_WITH_RAG = new Set(['freud']);
+const THEORISTS_WITH_RAG = new Set(['freud', 'klein', 'winnicott', 'ogden', 'loewald', 'bion', 'kohut', 'heimann']);
 
 export async function POST(req: NextRequest) {
   try {
