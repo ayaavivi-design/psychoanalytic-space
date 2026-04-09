@@ -1,18 +1,82 @@
 'use client';
-import { PenLine, Globe, Brain, Settings, LogOut, Languages, Sofa, Download } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { PenLine, Globe, Brain, Settings, LogOut, Languages, Sofa, Download, ChevronDown, BookOpen } from 'lucide-react';
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
+  const [theoristsOpen, setTheoristsOpen] = useState(false);
+  const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number } | null>(null);
+  const [authLangOpen, setAuthLangOpen] = useState(false);
+  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    if (theoristsOpen) {
+      const code = (window as any).selectedLang?.code || 'he';
+      setTimeout(() => (window as any).applyUITranslation?.(code), 0);
+    }
+  }, [theoristsOpen]);
   return (
     <>
       {/* Auth screen */}
       <div id="auth-screen" style={{
         position: 'fixed', inset: 0, zIndex: 200, background: 'var(--bg)',
         display: 'flex', alignItems: 'center', justifyContent: 'center'
-      }}>
+      }} suppressHydrationWarning>
+        {mounted && <>
+          {/* Language selector — top right */}
+          <div style={{ position: 'absolute', top: 16, left: 16 }}>
+            <div onClick={() => setAuthLangOpen(o => !o)}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', color: 'var(--muted)', padding: '6px 10px', borderRadius: 8, border: '1px solid transparent', transition: 'all 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'transparent')}>
+              <Globe size={15} strokeWidth={1.75} />
+            </div>
+            {authLangOpen && (
+              <div style={{ position: 'absolute', top: '100%', left: 0, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '4px', boxShadow: '0 4px 16px rgba(45,36,32,0.1)', zIndex: 210, minWidth: 130 }}>
+                {([
+                  ['he','🇮🇱','עברית'],['en','🇬🇧','English'],['de','🇩🇪','Deutsch'],
+                  ['es','🇪🇸','Español'],['fr','🇫🇷','Français'],['ru','🇷🇺','Русский'],
+                  ['it','🇮🇹','Italiano']
+                ] as [string,string,string][]).map(([code, flag, name]) => (
+                  <div key={code}
+                    onClick={() => { (window as any).selectLangSB(code, flag, name); setAuthLangOpen(false); }}
+                    style={{ padding: '7px 12px', borderRadius: 7, cursor: 'pointer', fontSize: 13, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--accent-soft)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}>
+                    {flag} {name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         <div style={{ textAlign: 'center', maxWidth: 420, width: '90%', padding: '0 20px' }}>
           <div style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 52, color: 'var(--accent)', opacity: 0.2, marginBottom: 16 }}>ψ</div>
-          <h2 style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 22, fontWeight: 300, fontStyle: 'italic', color: 'var(--accent)', marginBottom: 8 }}>מרחב פסיכואנליטי לסקרנים</h2>
-          <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8, marginBottom: 28 }}>כניסה או הרשמה כדי להתחיל</p>
+          <h2 id="auth-title" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 22, fontWeight: 300, fontStyle: 'italic', color: 'var(--accent)', marginBottom: 8 }}>מרחב פסיכואנליטי</h2>
+          <p id="auth-subtitle" style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8, marginBottom: 12 }}>כניסה או הרשמה כדי להתחיל</p>
+
+          <div style={{ marginBottom: 16 }}>
+            <div id="auth-persona-label" style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 10, opacity: 0.8 }}>מי אתה/את?</div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {([['therapist','מטפל/ת'],['student','לומד/ת'],['patient','בטיפול']] as [string,string][]).map(([key, label]) => (
+                <button key={key} id={`persona-auth-${key}`}
+                  onClick={() => {
+                    const prefs = JSON.parse(localStorage.getItem('user_prefs') || '{}');
+                    prefs.persona = key;
+                    localStorage.setItem('user_prefs', JSON.stringify(prefs));
+                    ['therapist','student','patient'].forEach(k => {
+                      const btn = document.getElementById(`persona-auth-${k}`);
+                      if (!btn) return;
+                      btn.style.background = k === key ? 'var(--accent-soft)' : 'none';
+                      btn.style.borderColor = k === key ? 'var(--accent)' : 'var(--border)';
+                      btn.style.color = k === key ? 'var(--accent)' : 'var(--muted)';
+                    });
+                    (window as any).selectPersona?.(key);
+                  }}
+                  style={{ flex: 1, background: 'none', border: '1px solid var(--border)', borderRadius: 8, padding: '9px 8px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)', cursor: 'pointer', transition: 'all 0.15s' }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
             <input id="auth-email" type="email" placeholder="כתובת מייל" dir="ltr"
@@ -38,17 +102,18 @@ export default function Home() {
           </div>
           <div id="auth-error" style={{ display: 'none', fontSize: 12, color: '#c06060', marginTop: 8 }}></div>
           <div style={{ marginTop: 10, textAlign: 'center' }}>
-            <span onClick={() => (window as any).resetPassword?.()} style={{ fontSize: 12, color: 'var(--muted)', cursor: 'pointer', textDecoration: 'underline' }}>שכחתי סיסמה</span>
+            <span id="auth-forgot" onClick={() => (window as any).resetPassword?.()} style={{ fontSize: 12, color: 'var(--muted)', cursor: 'pointer', textDecoration: 'underline' }}>שכחתי סיסמה</span>
           </div>
-          <p style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.8, marginTop: 20, opacity: 0.7 }}>
+          <p id="auth-security" style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.8, marginTop: 17, opacity: 0.7 }}>
             השיחות נשמרות רק על המכשיר שלך ולא מועלות לשרת.
             <br />
             פרטי הכניסה מוצפנים ומאובטחים.
           </p>
-          <p style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.7, marginTop: 14, opacity: 0.6, borderTop: '1px solid var(--border)', paddingTop: 14 }}>
-            ״מרחב פסיכואנליטי לסקרנים״ הוא כלי לימודי, מחקרי וייעוצי, אך אינו מהווה תחליף לטיפול פסיכולוגי. פסיכואנליזה היא תהליך המתרחש בין שני בני אדם ומבוססת על נוכחות רגשית וקשר אנושי חי — אלמנטים ששום טכנולוגיה אינה יכולה לשחזר. הממשק נועד לעזור לך לחשוב, להסתקרן ולהעמיק בהבנת המבנה הנפשי, אך אינו יכול להחליף את ההחזקה והליווי המקצועי שמספק מטפל אנושי.
+          <p id="auth-disclaimer" style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.85, marginTop: 12, opacity: 0.6, borderTop: '1px solid var(--border)', paddingTop: 14, width: 'calc(100% + 320px)', marginLeft: '-160px', marginRight: '-160px' }}>
+״מרחב פסיכואנליטי״ הוא כלי לחשיבה ולהבנה עצמית ולא תחליף לטיפול. הוא נועד ללוות אנשים שנמצאים בתהליך: בטיפול, בהכשרה, או בחקירה עצמית. פסיכואנליזה מתרחשת בין שני בני אדם בנוכחות, בקשר, ובזמן. הממשק נועד לצד המטפל, לא במקומו.
           </p>
         </div>
+        </>}
       </div>
 
       {/* Sidebar */}
@@ -69,8 +134,43 @@ export default function Home() {
             </div>
             <div className="sb-item" onClick={() => (window as any).exportPDF()}>
               <span className="sb-icon"><Download size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label">הורד PDF</span>
+              <span className="sb-label" id="sb-pdf-label">הורד PDF</span>
             </div>
+          </div>
+
+          {/* Theorists section */}
+          <div style={{ borderTop: '1px solid var(--border)', padding: '6px 8px 4px' }}>
+            <div className="sb-item" onClick={() => setTheoristsOpen(o => !o)}>
+              <span className="sb-icon"><BookOpen size={15} strokeWidth={1.75} /></span>
+              <span className="sb-label" id="sb-theorists-label" style={{ flex: 1 }}>גישה תיאורטית</span>
+              <ChevronDown size={13} strokeWidth={1.75} className="theorist-chevron" style={{ color: 'var(--muted)', flexShrink: 0, transition: 'transform 0.2s', transform: theoristsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+            </div>
+            {theoristsOpen && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 1, paddingTop: 2 }}>
+                {([
+                  ['freud','פרויד','מה שלא נאמר'],
+                  ['klein','קליין','מה שקשה לגעת בו'],
+                  ['winnicott','ויניקוט','המרחב להיות'],
+                  ['ogden','אוגדן','מה שנוצר בין שנינו'],
+                  ['loewald','לוואלד','הקשר עצמו כגורם המרפא'],
+                  ['bion','ביון','מה שעדיין לא ניתן לומר'],
+                  ['kohut','קוהוט','להרגיש מובן'],
+                  ['heimann','היימן','מה שהמפגש מעורר בי'],
+                ] as [string, string, string][]).map(([key, label, tooltipText]) => (
+                  <div key={key} className="theorist-tag sb-item" data-key={key}
+                    style={{ paddingRight: 10, fontSize: 13 }}
+                    onClick={(e) => (window as any).toggleTheorist(e.currentTarget, key)}
+                    onMouseEnter={(e) => {
+                      const r = e.currentTarget.getBoundingClientRect();
+                      const text = e.currentTarget.getAttribute('data-tooltip') || tooltipText;
+                      setTooltip({ text, top: r.top + r.height / 2, left: r.right + 8 });
+                    }}
+                    onMouseLeave={() => setTooltip(null)}>
+                    {label}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <div style={{ borderTop: '1px solid var(--border)', padding: 8 }}>
@@ -98,8 +198,7 @@ export default function Home() {
               {[
                 ['he','🇮🇱','עברית'],['en','🇬🇧','English'],['de','🇩🇪','Deutsch'],
                 ['es','🇪🇸','Español'],['fr','🇫🇷','Français'],['ru','🇷🇺','Русский'],
-                ['ar','🇸🇦','العربية'],['it','🇮🇹','Italiano'],['pt','🇧🇷','Português'],
-                ['ja','🇯🇵','日本語'],['zh','🇨🇳','中文']
+                ['it','🇮🇹','Italiano']
               ].map(([code, flag, name]) => (
                 <div key={code} className="sb-item" style={{ fontSize: 12, paddingRight: 24 }}
                   onClick={(e) => { e.stopPropagation(); (window as any).selectLangSB(code, flag, name); }}>
@@ -121,24 +220,18 @@ export default function Home() {
                 <line x1="6" y1="1" x2="6" y2="17" stroke="currentColor" strokeWidth="1.3"/>
               </svg>
             </div>
-            <h1 style={{ direction: 'rtl' }}>מרחב פסיכואנליטי לסקרנים</h1>
+            <h1>מרחב פסיכואנליטי</h1>
             <div className="header-psi">ψ</div>
           </div>
           <div className="header-session">
             <div id="session-title" style={{ display: 'none' }}></div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, overflowX: 'auto', minWidth: 0, scrollbarWidth: 'none' }}>
-              {[
-                ['freud','פרויד'],['klein','קליין'],['winnicott','ויניקוט'],
-                ['ogden','אוגדן'],['loewald','לוואלד'],['bion','ביון'],
-                ['kohut','קוהוט'],['heimann','היימן']
-              ].map(([key, label]) => (
-                <div key={key} className="theorist-tag" data-key={key}
-                  onClick={(e) => (window as any).toggleTheorist(e.currentTarget, key)}>
-                  {label}
-                </div>
-              ))}
-            </div>
+            <div style={{ flex: 1 }}></div>
             <div className="session-actions">
+              <div id="header-intake-btn" onClick={() => (window as any).startIntake()} style={{ display: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--accent)', border: '1px solid var(--accent-dim)', borderRadius: 20, padding: '4px 14px', fontFamily: 'var(--font-rubik), sans-serif', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--accent-soft)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'none'; }}>
+                שיחת היכרות
+              </div>
               <div id="clinical-btn" className="memory-indicator" onClick={() => (window as any).toggleClinicalMode()} style={{ cursor: 'pointer' }} title="מצב יישום">
                 <Sofa size={18} strokeWidth={1.75} />
                 <span id="clinical-label">סשן</span>
@@ -189,7 +282,7 @@ export default function Home() {
               </button>
             </div>
             <div className="hint" id="input-hint">Enter לשליחה · Shift+Enter לשורה חדשה</div>
-            <div style={{ fontSize: 10, color: 'var(--muted)', opacity: 0.55, textAlign: 'center', paddingTop: 6, lineHeight: 1.5 }}>
+            <div id="input-disclaimer" style={{ fontSize: 10, color: 'var(--muted)', opacity: 0.55, textAlign: 'center', paddingTop: 6, lineHeight: 1.5 }}>
               כלי לימודי ומחקרי בלבד · אינו מהווה תחליף לטיפול פסיכולוגי מקצועי
             </div>
           </div>
@@ -207,6 +300,19 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Theorist tooltip */}
+      {tooltip && (
+        <div style={{
+          position: 'fixed', top: tooltip.top, left: tooltip.left,
+          transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 1000,
+          background: '#a8948e', color: '#fff',
+          fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 400,
+          padding: '4px 10px', borderRadius: 6, whiteSpace: 'nowrap',
+          letterSpacing: 0,
+        }}>
+          {tooltip.text}
+        </div>
+      )}
     </>
   );
 }
