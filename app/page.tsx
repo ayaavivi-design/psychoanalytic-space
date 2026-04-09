@@ -246,6 +246,13 @@ export default function Home() {
             <div className="ornament">ψ</div>
             <h2>ברוכ/ה הבא/ה</h2>
             <p>שאל/י כל שאלה בנושאי פסיכואנליזה — על תיאוריה, קליניקה, מושגים, או דרכי חשיבה של אנליטיקאים שונים.</p>
+            <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 16, lineHeight: 1.6 }}>
+              השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.{' '}
+              <span onClick={() => { const m = document.getElementById('privacy-modal'); if(m) m.style.display='flex'; }}
+                style={{ color: 'var(--accent)', cursor: 'pointer', textDecoration: 'underline' }}>
+                מדיניות פרטיות
+              </span>
+            </p>
           </div>
         </div>
 
@@ -285,6 +292,26 @@ export default function Home() {
             <div id="input-disclaimer" style={{ fontSize: 10, color: 'var(--muted)', opacity: 0.55, textAlign: 'center', paddingTop: 6, lineHeight: 1.5 }}>
               כלי לימודי ומחקרי בלבד · אינו מהווה תחליף לטיפול פסיכולוגי מקצועי
             </div>
+          </div>
+        </div>
+
+        {/* Privacy modal */}
+        <div id="privacy-modal" style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(45,36,32,0.4)', display: 'none', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+          <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 16, padding: 32, maxWidth: 460, width: '90%', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', direction: 'rtl' }}>
+            <div style={{ fontSize: 24, color: 'var(--accent)', marginBottom: 12, fontFamily: 'var(--font-cormorant), serif', textAlign: 'center' }}>ψ</div>
+            <h3 style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 20, fontWeight: 300, color: 'var(--accent)', marginBottom: 20, textAlign: 'center' }}>מדיניות פרטיות</h3>
+
+            <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.9, fontFamily: 'var(--font-rubik), sans-serif' }}>
+              <p style={{ marginBottom: 12 }}><strong>שיחות</strong> — מעובדות דרך ממשק ה-API של אנתרופיק בלבד. אינן נשמרות על ידינו, ואינן משמשות לאימון מודלים.</p>
+              <p style={{ marginBottom: 12 }}><strong>זיכרון</strong> — נשמר באופן מקומי בדפדפן שלך בלבד. אנחנו לא רואים אותו ולא מאחסנים אותו.</p>
+              <p style={{ marginBottom: 12 }}><strong>מאגר ידע</strong> — קטעים מהספרות הפסיכואנליטית מאוחסנים אצלנו כמספרים בלבד לצורך חיפוש. תוכן השיחות שלך אינו נשמר שם.</p>
+              <p style={{ marginBottom: 20 }}><strong>זיהוי</strong> — אין שמירה של כתובות IP, זהות משתמש, או כל מידע מזהה אישי מעבר לנדרש לניהול החשבון.</p>
+            </div>
+
+            <button onClick={() => { const m = document.getElementById('privacy-modal'); if(m) m.style.display='none'; }}
+              style={{ display: 'block', margin: '0 auto', background: 'var(--accent)', border: 'none', color: '#fff', padding: '10px 32px', borderRadius: 20, fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer' }}>
+              הבנתי
+            </button>
           </div>
         </div>
 

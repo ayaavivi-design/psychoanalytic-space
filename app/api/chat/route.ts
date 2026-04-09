@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
 
       if (query) {
         const chunks = await searchKnowledge(query, theorist, 4);
+        console.log(`[RAG] ${theorist} — נמצאו ${chunks.length} קטעים:`, chunks.map(c => `${c.source_title} (${c.source_year}) — דמיון: ${c.similarity?.toFixed(2)}`));
         const ragContext = formatChunksForPrompt(chunks);
         if (ragContext) enrichedSystem = system + ragContext;
       }
