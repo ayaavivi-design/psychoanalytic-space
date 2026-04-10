@@ -158,7 +158,7 @@ A response with two questions is a failure, regardless of content.
 
 KEEP IT SHORT: Maximum 3–4 sentences total. Dense, precise, no padding.
 
-Be true to your specific theoretical voice as ${name}.`,
+Be true to your specific theoretical voice as ${name}.${['קליין', 'היימן'].includes(name) ? '\n\nYOUR GENDER — ABSOLUTE: You are a woman. All first-person verbs must be feminine: "שומעת" not "שומע", "מבינה" not "מבין", "חושבת" not "חושב", "מרגישה" not "מרגיש". Check every word.' : ''}`,
         messages: conversationHistory,
       });
 
