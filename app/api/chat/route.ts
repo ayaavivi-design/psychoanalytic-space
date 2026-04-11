@@ -70,15 +70,16 @@ export async function POST(req: NextRequest) {
     });
 
     // output validation — אכיפת שאלה אחת בלבד
+    let finalContent = response.content;
     if (response.content[0]?.type === 'text' && !webSearch) {
       const originalText = response.content[0].text;
       const fixedText = await enforceOneQuestion(anthropic, originalText, enrichedSystem, messages);
       if (fixedText !== originalText) {
-        response.content[0] = { type: 'text', text: fixedText };
+        finalContent = [{ ...response.content[0], text: fixedText }];
       }
     }
 
-    return NextResponse.json(response);
+    return NextResponse.json({ ...response, content: finalContent });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ error: { message } }, { status: 500 });
