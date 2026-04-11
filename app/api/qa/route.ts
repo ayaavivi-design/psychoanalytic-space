@@ -164,7 +164,24 @@ async function testTheorist(theorist: string, question: typeof QUESTION_BANK[0])
         messages: conversationHistory,
       });
 
-      const therapistText = response.content[0].type === 'text' ? response.content[0].text : '';
+      let therapistText = response.content[0].type === 'text' ? response.content[0].text : '';
+
+      // output validation — אכיפת שאלה אחת בלבד
+      const qCount = (therapistText.match(/\?/g) || []).length;
+      if (qCount > 1) {
+        const fixResponse = await anthropic.messages.create({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 400,
+          system: fullSystem,
+          messages: [
+            ...conversationHistory,
+            { role: 'assistant', content: therapistText },
+            { role: 'user', content: `עצור. התגובה שלך מכילה ${qCount} סימני שאלה. הכלל: שאלה אחת בלבד. כתוב מחדש — אותו תוכן, שאלה אחת בלבד.` },
+          ],
+        });
+        therapistText = fixResponse.content[0].type === 'text' ? fixResponse.content[0].text : therapistText;
+      }
+
       conversationHistory.push({ role: 'assistant', content: therapistText });
 
       const turnIssues = checkTurn(therapistText, i);

@@ -2,8 +2,38 @@ import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { searchKnowledge, formatChunksForPrompt } from '@/lib/rag';
 
-// תיאוריסטים שיש להם ידע במאגר
 const THEORISTS_WITH_RAG = new Set(['freud', 'klein', 'winnicott', 'ogden', 'loewald', 'bion', 'kohut', 'heimann']);
+
+// בדיקה ותיקון של שאלות כפולות — output validation loop
+async function enforceOneQuestion(
+  anthropic: Anthropic,
+  text: string,
+  system: string,
+  messages: Anthropic.MessageParam[]
+): Promise<string> {
+  const questionMarks = (text.match(/\?/g) || []).length;
+  if (questionMarks <= 1) return text;
+
+  // יש יותר מ-1 שאלה — שולחים שוב לתיקון
+  const fixResponse = await anthropic.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 400,
+    system,
+    messages: [
+      ...messages,
+      { role: 'assistant', content: text },
+      {
+        role: 'user',
+        content: `עצור. התגובה שלך מכילה ${questionMarks} סימני שאלה. הכלל: שאלה אחת בלבד.
+כתוב מחדש את התגובה — אותו תוכן, אבל עם סימן שאלה אחד בלבד. בחר את השאלה החדה ביותר. מחק את השאר.`,
+      },
+    ],
+  });
+
+  const fixed = fixResponse.content[0].type === 'text' ? fixResponse.content[0].text : text;
+  console.log(`[QA] תוקן: ${questionMarks} שאלות → ${(fixed.match(/\?/g) || []).length}`);
+  return fixed;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,7 +41,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { messages, system, webSearch, theorist } = body;
 
-    // RAG — הוסף קטעים רלוונטיים אם יש מאגר לתיאוריסט הזה
+    // RAG
     let enrichedSystem = system;
     if (theorist && THEORISTS_WITH_RAG.has(theorist) && messages?.length > 0) {
       const lastUserMessage = [...messages].reverse().find((m: { role: string }) => m.role === 'user');
@@ -38,6 +68,15 @@ export async function POST(req: NextRequest) {
       messages,
       ...(tools.length > 0 && { tools }),
     });
+
+    // output validation — אכיפת שאלה אחת בלבד
+    if (response.content[0]?.type === 'text' && !webSearch) {
+      const originalText = response.content[0].text;
+      const fixedText = await enforceOneQuestion(anthropic, originalText, enrichedSystem, messages);
+      if (fixedText !== originalText) {
+        response.content[0] = { type: 'text', text: fixedText };
+      }
+    }
 
     return NextResponse.json(response);
   } catch (err: unknown) {
