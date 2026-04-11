@@ -6,6 +6,17 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [theoristsOpen, setTheoristsOpen] = useState(false);
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number } | null>(null);
+
+  const THEORIST_CARDS: Record<string, { approach: string; concepts: string; forWhom: string }> = {
+    freud:    { approach: 'ארכיאולוגיה של הנפש — מה נדחק, מה חוזר, מה מסתתר מאחורי המילים', concepts: 'דחף, עיכוב, העברה, התנגדות, חלום', forWhom: 'מי שרוצה להבין שורשים, תסמינים חוזרים, או פשר של מה שלא מובן' },
+    klein:    { approach: 'עולם פנימי של אובייקטים — אהבה ושנאה, פיצול ואיחוד, מה שלא ניתן לעכל', concepts: 'קנאה, פיצול, השלכה, אובייקט טוב ורע', forWhom: 'מי שרוצה לעבוד עם רגשות עזים, קשיי קרבה, חרדות עמוקות' },
+    winnicott: { approach: 'המרחב שבין — משחק, החזקה, ה"אני" האמיתי שמחפש לצאת', concepts: 'סביבה מאפשרת, עצמי אמיתי ומזויף, אובייקט מעבר', forWhom: 'מי שמרגיש שמתפקד אבל לא ממש חי, מי שמחפש מרחב ולא פרשנות' },
+    ogden:    { approach: 'מה שנוצר בין שני האנשים בחדר — לא בתוך האחד ולא בתוך האחר', concepts: 'שלישי אנליטי, רווריה, חלימה משותפת', forWhom: 'מי שרוצה לעבוד עם הדינמיקה בין מטפל למטופל, שפה ותהליך יצירתי' },
+    loewald:  { approach: 'הקשר עצמו כגורם המרפא — האנליטיקאי כדמות הורית חדשה', concepts: 'הפנמה, זמן נפשי, אובייקט חדש, רצח אב כהכרח התפתחותי', forWhom: 'מי שמתעניין בממשק בין פרויד לרלציוניים, שינוי לאורך זמן' },
+    bion:     { approach: 'מה שעדיין לא ניתן לחשוב — כיצד רגשות הופכים לניתנים לעיכול', concepts: 'אלפא ובטא, מכיל-מוכל, O, ללא זיכרון וללא רצון', forWhom: 'מי שעובד עם מצבים קשים לניסוח, חוויות כאוטיות, גבולות החשיבה' },
+    kohut:    { approach: 'הצורך להרגיש מובן — לא לפרש, אלא לקלוט מבפנים', concepts: 'עצמי, אובייקט-עצמי, שיקוף, אידיאליזציה, חרדת פירוק', forWhom: 'מי שמרגיש שלא נראה, פגיעות נרקיסיסטית, אמפתיה כמתודה' },
+    heimann:  { approach: 'מה שהמפגש מעורר במטפל — הקאונטרטרנספרנס כמכשיר הידע המרכזי', concepts: 'קאונטרטרנספרנס, מה שמושלך לתוך המטפל', forWhom: 'מי שמתעניין בתהליכים שקורים במטפל, סופרוויזיה, עיבוד פנימי' },
+  };
   const [authLangOpen, setAuthLangOpen] = useState(false);
   useEffect(() => setMounted(true), []);
   useEffect(() => {
@@ -162,8 +173,7 @@ export default function Home() {
                     onClick={(e) => (window as any).toggleTheorist(e.currentTarget, key)}
                     onMouseEnter={(e) => {
                       const r = e.currentTarget.getBoundingClientRect();
-                      const text = e.currentTarget.getAttribute('data-tooltip') || tooltipText;
-                      setTooltip({ text, top: r.top + r.height / 2, left: r.right + 8 });
+                      setTooltip({ text: key, top: r.top, left: r.right + 8 });
                     }}
                     onMouseLeave={() => setTooltip(null)}>
                     {label}
@@ -341,19 +351,39 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Theorist tooltip */}
-      {tooltip && (
-        <div style={{
-          position: 'fixed', top: tooltip.top, left: tooltip.left,
-          transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 1000,
-          background: '#a8948e', color: '#fff',
-          fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 400,
-          padding: '4px 10px', borderRadius: 6, whiteSpace: 'nowrap',
-          letterSpacing: 0,
-        }}>
-          {tooltip.text}
-        </div>
-      )}
+      {/* Theorist card tooltip */}
+      {tooltip && (() => {
+        const card = THEORIST_CARDS[tooltip.text];
+        if (!card) return null;
+        const names: Record<string,string> = { freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', kohut:'קוהוט', heimann:'היימן' };
+        return (
+          <div style={{
+            position: 'fixed', top: tooltip.top, left: tooltip.left,
+            pointerEvents: 'none', zIndex: 1000,
+            background: 'var(--surface, #fff)', border: '1px solid var(--border, #ede4e0)',
+            borderRadius: 12, padding: '14px 16px', width: 240,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+            fontFamily: 'var(--font-rubik), sans-serif',
+            direction: 'rtl', textAlign: 'right',
+          }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent, #c4607a)', marginBottom: 10 }}>
+              {names[tooltip.text]}
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 10, color: 'var(--muted, #a8948e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>גישה</div>
+              <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{card.approach}</div>
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 10, color: 'var(--muted, #a8948e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>מושגים</div>
+              <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{card.concepts}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 10, color: 'var(--muted, #a8948e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>מתאים ל</div>
+              <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{card.forWhom}</div>
+            </div>
+          </div>
+        );
+      })()}
     </>
   );
 }
