@@ -4,7 +4,7 @@ import { PenLine, Globe, Brain, Settings, LogOut, Languages, Sofa, Download, Che
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const [theoristsOpen, setTheoristsOpen] = useState(false);
+  const [theoristsOpen, setTheoristsOpen] = useState(true);
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
 
   const THEORIST_CARDS: Record<string, { approach: string; concepts: string; forWhom: string }> = {
