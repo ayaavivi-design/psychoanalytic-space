@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
+import { THEORIST_VOICE } from '@/lib/theorist-voices';
+import { searchKnowledge, formatChunksForPrompt } from '@/lib/rag';
 
 export const maxDuration = 300; // 5 דקות — מקסימום Vercel Pro
 
@@ -146,19 +148,19 @@ async function testTheorist(theorist: string, question: typeof QUESTION_BANK[0])
       const patientMessage = question.turns[i];
       conversationHistory.push({ role: 'user', content: patientMessage });
 
+      // בנה את הפרומפט האמיתי — אותו פרומפט שהממשק משתמש בו
+      const baseSystem = THEORIST_VOICE[theorist] || `You are ${name}, a psychoanalytic therapist.`;
+
+      // הוסף RAG לפרומפט
+      const lastMsg = question.turns[i];
+      const chunks = await searchKnowledge(lastMsg, theorist, 4);
+      const ragContext = formatChunksForPrompt(chunks);
+      const fullSystem = ragContext ? baseSystem + ragContext : baseSystem;
+
       const response = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 400,
-        system: `You are ${name}, a psychoanalytic therapist. Respond ONLY in Hebrew.
-
-ABSOLUTE RULE — ONE QUESTION MAXIMUM:
-Your entire response may contain at most ONE question mark. Not two. Not three. ONE.
-Before sending, count every "?" in your response. If you find more than one — delete everything after the first question and stop there.
-A response with two questions is a failure, regardless of content.
-
-KEEP IT SHORT: Maximum 3–4 sentences total. Dense, precise, no padding.
-
-Be true to your specific theoretical voice as ${name}.${['קליין', 'היימן'].includes(name) ? '\n\nYOUR GENDER — ABSOLUTE: You are a woman. All first-person verbs must be feminine: "שומעת" not "שומע", "מבינה" not "מבין", "חושבת" not "חושב", "מרגישה" not "מרגיש". Check every word.' : ''}`,
+        system: fullSystem,
         messages: conversationHistory,
       });
 
