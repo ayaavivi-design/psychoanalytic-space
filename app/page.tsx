@@ -5,7 +5,7 @@ import { PenLine, Globe, Brain, Settings, LogOut, Languages, Sofa, Download, Che
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [theoristsOpen, setTheoristsOpen] = useState(false);
-  const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number } | null>(null);
+  const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
 
   const THEORIST_CARDS: Record<string, { approach: string; concepts: string; forWhom: string }> = {
     freud:    { approach: 'ארכיאולוגיה של הנפש — מה נדחק, מה חוזר, מה מסתתר מאחורי המילים', concepts: 'דחף, עיכוב, העברה, התנגדות, חלום', forWhom: 'מי שרוצה להבין שורשים, תסמינים חוזרים, או פשר של מה שלא מובן' },
@@ -173,7 +173,9 @@ export default function Home() {
                     onClick={(e) => (window as any).toggleTheorist(e.currentTarget, key)}
                     onMouseEnter={(e) => {
                       const r = e.currentTarget.getBoundingClientRect();
-                      setTooltip({ text: key, top: r.top, left: r.right + 8 });
+                      const cardHeight = 220;
+                      const flip = r.top + cardHeight > window.innerHeight - 16;
+                      setTooltip({ text: key, top: flip ? r.bottom - cardHeight : r.top, left: r.right + 8, flip });
                     }}
                     onMouseLeave={() => setTooltip(null)}>
                     {label}
