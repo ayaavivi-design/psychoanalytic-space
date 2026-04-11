@@ -250,7 +250,7 @@ export default function Home() {
                 <Sofa size={18} strokeWidth={1.75} />
                 <span id="clinical-label">סשן</span>
                 <div className="session-tooltip" style={{
-                  position: 'absolute', bottom: 'calc(100% + 10px)', left: 0,
+                  position: 'absolute', top: 'calc(100% + 10px)', left: 0,
                   background: 'var(--surface)', border: '1px solid var(--border)',
                   borderRadius: 10, padding: '10px 14px', width: 220,
                   fontSize: 12, lineHeight: 1.6, color: 'var(--text)',
