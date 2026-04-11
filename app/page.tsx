@@ -232,9 +232,23 @@ export default function Home() {
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'none'; }}>
                 שיחת היכרות
               </div>
-              <div id="clinical-btn" className="memory-indicator" onClick={() => (window as any).toggleClinicalMode()} style={{ cursor: 'pointer' }} title="מצב יישום">
+              <div id="clinical-btn" className="memory-indicator" onClick={() => (window as any).toggleClinicalMode()} style={{ cursor: 'pointer', position: 'relative' }}
+                onMouseEnter={(e) => { const tip = (e.currentTarget as HTMLElement).querySelector('.session-tooltip') as HTMLElement; if (tip) tip.style.opacity = '1'; }}
+                onMouseLeave={(e) => { const tip = (e.currentTarget as HTMLElement).querySelector('.session-tooltip') as HTMLElement; if (tip) tip.style.opacity = '0'; }}>
                 <Sofa size={18} strokeWidth={1.75} />
                 <span id="clinical-label">סשן</span>
+                <div className="session-tooltip" style={{
+                  position: 'absolute', bottom: 'calc(100% + 10px)', right: 0,
+                  background: 'var(--surface)', border: '1px solid var(--border)',
+                  borderRadius: 10, padding: '10px 14px', width: 220,
+                  fontSize: 12, lineHeight: 1.6, color: 'var(--text)',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                  opacity: 0, transition: 'opacity 0.2s', pointerEvents: 'none',
+                  textAlign: 'right', direction: 'rtl', zIndex: 100,
+                }}>
+                  <strong style={{ display: 'block', marginBottom: 4, color: 'var(--accent)' }}>מצב סשן קליני</strong>
+                  התיאוריסט הנבחר יגיב כאנליטיקאי בשיחה — לא כמרצה. מתאים להבאת חומר קליני, חלומות, או מצבים אישיים.
+                </div>
               </div>
             </div>
           </div>

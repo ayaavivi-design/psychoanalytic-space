@@ -3744,9 +3744,20 @@ function showTheoristOpening(theoristKey) {
   const lang = (selectedLang && selectedLang.code) || 'he';
   const opening = openingObj[lang] || openingObj['en'] || openingObj['he'];
   const nameMap = {freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', kohut:'קוהוט', heimann:'היימן'};
+  const fullNames = {freud:'זיגמונד פרויד', klein:'מלאני קליין', winnicott:'דונלד ויניקוט', ogden:'תומאס אוגדן', loewald:'הנס לוואלד', bion:'ויל ביון', kohut:'היינץ קוהוט', heimann:'פאולה היימן'};
   const chat = document.getElementById('chat');
   const welcome = document.getElementById('welcome');
   if (welcome) welcome.remove();
+
+  // הודעת הקשר — מסביר למשתמש מה עומד לקרות
+  const contextDiv = document.createElement('div');
+  contextDiv.style.cssText = 'text-align:center;padding:12px 20px;margin:16px auto;max-width:380px;';
+  contextDiv.innerHTML = `<span style="font-size:11px;color:var(--muted);background:var(--surface-alt,#f8f4f2);border:1px solid var(--border);border-radius:20px;padding:5px 14px;display:inline-block;line-height:1.5;">
+    מצב סשן קליני — ${fullNames[theoristKey] || nameMap[theoristKey]} מגיב/ה כאנליטיקאי/ת בשיחה
+  </span>`;
+  chat.appendChild(contextDiv);
+
+  // הודעת הפתיחה של התיאוריסט
   const div = document.createElement('div');
   div.className = 'message assistant';
   div.innerHTML = `
