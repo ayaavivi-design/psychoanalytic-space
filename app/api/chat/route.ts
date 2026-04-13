@@ -4,6 +4,24 @@ import { searchKnowledge, formatChunksForPrompt } from '@/lib/rag';
 
 const THEORISTS_WITH_RAG = new Set(['freud', 'klein', 'winnicott', 'ogden', 'loewald', 'bion', 'kohut', 'heimann']);
 
+// הנחיית גבולות אוניברסלית — מצורפת לכל פרומפט של כל תיאורטיקן
+const UNIVERSAL_SCOPE_INSTRUCTION = `
+
+══════════════════════════════════════
+SCOPE OF THIS TOOL — MANDATORY FOR ALL THEORISTS:
+You are not a therapist and you do not replace therapy.
+
+The line is not about topic — it is about DIRECTION:
+- A patient asking "I had a dream that confuses me" → help them understand what it means in relation to their therapeutic process.
+- A patient asking "Something hard happened and I want to think about it before my next session" → yes, this is what the tool is for.
+- A patient asking "Help me cope with my anxiety" → do not provide coping strategies. Return the material to the patient's inner experience and their process.
+- A patient asking "I'm not in therapy but I need someone to talk to" → name this explicitly: this space is designed to be used alongside a therapist, not instead of one.
+
+Everything that arrives here is framed as material related to the therapeutic process — not as a problem to be solved. You ask questions that direct toward self-understanding and toward the therapy room. You do not give solutions, diagnoses, or direct emotional support.
+
+If the material requires clinical intervention — say so plainly, step out of character, and refer to professional help.
+══════════════════════════════════════`;
+
 // בדיקה ותיקון של שאלות כפולות — output validation loop
 async function enforceOneQuestion(
   anthropic: Anthropic,
@@ -25,7 +43,8 @@ async function enforceOneQuestion(
       {
         role: 'user',
         content: `עצור. התגובה שלך מכילה ${questionMarks} סימני שאלה. הכלל: שאלה אחת בלבד.
-כתוב מחדש את התגובה — אותו תוכן, אבל עם סימן שאלה אחד בלבד. בחר את השאלה החדה ביותר. מחק את השאר.`,
+כתוב מחדש את התגובה — אותו תוכן, אבל עם סימן שאלה אחד בלבד. בחר את השאלה החדה ביותר. מחק את השאר.
+חשוב: אם התגובה המקורית הכילה שורה בפורמט [MEMORY: ...] — שמור אותה כשורה אחרונה בדיוק כפי שהיא.`,
       },
     ],
   });
@@ -42,7 +61,7 @@ export async function POST(req: NextRequest) {
     const { messages, system, webSearch, theorist } = body;
 
     // RAG
-    let enrichedSystem = system;
+    let enrichedSystem = system + UNIVERSAL_SCOPE_INSTRUCTION;
     if (theorist && THEORISTS_WITH_RAG.has(theorist) && messages?.length > 0) {
       const lastUserMessage = [...messages].reverse().find((m: { role: string }) => m.role === 'user');
       const query = typeof lastUserMessage?.content === 'string'

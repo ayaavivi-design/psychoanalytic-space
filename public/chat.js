@@ -3116,6 +3116,7 @@ You may only reference material the patient has explicitly brought in THIS conve
 GLOBAL RULE — NO CITATIONS IN CLINICAL SESSION:
 Do not include any bibliographic reference, book title, paper name, year, or "📖" symbol at the end of your response. This applies to ALL theorists in ALL clinical exchanges. You are in a session — not writing an academic paper. A therapist does not append citations to their words in the room.
 MANDATORY SELF-CHECK: Look at the last two lines of your response. If they contain a title, a year, a "📖", or an author name — delete them before sending.
+CRITICAL EXCEPTION — [MEMORY:] IS NOT A CITATION: The tag [MEMORY: ...] is a hidden system tag, not a bibliographic citation. The no-citations rule does NOT apply to it. You MUST include [MEMORY: brief summary] as the very last line of every response, even in clinical mode. This tag is invisible to the user and will be stripped automatically.
 
 SAFETY PROTOCOL — THIS OVERRIDES EVERYTHING ELSE:
 If the person says ANYTHING that could indicate suicidal ideation or self-harm — even a hint — immediately step out of the analytic role and respond as a human being. This includes but is not limited to:
@@ -3169,9 +3170,12 @@ You are not diagnosing. You are not a hotline. But you are also not a theoretica
 
 אתה משיב תמיד בשפה: ${selectedLang ? selectedLang.code : 'he'}. אם השפה היא 'he' — ענה בעברית. אם 'en' — ענה באנגלית. אם 'de' — ענה בגרמנית. אם 'es' — ענה בספרדית. אם 'fr' — ענה בצרפתית. אם 'ru' — ענה ברוסית. שמור על שפת התשובה ללא קשר לשפת השאלה. אתה שולט לעומק בכל הגישות הפסיכואנליטיות העיקריות: פרויד, קליין, ויניקוט, אוגדן, לוואלד, ביון, לאקאן, קוהוט, היימן.${theoristKnowledge}${focusInstruction}${memoryContext}${genderInstruction}${clinicalInstruction}
 
-בסוף כל תשובה:
-1. ייחס את המקור: ציין את שם הספר או המאמר הרלוונטי ביותר שממנו נלקח הרעיון המרכזי בתשובה, בפורמט: [מקור: שם הספר/מאמר — שם המחבר, שנה]. אם מדובר ברעיון כללי ממספר מקורות, ציין את המרכזי שבהם.
-2. הוסף שורה בפורמט: [MEMORY: תמצית קצרה של השאלה המרכזית]`;
+SYSTEM TAG — MANDATORY IN ALL MODES:
+The very last line of EVERY response must be: [MEMORY: תמצית קצרה של השאלה המרכזית]
+This tag is a hidden system marker, not a citation. It is stripped before display. Include it always, without exception, even in clinical mode.
+
+${window.clinicalMode ? '' : `בסוף כל תשובה:
+1. ייחס את המקור: ציין את שם הספר או המאמר הרלוונטי ביותר שממנו נלקח הרעיון המרכזי בתשובה, בפורמט: [מקור: שם הספר/מאמר — שם המחבר, שנה]. אם מדובר ברעיון כללי ממספר מקורות, ציין את המרכזי שבהם.`}`;
 }
 
 function toggleLangMenu() {
@@ -3224,6 +3228,13 @@ const UI_TRANSLATIONS = {
     settingsTimer: 'טיימר לסשן', settingsTimerDesc: '50 דקות · מסגרת טיפולית',
     settingsTimerWarnPre: 'דקות לפני הסיום', settingsTimerWarnSuf: 'אזהרה',
     settingsIntakeDone: 'שיחת היכרות הושלמה ✓', settingsIntakeReset: 'אפס',
+    sessionTooltipTitle: 'מצב סשן קליני',
+    sessionTooltipText: 'התיאורטיקן הנבחר יגיב כאנליטיקאי בשיחה — לא כמרצה. מתאים להבאת חומר קליני, חלומות, או מצבים אישיים.',
+    welcomeApiText: 'השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.',
+    privacyLink: 'מדיניות פרטיות',
+    privacyTitle: 'מדיניות פרטיות',
+    privacyContent: '<p style="margin-bottom:12px"><strong>שיחות</strong> — מעובדות דרך ממשק ה-API של אנתרופיק בלבד. אינן נשמרות על ידינו, ואינן משמשות לאימון מודלים.</p><p style="margin-bottom:12px"><strong>זיכרון</strong> — נשמר באופן מקומי בדפדפן שלך בלבד. אנחנו לא רואים אותו ולא מאחסנים אותו.</p><p style="margin-bottom:12px"><strong>מאגר ידע</strong> — קטעים מהספרות הפסיכואנליטית מאוחסנים אצלנו כמספרים בלבד לצורך חיפוש. תוכן השיחות שלך אינו נשמר שם.</p><p style="margin-bottom:20px"><strong>זיהוי</strong> — אין שמירה של כתובות IP, זהות משתמש, או כל מידע מזהה אישי מעבר לנדרש לניהול החשבון.</p>',
+    privacyBtnOk: 'הבנתי',
     dir: 'rtl'
   },
   en: {
@@ -3258,6 +3269,13 @@ const UI_TRANSLATIONS = {
     settingsTimer: 'Session timer', settingsTimerDesc: '50 min · clinical framework',
     settingsTimerWarnPre: 'min before end', settingsTimerWarnSuf: 'warning',
     settingsIntakeDone: 'Intro conversation completed ✓', settingsIntakeReset: 'Reset',
+    sessionTooltipTitle: 'Clinical Session Mode',
+    sessionTooltipText: 'The selected theorist responds as an analyst in conversation — not as a lecturer. Suitable for clinical material, dreams, or personal situations.',
+    welcomeApiText: 'Conversations are processed through the Anthropic API and are not stored by us or used to train models.',
+    privacyLink: 'Privacy Policy',
+    privacyTitle: 'Privacy Policy',
+    privacyContent: '<p style="margin-bottom:12px"><strong>Conversations</strong> — processed through the Anthropic API only. Not stored by us, and not used to train models.</p><p style="margin-bottom:12px"><strong>Memory</strong> — stored locally in your browser only. We cannot see or access it.</p><p style="margin-bottom:12px"><strong>Knowledge base</strong> — excerpts from psychoanalytic literature are stored as numbers only for search. Your conversation content is not stored there.</p><p style="margin-bottom:20px"><strong>Identity</strong> — no storage of IP addresses, user identity, or any identifying personal data beyond what is required for account management.</p>',
+    privacyBtnOk: 'Got it',
     newChat: 'New chat',
     recentChats: 'Recent chats',
     session: 'Session',
@@ -3324,6 +3342,13 @@ const UI_TRANSLATIONS = {
     settingsTimer: 'Sitzungs-Timer', settingsTimerDesc: '50 Min · klinischer Rahmen',
     settingsTimerWarnPre: 'Min vor Ende', settingsTimerWarnSuf: 'Warnung',
     settingsIntakeDone: 'Kennenlerngespräch abgeschlossen ✓', settingsIntakeReset: 'Zurücksetzen',
+    sessionTooltipTitle: 'Klinischer Sitzungsmodus',
+    sessionTooltipText: 'Der ausgewählte Theoretiker antwortet als Analytiker — nicht als Dozent. Geeignet für klinisches Material, Träume oder persönliche Situationen.',
+    welcomeApiText: 'Gespräche werden über die Anthropic-API verarbeitet und weder von uns gespeichert noch zum Training von Modellen verwendet.',
+    privacyLink: 'Datenschutzrichtlinie',
+    privacyTitle: 'Datenschutzrichtlinie',
+    privacyContent: '<p style="margin-bottom:12px"><strong>Gespräche</strong> — werden nur über die Anthropic-API verarbeitet. Nicht von uns gespeichert, nicht zum Trainieren von Modellen verwendet.</p><p style="margin-bottom:12px"><strong>Gedächtnis</strong> — wird nur lokal in Ihrem Browser gespeichert. Wir können es weder sehen noch darauf zugreifen.</p><p style="margin-bottom:12px"><strong>Wissensbasis</strong> — Auszüge aus der psychoanalytischen Literatur werden nur als Zahlen für die Suche gespeichert. Ihr Gesprächsinhalt wird dort nicht gespeichert.</p><p style="margin-bottom:20px"><strong>Identität</strong> — keine Speicherung von IP-Adressen, Benutzeridentität oder identifizierenden Daten über das für die Kontoverwaltung Erforderliche hinaus.</p>',
+    privacyBtnOk: 'Verstanden',
     dir: 'ltr'
   },
   es: {
@@ -3370,6 +3395,13 @@ const UI_TRANSLATIONS = {
     settingsTimer: 'Temporizador de sesión', settingsTimerDesc: '50 min · marco clínico',
     settingsTimerWarnPre: 'min antes del final', settingsTimerWarnSuf: 'aviso',
     settingsIntakeDone: 'Conversación de presentación completada ✓', settingsIntakeReset: 'Restablecer',
+    sessionTooltipTitle: 'Modo de sesión clínica',
+    sessionTooltipText: 'El teórico seleccionado responde como analista — no como conferenciante. Adecuado para material clínico, sueños o situaciones personales.',
+    welcomeApiText: 'Las conversaciones se procesan a través de la API de Anthropic y no son almacenadas por nosotros ni utilizadas para entrenar modelos.',
+    privacyLink: 'Política de privacidad',
+    privacyTitle: 'Política de privacidad',
+    privacyContent: '<p style="margin-bottom:12px"><strong>Conversaciones</strong> — procesadas solo a través de la API de Anthropic. No almacenadas, no usadas para entrenar modelos.</p><p style="margin-bottom:12px"><strong>Memoria</strong> — almacenada solo localmente en tu navegador. No podemos verla ni acceder a ella.</p><p style="margin-bottom:12px"><strong>Base de conocimiento</strong> — fragmentos de literatura psicoanalítica almacenados como números para búsqueda. Tu contenido de conversación no se almacena allí.</p><p style="margin-bottom:20px"><strong>Identidad</strong> — no se almacenan direcciones IP, identidad de usuario ni datos personales identificables más allá de lo necesario para la gestión de la cuenta.</p>',
+    privacyBtnOk: 'Entendido',
     dir: 'ltr'
   },
   fr: {
@@ -3416,6 +3448,13 @@ const UI_TRANSLATIONS = {
     settingsTimer: 'Minuteur de séance', settingsTimerDesc: '50 min · cadre clinique',
     settingsTimerWarnPre: 'min avant la fin', settingsTimerWarnSuf: 'alerte',
     settingsIntakeDone: 'Conversation de présentation complétée ✓', settingsIntakeReset: 'Réinitialiser',
+    sessionTooltipTitle: 'Mode session clinique',
+    sessionTooltipText: 'Le théoricien sélectionné répond comme analyste — pas comme conférencier. Adapté au matériel clinique, aux rêves ou aux situations personnelles.',
+    welcomeApiText: "Les conversations sont traitées via l'API Anthropic et ne sont ni stockées par nous ni utilisées pour entraîner des modèles.",
+    privacyLink: 'Politique de confidentialité',
+    privacyTitle: 'Politique de confidentialité',
+    privacyContent: "<p style=\"margin-bottom:12px\"><strong>Conversations</strong> — traitées uniquement via l'API Anthropic. Non stockées, non utilisées pour entraîner des modèles.</p><p style=\"margin-bottom:12px\"><strong>Mémoire</strong> — stockée uniquement localement dans votre navigateur. Nous ne pouvons pas la voir ni y accéder.</p><p style=\"margin-bottom:12px\"><strong>Base de connaissances</strong> — des extraits de littérature psychanalytique sont stockés sous forme de chiffres pour la recherche. Le contenu de vos conversations n'y est pas stocké.</p><p style=\"margin-bottom:20px\"><strong>Identité</strong> — aucun stockage d'adresses IP, d'identité d'utilisateur ou de données personnelles identifiantes au-delà de ce qui est nécessaire à la gestion du compte.</p>",
+    privacyBtnOk: 'Compris',
     dir: 'ltr'
   },
   ru: {
@@ -3462,6 +3501,13 @@ const UI_TRANSLATIONS = {
     settingsTimer: 'Таймер сессии', settingsTimerDesc: '50 мин · клинические рамки',
     settingsTimerWarnPre: 'мин до конца', settingsTimerWarnSuf: 'предупреждение',
     settingsIntakeDone: 'Вводная беседа завершена ✓', settingsIntakeReset: 'Сбросить',
+    sessionTooltipTitle: 'Режим клинической сессии',
+    sessionTooltipText: 'Выбранный теоретик отвечает как аналитик — не как лектор. Подходит для клинического материала, сновидений или личных ситуаций.',
+    welcomeApiText: 'Разговоры обрабатываются через API Anthropic и не хранятся нами и не используются для обучения моделей.',
+    privacyLink: 'Политика конфиденциальности',
+    privacyTitle: 'Политика конфиденциальности',
+    privacyContent: '<p style="margin-bottom:12px"><strong>Разговоры</strong> — обрабатываются только через API Anthropic. Не хранятся нами, не используются для обучения моделей.</p><p style="margin-bottom:12px"><strong>Память</strong> — хранится только локально в вашем браузере. Мы не можем её видеть или получить к ней доступ.</p><p style="margin-bottom:12px"><strong>База знаний</strong> — фрагменты психоаналитической литературы хранятся в виде чисел для поиска. Содержание ваших разговоров там не хранится.</p><p style="margin-bottom:20px"><strong>Личность</strong> — никакого хранения IP-адресов, личных данных или идентифицирующей информации сверх необходимого для управления аккаунтом.</p>',
+    privacyBtnOk: 'Понятно',
     dir: 'ltr'
   },
   it: {
@@ -3496,6 +3542,13 @@ const UI_TRANSLATIONS = {
     settingsTimer: 'Timer di sessione', settingsTimerDesc: '50 min · cornice clinica',
     settingsTimerWarnPre: 'min prima della fine', settingsTimerWarnSuf: 'avviso',
     settingsIntakeDone: 'Conversazione di presentazione completata ✓', settingsIntakeReset: 'Reimposta',
+    sessionTooltipTitle: 'Modalità sessione clinica',
+    sessionTooltipText: 'Il teorico selezionato risponde come analista — non come docente. Adatto per materiale clinico, sogni o situazioni personali.',
+    welcomeApiText: "Le conversazioni vengono elaborate tramite l'API di Anthropic e non vengono conservate da noi né utilizzate per addestrare modelli.",
+    privacyLink: 'Informativa sulla privacy',
+    privacyTitle: 'Informativa sulla privacy',
+    privacyContent: "<p style=\"margin-bottom:12px\"><strong>Conversazioni</strong> — elaborate solo tramite l'API di Anthropic. Non conservate, non usate per addestrare modelli.</p><p style=\"margin-bottom:12px\"><strong>Memoria</strong> — conservata solo localmente nel tuo browser. Non possiamo vederla né accedervi.</p><p style=\"margin-bottom:12px\"><strong>Base di conoscenza</strong> — estratti della letteratura psicoanalitica conservati come numeri per la ricerca. Il contenuto delle tue conversazioni non è conservato lì.</p><p style=\"margin-bottom:20px\"><strong>Identità</strong> — nessuna conservazione di indirizzi IP, identità utente o dati personali identificativi oltre a quanto necessario per la gestione dell'account.</p>",
+    privacyBtnOk: 'Capito',
     newChat: 'Nuova chat',
     recentChats: 'Chat recenti',
     session: 'Sessione',
@@ -3613,6 +3666,8 @@ function applyUITranslation(code) {
   // Bottom disclaimer
   const disclaimer = document.getElementById('input-disclaimer');
   if (disclaimer && t.disclaimer) disclaimer.textContent = t.disclaimer;
+  // Notify React components of language change (welcome text, privacy modal, session tooltip)
+  window.dispatchEvent(new CustomEvent('langchange', { detail: { code } }));
   // Theorist tooltips
   if (t.tooltips) {
     document.querySelectorAll('.theorist-tag[data-key]').forEach(el => {
@@ -4144,6 +4199,12 @@ async function sendMessage() {
   isThinking = false;
   document.getElementById('send-btn').disabled = false;
   input.focus();
+
+  // Start silence timer after theorist responds — user may go quiet without typing
+  if (window.clinicalMode && !silenceResponseSent) {
+    clearTimeout(silenceTimer);
+    silenceTimer = setTimeout(handleSilence, SILENCE_THRESHOLD_MS);
+  }
 }
 
 function toggleMemoryDropdown() {
