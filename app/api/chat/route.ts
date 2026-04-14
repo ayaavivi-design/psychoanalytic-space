@@ -101,6 +101,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ...response, content: finalContent });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    return NextResponse.json({ error: { message } }, { status: 500 });
+    const isOverloaded = message.includes('529') || message.toLowerCase().includes('overload');
+    const isRateLimit  = message.includes('529') || message.includes('rate') || message.includes('429');
+    const userMessage  = isOverloaded
+      ? 'השרת עמוס כרגע — נסה שוב בעוד כמה שניות.'
+      : isRateLimit
+      ? 'הגעת למגבלת קצב הבקשות — המתן רגע ונסה שוב.'
+      : message;
+    return NextResponse.json(
+      { error: { type: isOverloaded ? 'overloaded' : 'server_error', message: userMessage } },
+      { status: isOverloaded ? 529 : 500 }
+    );
   }
 }

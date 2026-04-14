@@ -4022,6 +4022,12 @@ async function sendMessage() {
     return;
   }
 
+  // בדיקת מגבלת שיחות — רק בהודעה הראשונה בשיחה חדשה
+  if (conversationHistory.length === 0) {
+    const allowed = await checkConversationLimit();
+    if (!allowed) return;
+  }
+
   isThinking = true;
   document.getElementById('send-btn').disabled = true;
   input.value = '';
@@ -4347,7 +4353,127 @@ async function exportPDF() {
 }
 
 function newChat() {
-  if (conversationHistory.length > 0 && !confirm('להתחיל שיחה חדשה? השיחה הנוכחית תישמר בזיכרון.')) return;
+  if (conversationHistory.length === 0) {
+    performNewChat();
+    return;
+  }
+  showConversationEndModal();
+}
+
+function showConversationEndModal() {
+  const existing = document.getElementById('end-conv-modal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'end-conv-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
+  modal.innerHTML = `
+    <div style="background:var(--bg);border-radius:16px;padding:36px 32px;max-width:340px;width:90%;text-align:center;direction:rtl;box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <p style="font-size:16px;color:var(--text);font-family:Rubik,sans-serif;margin:0 0 28px;line-height:1.6;">סיימת את השיחה?</p>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button onclick="confirmEndConversation()" style="background:var(--accent);color:#fff;border:none;padding:10px 28px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">כן</button>
+        <button onclick="document.getElementById('end-conv-modal').remove()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 28px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">לא, חזור</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function confirmEndConversation() {
+  document.getElementById('end-conv-modal')?.remove();
+  showFeedbackModal();
+}
+
+let _feedbackRating = null;
+
+function showFeedbackModal() {
+  const theorist = (activeTheorists && activeTheorists[0]) || '';
+  const existing = document.getElementById('feedback-modal');
+  if (existing) existing.remove();
+  _feedbackRating = null;
+  const modal = document.createElement('div');
+  modal.id = 'feedback-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
+  modal.innerHTML = `
+    <div style="background:var(--bg);border-radius:16px;padding:36px 32px;max-width:400px;width:90%;text-align:center;direction:rtl;box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <p style="font-size:15px;color:var(--text);font-family:Rubik,sans-serif;margin:0 0 6px;">רגע לפני שממשיכים —</p>
+      <p style="font-size:13px;color:var(--muted);font-family:Rubik,sans-serif;margin:0 0 22px;">איך היתה השיחה?</p>
+      <div id="emoji-row" style="display:flex;gap:16px;justify-content:center;font-size:28px;margin-bottom:20px;">
+        <span onclick="selectFeedbackRating(this,'😕')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="😕">😕</span>
+        <span onclick="selectFeedbackRating(this,'😐')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="😐">😐</span>
+        <span onclick="selectFeedbackRating(this,'🙂')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="🙂">🙂</span>
+        <span onclick="selectFeedbackRating(this,'😊')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="😊">😊</span>
+        <span onclick="selectFeedbackRating(this,'✨')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="✨">✨</span>
+      </div>
+      <textarea id="feedback-text" placeholder="משהו שתרצי לשתף? (לא חובה)" style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:Rubik,sans-serif;font-size:13px;background:var(--bg);color:var(--text);resize:none;height:68px;margin-bottom:18px;direction:rtl;" dir="rtl"></textarea>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button onclick="submitFeedback('${theorist}')" id="feedback-submit-btn" style="background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;opacity:0.35;pointer-events:none;">שלח</button>
+        <button onclick="skipFeedback()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">דלג</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function selectFeedbackRating(el, emoji) {
+  _feedbackRating = emoji;
+  document.querySelectorAll('#emoji-row span').forEach(s => {
+    s.style.opacity = s.dataset.val === emoji ? '1' : '0.3';
+    s.style.transform = s.dataset.val === emoji ? 'scale(1.35)' : 'scale(1)';
+  });
+  const btn = document.getElementById('feedback-submit-btn');
+  if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+}
+
+async function submitFeedback(theorist) {
+  const comment = document.getElementById('feedback-text')?.value?.trim() || '';
+  document.getElementById('feedback-modal')?.remove();
+  try {
+    await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rating: _feedbackRating, comment, theorist })
+    });
+  } catch {}
+  _feedbackRating = null;
+  performNewChat();
+}
+
+function skipFeedback() {
+  document.getElementById('feedback-modal')?.remove();
+  _feedbackRating = null;
+  performNewChat();
+}
+
+function showBlockedScreen() {
+  const chat = document.getElementById('chat');
+  if (!chat) return;
+  chat.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:48px 32px;direction:rtl;">
+      <div style="font-size:36px;margin-bottom:20px;color:var(--accent);">ψ</div>
+      <h2 style="font-family:Rubik,sans-serif;color:var(--text);font-size:20px;font-weight:500;margin-bottom:12px;">סיימת את תקופת הניסיון</h2>
+      <p style="font-family:Rubik,sans-serif;color:var(--muted);font-size:14px;max-width:300px;line-height:1.8;margin-bottom:28px;">השתמשת ב-3 השיחות שעמדו לרשותך בבטא.<br>אשמח לשמוע ממך — כתבי לי ונמשיך משם.</p>
+      <a href="mailto:ayaavivi@gmail.com" style="display:inline-block;background:var(--accent);color:#fff;padding:12px 28px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;text-decoration:none;">צרי קשר</a>
+    </div>`;
+}
+
+async function checkConversationLimit() {
+  try {
+    if (!supabaseClient) return true;
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return true;
+    const res = await fetch('/api/start-conversation', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${session.access_token}` }
+    });
+    if (res.status === 403) {
+      showBlockedScreen();
+      return false;
+    }
+    return true;
+  } catch {
+    return true; // על שגיאת רשת — לא חוסמים
+  }
+}
+
+function performNewChat() {
   stopSessionTimer();
   clearTimeout(silenceTimer);
   silenceResponseSent = false;
