@@ -22,6 +22,49 @@ Everything that arrives here is framed as material related to the therapeutic pr
 If the material requires clinical intervention — say so plainly, step out of character, and refer to professional help.
 ══════════════════════════════════════`;
 
+// בדיקה ותיקון של פתיחה חוזרת — מונעת שימוש חוזר במילת הפתיחה הקודמת
+async function enforceVariedOpening(
+  anthropic: Anthropic,
+  text: string,
+  system: string,
+  messages: Anthropic.MessageParam[]
+): Promise<string> {
+  const currentOpening = text.trim().split(/\s/)[0];
+  if (!currentOpening) return text;
+
+  // מחפשים את התגובה האחרונה של האנליטיקאי בהיסטוריה
+  const prevAssistant = [...messages].reverse().find(m => m.role === 'assistant');
+  if (!prevAssistant) return text;
+
+  const prevText = typeof prevAssistant.content === 'string'
+    ? prevAssistant.content
+    : (prevAssistant.content as { type: string; text?: string }[])?.[0]?.text || '';
+  const prevOpening = prevText.trim().split(/\s/)[0];
+
+  if (currentOpening !== prevOpening) return text;
+
+  // אותה מילת פתיחה — שולחים לתיקון
+  const fixResponse = await anthropic.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 400,
+    system,
+    messages: [
+      ...messages,
+      { role: 'assistant', content: text },
+      {
+        role: 'user',
+        content: `עצור. התגובה מתחילה ב"${currentOpening}" — בדיוק כמו התגובה הקודמת שלך.
+כתוב מחדש את אותה תגובה עם פתיחה שונה לחלוטין. אותו תוכן, אותו טון — רק מילת הפתיחה משתנה.
+חשוב: אם התגובה המקורית הכילה שורה בפורמט [MEMORY: ...] — שמור אותה כשורה אחרונה בדיוק כפי שהיא.`,
+      },
+    ],
+  });
+
+  const fixed = fixResponse.content[0].type === 'text' ? fixResponse.content[0].text : text;
+  console.log(`[QA] פתיחה תוקנה: "${currentOpening}" → "${fixed.trim().split(/\s/)[0]}"`);
+  return fixed;
+}
+
 // בדיקה ותיקון של שאלות כפולות — output validation loop
 async function enforceOneQuestion(
   anthropic: Anthropic,
@@ -88,13 +131,19 @@ export async function POST(req: NextRequest) {
       ...(tools.length > 0 && { tools }),
     });
 
-    // output validation — אכיפת שאלה אחת בלבד
+    // output validation — אכיפת שאלה אחת בלבד + פתיחה מגוונת
     let finalContent = response.content;
     if (response.content[0]?.type === 'text' && !webSearch) {
-      const originalText = response.content[0].text;
-      const fixedText = await enforceOneQuestion(anthropic, originalText, enrichedSystem, messages);
-      if (fixedText !== originalText) {
-        finalContent = [{ ...response.content[0], text: fixedText }];
+      let validatedText = response.content[0].text;
+
+      // 1. אכיפת שאלה אחת
+      validatedText = await enforceOneQuestion(anthropic, validatedText, enrichedSystem, messages);
+
+      // 2. מניעת פתיחה חוזרת
+      validatedText = await enforceVariedOpening(anthropic, validatedText, enrichedSystem, messages);
+
+      if (validatedText !== response.content[0].text) {
+        finalContent = [{ ...response.content[0], text: validatedText }];
       }
     }
 
