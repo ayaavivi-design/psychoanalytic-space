@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
-import { THEORIST_VOICE } from '@/lib/theorist-voices';
+import { THEORIST_VOICE, SAFETY_PROTOCOL } from '@/lib/theorist-voices';
 import { searchKnowledge, formatChunksForPrompt } from '@/lib/rag';
 
 export const maxDuration = 300; // 5 דקות — מקסימום Vercel Pro
@@ -336,18 +336,22 @@ function getTodaysSpecificTest(theorist: string): SpecificTest | null {
 
 async function runSpecificTest(theorist: string, test: SpecificTest): Promise<SpecificTestResult> {
   const baseSystem = THEORIST_VOICE[theorist] || `You are a psychoanalytic therapist.`;
-  const chunks = await searchKnowledge(test.prompt, theorist, 4);
-  const ragContext = formatChunksForPrompt(chunks);
-  const fullSystem = ragContext ? baseSystem + ragContext : baseSystem;
+  const APP_URL = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000';
 
-  const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 400,
-    system: fullSystem,
-    messages: [{ role: 'user', content: test.prompt }],
+  const chatResponse = await fetch(`${APP_URL}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messages: [{ role: 'user', content: test.prompt }],
+      system: baseSystem,
+      theorist,
+      webSearch: false,
+    }),
   });
-
-  const text = response.content[0].type === 'text' ? response.content[0].text : '';
+  const chatData = await chatResponse.json();
+  const text = chatData.content?.[0]?.type === 'text' ? chatData.content[0].text : '';
   const issues: string[] = [
     ...checkTurn(text, 0),
     ...test.checks.filter(c => c.fn(text)).map(c => c.message),
@@ -517,40 +521,34 @@ async function testTheorist(theorist: string, question: typeof QUESTION_BANK[0])
       const patientMessage = question.turns[i];
       conversationHistory.push({ role: 'user', content: patientMessage });
 
-      // בנה את הפרומפט האמיתי — אותו פרומפט שהממשק משתמש בו
+      // קריאה ל-/api/chat — אותו נתיב שהממשק משתמש בו
+      // כך כל הוולידציות, ה-RAG, וה-UNIVERSAL_SCOPE_INSTRUCTION רצים בדיוק כמו בפרודקשן
       const baseSystem = THEORIST_VOICE[theorist] || `You are ${name}, a psychoanalytic therapist.`;
+      const APP_URL = process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000';
 
-      // הוסף RAG לפרומפט — ועקוב כמה קטעים הוחזרו בפועל
+      const chatResponse = await fetch(`${APP_URL}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: conversationHistory,
+          system: baseSystem,
+          theorist,
+          webSearch: false,
+        }),
+      });
+
+      const chatData = await chatResponse.json();
+      let therapistText = chatData.content?.[0]?.type === 'text' ? chatData.content[0].text : '';
+      if (!therapistText && chatData.error) {
+        throw new Error(chatData.error.message || 'chat API error');
+      }
+
+      // מעקב RAG — נשאר לצורכי דיווח
       const lastMsg = question.turns[i];
       const chunks = await searchKnowledge(lastMsg, theorist, 4);
       ragRetrievedTotal += chunks.length;
-      const ragContext = formatChunksForPrompt(chunks);
-      const fullSystem = ragContext ? baseSystem + ragContext : baseSystem;
-
-      const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 400,
-        system: fullSystem,
-        messages: conversationHistory,
-      });
-
-      let therapistText = response.content[0].type === 'text' ? response.content[0].text : '';
-
-      // output validation — אכיפת שאלה אחת בלבד
-      const qCount = (therapistText.match(/\?/g) || []).length;
-      if (qCount > 1) {
-        const fixResponse = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 400,
-          system: fullSystem,
-          messages: [
-            ...conversationHistory,
-            { role: 'assistant', content: therapistText },
-            { role: 'user', content: `עצור. התגובה שלך מכילה ${qCount} סימני שאלה. הכלל: שאלה אחת בלבד. כתוב מחדש — אותו תוכן, שאלה אחת בלבד.` },
-          ],
-        });
-        therapistText = fixResponse.content[0].type === 'text' ? fixResponse.content[0].text : therapistText;
-      }
 
       conversationHistory.push({ role: 'assistant', content: therapistText });
 
