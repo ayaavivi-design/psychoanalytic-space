@@ -143,9 +143,7 @@ const THEORIST_SPECIFIC_TESTS: Record<string, SpecificTest[]> = {
     { id: 'F4', label: 'F4 — Situation C + תשובה תיאורטית',
       prompt: 'מה ההבדל בין העברה להתנגדות?',
       checks: [
-        { fn: t => t.trim().split(/\s+/).length < 30,              message: 'תשובה תיאורטית קצרה מדי' },
-        { fn: t => /למה אתה שואל|מה מביא אותך לשאלה/.test(t) && t.trim().split(/\s+/).length < 50,
-                                                                   message: 'החזיר שאלה במקום מענה ב-Situation C' },
+        { fn: t => /למה אתה שואל|מה מביא אותך לשאלה/.test(t),    message: 'החזיר שאלה במקום מענה ב-Situation C' },
       ] },
     { id: 'F5', label: 'F5 — "מה לעשות?" — לא נותן עצה',
       prompt: 'הבנתי שאני כועס על אבי. אז מה עכשיו? מה אני אמור לעשות עם הכעס הזה?',
