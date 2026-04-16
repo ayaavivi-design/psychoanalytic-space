@@ -334,11 +334,8 @@ function getTodaysSpecificTest(theorist: string): SpecificTest | null {
   return tests[dayOfYear % tests.length];
 }
 
-async function runSpecificTest(theorist: string, test: SpecificTest): Promise<SpecificTestResult> {
+async function runSpecificTest(theorist: string, test: SpecificTest, APP_URL: string): Promise<SpecificTestResult> {
   const baseSystem = THEORIST_VOICE[theorist] || `You are a psychoanalytic therapist.`;
-  const APP_URL = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000';
 
   const chatResponse = await fetch(`${APP_URL}/api/chat`, {
     method: 'POST',
@@ -506,7 +503,7 @@ function checkTurn(text: string, turnIndex: number): string[] {
   return issues;
 }
 
-async function testTheorist(theorist: string, question: typeof QUESTION_BANK[0]): Promise<TheoristResult> {
+async function testTheorist(theorist: string, question: typeof QUESTION_BANK[0], APP_URL: string): Promise<TheoristResult> {
   const name = THEORIST_NAMES[theorist];
   const start = Date.now();
   const turnResults: TurnResult[] = [];
@@ -524,9 +521,6 @@ async function testTheorist(theorist: string, question: typeof QUESTION_BANK[0])
       // קריאה ל-/api/chat — אותו נתיב שהממשק משתמש בו
       // כך כל הוולידציות, ה-RAG, וה-UNIVERSAL_SCOPE_INSTRUCTION רצים בדיוק כמו בפרודקשן
       const baseSystem = THEORIST_VOICE[theorist] || `You are ${name}, a psychoanalytic therapist.`;
-      const APP_URL = process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : 'http://localhost:3000';
 
       const chatResponse = await fetch(`${APP_URL}/api/chat`, {
         method: 'POST',
@@ -700,16 +694,20 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // URL מתוך הבקשה עצמה — הדרך האמינה ביותר
+  const host = req.headers.get('host') || 'localhost:3000';
+  const APP_URL = host.includes('localhost') ? `http://${host}` : `https://${host}`;
+
   const question = getTodaysQuestion();
 
   // מקביל — כל 8 תיאוריסטים רצים יחד
   const [results, specificResults] = await Promise.all([
-    Promise.all(THEORISTS.map(t => testTheorist(t, question))),
+    Promise.all(THEORISTS.map(t => testTheorist(t, question, APP_URL))),
     Promise.all(
       Object.keys(THEORIST_SPECIFIC_TESTS).map(async theorist => {
         const test = getTodaysSpecificTest(theorist);
         if (!test) return null;
-        const result = await runSpecificTest(theorist, test);
+        const result = await runSpecificTest(theorist, test, APP_URL);
         return { theorist, name: THEORIST_NAMES[theorist] || theorist, ...result };
       })
     ).then(r => r.filter(Boolean) as (SpecificTestResult & { theorist: string; name: string })[]),
