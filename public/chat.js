@@ -623,7 +623,7 @@ const SESSION_DURATION_MS = 50 * 60 * 1000;
 // ── Silence Detection (Situation A only) ──────────────────────
 let silenceTimer = null;
 let silenceResponseSent = false;
-const SILENCE_THRESHOLD_MS = 2 * 60 * 1000; // 2 minutes
+const SILENCE_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes
 
 
 
