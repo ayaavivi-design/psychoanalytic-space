@@ -4138,8 +4138,8 @@ async function sendMessage() {
     console.log('webSources sample:', webSources.slice(0,2));
     console.log('stop_reason:', data.stop_reason);
 
-    // Extract and save memory
-    const memMatch = reply.match(/\[MEMORY: (.+?)\]/);
+    // Extract and save memory — supports both [MEMORY: text] and [MEMORY]: text
+    const memMatch = reply.match(/\[MEMORY: (.+?)\]/) || reply.match(/\[MEMORY\]:\s*(.+)/);
     if (memMatch) {
       if (!sessionMemorySaved) {
         const memories = loadMemory();
@@ -4150,7 +4150,7 @@ async function sendMessage() {
         updateSessionTitle();
         updateSidebarMemories();
       }
-      reply = reply.replace(/\[MEMORY: .+?\]/, '').trim();
+      reply = reply.replace(/\[MEMORY[^\]]*\][^\n]*/g, '').trim();
     }
 
     // Detect attribution — never in clinical/session mode
@@ -5048,7 +5048,7 @@ async function handleSilence() {
     }
     if (!reply) return;
 
-    reply = reply.replace(/\[MEMORY: .+?\]/, '').trim();
+    reply = reply.replace(/\[MEMORY[^\]]*\][^\n]*/g, '').trim();
     conversationHistory.push({ role: 'assistant', content: reply });
     removeThinking();
 
