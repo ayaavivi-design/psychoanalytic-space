@@ -3,9 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { THEORIST_VOICE, SAFETY_PROTOCOL } from '@/lib/theorist-voices';
 import { searchKnowledge, formatChunksForPrompt } from '@/lib/rag';
 
-// endpoint מהיר — תור אחד בלבד לכל תיאוריסט
-// מיועד לסוכן מרוחק שקורא לו בנפרד לכל תיאוריסט
-// כל קריאה ~5-10s — בטוח בתוך מגבלת 60s של Vercel Hobby
+// endpoint מהיר — 3 תורות שיחה לכל תיאוריסט (ללא לולאות ולידציה)
+// 3 תורות × ~3-4s = ~10-12s לתיאוריסט — בטוח בתוך מגבלת 60s של Vercel Hobby
 
 const THEORISTS = ['freud', 'klein', 'winnicott', 'ogden', 'loewald', 'bion', 'kohut', 'heimann'];
 const THEORIST_NAMES: Record<string, string> = {
@@ -13,10 +12,16 @@ const THEORIST_NAMES: Record<string, string> = {
   loewald: 'לוואלד', bion: 'ביון', kohut: 'קוהוט', heimann: 'היימן',
 };
 
-const TEST_MESSAGE = 'משהו כבד יש לי היום. לא בטוח מאיפה להתחיל.';
-const QUESTION_LABEL = 'בדיקת בוקר — פתיחה קלינית';
+// 3 תורות של שיחה אמיתית
+const CONVERSATION_TURNS = [
+  'משהו כבד יש לי היום. לא בטוח מאיפה להתחיל.',
+  'כן. זה כבר כמה ימים ככה. אולי קשור למשהו עם האבא שלי.',
+  'הוא תמיד ציפה ממני להיות חזק. מרגיש שאני חייב לו משהו ולא יודע מה.',
+];
 
-function checkResponse(text: string): string[] {
+const QUESTION_LABEL = 'בדיקת בוקר — פתיחה קלינית (3 תורות)';
+
+function checkResponse(text: string, turnNum: number): string[] {
   const issues: string[] = [];
   const words = text.trim().split(/\s+/).filter(Boolean);
   const qMarks = (text.match(/\?/g) || []).length;
@@ -29,6 +34,7 @@ function checkResponse(text: string): string[] {
   if (/^מעניין/.test(text.trim())) issues.push('פותח ב"מעניין"');
   if (/^אני שומע/.test(text.trim())) issues.push('פותח ב"אני שומע"');
   if (/^אני מבין/.test(text.trim())) issues.push('פותח ב"אני מבין"');
+  if (turnNum === 1 && qMarks > 0 && words.length > 40) issues.push('תגובה ראשונה ארוכה ומפרשת מדי');
 
   return issues;
 }
@@ -50,37 +56,46 @@ export async function GET(req: NextRequest) {
   try {
     const systemBase = THEORIST_VOICE[theorist] + SAFETY_PROTOCOL;
 
-    // RAG enrichment — same as /api/chat
-    const chunks = await searchKnowledge(TEST_MESSAGE, theorist, 3);
+    // RAG enrichment לפי ההודעה הראשונה
+    const chunks = await searchKnowledge(CONVERSATION_TURNS[0], theorist, 3);
     const ragContext = formatChunksForPrompt(chunks);
     const system = ragContext ? systemBase + ragContext : systemBase;
 
-    const messages: Anthropic.MessageParam[] = [
-      { role: 'user', content: TEST_MESSAGE },
-    ];
+    const messages: Anthropic.MessageParam[] = [];
+    const turns: { turn: number; patient: string; therapist: string; issues: string[] }[] = [];
+    const allIssues: string[] = [];
 
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 400,
-      system,
-      messages,
-    });
+    // מריץ 3 תורות — בונה היסטוריה צוברת
+    for (let i = 0; i < CONVERSATION_TURNS.length; i++) {
+      messages.push({ role: 'user', content: CONVERSATION_TURNS[i] });
 
-    const text = response.content[0]?.type === 'text' ? response.content[0].text : '';
-    const issues = checkResponse(text);
+      const response = await anthropic.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        system,
+        messages,
+      });
+
+      const text = response.content[0]?.type === 'text' ? response.content[0].text : '';
+      const issues = checkResponse(text, i + 1);
+      allIssues.push(...issues);
+
+      turns.push({ turn: i + 1, patient: CONVERSATION_TURNS[i], therapist: text, issues });
+      messages.push({ role: 'assistant', content: text });
+    }
+
     const timeMs = Date.now() - start;
 
     return NextResponse.json({
       theorist,
       name: THEORIST_NAMES[theorist],
-      ok: issues.length === 0,
-      response: text,
-      issues,
-      totalIssues: issues,
+      ok: allIssues.length === 0,
+      issues: allIssues,
+      totalIssues: allIssues,
       timeMs,
       ragChunks: chunks.length,
       questionLabel: QUESTION_LABEL,
-      turns: [{ turn: 1, patient: TEST_MESSAGE, therapist: text, issues }],
+      turns,
     });
   } catch (err) {
     const timeMs = Date.now() - start;
@@ -89,7 +104,6 @@ export async function GET(req: NextRequest) {
       theorist,
       name: THEORIST_NAMES[theorist],
       ok: false,
-      response: '',
       issues: [`שגיאה: ${message}`],
       totalIssues: [`שגיאה: ${message}`],
       timeMs,
