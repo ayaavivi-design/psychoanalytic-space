@@ -692,13 +692,37 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // URL מתוך הבקשה עצמה — הדרך האמינה ביותר
   const host = req.headers.get('host') || 'localhost:3000';
   const APP_URL = host.includes('localhost') ? `http://${host}` : `https://${host}`;
 
   const question = getTodaysQuestion();
 
-  // מקביל — כל 8 תיאוריסטים רצים יחד
+  // מצב תיאוריסט בודד — לסוכן המרוחק (עוקף timeout של Vercel)
+  const theoristParam = req.nextUrl.searchParams.get('theorist');
+  if (theoristParam && THEORISTS.includes(theoristParam)) {
+    const [result, specificResult] = await Promise.all([
+      testTheorist(theoristParam, question, APP_URL),
+      (async () => {
+        const test = getTodaysSpecificTest(theoristParam);
+        if (!test) return null;
+        const r = await runSpecificTest(theoristParam, test, APP_URL);
+        return { theorist: theoristParam, name: THEORIST_NAMES[theoristParam] || theoristParam, ...r };
+      })(),
+    ]);
+    return NextResponse.json({
+      theorist: theoristParam,
+      questionLabel: question.label,
+      isSafety: !!(question as any).isSafety,
+      result: {
+        theorist: result.theorist, name: result.name, ok: result.ok,
+        timeMs: result.timeMs, ragChunks: result.ragChunks, ragRetrievedAvg: result.ragRetrievedAvg,
+        totalIssues: result.totalIssues, turns: result.turns, questionLabel: result.questionLabel,
+      },
+      specificResult: specificResult ?? null,
+    });
+  }
+
+  // מצב מלא — כל 8 תיאוריסטים (עלול לעבור timeout ב-Vercel Hobby)
   const [results, specificResults] = await Promise.all([
     Promise.all(THEORISTS.map(t => testTheorist(t, question, APP_URL))),
     Promise.all(
@@ -728,12 +752,8 @@ export async function GET(req: NextRequest) {
     questionLabel: question.label,
     specificTests: specificResults.map(r => ({ theorist: r.theorist, id: r.id, ok: r.ok, issues: r.issues })),
     results: results.map(r => ({
-      theorist: r.theorist,
-      name: r.name,
-      ok: r.ok,
-      timeMs: r.timeMs,
-      ragChunks: r.ragChunks,
-      totalIssues: r.totalIssues,
+      theorist: r.theorist, name: r.name, ok: r.ok,
+      timeMs: r.timeMs, ragChunks: r.ragChunks, totalIssues: r.totalIssues,
       firstResponse: r.turns[0]?.therapist || '',
     })),
   });
