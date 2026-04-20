@@ -44,9 +44,10 @@ async function enforceVariedOpening(
   if (currentOpening !== prevOpening) return text;
 
   // אותה מילת פתיחה — שולחים לתיקון
+  // max_tokens זהה לתגובה המקורית כדי למנוע קטיעה באמצע מילה
   const fixResponse = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
-    max_tokens: 400,
+    max_tokens: 1200,
     system,
     messages: [
       ...messages,
@@ -76,9 +77,10 @@ async function enforceOneQuestion(
   if (questionMarks <= 1) return text;
 
   // יש יותר מ-1 שאלה — שולחים שוב לתיקון
+  // max_tokens זהה לתגובה המקורית כדי למנוע קטיעה באמצע מילה
   const fixResponse = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
-    max_tokens: 400,
+    max_tokens: 1200,
     system,
     messages: [
       ...messages,
