@@ -771,6 +771,7 @@ function appendMessage(role, content, attribution = '', sourceHTML = '') {
   `;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
+  updateSupervisionBar();
   return div;
 }
 
@@ -5158,6 +5159,160 @@ function updateTimerToggleVisual(checked) {
   if (track) track.style.background = checked ? 'var(--accent)' : 'var(--border)';
   if (thumb) thumb.style.transform = checked ? 'translateX(-18px)' : 'translateX(0)';
 }
+
+// ── Supervision agent ─────────────────────────────────────────
+
+function updateSupervisionBar() {
+  const bar = document.getElementById('supervision-bar');
+  if (!bar) return;
+  // מוצג רק במצב קליני, תיאורטיקן יחיד, לאחר 3+ תורות (6+ הודעות)
+  const show = window.clinicalMode && activeTheorists.length === 1 && conversationHistory.length >= 6;
+  bar.style.display = show ? 'block' : 'none';
+}
+
+async function requestSupervision() {
+  if (isThinking) return;
+  const theorist = activeTheorists[0] || 'לא צוין';
+
+  // בניית טרנסקריפט מה-conversationHistory
+  const turns = [];
+  for (let i = 0; i + 1 < conversationHistory.length; i += 2) {
+    const patient = conversationHistory[i]?.content || '';
+    const therapist = conversationHistory[i + 1]?.content || '';
+    if (patient && therapist) {
+      turns.push(`[תור ${Math.floor(i / 2) + 1}]\nמטופל: ${patient}\nמטפל: ${therapist}`);
+    }
+  }
+  const transcript = turns.join('\n\n');
+  if (!transcript) return;
+
+  // נעל כפתור
+  const btn = document.getElementById('supervision-btn');
+  if (btn) { btn.textContent = '...'; btn.disabled = true; }
+
+  // placeholder בצ'אט
+  const chat = document.getElementById('chat');
+  const loadingDiv = document.createElement('div');
+  loadingDiv.id = 'supervision-loading';
+  loadingDiv.style.cssText = 'margin:12px 0;padding:16px;background:#f8f4fb;border:1px solid #e0d4e8;border-radius:10px;text-align:center;color:#7a5080;font-size:13px;direction:rtl;';
+  loadingDiv.textContent = 'מכין פיקוח קליני...';
+  chat.appendChild(loadingDiv);
+  chat.scrollTop = chat.scrollHeight;
+
+  try {
+    const res = await fetch('/api/supervise', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ transcript, theorist }),
+    });
+    const report = await res.json();
+    loadingDiv.remove();
+    appendSupervisionCard(report);
+  } catch {
+    loadingDiv.textContent = 'שגיאה בטעינת הפיקוח.';
+  } finally {
+    if (btn) { btn.textContent = '⚲ פיקוח על שיחה זו'; btn.disabled = false; }
+  }
+}
+
+function appendSupervisionCard(r) {
+  const OVERALL_LABEL = { pass: '✅ עבר', warn: '⚠️ אזהרה', fail: '❌ דרוש שיפור' };
+  const OVERALL_COLOR = { pass: '#2d8a5e', warn: '#d97706', fail: '#b91c1c' };
+  const FIDELITY_LABEL = { strong: 'חזק', partial: 'חלקי', weak: 'חלש' };
+  const FIDELITY_COLOR = { strong: '#2d8a5e', partial: '#d97706', weak: '#b91c1c' };
+  const TIMING_LABEL = { too_early: 'מוקדם מדי', appropriate: 'מתאים', too_late: 'מאוחר מדי', absent: 'נעדר' };
+
+  const overall = r.overall || 'warn';
+  const fidelity = r.voice_fidelity?.rating || 'partial';
+  const timing = r.interpretive_timing?.assessment || 'appropriate';
+
+  const missedHTML = (r.missed_moments || []).map(m => `
+    <div style="margin-bottom:10px;padding:10px 14px;background:#fff;border-right:3px solid #c4607a;border-radius:0 6px 6px 0;">
+      <div style="font-size:11px;color:#c4607a;font-weight:600;margin-bottom:4px;">רגע שהוחמץ</div>
+      <div style="font-size:12px;color:#555;font-style:italic;margin-bottom:5px;">"${m.patient_quote || ''}"</div>
+      <div style="font-size:12px;color:#444;margin-bottom:4px;"><strong>מה היה בזה:</strong> ${m.what_was_in_it || ''}</div>
+      <div style="font-size:12px;color:#2d8a5e;"><strong>אפשרות:</strong> ${m.alternative || ''}</div>
+    </div>`).join('');
+
+  const landedHTML = (r.what_landed || []).map(s =>
+    `<div style="font-size:12px;color:#2d8a5e;padding:4px 0;border-bottom:1px solid #e8f5ed;">✓ ${s}</div>`
+  ).join('');
+
+  const card = document.createElement('div');
+  card.className = 'supervision-card';
+  card.style.cssText = 'margin:16px 0;border:1px solid #d8c8e0;border-radius:10px;overflow:hidden;direction:rtl;';
+  card.innerHTML = `
+    <div style="background:#5b3a5e;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="color:rgba(255,255,255,0.75);font-size:13px;letter-spacing:0.02em;">⚲ פיקוח קליני — ${r.theorist || theoristNameHe(activeTheorists[0])}</span>
+      <span style="padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(255,255,255,0.15);color:#fff;">
+        ${OVERALL_LABEL[overall] || overall}
+      </span>
+    </div>
+    <div style="padding:14px 16px;background:#faf7fc;">
+
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <div style="flex:1;background:#fff;border:1px solid #e8e0ec;border-radius:8px;padding:10px 12px;text-align:center;">
+          <div style="font-size:10px;color:#aaa;margin-bottom:4px;">נאמנות לקול</div>
+          <div style="font-size:13px;font-weight:600;color:${FIDELITY_COLOR[fidelity] || '#888'};">${FIDELITY_LABEL[fidelity] || fidelity}</div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #e8e0ec;border-radius:8px;padding:10px 12px;text-align:center;">
+          <div style="font-size:10px;color:#aaa;margin-bottom:4px;">עיתוי פרשני</div>
+          <div style="font-size:12px;font-weight:600;color:${OVERALL_COLOR[overall] || '#888'};">${TIMING_LABEL[timing] || timing}</div>
+        </div>
+      </div>
+
+      ${r.voice_fidelity?.notes ? `
+      <div style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;font-size:12px;color:#444;line-height:1.7;">
+        ${r.voice_fidelity.notes}
+      </div>` : ''}
+
+      ${landedHTML ? `
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">מה נחת</div>
+        ${landedHTML}
+      </div>` : ''}
+
+      ${missedHTML ? `
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">רגעים שהוחמצו</div>
+        ${missedHTML}
+      </div>` : ''}
+
+      ${r.relational_field ? `
+      <div style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;">
+        <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:4px;">השדה היחסי</div>
+        <div style="font-size:12px;color:#444;line-height:1.7;">${r.relational_field}</div>
+      </div>` : ''}
+
+      ${r.summary ? `
+      <div style="margin-bottom:12px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;">
+        <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:4px;">סיכום</div>
+        <div style="font-size:12px;color:#333;line-height:1.7;">${r.summary}</div>
+      </div>` : ''}
+
+      ${r.one_thing ? `
+      <div style="padding:10px 14px;background:rgba(91,58,94,0.06);border-radius:6px;border-right:3px solid #5b3a5e;">
+        <div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:4px;">דבר אחד לסשן הבא</div>
+        <div style="font-size:12px;color:#333;line-height:1.7;">${r.one_thing}</div>
+      </div>` : ''}
+
+    </div>`;
+
+  const chat = document.getElementById('chat');
+  chat.appendChild(card);
+  chat.scrollTop = chat.scrollHeight;
+
+  // הסתר כפתור לאחר שימוש
+  const bar = document.getElementById('supervision-bar');
+  if (bar) bar.style.display = 'none';
+}
+
+function theoristNameHe(key) {
+  const map = { freud: 'פרויד', klein: 'קליין', winnicott: 'ויניקוט', ogden: 'אוגדן', loewald: 'לוואלד', bion: 'ביון', kohut: 'קוהוט', heimann: 'היימן' };
+  return map[key] || key || '';
+}
+
+window.requestSupervision = requestSupervision;
 
 // Init silence detection after DOM ready
 initSilenceDetection();

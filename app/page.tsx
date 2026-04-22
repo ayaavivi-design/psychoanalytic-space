@@ -490,6 +490,14 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Supervision bar — מוצג ידנית במצב קליני לאחר 3+ תורות */}
+        <div id="supervision-bar" style={{ display: 'none', padding: '0 16px 8px', textAlign: 'center' }}>
+          <button id="supervision-btn" onClick={() => (window as any).requestSupervision()}
+            style={{ background: 'none', border: '1px solid #7a5080', borderRadius: 20, padding: '5px 18px', cursor: 'pointer', fontSize: 12, color: '#7a5080', letterSpacing: '0.02em', transition: 'all 0.2s' }}>
+            ⚲ פיקוח על שיחה זו
+          </button>
+        </div>
+
         <div className="input-area-outer">
           <div className="input-area">
             <div id="file-indicator" style={{ display: 'none', background: 'rgba(196,96,122,0.06)', border: '1px solid var(--accent-dim)', borderRadius: 10, padding: '8px 14px', marginBottom: 8, alignItems: 'center', gap: 10, fontSize: 12, color: 'var(--accent)' }}>
