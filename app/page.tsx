@@ -329,6 +329,10 @@ export default function Home() {
               <span className="sb-icon"><Download size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-pdf-label">הורד PDF</span>
             </div>
+            <div className="sb-item" onClick={() => (window as any).openSupervision()}>
+              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⚲</span>
+              <span className="sb-label">פיקוח קליני</span>
+            </div>
           </div>
 
           {/* Theorists section */}
@@ -486,6 +490,56 @@ export default function Home() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span className="clear-memory" onClick={() => (window as any).clearMemory()}>מחק זיכרון</span>
               <span className="memory-close" onClick={() => (window as any).closeMemory()}>סגור</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Supervision panel — overlay */}
+        <div id="supervision-panel" onClick={(e) => { if (e.target === e.currentTarget) (window as any).closeSupervision(); }}>
+          <div id="supervision-box">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h2 style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 22, fontWeight: 300, fontStyle: 'italic', color: '#7a5080', margin: 0 }}>⚲ פיקוח קליני</h2>
+              <span onClick={() => (window as any).closeSupervision()} style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 18, lineHeight: 1, padding: 4 }}>✕</span>
+            </div>
+
+            {/* Mode tabs */}
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16, borderBottom: '1px solid var(--border)', paddingBottom: 12 }}>
+              <button id="sup-tab-active" className="sup-tab active" onClick={() => (window as any).switchSupervisionTab('active')}>שיחה פעילה</button>
+              <button id="sup-tab-paste" className="sup-tab" onClick={() => (window as any).switchSupervisionTab('paste')}>הדבק שיחה</button>
+            </div>
+
+            {/* Active conversation mode */}
+            <div id="sup-mode-active">
+              <div id="sup-active-info" style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8, padding: '10px 14px', background: 'rgba(91,58,94,0.05)', borderRadius: 6, marginBottom: 4 }}>
+                אין שיחה פעילה
+              </div>
+            </div>
+
+            {/* Paste mode */}
+            <div id="sup-mode-paste" style={{ display: 'none' }}>
+              <select id="sup-theorist-select" style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 13, marginBottom: 10, direction: 'rtl' }}>
+                <option value="freud">פרויד</option>
+                <option value="klein">קליין</option>
+                <option value="winnicott">ויניקוט</option>
+                <option value="ogden">אוגדן</option>
+                <option value="loewald">לוואלד</option>
+                <option value="bion">ביון</option>
+                <option value="kohut">קוהוט</option>
+                <option value="heimann">היימן</option>
+              </select>
+              <textarea id="sup-paste-input" placeholder="הדבק שיחה — כל פורמט מתקבל"
+                style={{ width: '100%', minHeight: 150, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 12, resize: 'vertical', direction: 'rtl', lineHeight: 1.7, boxSizing: 'border-box', fontFamily: 'var(--font-rubik), sans-serif' }}></textarea>
+            </div>
+
+            <button id="sup-run-btn" onClick={() => (window as any).runSupervisionPanel()}
+              style={{ width: '100%', padding: '10px', background: '#5b3a5e', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 14, marginTop: 14, transition: 'opacity 0.2s', fontFamily: 'var(--font-rubik), sans-serif' }}>
+              הרץ פיקוח
+            </button>
+
+            <div id="sup-results" style={{ marginTop: 20 }}></div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+              <span className="memory-close" onClick={() => (window as any).closeSupervision()}>סגור</span>
             </div>
           </div>
         </div>

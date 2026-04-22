@@ -5162,69 +5162,121 @@ function updateTimerToggleVisual(checked) {
 
 // ── Supervision agent ─────────────────────────────────────────
 
+const THEORIST_NAME_HE = { freud: 'פרויד', klein: 'קליין', winnicott: 'ויניקוט', ogden: 'אוגדן', loewald: 'לוואלד', bion: 'ביון', kohut: 'קוהוט', heimann: 'היימן' };
+function theoristNameHe(key) { return THEORIST_NAME_HE[key] || key || ''; }
+
+// ---- inline bar (clinical mode, 3+ turns) ----
 function updateSupervisionBar() {
   const bar = document.getElementById('supervision-bar');
   if (!bar) return;
-  // מוצג רק במצב קליני, תיאורטיקן יחיד, לאחר 3+ תורות (6+ הודעות)
   const show = window.clinicalMode && activeTheorists.length === 1 && conversationHistory.length >= 6;
   bar.style.display = show ? 'block' : 'none';
 }
 
-async function requestSupervision() {
-  if (isThinking) return;
-  const theorist = activeTheorists[0] || 'לא צוין';
+// ---- panel (sidebar button) ----
+function openSupervision() {
+  const panel = document.getElementById('supervision-panel');
+  if (!panel) return;
+  panel.classList.add('open');
 
-  // בניית טרנסקריפט מה-conversationHistory
-  const turns = [];
-  for (let i = 0; i + 1 < conversationHistory.length; i += 2) {
-    const patient = conversationHistory[i]?.content || '';
-    const therapist = conversationHistory[i + 1]?.content || '';
-    if (patient && therapist) {
-      turns.push(`[תור ${Math.floor(i / 2) + 1}]\nמטופל: ${patient}\nמטפל: ${therapist}`);
+  // עדכן מידע על שיחה פעילה
+  const infoEl = document.getElementById('sup-active-info');
+  if (infoEl) {
+    if (conversationHistory.length >= 4 && activeTheorists.length === 1) {
+      const name = theoristNameHe(activeTheorists[0]);
+      const turns = Math.floor(conversationHistory.length / 2);
+      infoEl.innerHTML = `תיאורטיקן: <strong>${name}</strong> &nbsp;·&nbsp; ${turns} תורות`;
+      infoEl.style.color = 'var(--text)';
+    } else if (conversationHistory.length < 4) {
+      infoEl.textContent = 'אין שיחה פעילה עם מספיק תורות — השתמש בלשונית "הדבק שיחה".';
+      infoEl.style.color = 'var(--muted)';
+    } else {
+      infoEl.textContent = 'בחר תיאורטיקן יחיד כדי להשתמש בשיחה הפעילה.';
+      infoEl.style.color = 'var(--muted)';
     }
   }
-  const transcript = turns.join('\n\n');
-  if (!transcript) return;
 
-  // נעל כפתור
-  const btn = document.getElementById('supervision-btn');
+  // נקה תוצאות קודמות
+  const results = document.getElementById('sup-results');
+  if (results) results.innerHTML = '';
+}
+
+function closeSupervision() {
+  const panel = document.getElementById('supervision-panel');
+  if (panel) panel.classList.remove('open');
+}
+
+function switchSupervisionTab(tab) {
+  document.getElementById('sup-mode-active').style.display = tab === 'active' ? 'block' : 'none';
+  document.getElementById('sup-mode-paste').style.display  = tab === 'paste'  ? 'block' : 'none';
+  document.getElementById('sup-tab-active').classList.toggle('active', tab === 'active');
+  document.getElementById('sup-tab-paste').classList.toggle('active',  tab === 'paste');
+}
+
+async function runSupervisionPanel() {
+  const pasteVisible = document.getElementById('sup-mode-paste').style.display !== 'none';
+
+  let transcript = '';
+  let theorist   = '';
+
+  if (!pasteVisible) {
+    // שיחה פעילה
+    if (conversationHistory.length < 4) {
+      alert('נדרשות לפחות 2 תורות לפיקוח.');
+      return;
+    }
+    const turns = [];
+    for (let i = 0; i + 1 < conversationHistory.length; i += 2) {
+      turns.push(`[תור ${Math.floor(i / 2) + 1}]\nמטופל: ${conversationHistory[i].content}\nמטפל: ${conversationHistory[i + 1].content}`);
+    }
+    transcript = turns.join('\n\n');
+    theorist   = theoristNameHe(activeTheorists[0]);
+  } else {
+    // הדבק שיחה
+    transcript = (document.getElementById('sup-paste-input').value || '').trim();
+    if (!transcript) { alert('אנא הדבק שיחה.'); return; }
+    const sel  = document.getElementById('sup-theorist-select');
+    theorist   = theoristNameHe(sel ? sel.value : '');
+  }
+
+  const btn = document.getElementById('sup-run-btn');
   if (btn) { btn.textContent = '...'; btn.disabled = true; }
 
-  // placeholder בצ'אט
-  const chat = document.getElementById('chat');
-  const loadingDiv = document.createElement('div');
-  loadingDiv.id = 'supervision-loading';
-  loadingDiv.style.cssText = 'margin:12px 0;padding:16px;background:#f8f4fb;border:1px solid #e0d4e8;border-radius:10px;text-align:center;color:#7a5080;font-size:13px;direction:rtl;';
-  loadingDiv.textContent = 'מכין פיקוח קליני...';
-  chat.appendChild(loadingDiv);
-  chat.scrollTop = chat.scrollHeight;
+  const resultsEl = document.getElementById('sup-results');
+  if (resultsEl) {
+    resultsEl.innerHTML = '<div style="text-align:center;color:#7a5080;padding:20px;font-size:13px;">מכין פיקוח קליני...</div>';
+  }
 
   try {
-    const res = await fetch('/api/supervise', {
+    const res    = await fetch('/api/supervise', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ transcript, theorist }),
     });
     const report = await res.json();
-    loadingDiv.remove();
-    appendSupervisionCard(report);
+    if (resultsEl) {
+      resultsEl.innerHTML = '';
+      resultsEl.appendChild(buildSupervisionCard(report, theorist));
+    }
   } catch {
-    loadingDiv.textContent = 'שגיאה בטעינת הפיקוח.';
+    if (resultsEl) resultsEl.innerHTML = '<div style="color:#b91c1c;padding:12px;font-size:13px;">שגיאה בטעינת הפיקוח.</div>';
   } finally {
-    if (btn) { btn.textContent = '⚲ פיקוח על שיחה זו'; btn.disabled = false; }
+    if (btn) { btn.textContent = 'הרץ פיקוח'; btn.disabled = false; }
   }
 }
 
-function appendSupervisionCard(r) {
-  const OVERALL_LABEL = { pass: '✅ עבר', warn: '⚠️ אזהרה', fail: '❌ דרוש שיפור' };
-  const OVERALL_COLOR = { pass: '#2d8a5e', warn: '#d97706', fail: '#b91c1c' };
+// ---- shared card builder ----
+function buildSupervisionCard(r, theoristLabel) {
+  const OVERALL_LABEL  = { pass: '✅ עבר', warn: '⚠️ אזהרה', fail: '❌ דרוש שיפור' };
+  const OVERALL_COLOR  = { pass: '#2d8a5e', warn: '#d97706', fail: '#b91c1c' };
   const FIDELITY_LABEL = { strong: 'חזק', partial: 'חלקי', weak: 'חלש' };
   const FIDELITY_COLOR = { strong: '#2d8a5e', partial: '#d97706', weak: '#b91c1c' };
-  const TIMING_LABEL = { too_early: 'מוקדם מדי', appropriate: 'מתאים', too_late: 'מאוחר מדי', absent: 'נעדר' };
+  const TIMING_LABEL   = { too_early: 'מוקדם מדי', appropriate: 'מתאים', too_late: 'מאוחר מדי', absent: 'נעדר' };
 
-  const overall = r.overall || 'warn';
+  const overall  = r.overall || 'warn';
   const fidelity = r.voice_fidelity?.rating || 'partial';
-  const timing = r.interpretive_timing?.assessment || 'appropriate';
+  const timing   = r.interpretive_timing?.assessment || 'appropriate';
+  const name     = r.theorist || theoristLabel || '';
 
   const missedHTML = (r.missed_moments || []).map(m => `
     <div style="margin-bottom:10px;padding:10px 14px;background:#fff;border-right:3px solid #c4607a;border-radius:0 6px 6px 0;">
@@ -5239,17 +5291,15 @@ function appendSupervisionCard(r) {
   ).join('');
 
   const card = document.createElement('div');
-  card.className = 'supervision-card';
-  card.style.cssText = 'margin:16px 0;border:1px solid #d8c8e0;border-radius:10px;overflow:hidden;direction:rtl;';
+  card.style.cssText = 'border:1px solid #d8c8e0;border-radius:10px;overflow:hidden;direction:rtl;';
   card.innerHTML = `
     <div style="background:#5b3a5e;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
-      <span style="color:rgba(255,255,255,0.75);font-size:13px;letter-spacing:0.02em;">⚲ פיקוח קליני — ${r.theorist || theoristNameHe(activeTheorists[0])}</span>
+      <span style="color:rgba(255,255,255,0.8);font-size:13px;">⚲ פיקוח קליני — ${name}</span>
       <span style="padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(255,255,255,0.15);color:#fff;">
         ${OVERALL_LABEL[overall] || overall}
       </span>
     </div>
     <div style="padding:14px 16px;background:#faf7fc;">
-
       <div style="display:flex;gap:8px;margin-bottom:14px;">
         <div style="flex:1;background:#fff;border:1px solid #e8e0ec;border-radius:8px;padding:10px 12px;text-align:center;">
           <div style="font-size:10px;color:#aaa;margin-bottom:4px;">נאמנות לקול</div>
@@ -5260,59 +5310,59 @@ function appendSupervisionCard(r) {
           <div style="font-size:12px;font-weight:600;color:${OVERALL_COLOR[overall] || '#888'};">${TIMING_LABEL[timing] || timing}</div>
         </div>
       </div>
-
-      ${r.voice_fidelity?.notes ? `
-      <div style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;font-size:12px;color:#444;line-height:1.7;">
-        ${r.voice_fidelity.notes}
-      </div>` : ''}
-
-      ${landedHTML ? `
-      <div style="margin-bottom:14px;">
-        <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">מה נחת</div>
-        ${landedHTML}
-      </div>` : ''}
-
-      ${missedHTML ? `
-      <div style="margin-bottom:14px;">
-        <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">רגעים שהוחמצו</div>
-        ${missedHTML}
-      </div>` : ''}
-
-      ${r.relational_field ? `
-      <div style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;">
-        <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:4px;">השדה היחסי</div>
-        <div style="font-size:12px;color:#444;line-height:1.7;">${r.relational_field}</div>
-      </div>` : ''}
-
-      ${r.summary ? `
-      <div style="margin-bottom:12px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;">
-        <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:4px;">סיכום</div>
-        <div style="font-size:12px;color:#333;line-height:1.7;">${r.summary}</div>
-      </div>` : ''}
-
-      ${r.one_thing ? `
-      <div style="padding:10px 14px;background:rgba(91,58,94,0.06);border-radius:6px;border-right:3px solid #5b3a5e;">
-        <div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:4px;">דבר אחד לסשן הבא</div>
-        <div style="font-size:12px;color:#333;line-height:1.7;">${r.one_thing}</div>
-      </div>` : ''}
-
+      ${r.voice_fidelity?.notes ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;font-size:12px;color:#444;line-height:1.7;">${r.voice_fidelity.notes}</div>` : ''}
+      ${landedHTML ? `<div style="margin-bottom:14px;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">מה נחת</div>${landedHTML}</div>` : ''}
+      ${missedHTML ? `<div style="margin-bottom:14px;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">רגעים שהוחמצו</div>${missedHTML}</div>` : ''}
+      ${r.relational_field ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:4px;">השדה היחסי</div><div style="font-size:12px;color:#444;line-height:1.7;">${r.relational_field}</div></div>` : ''}
+      ${r.summary ? `<div style="margin-bottom:12px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:4px;">סיכום</div><div style="font-size:12px;color:#333;line-height:1.7;">${r.summary}</div></div>` : ''}
+      ${r.one_thing ? `<div style="padding:10px 14px;background:rgba(91,58,94,0.06);border-radius:6px;border-right:3px solid #5b3a5e;"><div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:4px;">דבר אחד לסשן הבא</div><div style="font-size:12px;color:#333;line-height:1.7;">${r.one_thing}</div></div>` : ''}
     </div>`;
+  return card;
+}
+
+// ---- inline bar: trigger via chat button ----
+async function requestSupervision() {
+  if (isThinking) return;
+  const theorist = theoristNameHe(activeTheorists[0]);
+  const turns = [];
+  for (let i = 0; i + 1 < conversationHistory.length; i += 2) {
+    turns.push(`[תור ${Math.floor(i / 2) + 1}]\nמטופל: ${conversationHistory[i].content}\nמטפל: ${conversationHistory[i + 1].content}`);
+  }
+  const transcript = turns.join('\n\n');
+  if (!transcript) return;
+
+  const btn = document.getElementById('supervision-btn');
+  if (btn) { btn.textContent = '...'; btn.disabled = true; }
 
   const chat = document.getElementById('chat');
-  chat.appendChild(card);
+  const loadingDiv = document.createElement('div');
+  loadingDiv.style.cssText = 'margin:12px 0;padding:16px;background:#f8f4fb;border:1px solid #e0d4e8;border-radius:10px;text-align:center;color:#7a5080;font-size:13px;direction:rtl;';
+  loadingDiv.textContent = 'מכין פיקוח קליני...';
+  chat.appendChild(loadingDiv);
   chat.scrollTop = chat.scrollHeight;
 
-  // הסתר כפתור לאחר שימוש
-  const bar = document.getElementById('supervision-bar');
-  if (bar) bar.style.display = 'none';
+  try {
+    const res    = await fetch('/api/supervise', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transcript, theorist }) });
+    const report = await res.json();
+    loadingDiv.remove();
+    const card = buildSupervisionCard(report, theorist);
+    card.style.margin = '16px 0';
+    chat.appendChild(card);
+    chat.scrollTop = chat.scrollHeight;
+  } catch {
+    loadingDiv.textContent = 'שגיאה בטעינת הפיקוח.';
+  } finally {
+    if (btn) { btn.textContent = '⚲ פיקוח על שיחה זו'; btn.disabled = false; }
+    const bar = document.getElementById('supervision-bar');
+    if (bar) bar.style.display = 'none';
+  }
 }
 
-function theoristNameHe(key) {
-  const map = { freud: 'פרויד', klein: 'קליין', winnicott: 'ויניקוט', ogden: 'אוגדן', loewald: 'לוואלד', bion: 'ביון', kohut: 'קוהוט', heimann: 'היימן' };
-  return map[key] || key || '';
-}
-
-window.requestSupervision = requestSupervision;
+window.openSupervision      = openSupervision;
+window.closeSupervision     = closeSupervision;
+window.switchSupervisionTab = switchSupervisionTab;
+window.runSupervisionPanel  = runSupervisionPanel;
+window.requestSupervision   = requestSupervision;
 
 // Init silence detection after DOM ready
 initSilenceDetection();
