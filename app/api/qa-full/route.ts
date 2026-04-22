@@ -74,7 +74,7 @@ async function runTheorist(theorist: string): Promise<{
       messages.push({ role: 'user', content: CONVERSATION_TURNS[i] });
       const res = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 400,
+        max_tokens: 250,
         system,
         messages,
       });
@@ -117,7 +117,11 @@ export async function GET(req: NextRequest) {
   }
 
   const start = Date.now();
-  const results = await Promise.all(THEORISTS.map(runTheorist));
+
+  // מריץ בשתי קבוצות של 4 כדי לא להציף את ה-API
+  const batch1 = await Promise.all(THEORISTS.slice(0, 4).map(runTheorist));
+  const batch2 = await Promise.all(THEORISTS.slice(4).map(runTheorist));
+  const results = [...batch1, ...batch2];
 
   const passed = results.filter(r => r.ok).length;
   const allOk = passed === results.length;
