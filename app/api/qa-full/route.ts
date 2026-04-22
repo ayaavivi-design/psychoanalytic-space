@@ -86,8 +86,10 @@ async function runTheorist(theorist: string): Promise<{
       messages.push({ role: 'assistant', content: text });
     }
 
-    const allQs = turns.every(t => t.therapist.includes('?'));
-    if (allQs) allIssues.push('[Q-3] כל התגובות שאלות — אין משפט');
+    // Q-3: אין ולו משפט אחד (המסתיים ב. או !) בכל השיחה — חקירה טהורה ללא תצפית
+    const fullText = turns.map(t => t.therapist).join(' ');
+    const statementEndings = (fullText.match(/[.!]/g) || []).length;
+    if (statementEndings === 0) allIssues.push('[Q-3] כל התגובות שאלות בלבד — אין תצפית / משפט');
 
     return {
       theorist, name,
