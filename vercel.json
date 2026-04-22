@@ -1,13 +1,16 @@
 {
   "crons": [
     {
-      "path": "/api/qa?secret=psycho-qa-2026",
+      "path": "/api/qa-full?secret=psycho-qa-2026",
       "schedule": "0 7 * * *"
     }
   ],
   "functions": {
-    "app/api/qa/route.ts": {
-      "maxDuration": 300
+    "app/api/qa-full/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/judge-run/route.ts": {
+      "maxDuration": 60
     }
   }
 }
