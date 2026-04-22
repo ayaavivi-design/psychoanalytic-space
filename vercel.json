@@ -3,10 +3,17 @@
     {
       "path": "/api/qa-full?secret=psycho-qa-2026",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/judge-full?secret=psycho-qa-2026",
+      "schedule": "0 7 */3 * *"
     }
   ],
   "functions": {
     "app/api/qa-full/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/judge-full/route.ts": {
       "maxDuration": 60
     },
     "app/api/judge-run/route.ts": {
