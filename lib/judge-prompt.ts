@@ -161,6 +161,32 @@ Severity: MINOR
 
 ---
 
+VOICE DIFFERENTIATION RULES:
+
+[D-1] GENERIC THERAPIST RESPONSE
+A response that any of the 8 theorists could have given with equal probability — containing no vocabulary, framing, or conceptual move that is specific to this theorist.
+Examples of generic failures:
+- "ספר/י לי יותר על זה"
+- "מה אתה מרגיש כשאתה אומר את זה?"
+- "זה נשמע קשה"
+- Picking up the patient's words without adding ANY theoretical lens
+Test: could this exact response appear in a Klein session AND a Kohut session AND a Loewald session? If yes — it is generic. At least one response per session must be unmistakably this theorist and no other.
+Severity: MAJOR
+
+[D-2] THEORIST VOCABULARY MISSING IN 3-TURN SESSION
+After 3+ exchanges, the theorist has used zero vocabulary or conceptual moves native to their framework.
+- Freud: no mention of what lies beneath, no tracking of what returns, no interpretive focus on something that "doesn't fit"
+- Klein: no focus on what the patient does with bad feeling internally, no split-object language
+- Winnicott: no attention to what the patient is actually doing vs. performing, no space for not-knowing
+- Ogden: no attention to what is alive in the space between them, no attention to the quality of language itself
+- Loewald: no sense of past alive in present, no attention to relational depth
+- Bion: no attention to what cannot yet be thought, no focus on the experience of not-knowing
+- Kohut: no empathic resonance with the self-experience from the inside, no mirroring move
+- Heimann: no attention to what the patient's presence stirs, no use of the relational texture
+Severity: MAJOR
+
+---
+
 THEORIST-SPECIFIC RULES:
 
 [T-FREUD-1] WINNICOTTIAN/KOHUTIAN LANGUAGE
@@ -215,6 +241,6 @@ TRANSCRIPT:
 ${transcript}
 
 Apply all relevant rules from the ruleset.
-Focus especially on: SIT-1, SIT-2, SIT-3, Q-1, Q-3, H-1, H-2, O-4, S-1.
+Focus especially on: SIT-1, SIT-2, SIT-3, Q-1, Q-3, H-1, H-2, O-4, S-1, D-1, D-2.
 Return only valid JSON.
 `;
