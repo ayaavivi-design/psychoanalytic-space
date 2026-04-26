@@ -5714,5 +5714,251 @@ function downloadSessionSummary(s, theoristLabel) {
 
 window.openSessionSummary = openSessionSummary;
 
+// ============================================================
+// THEORIST COMPARISON
+// ============================================================
+
+const COMPARISON_THEORISTS = [
+  { key: 'freud',    label: 'פרויד',   color: '#4a6fa5' },
+  { key: 'klein',    label: 'קליין',   color: '#8b3a52' },
+  { key: 'winnicott',label: 'ויניקוט', color: '#3a7a5a' },
+  { key: 'ogden',    label: 'אוגדן',   color: '#4a7a8a' },
+  { key: 'loewald',  label: 'לוואלד',  color: '#7a5a3a' },
+  { key: 'bion',     label: 'ביון',    color: '#4a4a6a' },
+  { key: 'kohut',    label: 'קוהוט',   color: '#8a6a20' },
+  { key: 'heimann',  label: 'היימן',   color: '#7a3a6a' },
+];
+
+function openComparison() {
+  if (document.getElementById('comparison-modal')) {
+    document.getElementById('comparison-modal').remove();
+    return;
+  }
+
+  // Last patient message from conversation (if exists)
+  const lastPatientMsg = conversationHistory.length > 0
+    ? conversationHistory.filter(m => m.role === 'user').at(-1)?.content || ''
+    : '';
+
+  const overlay = document.createElement('div');
+  overlay.id = 'comparison-modal';
+  overlay.style.cssText = [
+    'position:fixed;inset:0;z-index:150;display:flex;align-items:flex-start;justify-content:center;',
+    'background:rgba(45,36,32,0.3);backdrop-filter:blur(4px);direction:rtl;overflow-y:auto;padding:40px 16px;'
+  ].join('');
+
+  // Build theorist checkboxes
+  const checkboxes = COMPARISON_THEORISTS.map(t => `
+    <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin:3px 4px;
+      padding:4px 10px;border-radius:16px;border:1px solid ${t.color}33;background:${t.color}11;
+      font-size:12px;color:${t.color};">
+      <input type="checkbox" value="${t.key}" checked
+        style="accent-color:${t.color};cursor:pointer;">
+      ${t.label}
+    </label>`).join('');
+
+  overlay.innerHTML = `
+    <div id="comparison-box" style="background:#fff;border-radius:14px;width:720px;max-width:95vw;
+      box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:rtl;">
+
+      <!-- Header -->
+      <div style="background:#2d3a4a;padding:14px 20px;display:flex;justify-content:space-between;
+        align-items:center;border-radius:14px 14px 0 0;position:sticky;top:0;z-index:1;">
+        <span style="color:rgba(255,255,255,0.85);font-size:14px;">⇌ השוואת תיאורטיקנים</span>
+        <button id="cmp-close" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;">×</button>
+      </div>
+
+      <div style="padding:20px;">
+
+        <!-- Input area -->
+        <div style="margin-bottom:14px;">
+          <div style="font-size:12px;color:#888;margin-bottom:6px;">ציטוט מטופל לבדיקה:</div>
+          <textarea id="cmp-input" rows="3"
+            style="width:100%;border:1px solid #ddd;border-radius:8px;padding:10px 12px;
+            font-size:13px;direction:rtl;resize:vertical;font-family:inherit;color:#333;"
+            placeholder="הדביקו משפט או קטע של המטופל — כל התיאורטיקנים הנבחרים יענו לאותו ציטוט"
+          >${lastPatientMsg ? lastPatientMsg.replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''}</textarea>
+          ${lastPatientMsg ? `<div style="font-size:11px;color:#aaa;margin-top:3px;">מולא אוטומטית מהתגובה האחרונה של המטופל בשיחה. ניתן לערוך.</div>` : ''}
+        </div>
+
+        <!-- Theorist selection -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:12px;color:#888;margin-bottom:6px;">תיאורטיקנים להשוואה:</div>
+          <div id="cmp-theorists" style="display:flex;flex-wrap:wrap;">${checkboxes}</div>
+          <div style="margin-top:6px;">
+            <span style="font-size:11px;color:#bbb;cursor:pointer;" id="cmp-select-all">בחר הכל</span>
+            <span style="font-size:11px;color:#bbb;margin:0 6px;">·</span>
+            <span style="font-size:11px;color:#bbb;cursor:pointer;" id="cmp-select-none">נקה</span>
+          </div>
+        </div>
+
+        <!-- Run button -->
+        <button id="cmp-run"
+          style="width:100%;padding:10px;border-radius:8px;border:none;background:#2d3a4a;
+          color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:6px;">
+          הרץ השוואה
+        </button>
+        <div style="font-size:11px;color:#bbb;text-align:center;margin-bottom:16px;">
+          כל תיאורטיקן יענה באופן עצמאי לאותו ציטוט — התגובות מגיעות במקביל
+        </div>
+
+        <!-- Results -->
+        <div id="cmp-results"></div>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+
+  // Close handlers
+  document.getElementById('cmp-close').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+  // Select all / none
+  document.getElementById('cmp-select-all').addEventListener('click', () => {
+    overlay.querySelectorAll('#cmp-theorists input[type=checkbox]').forEach(cb => cb.checked = true);
+  });
+  document.getElementById('cmp-select-none').addEventListener('click', () => {
+    overlay.querySelectorAll('#cmp-theorists input[type=checkbox]').forEach(cb => cb.checked = false);
+  });
+
+  // Run
+  document.getElementById('cmp-run').addEventListener('click', () => runComparison(overlay));
+}
+
+async function runComparison(overlay) {
+  const input = overlay.querySelector('#cmp-input');
+  const patient_message = input ? input.value.trim() : '';
+  if (!patient_message) {
+    input && (input.style.borderColor = '#c00');
+    setTimeout(() => input && (input.style.borderColor = '#ddd'), 1500);
+    return;
+  }
+
+  const selected = [...overlay.querySelectorAll('#cmp-theorists input[type=checkbox]:checked')]
+    .map(cb => cb.value);
+  if (selected.length === 0) return;
+
+  const resultsEl = overlay.querySelector('#cmp-results');
+  const runBtn    = overlay.querySelector('#cmp-run');
+  runBtn.disabled = true;
+  runBtn.textContent = 'מריץ...';
+  resultsEl.innerHTML = `
+    <div style="text-align:center;padding:20px;color:#888;font-size:13px;">
+      שולח ל-${selected.length} תיאורטיקנים במקביל...
+    </div>`;
+
+  try {
+    const res  = await fetch('/api/compare-theorists', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patient_message, theorists: selected }),
+    });
+    const data = await res.json();
+
+    resultsEl.innerHTML = '';
+
+    // Patient quote header
+    const quoteEl = document.createElement('div');
+    quoteEl.style.cssText = 'margin-bottom:16px;padding:10px 14px;background:#f8f6fb;border-right:3px solid #aaa;border-radius:0 6px 6px 0;';
+    quoteEl.innerHTML = `<div style="font-size:10px;color:#aaa;font-weight:600;margin-bottom:3px;">ציטוט המטופל</div>
+      <div style="font-size:13px;color:#333;font-style:italic;">"${patient_message.replace(/</g,'&lt;').replace(/>/g,'&gt;')}"</div>`;
+    resultsEl.appendChild(quoteEl);
+
+    // Grid of theorist cards
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;';
+
+    (data.comparisons || []).forEach(c => {
+      const info = COMPARISON_THEORISTS.find(t => t.key === c.theorist) || { color: '#888', label: c.name };
+      const card = document.createElement('div');
+      card.style.cssText = `border:1px solid ${info.color}33;border-radius:10px;overflow:hidden;`;
+      card.innerHTML = `
+        <div style="background:${info.color};padding:8px 12px;">
+          <span style="color:#fff;font-size:13px;font-weight:600;">${c.name}</span>
+        </div>
+        <div style="padding:12px;font-size:13px;color:#333;line-height:1.8;direction:rtl;min-height:80px;">
+          ${c.error
+            ? `<span style="color:#c00;font-size:12px;">שגיאה: ${c.error}</span>`
+            : c.response.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
+        </div>`;
+      grid.appendChild(card);
+    });
+
+    resultsEl.appendChild(grid);
+
+    // Download button
+    const dlRow = document.createElement('div');
+    dlRow.style.cssText = 'margin-top:14px;text-align:left;';
+    const dlBtn = document.createElement('button');
+    dlBtn.textContent = '↓ הורד השוואה';
+    dlBtn.style.cssText = 'background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;';
+    dlBtn.addEventListener('click', () => downloadComparison(patient_message, data.comparisons || []));
+    dlRow.appendChild(dlBtn);
+    resultsEl.appendChild(dlRow);
+
+  } catch (err) {
+    resultsEl.innerHTML = '<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">שגיאה בהרצת ההשוואה.</div>';
+  } finally {
+    runBtn.disabled = false;
+    runBtn.textContent = 'הרץ שוב';
+  }
+}
+
+function downloadComparison(patientMessage, comparisons) {
+  const dateStr = new Date().toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const cardsHTML = comparisons.map(c => {
+    const info = COMPARISON_THEORISTS.find(t => t.key === c.theorist) || { color: '#888' };
+    return `
+      <div class="card">
+        <div class="card-header" style="background:${info.color};">${c.name}</div>
+        <div class="card-body">${c.error ? `<em style="color:#c00">שגיאה: ${c.error}</em>` : c.response.replace(/\n/g,'<br>')}</div>
+      </div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<title>השוואת תיאורטיקנים</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #222; padding: 40px; direction: rtl; }
+  h1 { font-size: 20px; color: #2d3a4a; margin-bottom: 4px; }
+  .meta { font-size: 12px; color: #888; margin-bottom: 20px; }
+  .quote-box { background: #f8f6fb; border-right: 3px solid #aaa; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 24px; }
+  .quote-label { font-size: 10px; color: #aaa; font-weight: 700; margin-bottom: 4px; }
+  .quote-text { font-size: 13px; color: #333; font-style: italic; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .card { border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden; }
+  .card-header { padding: 8px 12px; color: #fff; font-size: 13px; font-weight: 600; }
+  .card-body { padding: 12px; font-size: 13px; line-height: 1.8; color: #333; }
+  .footer { margin-top: 32px; font-size: 10px; color: #bbb; border-top: 1px solid #eee; padding-top: 10px; }
+  @media print { body { padding: 20px; } }
+</style>
+</head>
+<body>
+  <h1>השוואת תיאורטיקנים</h1>
+  <div class="meta">${dateStr}</div>
+  <div class="quote-box">
+    <div class="quote-label">ציטוט המטופל</div>
+    <div class="quote-text">"${patientMessage.replace(/</g,'&lt;').replace(/>/g,'&gt;')}"</div>
+  </div>
+  <div class="grid">${cardsHTML}</div>
+  <div class="footer">נוצר על ידי מרחב הפסיכואנליזה</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `השוואת-תיאורטיקנים-${new Date().toISOString().slice(0,10)}.html`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
+
+window.openComparison = openComparison;
+
 // Init silence detection after DOM ready
 initSilenceDetection();
