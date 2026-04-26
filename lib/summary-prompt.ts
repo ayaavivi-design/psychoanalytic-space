@@ -4,7 +4,7 @@ export const SUMMARY_SYSTEM_PROMPT = `You are a senior psychoanalytic clinician 
 You receive a transcript of a psychoanalytic session and return a structured clinical summary in JSON.
 Write all text values in Hebrew. Keep JSON keys in English.
 
-Return ONLY valid JSON. No prose outside the JSON.
+Return ONLY valid JSON. The very first character must be { and the very last must be }. No prose, no markdown code fences.
 
 FORMAT:
 {

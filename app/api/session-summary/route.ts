@@ -28,11 +28,16 @@ export async function POST(req: NextRequest) {
     ],
   });
 
-  const raw = res.content[0]?.type === 'text' ? res.content[0].text : '{}';
+  const raw = res.content[0]?.type === 'text' ? res.content[0].text : '';
 
+  // Extract the first {...} block — handles prose before/after the JSON
+  const jsonMatch = raw.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    return NextResponse.json({ error: 'parse_failed', raw }, { status: 500 });
+  }
   let summary: Record<string, unknown> = {};
   try {
-    summary = JSON.parse(raw);
+    summary = JSON.parse(jsonMatch[0]);
   } catch {
     return NextResponse.json({ error: 'parse_failed', raw }, { status: 500 });
   }

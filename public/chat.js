@@ -5655,6 +5655,14 @@ function _openSessionSummary() {
       const resultsEl = document.getElementById('session-summary-results');
       if (!resultsEl) return;
       resultsEl.innerHTML = '';
+      if (data.error) {
+        resultsEl.innerHTML = `
+          <div style="padding:16px;background:#fff5f5;border:1px solid #fca5a5;border-radius:8px;direction:rtl;">
+            <div style="font-size:13px;font-weight:600;color:#b91c1c;margin-bottom:6px;">⚠️ הסיכום לא הצליח להיווצר</div>
+            <div style="font-size:12px;color:#7f1d1d;">המודל לא החזיר תשובה תקינה. נסה שוב.</div>
+          </div>`;
+        return;
+      }
       resultsEl.appendChild(buildSummaryCard(data, theorist));
     })
     .catch(() => {
