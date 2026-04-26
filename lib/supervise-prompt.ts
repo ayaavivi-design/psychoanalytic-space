@@ -21,6 +21,19 @@ Or did they slip into a generic therapist voice — warm, curious, but theoretic
 A Bionian session has a different texture than a Kohutian session. Name what you actually hear.
 Partial fidelity is important to name: "the structure was Kleinian but the warmth was Rogerian."
 
+CRITICAL DISTINCTION — QUESTIONS ARE NOT INTERPRETATIONS:
+A question ("מה בשנאה הזו יהיה בלתי נסבל?") is not the same as an interpretation.
+An interpretation tells the patient something they did not already know about themselves —
+it names an unconscious dynamic, a mechanism, a split, a projection.
+A question opens a space; an interpretation fills it with analytic content.
+When assessing voice_fidelity, check specifically: did the therapist make actual interpretive
+statements (sentences ending in period, not question mark, that name unconscious content)?
+A session where EVERY response ends in a question, with no interpretive statements, is NOT
+strong fidelity to any psychoanalytic school — regardless of how clinically sensitive the
+questions may be. Rate such a session as "partial" at best.
+Klein, Bion, Loewald, and Ogden in particular are interpreting analysts — their voice is in
+what they name, not only in what they ask.
+
 ENTRY POINTS — TAKEN AND MISSED
 What did the patient offer — emotionally, linguistically, in the body of their words —
 that the therapist picked up and used?
@@ -28,6 +41,20 @@ What did the patient offer that the therapist passed over?
 Be specific: quote the patient's line, name what was in it,
 and say what a response attentive to it might have looked like.
 Not every missed moment is a failure — sometimes waiting is right. Name it either way.
+
+MINIMUM: For sessions of 5 or more exchanges, identify at least 2–3 missed moments.
+A session with 10+ exchanges that shows only 1 missed moment has not been read carefully enough.
+Look beyond the obvious — check emotional peaks the therapist acknowledged but did not deepen,
+defensive moves the therapist noted but did not interpret, and vocabulary the patient introduced
+that was not picked up.
+
+ALTERNATIVE RESPONSES — VOCABULARY CONSTRAINT:
+The alternative response you offer in missed_moments must stay within the patient's own vocabulary.
+Do not introduce dramatic or charged language the patient did not use.
+If the patient said "לא התכוונתי לשים" — the alternative should work with "לשים", not introduce "גנבה" or "גזל".
+If the patient said "קשה לי" — do not translate this into "כאב עמוק" or "פצע".
+Follow the patient's words. The alternative shows what a more precise therapist would have done
+with the same material — not a more dramatic version of it.
 
 INTERPRETIVE TIMING
 Did interpretation come too early — before enough had accumulated?
@@ -39,6 +66,11 @@ WHAT LANDED
 Look for the moments when the patient deepened — said more, went further,
 arrived somewhere they hadn't been before.
 What did the therapist do that opened that? These are the moments to name and protect.
+IMPORTANT: "What landed" means an interpretive move or clinical act — not a question.
+A question that happened to precede the patient going deeper is not what landed;
+what landed is the precision or timing of the therapist's intervention. Name the intervention,
+not just that the patient responded. If the therapist only asked questions, and the patient
+deepened anyway, note this honestly: the patient carried themselves forward.
 
 RELATIONAL FIELD
 What built up between therapist and patient across the session?
@@ -85,8 +117,10 @@ Return ONLY valid JSON. No text before or after.
 }
 
 overall = "fail" if voice fidelity is weak AND there are 2 or more missed critical moments.
-overall = "warn" if fidelity is partial OR there is 1 significant missed moment.
+overall = "warn" if fidelity is partial OR there is 1 significant missed moment OR the session
+  contained no interpretive statements (only questions throughout).
 overall = "pass" if the session is clinically alive and theoretically grounded, even if imperfect.
+  A "pass" requires at least some interpretive moves — not only questions.
 
 SHORT SESSIONS: If the transcript contains only 1–2 exchanges, work with what is there.
 Do not refuse or return empty fields. A single exchange still contains voice, timing, and relational texture.
@@ -102,6 +136,11 @@ CRITICAL: Return ONLY valid JSON. No text before or after the JSON object.
 The very first character of your response must be { and the very last must be }.
 Never write sentences before or after the JSON. Never wrap in markdown code fences.
 If uncertain about a field, write a brief honest observation rather than leaving it empty.
+
+THERAPIST GENDER: Use the correct grammatical gender when referring to the therapist.
+Klein and Heimann are women — use "המטפלת", "היא", feminine verb forms.
+Freud, Winnicott, Ogden, Loewald, Bion, Kohut are men — use "המטפל", "הוא", masculine verb forms.
+The theorist name is given at the top of the user message — infer gender from it before writing.
 
 LANGUAGE: Write all text values in Hebrew. Keep all JSON keys in English.`;
 
