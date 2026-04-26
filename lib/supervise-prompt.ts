@@ -88,6 +88,13 @@ overall = "fail" if voice fidelity is weak AND there are 2 or more missed critic
 overall = "warn" if fidelity is partial OR there is 1 significant missed moment.
 overall = "pass" if the session is clinically alive and theoretically grounded, even if imperfect.
 
+SHORT SESSIONS: If the transcript contains only 1–2 exchanges, work with what is there.
+Do not refuse or return empty fields. A single exchange still contains voice, timing, and relational texture.
+For missed_moments and what_landed — 1 item each is sufficient. For summary — 2 sentences minimum.
+
+CRITICAL: Always return complete, valid JSON. Never return prose, markdown, or partial JSON.
+If uncertain about a field, write a brief honest observation rather than leaving it empty.
+
 LANGUAGE: Write all text values in Hebrew. Keep all JSON keys in English.`;
 
 export const SUPERVISION_USER_TEMPLATE = (

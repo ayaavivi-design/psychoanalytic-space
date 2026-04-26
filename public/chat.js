@@ -5334,10 +5334,23 @@ async function runSupervisionPanel() {
     const report = await res.json();
     if (resultsEl) {
       resultsEl.innerHTML = '';
-      resultsEl.appendChild(buildSupervisionCard(report, theorist));
+      if (report.error) {
+        resultsEl.innerHTML = `
+          <div style="padding:16px;background:#fff5f5;border:1px solid #fca5a5;border-radius:8px;direction:rtl;">
+            <div style="font-size:13px;font-weight:600;color:#b91c1c;margin-bottom:6px;">⚠️ הפיקוח לא הצליח להיווצר</div>
+            <div style="font-size:12px;color:#7f1d1d;line-height:1.7;">
+              ${report.error === 'parse_failed'
+                ? 'המודל לא החזיר JSON תקין. זה קורה לעיתים עם שיחות קצרות מאוד — נסה עם לפחות 2–3 תורות.'
+                : `שגיאה: ${report.error}`}
+            </div>
+            ${report.raw ? `<details style="margin-top:8px;"><summary style="font-size:11px;color:#aaa;cursor:pointer;">תגובה גולמית</summary><pre style="font-size:10px;color:#888;white-space:pre-wrap;margin-top:4px;">${report.raw.slice(0,400)}</pre></details>` : ''}
+          </div>`;
+      } else {
+        resultsEl.appendChild(buildSupervisionCard(report, theorist));
+      }
     }
-  } catch {
-    if (resultsEl) resultsEl.innerHTML = '<div style="color:#b91c1c;padding:12px;font-size:13px;">שגיאה בטעינת הפיקוח.</div>';
+  } catch (err) {
+    if (resultsEl) resultsEl.innerHTML = `<div style="color:#b91c1c;padding:12px;font-size:13px;">שגיאת רשת: ${err?.message || 'שגיאה לא ידועה'}</div>`;
   } finally {
     if (btn) { btn.textContent = 'הרץ פיקוח'; btn.disabled = false; }
   }
@@ -5528,12 +5541,24 @@ async function requestSupervision() {
     const res    = await fetch('/api/supervise', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transcript, theorist }) });
     const report = await res.json();
     loadingDiv.remove();
-    const card = buildSupervisionCard(report, theorist);
-    card.style.margin = '16px 0';
-    chat.appendChild(card);
+    if (report.error) {
+      const errDiv = document.createElement('div');
+      errDiv.style.cssText = 'margin:16px 0;padding:14px 16px;background:#fff5f5;border:1px solid #fca5a5;border-radius:8px;direction:rtl;font-size:13px;';
+      errDiv.innerHTML = `<strong style="color:#b91c1c;">⚠️ הפיקוח לא הצליח</strong><br>
+        <span style="color:#7f1d1d;font-size:12px;">
+          ${report.error === 'parse_failed'
+            ? 'המודל לא החזיר JSON תקין. נסה עם שיחה ארוכה יותר (לפחות 2–3 תורות).'
+            : report.error}
+        </span>`;
+      chat.appendChild(errDiv);
+    } else {
+      const card = buildSupervisionCard(report, theorist);
+      card.style.margin = '16px 0';
+      chat.appendChild(card);
+    }
     chat.scrollTop = chat.scrollHeight;
-  } catch {
-    loadingDiv.textContent = 'שגיאה בטעינת הפיקוח.';
+  } catch (err) {
+    loadingDiv.textContent = `שגיאת רשת: ${err?.message || 'שגיאה לא ידועה'}`;
   } finally {
     if (btn) { btn.textContent = '⚲ פיקוח על שיחה זו'; btn.disabled = false; }
     const bar = document.getElementById('supervision-bar');
