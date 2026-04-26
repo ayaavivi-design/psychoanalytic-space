@@ -5316,8 +5316,113 @@ function buildSupervisionCard(r, theoristLabel) {
       ${r.relational_field ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:4px;">השדה היחסי</div><div style="font-size:12px;color:#444;line-height:1.7;">${r.relational_field}</div></div>` : ''}
       ${r.summary ? `<div style="margin-bottom:12px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:4px;">סיכום</div><div style="font-size:12px;color:#333;line-height:1.7;">${r.summary}</div></div>` : ''}
       ${r.one_thing ? `<div style="padding:10px 14px;background:rgba(91,58,94,0.06);border-radius:6px;border-right:3px solid #5b3a5e;"><div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:4px;">דבר אחד לסשן הבא</div><div style="font-size:12px;color:#333;line-height:1.7;">${r.one_thing}</div></div>` : ''}
+      <div id="sup-download-footer" style="margin-top:14px;padding-top:12px;border-top:1px solid #e8e0ec;text-align:left;"></div>
     </div>`;
+
+  // Add download button safely via JS (avoids escaping issues in inline onclick)
+  const footer = card.querySelector('#sup-download-footer');
+  if (footer) {
+    const dlBtn = document.createElement('button');
+    dlBtn.textContent = '↓ הורד דוח פיקוח';
+    dlBtn.style.cssText = 'background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;';
+    dlBtn.addEventListener('click', () => downloadSupervisionReport(r, name));
+    footer.appendChild(dlBtn);
+  }
+
   return card;
+}
+
+function downloadSupervisionReport(r, theoristLabel) {
+  const OVERALL_LABEL  = { pass: 'עבר', warn: 'אזהרה', fail: 'דרוש שיפור' };
+  const FIDELITY_LABEL = { strong: 'חזק', partial: 'חלקי', weak: 'חלש' };
+  const TIMING_LABEL   = { too_early: 'מוקדם מדי', appropriate: 'מתאים', too_late: 'מאוחר מדי', absent: 'נעדר' };
+  const FIDELITY_COLOR = { strong: '#2d8a5e', partial: '#c07800', weak: '#b91c1c' };
+  const OVERALL_COLOR  = { pass: '#2d8a5e', warn: '#c07800', fail: '#b91c1c' };
+
+  const name     = r.theorist || theoristLabel || '';
+  const overall  = r.overall  || 'warn';
+  const fidelity = r.voice_fidelity?.rating || 'partial';
+  const timing   = r.interpretive_timing?.assessment || 'appropriate';
+  const dateStr  = new Date().toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const missedRows = (r.missed_moments || []).map(m => `
+    <div class="missed">
+      <div class="missed-label">רגע שהוחמץ</div>
+      ${m.patient_quote ? `<div class="quote">"${m.patient_quote}"</div>` : ''}
+      ${m.what_was_in_it ? `<p><strong>מה היה בזה:</strong> ${m.what_was_in_it}</p>` : ''}
+      ${m.alternative   ? `<p class="alt"><strong>אפשרות:</strong> ${m.alternative}</p>` : ''}
+    </div>`).join('');
+
+  const landedRows = (r.what_landed || []).map(s =>
+    `<div class="landed">✓ ${s}</div>`).join('');
+
+  const html = `<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<title>דוח פיקוח קליני — ${name}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #222; background: #fff; padding: 40px; max-width: 720px; margin: 0 auto; direction: rtl; }
+  h1 { font-size: 20px; color: #3a1f3d; margin-bottom: 4px; }
+  .meta { font-size: 12px; color: #888; margin-bottom: 24px; }
+  .badge { display: inline-block; padding: 3px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; color: #fff; }
+  .badges { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .badge-box { background: #f5f0f7; border: 1px solid #ddd; border-radius: 8px; padding: 10px 14px; flex: 1; min-width: 140px; }
+  .badge-box .label { font-size: 10px; color: #aaa; font-weight: 600; margin-bottom: 4px; }
+  .badge-box .value { font-size: 14px; font-weight: 700; }
+  section { margin-bottom: 20px; }
+  section h2 { font-size: 12px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+  .landed { color: #2d8a5e; padding: 4px 0; border-bottom: 1px solid #e8f5ed; font-size: 12px; }
+  .missed { background: #fff5f7; border-right: 3px solid #c4607a; border-radius: 0 6px 6px 0; padding: 12px; margin-bottom: 10px; }
+  .missed-label { font-size: 10px; color: #c4607a; font-weight: 700; margin-bottom: 6px; }
+  .quote { font-style: italic; color: #555; font-size: 12px; margin-bottom: 6px; }
+  .alt { color: #2d8a5e; font-size: 12px; margin-top: 4px; }
+  .missed p { font-size: 12px; color: #444; margin-top: 4px; line-height: 1.6; }
+  .note-box { background: #f9f6fb; border: 1px solid #e0d4e8; border-radius: 6px; padding: 12px 14px; font-size: 12px; color: #444; line-height: 1.8; }
+  .one-thing { background: rgba(91,58,94,0.07); border-right: 3px solid #5b3a5e; border-radius: 0 6px 6px 0; padding: 12px 14px; font-size: 12px; color: #333; line-height: 1.8; }
+  .one-thing strong { display: block; font-size: 11px; color: #7a5080; margin-bottom: 5px; }
+  .footer { margin-top: 32px; font-size: 10px; color: #bbb; border-top: 1px solid #eee; padding-top: 10px; }
+  @media print { body { padding: 20px; } }
+</style>
+</head>
+<body>
+  <h1>דוח פיקוח קליני — ${name}</h1>
+  <div class="meta">${dateStr}</div>
+
+  <div class="badges">
+    <div class="badge-box">
+      <div class="label">תוצאה כוללת</div>
+      <div class="value" style="color:${OVERALL_COLOR[overall]||'#888'};">${OVERALL_LABEL[overall]||overall}</div>
+    </div>
+    <div class="badge-box">
+      <div class="label">נאמנות לקול</div>
+      <div class="value" style="color:${FIDELITY_COLOR[fidelity]||'#888'};">${FIDELITY_LABEL[fidelity]||fidelity}</div>
+    </div>
+    <div class="badge-box">
+      <div class="label">עיתוי פרשני</div>
+      <div class="value" style="color:#555;">${TIMING_LABEL[timing]||timing}</div>
+    </div>
+  </div>
+
+  ${r.voice_fidelity?.notes ? `<section><h2>הערות על הקול</h2><div class="note-box">${r.voice_fidelity.notes}</div></section>` : ''}
+  ${landedRows ? `<section><h2>מה נחת</h2>${landedRows}</section>` : ''}
+  ${missedRows ? `<section><h2>רגעים שהוחמצו</h2>${missedRows}</section>` : ''}
+  ${r.relational_field ? `<section><h2>השדה היחסי</h2><div class="note-box">${r.relational_field}</div></section>` : ''}
+  ${r.summary ? `<section><h2>סיכום</h2><div class="note-box">${r.summary}</div></section>` : ''}
+  ${r.one_thing ? `<section><h2>דבר אחד לסשן הבא</h2><div class="one-thing"><strong>המלצה</strong>${r.one_thing}</div></section>` : ''}
+
+  <div class="footer">נוצר על ידי מרחב הפסיכואנליזה</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `פיקוח-קליני-${name}-${new Date().toISOString().slice(0,10)}.html`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
 
 // ---- inline bar: trigger via chat button ----
@@ -5358,8 +5463,9 @@ async function requestSupervision() {
   }
 }
 
-window.openSupervision      = openSupervision;
-window.closeSupervision     = closeSupervision;
+window.openSupervision          = openSupervision;
+window.closeSupervision         = closeSupervision;
+window.downloadSupervisionReport = downloadSupervisionReport;
 window.switchSupervisionTab = switchSupervisionTab;
 window.runSupervisionPanel  = runSupervisionPanel;
 window.requestSupervision   = requestSupervision;
