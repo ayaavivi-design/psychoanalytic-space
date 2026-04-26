@@ -341,6 +341,10 @@ export default function Home() {
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⇌</span>
               <span className="sb-label">השוואת תיאורטיקנים</span>
             </div>
+            <div className="sb-item" onClick={() => (window as any).openAnonymizer()}>
+              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◌</span>
+              <span className="sb-label">אנונימיזציה</span>
+            </div>
           </div>
 
           {/* Theorists section */}

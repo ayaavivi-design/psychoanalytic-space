@@ -5886,15 +5886,27 @@ async function runComparison(overlay) {
 
     resultsEl.appendChild(grid);
 
-    // Download button
-    const dlRow = document.createElement('div');
-    dlRow.style.cssText = 'margin-top:14px;text-align:left;';
+    // Action row: roundtable + download
+    const actRow = document.createElement('div');
+    actRow.style.cssText = 'margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;';
+
+    const rtBtn = document.createElement('button');
+    rtBtn.textContent = '🪑 שולחן עגול — סיבוב שני';
+    rtBtn.style.cssText = 'padding:6px 16px;border-radius:7px;border:1px solid #b0c4cc;background:#f0f7fa;color:#2d4a5e;font-size:12px;font-weight:600;cursor:pointer;';
+    rtBtn.addEventListener('click', () => {
+      rtBtn.disabled = true;
+      rtBtn.textContent = 'מריץ סיבוב שני...';
+      runRoundtable(overlay, patient_message, data.comparisons || []);
+    });
+    actRow.appendChild(rtBtn);
+
     const dlBtn = document.createElement('button');
     dlBtn.textContent = '↓ הורד השוואה';
     dlBtn.style.cssText = 'background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;';
     dlBtn.addEventListener('click', () => downloadComparison(patient_message, data.comparisons || []));
-    dlRow.appendChild(dlBtn);
-    resultsEl.appendChild(dlRow);
+    actRow.appendChild(dlBtn);
+
+    resultsEl.appendChild(actRow);
 
   } catch (err) {
     resultsEl.innerHTML = '<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">שגיאה בהרצת ההשוואה.</div>';
@@ -5959,6 +5971,208 @@ function downloadComparison(patientMessage, comparisons) {
 }
 
 window.openComparison = openComparison;
+
+// ============================================================
+// ANONYMIZER
+// ============================================================
+
+function openAnonymizer() {
+  if (document.getElementById('anon-modal')) { document.getElementById('anon-modal').remove(); return; }
+
+  // Pre-fill from chat input if something is there
+  const inputEl = document.getElementById('user-input');
+  const prefill  = (inputEl && inputEl.value.trim()) ? inputEl.value.trim() : '';
+
+  const overlay = document.createElement('div');
+  overlay.id = 'anon-modal';
+  overlay.style.cssText = [
+    'position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;',
+    'background:rgba(45,36,32,0.32);backdrop-filter:blur(4px);direction:rtl;padding:40px 16px;'
+  ].join('');
+
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:14px;width:640px;max-width:94vw;max-height:88vh;overflow-y:auto;
+      box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:rtl;">
+
+      <div style="background:#2a3a2a;padding:14px 20px;display:flex;justify-content:space-between;
+        align-items:center;border-radius:14px 14px 0 0;position:sticky;top:0;">
+        <span style="color:rgba(255,255,255,0.85);font-size:14px;">◌ אנונימיזציה קלינית</span>
+        <button id="anon-close" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;">×</button>
+      </div>
+
+      <div style="padding:20px;">
+        <div style="font-size:12px;color:#888;margin-bottom:6px;">הדביקו חומר קליני — שמות, מיקומים, תאריכים יוחלפו אוטומטית:</div>
+        <textarea id="anon-input" rows="6"
+          style="width:100%;border:1px solid #ddd;border-radius:8px;padding:10px 12px;font-size:13px;
+          direction:rtl;resize:vertical;font-family:inherit;color:#333;margin-bottom:10px;"
+          placeholder="מטופלת בת 42 שרה כהן, רופאת עור בבית חולים שיבא בתל אביב. נשואה לדוד מזה 15 שנה..."
+        >${prefill.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+        <button id="anon-run"
+          style="width:100%;padding:10px;border-radius:8px;border:none;background:#2a3a2a;
+          color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;">
+          הרץ אנונימיזציה
+        </button>
+        <div id="anon-results"></div>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  document.getElementById('anon-close').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.getElementById('anon-run').addEventListener('click', () => runAnonymizer(overlay));
+}
+
+async function runAnonymizer(overlay) {
+  const input   = overlay.querySelector('#anon-input');
+  const text    = input ? input.value.trim() : '';
+  if (!text) { if (input) input.style.borderColor = '#c00'; setTimeout(() => input && (input.style.borderColor = '#ddd'), 1500); return; }
+
+  const results = overlay.querySelector('#anon-results');
+  const runBtn  = overlay.querySelector('#anon-run');
+  runBtn.disabled = true;
+  runBtn.textContent = 'מעבד...';
+  results.innerHTML = '<div style="text-align:center;color:#888;font-size:13px;padding:16px;">מזהה פרטים מזהים...</div>';
+
+  try {
+    const res  = await fetch('/api/anonymize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+    const data = await res.json();
+
+    results.innerHTML = '';
+
+    if (data.error) {
+      results.innerHTML = `<div style="color:#c00;font-size:13px;">שגיאה: ${data.error}</div>`;
+      return;
+    }
+
+    // Changes summary
+    if (data.changes && data.changes.length > 0) {
+      const changesEl = document.createElement('div');
+      changesEl.style.cssText = 'margin-bottom:14px;';
+      changesEl.innerHTML = `
+        <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">שינויים שבוצעו (${data.changes.length})</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${data.changes.map(c => `
+            <span style="background:#fff3e0;border:1px solid #ffe082;border-radius:12px;padding:2px 10px;font-size:11px;color:#6d4c00;">
+              <s style="color:#c00;opacity:0.7;">${c.original}</s> → <strong>${c.replacement}</strong>
+              <span style="color:#aaa;font-size:10px;"> · ${c.type}</span>
+            </span>`).join('')}
+        </div>`;
+      results.appendChild(changesEl);
+    } else {
+      const noChanges = document.createElement('div');
+      noChanges.style.cssText = 'margin-bottom:12px;font-size:12px;color:#2d8a5e;';
+      noChanges.textContent = '✓ לא נמצאו פרטים מזהים בטקסט';
+      results.appendChild(noChanges);
+    }
+
+    // Anonymized text box
+    const anonBox = document.createElement('div');
+    anonBox.style.cssText = 'margin-bottom:12px;';
+    anonBox.innerHTML = `
+      <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">טקסט מאונונים</div>
+      <div id="anon-output" style="background:#f6faf6;border:1px solid #c3e6cb;border-radius:8px;padding:12px 14px;
+        font-size:13px;color:#333;line-height:1.8;white-space:pre-wrap;direction:rtl;">
+        ${(data.anonymized || text).replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+      </div>`;
+    results.appendChild(anonBox);
+
+    // Action buttons
+    const btns = document.createElement('div');
+    btns.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = '📋 העתק טקסט מאונונים';
+    copyBtn.style.cssText = 'padding:7px 16px;border-radius:7px;border:1px solid #c3e6cb;background:#f6faf6;color:#2d8a5e;font-size:12px;cursor:pointer;';
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(data.anonymized || text).then(() => {
+        copyBtn.textContent = '✓ הועתק';
+        setTimeout(() => { copyBtn.textContent = '📋 העתק טקסט מאונונים'; }, 2000);
+      });
+    });
+    btns.appendChild(copyBtn);
+
+    // Insert into chat input
+    const inputEl = document.getElementById('user-input');
+    if (inputEl) {
+      const insertBtn = document.createElement('button');
+      insertBtn.textContent = '→ הכנס לשורת הקלט';
+      insertBtn.style.cssText = 'padding:7px 16px;border-radius:7px;border:1px solid #d4c2e0;background:#f7f5fb;color:#5b3a5e;font-size:12px;cursor:pointer;';
+      insertBtn.addEventListener('click', () => {
+        inputEl.value = data.anonymized || text;
+        inputEl.focus();
+        document.getElementById('anon-modal')?.remove();
+      });
+      btns.appendChild(insertBtn);
+    }
+
+    results.appendChild(btns);
+
+  } catch {
+    results.innerHTML = '<div style="color:#c00;text-align:center;font-size:13px;">שגיאה בעיבוד הטקסט.</div>';
+  } finally {
+    runBtn.disabled = false;
+    runBtn.textContent = 'הרץ שוב';
+  }
+}
+
+window.openAnonymizer = openAnonymizer;
+
+// ============================================================
+// THEORIST ROUNDTABLE — round 2 inside comparison panel
+// ============================================================
+
+async function runRoundtable(overlay, patientMessage, initialComparisons) {
+  const resultsEl = overlay.querySelector('#cmp-results');
+  if (!resultsEl) return;
+
+  // Add roundtable section
+  const rtSection = document.createElement('div');
+  rtSection.style.cssText = 'margin-top:20px;';
+  rtSection.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-top:16px;border-top:1px solid #e8e0ec;">
+      <span style="font-size:14px;">🪑</span>
+      <div style="font-size:12px;font-weight:600;color:#444;">שולחן עגול — כל תיאורטיקן רואה מה שאר עמיתיו אמרו</div>
+    </div>
+    <div id="rt-loading" style="text-align:center;color:#888;font-size:13px;padding:12px;">שולח לסיבוב שני...</div>
+    <div id="rt-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;"></div>`;
+  resultsEl.appendChild(rtSection);
+
+  // Scroll to it
+  rtSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  try {
+    const res  = await fetch('/api/theorist-roundtable', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patient_message: patientMessage, initial_responses: initialComparisons }),
+    });
+    const data = await res.json();
+
+    document.getElementById('rt-loading')?.remove();
+    const rtGrid = document.getElementById('rt-grid');
+    if (!rtGrid) return;
+
+    (data.reactions || []).forEach(r => {
+      const info = COMPARISON_THEORISTS.find(t => t.key === r.theorist) || { color: '#888' };
+      const card = document.createElement('div');
+      card.style.cssText = `border:1px solid ${info.color}33;border-radius:10px;overflow:hidden;`;
+      card.innerHTML = `
+        <div style="background:${info.color};padding:6px 12px;display:flex;align-items:center;gap:6px;">
+          <span style="color:#fff;font-size:13px;font-weight:600;">${r.name}</span>
+          <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:9px;padding:1px 7px;border-radius:10px;">תגובה</span>
+        </div>
+        <div style="padding:10px 12px;font-size:13px;color:#333;line-height:1.8;direction:rtl;font-style:italic;">
+          ${r.error
+            ? `<span style="color:#c00;font-size:12px;font-style:normal;">שגיאה: ${r.error}</span>`
+            : r.reaction.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
+        </div>`;
+      rtGrid.appendChild(card);
+    });
+
+  } catch {
+    document.getElementById('rt-loading').textContent = 'שגיאה בסיבוב השני.';
+  }
+}
 
 // Init silence detection after DOM ready
 initSilenceDetection();
