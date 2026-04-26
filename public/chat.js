@@ -3826,11 +3826,89 @@ function showTheoristOpening(theoristKey) {
 }
 
 function toggleClinicalMode() {
-  window.clinicalMode = !window.clinicalMode;
+  if (!window.clinicalMode) {
+    // Turning ON — show consent/privacy modal first
+    showClinicalConsentModal();
+  } else {
+    // Turning OFF — immediate
+    activateClinicalModeUI(false);
+  }
+}
+
+function showClinicalConsentModal() {
+  if (document.getElementById('clinical-consent-modal')) return; // already open
+
+  const overlay = document.createElement('div');
+  overlay.id = 'clinical-consent-modal';
+  overlay.style.cssText = [
+    'position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;',
+    'background:rgba(45,36,32,0.35);backdrop-filter:blur(5px);direction:rtl;'
+  ].join('');
+
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:14px;padding:28px 32px;max-width:480px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.18);direction:rtl;">
+
+      <div style="font-size:17px;font-weight:700;color:#2d1f1f;margin-bottom:18px;display:flex;align-items:center;gap:8px;">
+        <span>🛋️</span> מעבר למצב סשן קליני
+      </div>
+
+      <!-- Anonymization warning -->
+      <div style="background:#fff8f0;border:1px solid #f5c97a;border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:#92600a;margin-bottom:6px;">⚠️ אנונימיזציה — חובה</div>
+        <div style="font-size:12px;color:#6b4a10;line-height:1.8;">
+          אל תשתפו שמות, תאריכים, או פרטים מזהים של מטופלים.<br>
+          השתמשו ב <strong>"מטופל א׳"</strong>, <strong>"בת 40"</strong>, <strong>"עיר גדולה בצפון"</strong> — ללא שם ספציפי.<br>
+          <span style="color:#b45309;font-weight:600;">שיתוף חומר מזהה עלול להפר את האתיקה המקצועית, גם אם הטכנולוגיה מאובטחת.</span>
+        </div>
+      </div>
+
+      <!-- Privacy statement -->
+      <div style="background:#f7f5fb;border:1px solid #d8c8e0;border-radius:10px;padding:14px 16px;margin-bottom:22px;">
+        <div style="font-size:13px;font-weight:700;color:#4a3560;margin-bottom:8px;">🔒 מדיניות פרטיות</div>
+        <ul style="font-size:12px;color:#444;line-height:2;margin:0;padding-right:16px;">
+          <li>שיחות <strong>לא נשמרות</strong> בשרתים שלנו</li>
+          <li>הנתונים עוברים דרך <strong>Anthropic API</strong> בלבד</li>
+          <li>Anthropic <strong>אינה משתמשת</strong> בנתוני API לאימון מודלים</li>
+          <li>ניתן לקרוא את <a href="https://www.anthropic.com/privacy" target="_blank" style="color:#5b3a5e;">מדיניות הפרטיות של Anthropic</a></li>
+        </ul>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button id="clinical-consent-cancel"
+          style="padding:9px 20px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;font-size:13px;cursor:pointer;">
+          ביטול
+        </button>
+        <button id="clinical-consent-confirm"
+          style="padding:9px 22px;border-radius:8px;border:none;background:#5b3a5e;color:#fff;font-size:13px;font-weight:600;cursor:pointer;">
+          הבנתי — כנס למצב סשן
+        </button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+
+  document.getElementById('clinical-consent-confirm').addEventListener('click', () => {
+    overlay.remove();
+    window.clinicalMode = true;
+    activateClinicalModeUI(true);
+  });
+
+  document.getElementById('clinical-consent-cancel').addEventListener('click', () => {
+    overlay.remove();
+  });
+
+  // Close on backdrop click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+}
+
+function activateClinicalModeUI(on) {
+  window.clinicalMode = on;
   const btn = document.getElementById('clinical-btn');
   const label = document.getElementById('clinical-label');
   const input = document.getElementById('user-input');
-  if (window.clinicalMode) {
+  if (on) {
     btn.style.background = 'rgba(196,96,122,0.12)';
     btn.style.color = 'var(--accent)';
     btn.style.borderColor = 'var(--accent)';
@@ -4527,9 +4605,9 @@ function restoreConversation(memIndex) {
       if (el) el.classList.add('active');
     });
   }
-  // Restore clinical mode
-  if (mem.clinical && !window.clinicalMode) toggleClinicalMode();
-  else if (!mem.clinical && window.clinicalMode) toggleClinicalMode();
+  // Restore clinical mode (bypass consent modal — session already confirmed previously)
+  if (mem.clinical && !window.clinicalMode) { window.clinicalMode = true; activateClinicalModeUI(true); }
+  else if (!mem.clinical && window.clinicalMode) activateClinicalModeUI(false);
 
   // Set context so next message continues from here
   conversationHistory = [{ role: 'user', content: mem.q || mem.summary },
