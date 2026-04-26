@@ -28,11 +28,13 @@ Rules:
 - Do not introduce yourself or explain your school
 - 2 sentences. No more.`;
 
+type InitialResponse = { theorist: string; name: string; response: string; error?: string };
+
 async function getReaction(
   anthropic: Anthropic,
   theorist: string,
   patientMessage: string,
-  allResponses: { theorist: string; name: string; response: string }[]
+  allResponses: InitialResponse[]
 ): Promise<{ theorist: string; name: string; reaction: string; error?: string }> {
   try {
     const othersText = allResponses
@@ -76,8 +78,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing patient_message or initial_responses' }, { status: 400 });
   }
 
-  const validResponses = initial_responses.filter(
-    (r: { theorist: string; response?: string }) => r.theorist && THEORIST_VOICE[r.theorist] && r.response
+  const validResponses: InitialResponse[] = (initial_responses as InitialResponse[]).filter(
+    r => r.theorist && THEORIST_VOICE[r.theorist] && r.response
   );
 
   if (validResponses.length === 0) {
@@ -87,9 +89,7 @@ export async function POST(req: NextRequest) {
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   const reactions = await Promise.all(
-    validResponses.map((r: { theorist: string; name: string; response: string }) =>
-      getReaction(anthropic, r.theorist, patient_message, validResponses)
-    )
+    validResponses.map(r => getReaction(anthropic, r.theorist, patient_message, validResponses))
   );
 
   return NextResponse.json({ reactions, patient_message });
