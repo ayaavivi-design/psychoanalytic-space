@@ -771,7 +771,6 @@ function appendMessage(role, content, attribution = '', sourceHTML = '') {
   `;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
-  updateSupervisionBar();
   return div;
 }
 
@@ -5257,14 +5256,6 @@ function updateTimerToggleVisual(checked) {
 const THEORIST_NAME_HE = { freud: 'פרויד', klein: 'קליין', winnicott: 'ויניקוט', ogden: 'אוגדן', loewald: 'לוואלד', bion: 'ביון', kohut: 'קוהוט', heimann: 'היימן' };
 function theoristNameHe(key) { return THEORIST_NAME_HE[key] || key || ''; }
 
-// ---- inline bar (clinical mode, 3+ turns) ----
-function updateSupervisionBar() {
-  const bar = document.getElementById('supervision-bar');
-  if (!bar) return;
-  const show = window.clinicalMode && activeTheorists.length === 1 && conversationHistory.length >= 6;
-  bar.style.display = show ? 'block' : 'none';
-}
-
 // ---- panel (sidebar button) ----
 function openSupervision() {
   requireTherapistConsent(() => _openSupervision());
@@ -5533,63 +5524,11 @@ function downloadSupervisionReport(r, theoristLabel) {
   setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
 
-// ---- inline bar: trigger via chat button ----
-async function requestSupervision() {
-  if (isThinking) return;
-  if (conversationHistory.length < 2) return; // need at least one complete exchange
-  const theorist = theoristNameHe(activeTheorists[0]);
-  const turns = [];
-  for (let i = 0; i + 1 < conversationHistory.length; i += 2) {
-    turns.push(`[תור ${Math.floor(i / 2) + 1}]\nמטופל: ${conversationHistory[i].content}\nמטפל: ${conversationHistory[i + 1].content}`);
-  }
-  const transcript = turns.join('\n\n');
-  if (!transcript) return;
-
-  const btn = document.getElementById('supervision-btn');
-  if (btn) { btn.textContent = '...'; btn.disabled = true; }
-
-  const chat = document.getElementById('chat');
-  const loadingDiv = document.createElement('div');
-  loadingDiv.style.cssText = 'margin:12px 0;padding:16px;background:#f8f4fb;border:1px solid #e0d4e8;border-radius:10px;text-align:center;color:#7a5080;font-size:13px;direction:rtl;';
-  loadingDiv.textContent = 'מכין פיקוח קליני...';
-  chat.appendChild(loadingDiv);
-  chat.scrollTop = chat.scrollHeight;
-
-  try {
-    const res    = await fetch('/api/supervise', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transcript, theorist }) });
-    const report = await res.json();
-    loadingDiv.remove();
-    if (report.error) {
-      const errDiv = document.createElement('div');
-      errDiv.style.cssText = 'margin:16px 0;padding:14px 16px;background:#fff5f5;border:1px solid #fca5a5;border-radius:8px;direction:rtl;font-size:13px;';
-      errDiv.innerHTML = `<strong style="color:#b91c1c;">⚠️ הפיקוח לא הצליח</strong><br>
-        <span style="color:#7f1d1d;font-size:12px;">
-          ${report.error === 'parse_failed'
-            ? 'המודל לא החזיר תשובה תקינה. נסה שוב — אם השגיאה חוזרת, נסה להריץ הפיקוח מחדש.'
-            : report.error}
-        </span>`;
-      chat.appendChild(errDiv);
-    } else {
-      const card = buildSupervisionCard(report, theorist);
-      card.style.margin = '16px 0';
-      chat.appendChild(card);
-    }
-    chat.scrollTop = chat.scrollHeight;
-  } catch (err) {
-    loadingDiv.textContent = `שגיאת רשת: ${err?.message || 'שגיאה לא ידועה'}`;
-  } finally {
-    if (btn) { btn.textContent = '⚲ פיקוח על שיחה זו'; btn.disabled = false; }
-    const bar = document.getElementById('supervision-bar');
-    if (bar) bar.style.display = 'none';
-  }
-}
-
 window.openSupervision          = openSupervision;
 window.closeSupervision         = closeSupervision;
 window.downloadSupervisionReport = downloadSupervisionReport;
 window.switchSupervisionTab = switchSupervisionTab;
 window.runSupervisionPanel  = runSupervisionPanel;
-window.requestSupervision   = requestSupervision;
 
 // ============================================================
 // SESSION SUMMARY
