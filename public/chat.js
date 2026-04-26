@@ -5548,5 +5548,171 @@ window.switchSupervisionTab = switchSupervisionTab;
 window.runSupervisionPanel  = runSupervisionPanel;
 window.requestSupervision   = requestSupervision;
 
+// ============================================================
+// SESSION SUMMARY
+// ============================================================
+
+function buildSessionSummaryTranscript() {
+  const turns = [];
+  for (let i = 0; i + 1 < conversationHistory.length; i += 2) {
+    turns.push(`[תור ${Math.floor(i / 2) + 1}]\nמטופל: ${conversationHistory[i].content}\nמטפל: ${conversationHistory[i + 1].content}`);
+  }
+  return turns.join('\n\n');
+}
+
+function openSessionSummary() {
+  const transcript = buildSessionSummaryTranscript();
+  if (!transcript) {
+    alert('אין שיחה פעילה לסכם.');
+    return;
+  }
+
+  // If modal already open — close it
+  const existing = document.getElementById('session-summary-modal');
+  if (existing) { existing.remove(); return; }
+
+  const theorist = activeTheorists.length === 1
+    ? (THEORIST_NAME_HE[activeTheorists[0]] || activeTheorists[0])
+    : 'לא צוין';
+
+  const overlay = document.createElement('div');
+  overlay.id = 'session-summary-modal';
+  overlay.style.cssText = [
+    'position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;',
+    'background:rgba(45,36,32,0.3);backdrop-filter:blur(4px);direction:rtl;'
+  ].join('');
+
+  overlay.innerHTML = `
+    <div id="session-summary-box" style="background:#fff;border-radius:14px;width:580px;max-width:92vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:rtl;">
+      <div style="background:#3a2540;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:14px 14px 0 0;position:sticky;top:0;">
+        <span style="color:rgba(255,255,255,0.85);font-size:14px;">◎ סיכום סשן — ${theorist}</span>
+        <button id="ss-close-btn" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;line-height:1;">×</button>
+      </div>
+      <div id="session-summary-results" style="padding:20px;">
+        <div style="text-align:center;color:#aaa;font-size:13px;padding:30px 0;">מייצר סיכום קליני...</div>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+
+  document.getElementById('ss-close-btn').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+  // Fetch summary
+  fetch('/api/session-summary', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ transcript, theorist })
+  })
+    .then(r => r.json())
+    .then(data => {
+      const resultsEl = document.getElementById('session-summary-results');
+      if (!resultsEl) return;
+      resultsEl.innerHTML = '';
+      resultsEl.appendChild(buildSummaryCard(data, theorist));
+    })
+    .catch(() => {
+      const resultsEl = document.getElementById('session-summary-results');
+      if (resultsEl) resultsEl.innerHTML = '<div style="color:#c00;text-align:center;padding:20px;">שגיאה בייצור הסיכום.</div>';
+    });
+}
+
+function buildSummaryCard(s, theoristLabel) {
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'font-size:13px;color:#333;line-height:1.8;';
+
+  const themesHTML = (s.themes || []).map(t =>
+    `<span style="display:inline-block;background:#f0eaf5;border:1px solid #d4c2e0;border-radius:20px;padding:2px 12px;font-size:11px;color:#5b3a5e;margin:3px 2px;">${t}</span>`
+  ).join('');
+
+  const momentsHTML = (s.key_moments || []).map(m => `
+    <div style="margin-bottom:10px;padding:10px 14px;background:#faf7fc;border-right:3px solid #9b7aab;border-radius:0 6px 6px 0;">
+      ${m.patient_quote ? `<div style="font-style:italic;color:#555;margin-bottom:5px;">"${m.patient_quote}"</div>` : ''}
+      <div style="font-size:12px;color:#444;">${m.clinical_significance || ''}</div>
+    </div>`).join('');
+
+  wrap.innerHTML = `
+    ${themesHTML ? `<div style="margin-bottom:16px;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">נושאים מרכזיים</div>${themesHTML}</div>` : ''}
+    ${momentsHTML ? `<div style="margin-bottom:16px;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">רגעים קליניים מרכזיים</div>${momentsHTML}</div>` : ''}
+    ${s.what_opened ? `<div style="margin-bottom:14px;padding:10px 14px;background:#f0faf3;border-radius:6px;border:1px solid #c3e6cb;"><div style="font-size:11px;color:#2d8a5e;font-weight:600;margin-bottom:4px;">מה נפתח בסשן זה</div><div style="font-size:12px;color:#333;">${s.what_opened}</div></div>` : ''}
+    ${s.what_remained ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff9f0;border-radius:6px;border:1px solid #f5c97a;"><div style="font-size:11px;color:#92600a;font-weight:600;margin-bottom:4px;">מה נותר פתוח</div><div style="font-size:12px;color:#333;">${s.what_remained}</div></div>` : ''}
+    ${s.therapist_moves ? `<div style="margin-bottom:14px;padding:10px 14px;background:#f7f5fb;border-radius:6px;border:1px solid #d8c8e0;"><div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:4px;">המהלכים הטיפוליים</div><div style="font-size:12px;color:#333;">${s.therapist_moves}</div></div>` : ''}
+    ${s.next_session_focus ? `<div style="padding:10px 14px;background:rgba(58,37,64,0.07);border-radius:6px;border-right:3px solid #3a2540;"><div style="font-size:11px;color:#3a2540;font-weight:600;margin-bottom:4px;">המוקד לסשן הבא</div><div style="font-size:12px;color:#333;font-weight:500;">${s.next_session_focus}</div></div>` : ''}
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #e8e0ec;text-align:left;">
+      <button id="ss-download-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
+        ↓ הורד סיכום
+      </button>
+    </div>`;
+
+  // Attach download after render
+  wrap.querySelector('#ss-download-btn').addEventListener('click', () =>
+    downloadSessionSummary(s, theoristLabel));
+
+  return wrap;
+}
+
+function downloadSessionSummary(s, theoristLabel) {
+  const name = s.theorist || theoristLabel || '';
+  const dateStr = new Date().toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const themeTags = (s.themes || []).map(t =>
+    `<span style="display:inline-block;background:#f0eaf5;border:1px solid #d4c2e0;border-radius:20px;padding:2px 12px;font-size:12px;color:#5b3a5e;margin:3px 2px;">${t}</span>`
+  ).join('');
+
+  const momentsHTML = (s.key_moments || []).map(m => `
+    <div class="moment">
+      ${m.patient_quote ? `<div class="quote">"${m.patient_quote}"</div>` : ''}
+      <div class="sig">${m.clinical_significance || ''}</div>
+    </div>`).join('');
+
+  const html = `<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<title>סיכום סשן — ${name}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #222; padding: 40px; max-width: 680px; margin: 0 auto; direction: rtl; }
+  h1 { font-size: 20px; color: #3a2540; margin-bottom: 4px; }
+  .meta { font-size: 12px; color: #888; margin-bottom: 24px; }
+  section { margin-bottom: 18px; }
+  section h2 { font-size: 11px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px; }
+  .box { border-radius: 6px; padding: 12px 14px; font-size: 12px; line-height: 1.8; }
+  .box-green  { background: #f0faf3; border: 1px solid #c3e6cb; }
+  .box-yellow { background: #fff9f0; border: 1px solid #f5c97a; }
+  .box-purple { background: #f7f5fb; border: 1px solid #d8c8e0; }
+  .box-dark   { background: rgba(58,37,64,0.07); border-right: 3px solid #3a2540; }
+  .box-dark strong { display: block; font-size: 12px; color: #3a2540; margin-bottom: 4px; }
+  .moment { background: #faf7fc; border-right: 3px solid #9b7aab; border-radius: 0 6px 6px 0; padding: 10px 12px; margin-bottom: 8px; }
+  .quote { font-style: italic; color: #555; margin-bottom: 4px; font-size: 12px; }
+  .sig { font-size: 12px; color: #444; }
+  .footer { margin-top: 32px; font-size: 10px; color: #bbb; border-top: 1px solid #eee; padding-top: 10px; }
+  @media print { body { padding: 20px; } }
+</style>
+</head>
+<body>
+  <h1>סיכום סשן — ${name}</h1>
+  <div class="meta">${dateStr}</div>
+  ${themeTags ? `<section><h2>נושאים מרכזיים</h2><div>${themeTags}</div></section>` : ''}
+  ${momentsHTML ? `<section><h2>רגעים קליניים מרכזיים</h2>${momentsHTML}</section>` : ''}
+  ${s.what_opened ? `<section><h2>מה נפתח</h2><div class="box box-green">${s.what_opened}</div></section>` : ''}
+  ${s.what_remained ? `<section><h2>מה נותר פתוח</h2><div class="box box-yellow">${s.what_remained}</div></section>` : ''}
+  ${s.therapist_moves ? `<section><h2>מהלכים טיפוליים</h2><div class="box box-purple">${s.therapist_moves}</div></section>` : ''}
+  ${s.next_session_focus ? `<section><h2>מוקד לסשן הבא</h2><div class="box box-dark"><strong>המלצה</strong>${s.next_session_focus}</div></section>` : ''}
+  <div class="footer">נוצר על ידי מרחב הפסיכואנליזה</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `סיכום-סשן-${name}-${new Date().toISOString().slice(0,10)}.html`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
+
+window.openSessionSummary = openSessionSummary;
+
 // Init silence detection after DOM ready
 initSilenceDetection();

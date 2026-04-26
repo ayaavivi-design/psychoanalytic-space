@@ -333,6 +333,10 @@ export default function Home() {
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⚲</span>
               <span className="sb-label">פיקוח קליני</span>
             </div>
+            <div className="sb-item" onClick={() => (window as any).openSessionSummary()}>
+              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
+              <span className="sb-label">סיכום סשן</span>
+            </div>
           </div>
 
           {/* Theorists section */}
