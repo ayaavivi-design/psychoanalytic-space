@@ -92,7 +92,15 @@ SHORT SESSIONS: If the transcript contains only 1–2 exchanges, work with what 
 Do not refuse or return empty fields. A single exchange still contains voice, timing, and relational texture.
 For missed_moments and what_landed — 1 item each is sufficient. For summary — 2 sentences minimum.
 
-CRITICAL: Always return complete, valid JSON. Never return prose, markdown, or partial JSON.
+THERAPIST SILENCE: If the therapist's response is "[אני שומרת על השתיקה - מחכה]" or similar,
+treat it as a deliberate clinical intervention — not an absence of data.
+Analyze: was holding silence the theoretically congruent choice here? What did it open or foreclose?
+The patient's words before the silence are your primary material.
+Do not return empty fields because "nothing was said" — silence is always clinically meaningful.
+
+CRITICAL: Return ONLY valid JSON. No text before or after the JSON object.
+The very first character of your response must be { and the very last must be }.
+Never write sentences before or after the JSON. Never wrap in markdown code fences.
 If uncertain about a field, write a brief honest observation rather than leaving it empty.
 
 LANGUAGE: Write all text values in Hebrew. Keep all JSON keys in English.`;

@@ -5536,6 +5536,7 @@ function downloadSupervisionReport(r, theoristLabel) {
 // ---- inline bar: trigger via chat button ----
 async function requestSupervision() {
   if (isThinking) return;
+  if (conversationHistory.length < 2) return; // need at least one complete exchange
   const theorist = theoristNameHe(activeTheorists[0]);
   const turns = [];
   for (let i = 0; i + 1 < conversationHistory.length; i += 2) {

@@ -42,13 +42,19 @@ export async function POST(req: NextRequest) {
     ],
   });
 
-  const raw = res.content[0]?.type === 'text' ? res.content[0].text : '{}';
+  const raw = res.content[0]?.type === 'text' ? res.content[0].text : '';
 
+  // The model sometimes emits prose before or after the JSON object.
+  // Extract the first top-level {...} block to handle that gracefully.
   let report: Record<string, unknown> = {};
+  const jsonMatch = raw.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    return NextResponse.json({ error: 'parse_failed', raw }, { status: 500 });
+  }
   try {
-    report = JSON.parse(raw);
+    report = JSON.parse(jsonMatch[0]);
   } catch {
-    // אם לא JSON תקין — החזר שגיאה עם הטקסט הגולמי לדיבאג
+    // JSON is present but malformed — return with raw for debugging
     return NextResponse.json({ error: 'parse_failed', raw }, { status: 500 });
   }
 
