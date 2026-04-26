@@ -5357,7 +5357,7 @@ async function runSupervisionPanel() {
             <div style="font-size:13px;font-weight:600;color:#b91c1c;margin-bottom:6px;">⚠️ הפיקוח לא הצליח להיווצר</div>
             <div style="font-size:12px;color:#7f1d1d;line-height:1.7;">
               ${report.error === 'parse_failed'
-                ? 'המודל לא החזיר JSON תקין. זה קורה לעיתים עם שיחות קצרות מאוד — נסה עם לפחות 2–3 תורות.'
+                ? 'המודל לא החזיר תשובה תקינה. נסה שוב — אם השגיאה חוזרת, נסה להריץ הפיקוח מחדש.'
                 : `שגיאה: ${report.error}`}
             </div>
             ${report.raw ? `<details style="margin-top:8px;"><summary style="font-size:11px;color:#aaa;cursor:pointer;">תגובה גולמית</summary><pre style="font-size:10px;color:#888;white-space:pre-wrap;margin-top:4px;">${report.raw.slice(0,400)}</pre></details>` : ''}
@@ -5564,7 +5564,7 @@ async function requestSupervision() {
       errDiv.innerHTML = `<strong style="color:#b91c1c;">⚠️ הפיקוח לא הצליח</strong><br>
         <span style="color:#7f1d1d;font-size:12px;">
           ${report.error === 'parse_failed'
-            ? 'המודל לא החזיר JSON תקין. נסה עם שיחה ארוכה יותר (לפחות 2–3 תורות).'
+            ? 'המודל לא החזיר תשובה תקינה. נסה שוב — אם השגיאה חוזרת, נסה להריץ הפיקוח מחדש.'
             : report.error}
         </span>`;
       chat.appendChild(errDiv);

@@ -6,6 +6,15 @@ import { SUPERVISION_SYSTEM_PROMPT, SUPERVISION_USER_TEMPLATE } from '@/lib/supe
 // body: { transcript: string, theorist: string }
 // מחזיר דוח פיקוח קליני מובנה
 
+// Keep only the last N exchanges from a transcript to stay within token limits.
+// Each exchange is a "[תור N]\nמטופל: ...\nמטפל: ..." block.
+function truncateTranscript(transcript: string, maxExchanges: number): string {
+  const blocks = transcript.split(/\n\n(?=\[תור )/).filter(Boolean);
+  if (blocks.length <= maxExchanges) return transcript;
+  const kept = blocks.slice(-maxExchanges);
+  return `[...${blocks.length - maxExchanges} תורות קודמים הושמטו לקריאות]\n\n` + kept.join('\n\n');
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const { transcript, theorist } = body;
@@ -16,14 +25,19 @@ export async function POST(req: NextRequest) {
 
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+  // Truncate very long transcripts to the last 8 exchanges to avoid token overflow.
+  // Clinical supervision does not need the full history — the last 8 turns contain
+  // the freshest material and are sufficient for a meaningful report.
+  const truncatedTranscript = truncateTranscript(transcript, 8);
+
   const res = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
-    max_tokens: 2000,
+    max_tokens: 3000,
     system: SUPERVISION_SYSTEM_PROMPT,
     messages: [
       {
         role: 'user',
-        content: SUPERVISION_USER_TEMPLATE(transcript, theorist || 'לא צוין'),
+        content: SUPERVISION_USER_TEMPLATE(truncatedTranscript, theorist || 'לא צוין'),
       },
     ],
   });
