@@ -3,98 +3,102 @@ import { NextRequest, NextResponse } from 'next/server';
 import { THEORIST_VOICE } from '@/lib/theorist-voices';
 import {
   PERSONAS,
-  buildUserSimSystem,
-  buildUserFeedbackSystem,
-  buildTurnContext,
+  buildUXSimSystem,
+  buildConvSimSystem,
+  buildUXFeedbackSystem,
+  buildConvContext,
 } from '@/lib/user-feedback-prompt';
 
 // POST /api/user-feedback
-// body: { personaId: string, theorist: string, turns?: number }
-// מריץ שיחה מדומה בין פרסונה לבין הסוכן, ואז מחזיר פידבק חווייתי
+// body: { personaId, theorist, turns? }
+//
+// שלב 1: הסוכן מדמה ניווט בממשק (stream-of-consciousness)
+// שלב 2: שיחה קצרה עם הסוכן הפסיכואנליטי
+// שלב 3: פידבק UX ספציפי — כפתורים, פלואו, חיכוך, מה חסר
 
-const DEFAULT_TURNS = 5;
-const MAX_TURNS = 8;
+const CONV_TURNS = 3; // שיחה קצרה — מספיקה כדי לקבל טעימה
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { personaId = 'michal', theorist = 'klein', turns: rawTurns } = body;
-  const turns = Math.min(Number(rawTurns) || DEFAULT_TURNS, MAX_TURNS);
+  const { personaId = 'michal', theorist = 'klein' } = body;
 
   const persona = PERSONAS[personaId];
-  if (!persona) {
-    return NextResponse.json({ error: `Unknown persona: ${personaId}` }, { status: 400 });
-  }
+  if (!persona) return NextResponse.json({ error: `Unknown persona: ${personaId}` }, { status: 400 });
 
   const therapistSystem = THEORIST_VOICE[theorist];
-  if (!therapistSystem) {
-    return NextResponse.json({ error: `Unknown theorist: ${theorist}` }, { status: 400 });
-  }
+  if (!therapistSystem) return NextResponse.json({ error: `Unknown theorist: ${theorist}` }, { status: 400 });
 
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-  // היסטוריה נפרדת לכל צד
+  // ─── שלב 1: סימולציה של ניווט בממשק ─────────────────────────────────────
+  const uxNavRes = await anthropic.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 900,
+    system: buildUXSimSystem(persona),
+    messages: [
+      {
+        role: 'user',
+        content: `פתחת את האתר. כתוב/י יומן ניווט — מה עשית, מה מצאת, מה לא מצאת. ספציפי. גוף ראשון. עברית.`,
+      },
+    ],
+  });
+
+  const uxNavLog = uxNavRes.content[0]?.type === 'text' ? uxNavRes.content[0].text : '';
+
+  // ─── שלב 2: שיחה קצרה עם הסוכן ──────────────────────────────────────────
   const therapistHistory: { role: 'user' | 'assistant'; content: string }[] = [];
   const transcript: { speaker: 'user' | 'therapist'; text: string }[] = [];
 
-  // ─── לולאת שיחה ──────────────────────────────────────────────
-  for (let i = 0; i < turns; i++) {
-    // תור המשתמש המדומה
-    const turnContext = buildTurnContext(persona, transcript, i === 0);
+  for (let i = 0; i < CONV_TURNS; i++) {
+    // הודעת משתמש
+    const turnContext = buildConvContext(persona, transcript, i === 0);
 
-    const userSimRes = await anthropic.messages.create({
+    const userMsgRes = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 350,
-      system: buildUserSimSystem(persona),
-      messages: [
-        // להלן: ההיסטוריה הפנימית של הסוכן-משתמש (רק user/assistant של הסים עצמו)
-        // פה אנחנו לא שומרים היסטוריה — כל תור מקבל את כל השיחה כהקשר בתוך ה-turnContext
-        { role: 'user', content: turnContext },
-      ],
+      max_tokens: 280,
+      system: buildConvSimSystem(persona),
+      messages: [{ role: 'user', content: turnContext }],
     });
 
-    const userMsg =
-      userSimRes.content[0]?.type === 'text' ? userSimRes.content[0].text.trim() : '';
+    const userMsg = userMsgRes.content[0]?.type === 'text' ? userMsgRes.content[0].text.trim() : '';
     if (!userMsg) break;
 
     transcript.push({ speaker: 'user', text: userMsg });
     therapistHistory.push({ role: 'user', content: userMsg });
 
-    // תור המטפל (הסוכן הפסיכואנליטי)
+    // תגובת המטפל
     const therapistRes = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 600,
+      max_tokens: 500,
       system: therapistSystem,
       messages: therapistHistory,
     });
 
-    const therapistMsg =
-      therapistRes.content[0]?.type === 'text' ? therapistRes.content[0].text.trim() : '';
+    const therapistMsg = therapistRes.content[0]?.type === 'text' ? therapistRes.content[0].text.trim() : '';
     if (!therapistMsg) break;
 
     transcript.push({ speaker: 'therapist', text: therapistMsg });
     therapistHistory.push({ role: 'assistant', content: therapistMsg });
   }
 
-  // ─── פידבק ──────────────────────────────────────────────────
-  const transcriptForFeedback = transcript
+  // ─── שלב 3: פידבק UX ─────────────────────────────────────────────────────
+  const transcriptStr = transcript
     .map(t => `${t.speaker === 'user' ? persona.name : 'הסוכן'}: ${t.text}`)
     .join('\n\n');
 
   const feedbackRes = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 1200,
-    system: buildUserFeedbackSystem(persona),
+    system: buildUXFeedbackSystem(persona),
     messages: [
       {
         role: 'user',
-        content: `[השיחה שהייתה לך עם הסוכן]\n\n${transcriptForFeedback}\n\n---\nכתוב/י פידבק אישי. JSON בלבד.`,
+        content: `[יומן הניווט שלך בממשק]\n${uxNavLog}\n\n[השיחה שניהלת]\n${transcriptStr}\n\n---\nכתוב/י פידבק UX. JSON בלבד.`,
       },
     ],
   });
 
-  const raw =
-    feedbackRes.content[0]?.type === 'text' ? feedbackRes.content[0].text : '';
-
+  const raw = feedbackRes.content[0]?.type === 'text' ? feedbackRes.content[0].text : '';
   const jsonMatch = raw.match(/\{[\s\S]*\}/);
   let feedback: Record<string, unknown> = {};
   try {
@@ -107,7 +111,7 @@ export async function POST(req: NextRequest) {
     persona: personaId,
     personaName: persona.name,
     theorist,
-    turns: transcript.length / 2,
+    uxNavLog,
     transcript,
     feedback,
   });
