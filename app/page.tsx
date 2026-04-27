@@ -349,6 +349,10 @@ export default function Home() {
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◌</span>
               <span className="sb-label">אנונימיזציה</span>
             </div>
+            <div className="sb-item" onClick={() => (window as any).openUserFeedback()}>
+              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◈</span>
+              <span className="sb-label">פידבק משתמש</span>
+            </div>
           </div>
 
           {/* Theorists section */}

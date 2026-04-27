@@ -6359,3 +6359,255 @@ async function openPatientReflection() {
 
 window.openPatientReflection = openPatientReflection;
 window.updateReflectionBtn   = updateReflectionBtn;
+
+// ============================================================
+// User Feedback Agent — משתמש מדומה נותן פידבק חווייתי
+// ============================================================
+
+const USER_FEEDBACK_PERSONAS = {
+  michal: { label: 'מיכל — מטופלת, 33, 2.5 שנות טיפול' },
+};
+
+const USER_FEEDBACK_THEORISTS = [
+  ['freud',    'פרויד'],
+  ['klein',    'קליין'],
+  ['winnicott','ויניקוט'],
+  ['ogden',    'אוגדן'],
+  ['loewald',  'לוואלד'],
+  ['bion',     'ביון'],
+  ['kohut',    'קוהוט'],
+  ['heimann',  'היימן'],
+];
+
+function buildFeedbackTranscriptTab(transcript, personaName) {
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
+
+  transcript.forEach(turn => {
+    const isUser = turn.speaker === 'user';
+    const bubble = document.createElement('div');
+    bubble.style.cssText = [
+      `padding:10px 14px;border-radius:10px;font-size:12.5px;line-height:1.75;max-width:85%;direction:rtl;`,
+      isUser
+        ? `align-self:flex-end;background:#f0ebe8;color:#3d2e28;`
+        : `align-self:flex-start;background:#f7f2f9;color:#2a1a30;border:1px solid #e0d4e8;`
+    ].join('');
+    const label = document.createElement('div');
+    label.style.cssText = `font-size:9px;color:${isUser ? '#a8948e' : '#8a6a95'};font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px;`;
+    label.textContent = isUser ? personaName : 'הסוכן';
+    bubble.appendChild(label);
+    const text = document.createElement('div');
+    text.textContent = turn.text;
+    bubble.appendChild(text);
+    wrap.appendChild(bubble);
+  });
+
+  return wrap;
+}
+
+function buildFeedbackReportTab(feedback, personaName) {
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:12px;';
+
+  const sections = [
+    {
+      key: 'feeling_after',
+      label: 'הרגשה אחרי',
+      color: '#c4786a', bg: '#fdf8f5',
+    },
+    {
+      key: 'what_worked',
+      label: 'מה עבד',
+      color: '#6ab87a', bg: '#f5fdf8',
+    },
+    {
+      key: 'what_missed',
+      label: 'מה פספסתם',
+      color: '#6a85c4', bg: '#f5f8fd',
+    },
+    {
+      key: 'would_bring_to_therapy',
+      label: 'מה תביאי לטיפול',
+      color: '#8a6a00', bg: '#fdfaf2',
+      border: '#e8d88a',
+    },
+    {
+      key: 'one_request',
+      label: 'בקשה אחת',
+      color: '#7a5080', bg: 'rgba(58,37,64,0.05)',
+    },
+  ];
+
+  sections.forEach(s => {
+    const val = feedback[s.key];
+    if (!val) return;
+    const block = document.createElement('div');
+    block.style.cssText = `padding:11px 14px;background:${s.bg};border-right:3px solid ${s.color};border-radius:0 8px 8px 0;${s.border ? `border:1px solid ${s.border};` : ''}`;
+    block.innerHTML = `<div style="font-size:9px;color:${s.color};font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:5px;">${s.label}</div>
+      <div style="font-size:12.5px;color:#2a1a30;line-height:1.75;">${val}</div>`;
+    wrap.appendChild(block);
+  });
+
+  // Friction moment
+  if (feedback.friction_moment?.quote) {
+    const block = document.createElement('div');
+    block.style.cssText = 'padding:11px 14px;background:#fff5f5;border-right:3px solid #c45050;border-radius:0 8px 8px 0;';
+    block.innerHTML = `<div style="font-size:9px;color:#a03030;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:5px;">רגע חיכוך</div>
+      <div style="font-size:11.5px;color:#6a2020;font-style:italic;margin-bottom:6px;line-height:1.6;">"${feedback.friction_moment.quote}"</div>
+      <div style="font-size:12px;color:#3a1010;line-height:1.7;">${feedback.friction_moment.what_felt_off}</div>`;
+    wrap.appendChild(block);
+  }
+
+  // Connection moment
+  if (feedback.connection_moment?.quote) {
+    const block = document.createElement('div');
+    block.style.cssText = 'padding:11px 14px;background:#f5fdf8;border-right:3px solid #5aaa6a;border-radius:0 8px 8px 0;';
+    block.innerHTML = `<div style="font-size:9px;color:#3a8a4a;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:5px;">רגע מגע</div>
+      <div style="font-size:11.5px;color:#2a5a30;font-style:italic;margin-bottom:6px;line-height:1.6;">"${feedback.connection_moment.quote}"</div>
+      <div style="font-size:12px;color:#1a3a20;line-height:1.7;">${feedback.connection_moment.why_it_landed}</div>`;
+    wrap.appendChild(block);
+  }
+
+  return wrap;
+}
+
+async function openUserFeedback() {
+  const existing = document.getElementById('user-feedback-modal');
+  if (existing) { existing.remove(); return; }
+
+  const overlay = document.createElement('div');
+  overlay.id = 'user-feedback-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(45,36,32,0.28);backdrop-filter:blur(4px);direction:rtl;';
+
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:16px;width:660px;max-width:94vw;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.14);overflow:hidden;">
+      <!-- header -->
+      <div style="background:linear-gradient(135deg,#2a1a30,#4a2a5a);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+        <span style="color:rgba(255,255,255,0.9);font-size:14px;">◈ פידבק משתמש מדומה</span>
+        <button id="uf-close" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;line-height:1;">×</button>
+      </div>
+
+      <!-- controls -->
+      <div id="uf-controls" style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;flex-shrink:0;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:0.04em;">פרסונה</label>
+          <select id="uf-persona" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--surface);color:var(--text);">
+            ${Object.entries(USER_FEEDBACK_PERSONAS).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('')}
+          </select>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:0.04em;">תיאורטיקן</label>
+          <select id="uf-theorist" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--surface);color:var(--text);">
+            ${USER_FEEDBACK_THEORISTS.map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}
+          </select>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:0.04em;">מספר תורות</label>
+          <select id="uf-turns" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--surface);color:var(--text);">
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5" selected>5</option>
+            <option value="6">6</option>
+          </select>
+        </div>
+        <button id="uf-run" style="padding:8px 20px;background:#4a2a5a;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;font-family:var(--font-rubik),sans-serif;margin-right:auto;">הרץ שיחה</button>
+      </div>
+
+      <!-- result area -->
+      <div style="flex:1;overflow-y:auto;">
+        <div id="uf-body" style="padding:20px;">
+          <div style="color:var(--muted);font-size:12px;text-align:center;padding:30px 0;">
+            בחר/י פרסונה ותיאורטיקן והרץ/י שיחה.
+            <br><br>
+            <span style="font-size:11px;opacity:0.7;">השיחה מדומה — ${Object.entries(USER_FEEDBACK_PERSONAS)[0]?.[1]?.label} מנהלת שיחה אמיתית עם הסוכן, ואז נותנת פידבק ממה שחוותה. לא QA — חוויה.</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  document.getElementById('uf-close').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+  document.getElementById('uf-run').addEventListener('click', async () => {
+    const personaId = document.getElementById('uf-persona').value;
+    const theorist  = document.getElementById('uf-theorist').value;
+    const turns     = parseInt(document.getElementById('uf-turns').value) || 5;
+    const body      = document.getElementById('uf-body');
+    const btn       = document.getElementById('uf-run');
+
+    btn.disabled = true;
+    btn.textContent = 'מריץ שיחה...';
+    body.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:13px;">
+      <div style="font-size:24px;margin-bottom:12px;animation:spin 1s linear infinite;display:inline-block;">◈</div><br>
+      מנהל שיחה מדומה · ${turns} תורות<br>
+      <span style="font-size:11px;opacity:0.6;">יכול לקחת עד דקה</span>
+    </div>
+    <style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>`;
+
+    try {
+      const res  = await fetch('/api/user-feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ personaId, theorist, turns }),
+      });
+      const data = await res.json();
+
+      if (data.error) {
+        body.innerHTML = `<div style="color:#c00;padding:20px;font-size:13px;text-align:center;">${data.error}</div>`;
+        return;
+      }
+
+      // Render with tabs
+      body.innerHTML = '';
+
+      // Meta line
+      const meta = document.createElement('div');
+      meta.style.cssText = 'font-size:11px;color:var(--muted);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);';
+      meta.textContent = `${data.personaName} · ${document.getElementById('uf-theorist').options[document.getElementById('uf-theorist').selectedIndex].text} · ${data.transcript.length / 2} תורות`;
+      body.appendChild(meta);
+
+      // Tabs
+      const tabs = document.createElement('div');
+      tabs.style.cssText = 'display:flex;gap:6px;margin-bottom:16px;';
+      const tabChat  = document.createElement('button');
+      const tabFeed  = document.createElement('button');
+      [tabChat, tabFeed].forEach((t, i) => {
+        t.style.cssText = `padding:5px 16px;border-radius:20px;font-size:12px;cursor:pointer;font-family:var(--font-rubik),sans-serif;border:1px solid var(--border);transition:all 0.15s;`;
+        t.textContent = i === 0 ? 'שיחה' : 'פידבק';
+      });
+      tabs.appendChild(tabFeed);
+      tabs.appendChild(tabChat);
+      body.appendChild(tabs);
+
+      const contentArea = document.createElement('div');
+      body.appendChild(contentArea);
+
+      const chatContent     = buildFeedbackTranscriptTab(data.transcript, data.personaName);
+      const feedbackContent = buildFeedbackReportTab(data.feedback, data.personaName);
+
+      function activateTab(tab) {
+        tabChat.style.background = tab === 'chat' ? 'var(--accent-soft)' : 'none';
+        tabChat.style.borderColor = tab === 'chat' ? 'var(--accent)' : 'var(--border)';
+        tabChat.style.color = tab === 'chat' ? 'var(--accent)' : 'var(--muted)';
+        tabFeed.style.background = tab === 'feed' ? '#4a2a5a' : 'none';
+        tabFeed.style.borderColor = tab === 'feed' ? '#4a2a5a' : 'var(--border)';
+        tabFeed.style.color = tab === 'feed' ? '#fff' : 'var(--muted)';
+        contentArea.innerHTML = '';
+        contentArea.appendChild(tab === 'chat' ? chatContent : feedbackContent);
+      }
+
+      tabChat.addEventListener('click', () => activateTab('chat'));
+      tabFeed.addEventListener('click', () => activateTab('feed'));
+      activateTab('feed'); // מתחיל עם הפידבק
+
+    } catch (e) {
+      body.innerHTML = `<div style="color:#c00;padding:20px;font-size:13px;text-align:center;">שגיאת רשת — ${e.message}</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'הרץ שיחה';
+    }
+  });
+}
+
+window.openUserFeedback = openUserFeedback;
