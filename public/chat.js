@@ -4265,6 +4265,7 @@ async function sendMessage() {
 
     conversationHistory.push({ role: 'assistant', content: reply });
     saveConversation();
+    updateReflectionBtn();
 
     // Build source attribution — never in clinical mode
     let sourceAttribution = '';
@@ -4626,6 +4627,7 @@ function restoreConversation(memIndex) {
   conversationHistory = [{ role: 'user', content: mem.q || mem.summary },
                          { role: 'assistant', content: mem.summary }];
   chat.scrollTop = chat.scrollHeight;
+  updateReflectionBtn();
 }
 
 function sbLangToggle() {
@@ -4812,7 +4814,10 @@ function loadSettingsForm() {
     }
   });
   // Load persona
-  if (prefs.persona) updatePersonaButtons(prefs.persona);
+  if (prefs.persona) {
+    updatePersonaButtons(prefs.persona);
+    applyPersona(prefs.persona);
+  }
   // Load timer prefs
   const timerCheckbox = document.getElementById('pref-timer-enabled');
   if (timerCheckbox) {
@@ -4871,6 +4876,7 @@ function updateSidebarMemories() {
 // Init
 conversationHistory = loadConversation();
 updateMemoryCount();
+updateReflectionBtn();
 tryInitSupabase();
 window.signIn = signIn;
 window.signUp = signUp;
@@ -5148,6 +5154,7 @@ async function handleSilence() {
     const attribution = activeTheorists.length === 1 ? (_shortNames[activeTheorists[0]] || null) : null;
     appendMessage('assistant', reply, attribution);
     saveConversation();
+    updateReflectionBtn();
   } catch (e) {
     removeThinking();
     console.warn('Silence response failed:', e.message);
@@ -5186,11 +5193,20 @@ function selectPersona(type) {
   updatePersonaButtons(type);
 }
 
+const BIO_PLACEHOLDER = {
+  therapist: 'למשל: אני מטפלת בהכשרה, מתעניינת בקשר בין אמנות לתיאוריה...',
+  student:   'למשל: סטודנט לפסיכולוגיה, קורא קליין בפעם הראשונה...',
+  patient:   'למשל: אני בטיפול כבר שנה, עובדת על קשר עם הורים...',
+};
+
 function applyPersona(type) {
   if (!type || !PERSONA_CONFIG[type]) return;
   const config = PERSONA_CONFIG[type];
   const input = document.getElementById('user-input');
   if (input) input.placeholder = config.placeholder;
+  // Update bio field placeholder in settings modal if open
+  const bioEl = document.getElementById('pref-context');
+  if (bioEl && BIO_PLACEHOLDER[type]) bioEl.placeholder = BIO_PLACEHOLDER[type];
 }
 
 function updatePersonaButtons(type) {
@@ -6175,3 +6191,171 @@ async function runRoundtable(overlay, patientMessage, initialComparisons) {
 
 // Init silence detection after DOM ready
 initSilenceDetection();
+
+// ============================================================
+// PATIENT REFLECTION — "מה לקחתי מהשיחה"
+// ============================================================
+
+function buildPatientReflectionTranscript() {
+  const turns = [];
+  for (let i = 0; i + 1 < conversationHistory.length; i += 2) {
+    turns.push(`[תור ${Math.floor(i / 2) + 1}]\nאני: ${conversationHistory[i].content}\nסוכן: ${conversationHistory[i + 1].content}`);
+  }
+  return turns.join('\n\n');
+}
+
+function updateReflectionBtn() {
+  const btn = document.getElementById('patient-reflection-btn');
+  if (!btn) return;
+  const show = conversationHistory.length >= 2;
+  btn.style.display = show ? 'flex' : 'none';
+}
+
+function buildReflectionCard(r) {
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'font-size:13px;color:#333;line-height:1.9;direction:rtl;';
+
+  const forTherapistHTML = (r.for_therapist || []).map(t =>
+    `<li style="margin-bottom:6px;">${t}</li>`
+  ).join('');
+
+  wrap.innerHTML = `
+    ${r.what_came_up ? `<div style="margin-bottom:14px;padding:12px 16px;background:#fdf8f5;border-right:3px solid #c4786a;border-radius:0 8px 8px 0;">
+      <div style="font-size:10px;color:#b06050;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">מה עלה בי</div>
+      <div style="font-size:13px;color:#3d2e28;line-height:1.8;">${r.what_came_up}</div>
+    </div>` : ''}
+    ${r.what_surprised_me ? `<div style="margin-bottom:14px;padding:12px 16px;background:#f5f8fd;border-right:3px solid #6a85c4;border-radius:0 8px 8px 0;">
+      <div style="font-size:10px;color:#4a6090;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">מה הפתיע אותי</div>
+      <div style="font-size:13px;color:#2a3248;line-height:1.8;">${r.what_surprised_me}</div>
+    </div>` : ''}
+    ${r.what_stayed ? `<div style="margin-bottom:14px;padding:12px 16px;background:#f5fdf8;border-right:3px solid #6ab87a;border-radius:0 8px 8px 0;">
+      <div style="font-size:10px;color:#3a7a4a;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">מה נשאר איתי</div>
+      <div style="font-size:13px;color:#2a3d2e;line-height:1.8;">${r.what_stayed}</div>
+    </div>` : ''}
+    ${forTherapistHTML ? `<div style="margin-bottom:14px;padding:12px 16px;background:#fdfaf2;border:1px solid #e8d88a;border-radius:8px;">
+      <div style="font-size:10px;color:#8a6a00;font-weight:700;letter-spacing:0.04em;margin-bottom:8px;text-transform:uppercase;">אני רוצה להביא לטיפול</div>
+      <ul style="margin:0;padding-right:18px;font-size:13px;color:#4a3c00;line-height:1.8;">${forTherapistHTML}</ul>
+    </div>` : ''}
+    ${r.one_question ? `<div style="padding:12px 16px;background:rgba(58,37,64,0.05);border-radius:8px;border-right:3px solid #7a5080;">
+      <div style="font-size:10px;color:#5a3060;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">שאלה שנשארתי איתה</div>
+      <div style="font-size:13px;color:#3a2040;line-height:1.8;font-style:italic;">${r.one_question}</div>
+    </div>` : ''}
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #ede4e0;text-align:left;">
+      <button id="pr-download-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
+        ↓ שמור את הרפלקציה
+      </button>
+    </div>`;
+
+  wrap.querySelector('#pr-download-btn').addEventListener('click', () =>
+    downloadReflection(r));
+
+  return wrap;
+}
+
+function downloadReflection(r) {
+  const dateStr = new Date().toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
+  const forTherapistHTML = (r.for_therapist || []).map(t => `<li>${t}</li>`).join('');
+
+  const html = `<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<title>מה לקחתי מהשיחה</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; color: #222; padding: 48px; max-width: 620px; margin: 0 auto; direction: rtl; line-height: 1.9; }
+  h1 { font-size: 22px; color: #3a2540; margin-bottom: 4px; font-weight: 400; }
+  .date { font-size: 12px; color: #aaa; margin-bottom: 32px; }
+  .block { margin-bottom: 20px; padding: 14px 18px; border-radius: 8px; }
+  .block-label { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; }
+  .block-text { font-size: 13px; line-height: 1.9; }
+  .warm  { background:#fdf8f5; border-right:3px solid #c4786a; }
+  .warm .block-label { color:#b06050; }
+  .cool  { background:#f5f8fd; border-right:3px solid #6a85c4; }
+  .cool .block-label { color:#4a6090; }
+  .green { background:#f5fdf8; border-right:3px solid #6ab87a; }
+  .green .block-label { color:#3a7a4a; }
+  .gold  { background:#fdfaf2; border:1px solid #e8d88a; }
+  .gold .block-label { color:#8a6a00; }
+  .purple { background:rgba(58,37,64,0.05); border-right:3px solid #7a5080; }
+  .purple .block-label { color:#5a3060; }
+  ul { padding-right: 20px; }
+  li { margin-bottom: 6px; }
+  .footer { margin-top: 40px; font-size: 10px; color: #ccc; border-top: 1px solid #eee; padding-top: 12px; }
+  @media print { body { padding: 24px; } }
+</style>
+</head>
+<body>
+  <h1>מה לקחתי מהשיחה</h1>
+  <div class="date">${dateStr}</div>
+  ${r.what_came_up ? `<div class="block warm"><div class="block-label">מה עלה בי</div><div class="block-text">${r.what_came_up}</div></div>` : ''}
+  ${r.what_surprised_me ? `<div class="block cool"><div class="block-label">מה הפתיע אותי</div><div class="block-text">${r.what_surprised_me}</div></div>` : ''}
+  ${r.what_stayed ? `<div class="block green"><div class="block-label">מה נשאר איתי</div><div class="block-text">${r.what_stayed}</div></div>` : ''}
+  ${forTherapistHTML ? `<div class="block gold"><div class="block-label">אני רוצה להביא לטיפול</div><ul>${forTherapistHTML}</ul></div>` : ''}
+  ${r.one_question ? `<div class="block purple"><div class="block-label">שאלה שנשארתי איתה</div><div class="block-text" style="font-style:italic;">${r.one_question}</div></div>` : ''}
+  <div class="footer">נוצר על ידי מרחב הפסיכואנליזה</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `רפלקציה-${new Date().toISOString().slice(0,10)}.html`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
+
+async function openPatientReflection() {
+  const transcript = buildPatientReflectionTranscript();
+  if (!transcript) return;
+
+  const existing = document.getElementById('patient-reflection-modal');
+  if (existing) { existing.remove(); return; }
+
+  const overlay = document.createElement('div');
+  overlay.id = 'patient-reflection-modal';
+  overlay.style.cssText = [
+    'position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;',
+    'background:rgba(45,36,32,0.28);backdrop-filter:blur(4px);direction:rtl;'
+  ].join('');
+
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:16px;width:560px;max-width:92vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.14);direction:rtl;">
+      <div style="background:linear-gradient(135deg,#3d2e28,#5a3a30);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:16px 16px 0 0;position:sticky;top:0;">
+        <span style="color:rgba(255,255,255,0.9);font-size:14px;letter-spacing:0.01em;">◉ מה לקחתי מהשיחה</span>
+        <button id="pr-close-btn" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;line-height:1;">×</button>
+      </div>
+      <div id="patient-reflection-results" style="padding:20px;">
+        <div style="text-align:center;color:#aaa;font-size:13px;padding:30px 0;">מזקק את השיחה...</div>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  document.getElementById('pr-close-btn').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+  fetch('/api/patient-reflection', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ transcript })
+  })
+    .then(r => r.json())
+    .then(data => {
+      const resultsEl = document.getElementById('patient-reflection-results');
+      if (!resultsEl) return;
+      resultsEl.innerHTML = '';
+      if (data.error) {
+        resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">משהו השתבש — נסה שוב.</div>`;
+        return;
+      }
+      resultsEl.appendChild(buildReflectionCard(data));
+    })
+    .catch(() => {
+      const resultsEl = document.getElementById('patient-reflection-results');
+      if (resultsEl) resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">שגיאת רשת — נסה שוב.</div>`;
+    });
+}
+
+window.openPatientReflection = openPatientReflection;
+window.updateReflectionBtn   = updateReflectionBtn;
