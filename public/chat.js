@@ -499,20 +499,22 @@ function resetIntake() {
 }
 
 async function signIn() {
-  const email = document.getElementById('auth-email').value.trim();
-  const password = document.getElementById('auth-password').value;
   const errEl = document.getElementById('auth-error');
   errEl.style.color = '#c06060'; errEl.style.display = 'none';
+  if (!supabaseClient) { errEl.textContent = 'המערכת עדיין נטענת — המתיני רגע ונסי שוב'; errEl.style.display = 'block'; return; }
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
   if (!email || !password) { errEl.textContent = 'יש למלא מייל וסיסמה'; errEl.style.display = 'block'; return; }
   const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
 }
 
 async function signUp() {
-  const email = document.getElementById('auth-email').value.trim();
-  const password = document.getElementById('auth-password').value;
   const errEl = document.getElementById('auth-error');
   errEl.style.color = '#c06060'; errEl.style.display = 'none';
+  if (!supabaseClient) { errEl.textContent = 'המערכת עדיין נטענת — המתיני רגע ונסי שוב'; errEl.style.display = 'block'; return; }
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
   if (!email || !password) { errEl.textContent = 'יש למלא מייל וסיסמה'; errEl.style.display = 'block'; return; }
   if (password.length < 6) { errEl.textContent = 'סיסמה חייבת להכיל לפחות 6 תווים'; errEl.style.display = 'block'; return; }
   const { data, error } = await supabaseClient.auth.signUp({ email, password });
@@ -522,9 +524,10 @@ async function signUp() {
 }
 
 async function resetPassword() {
-  const email = document.getElementById('auth-email').value.trim();
   const errEl = document.getElementById('auth-error');
   errEl.style.color = '#c06060'; errEl.style.display = 'none';
+  if (!supabaseClient) { errEl.textContent = 'המערכת עדיין נטענת — המתיני רגע ונסי שוב'; errEl.style.display = 'block'; return; }
+  const email = document.getElementById('auth-email').value.trim();
   if (!email) { errEl.textContent = 'הכניסי את כתובת המייל שלך ולחצי שכחתי סיסמה'; errEl.style.display = 'block'; return; }
   const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin
