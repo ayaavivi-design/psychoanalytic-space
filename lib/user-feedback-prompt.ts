@@ -122,7 +122,12 @@ Note when something works well or surprises you positively.
 
 Write in Hebrew, first person, as a running log of what you're doing.
 NOT a review. A stream-of-consciousness journal of using the interface.
-7-10 short paragraphs.`;
+7-10 short paragraphs.
+
+CRITICAL — GENDER: ${persona.name} is a woman. Every verb and adjective MUST be feminine throughout.
+CORRECT: "נכנסתי", "ראיתי", "לחצתי", "מצאתי", "התבלבלתי", "הייתי", "ניסיתי", "חיפשתי"
+WRONG:   "נכנסתי" ✓ but "נכנס" ✗, "ראיתי" ✓ but "ראה" ✗
+SELF-CHECK: Scan every verb before writing. One masculine form = rewrite the paragraph.`;
 
 // ─── פרומפט שלב 2: שיחה עם הסוכן (קצר) ─────────────────────────────────────
 
@@ -133,7 +138,12 @@ STYLE: ${persona.sim_instructions}
 
 You are NOT the therapist. You are the human typing in a chat.
 Write entirely in Hebrew. 2-4 sentences per message. Stay in character.
-Do NOT use clinical jargon. Do NOT be perfectly articulate.`;
+Do NOT use clinical jargon. Do NOT be perfectly articulate.
+
+CRITICAL — GENDER: ${persona.name} is a woman. Every verb and adjective MUST be feminine.
+CORRECT: "יודעת", "חושבת", "לובשת", "מרגישה", "מנסה", "מגיעה", "אומרת", "שאלתי", "ניסחתי"
+WRONG:   "יודע",  "חושב",  "לובש",  "מרגיש",  "מנסה" (same but check context), "מגיע", "אומר"
+SELF-CHECK: Before writing each message, verify every conjugated verb is feminine. One masculine form = rewrite.`;
 
 // ─── פרומפט שלב 3: פידבק UX אחרי הסשן ──────────────────────────────────────
 
