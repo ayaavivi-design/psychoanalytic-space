@@ -546,6 +546,18 @@ async function signOut() {
   document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
 }
 
+const ADMIN_EMAIL = 'ayaavivi@gmail.com';
+
+function applyAdminVisibility(email) {
+  const isAdmin = email === ADMIN_EMAIL;
+  window.isAdmin = isAdmin;
+  // מסתיר/מציג את כל אלמנטי admin-only
+  // (patient-reflection-btn מנוהל בנפרד ע"י updateReflectionBtn — לא נוגעים בו כאן)
+  document.querySelectorAll('.admin-only:not(#patient-reflection-btn)').forEach(el => {
+    el.style.display = isAdmin ? '' : 'none';
+  });
+}
+
 function loadUserProfile(user) {
   const email = user.email || '';
   const sbName = document.getElementById('sb-user-name');
@@ -560,6 +572,7 @@ function loadUserProfile(user) {
     if (sbName) sbName.textContent = prefs.name;
     if (sbAvatar) sbAvatar.textContent = prefs.name.charAt(0).toUpperCase();
   }
+  applyAdminVisibility(email);
 }
 // ─────────────────────────────────────────────────────────────
 
@@ -6211,7 +6224,7 @@ function buildPatientReflectionTranscript() {
 function updateReflectionBtn() {
   const btn = document.getElementById('patient-reflection-btn');
   if (!btn) return;
-  const show = conversationHistory.length >= 2;
+  const show = window.isAdmin && conversationHistory.length >= 2;
   btn.style.display = show ? 'flex' : 'none';
 }
 

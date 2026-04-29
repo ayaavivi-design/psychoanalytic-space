@@ -329,31 +329,31 @@ export default function Home() {
               <span className="sb-icon"><Download size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-pdf-label">הורד PDF</span>
             </div>
-            <div className="sb-item" onClick={() => (window as any).openSupervision()}>
+            <div className="sb-item admin-only" onClick={() => (window as any).openSupervision()}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⚲</span>
               <span className="sb-label">פיקוח קליני</span>
             </div>
-            <div className="sb-item" onClick={() => (window as any).openSessionSummary()}>
+            <div className="sb-item admin-only" onClick={() => (window as any).openSessionSummary()}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
               <span className="sb-label">סיכום סשן</span>
             </div>
-            <div id="patient-reflection-btn" className="sb-item" onClick={() => (window as any).openPatientReflection()} style={{ display: 'none' }}>
+            <div id="patient-reflection-btn" className="sb-item admin-only" onClick={() => (window as any).openPatientReflection()} style={{ display: 'none' }}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◉</span>
               <span className="sb-label">מה לקחתי מהשיחה</span>
             </div>
-            <div className="sb-item" onClick={() => (window as any).openComparison()}>
+            <div className="sb-item admin-only" onClick={() => (window as any).openComparison()}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⇌</span>
               <span className="sb-label">השוואת תיאורטיקנים</span>
             </div>
-            <div className="sb-item" onClick={() => (window as any).openAnonymizer()}>
+            <div className="sb-item admin-only" onClick={() => (window as any).openAnonymizer()}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◌</span>
               <span className="sb-label">אנונימיזציה</span>
             </div>
-            <div className="sb-item" onClick={() => (window as any).openUserFeedback()}>
+            <div className="sb-item admin-only" onClick={() => (window as any).openUserFeedback()}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◈</span>
               <span className="sb-label">פידבק משתמש</span>
             </div>
-            <div className="sb-item" onClick={() => (window as any).openBoardRoom()}>
+            <div className="sb-item admin-only" onClick={() => (window as any).openBoardRoom()}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⬡</span>
               <span className="sb-label">חדר הבורד</span>
             </div>
