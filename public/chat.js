@@ -37,6 +37,7 @@ function hideAuthScreen() {
   const el = document.getElementById('auth-screen');
   if (el) el.style.display = 'none';
   setTimeout(checkIntakeStatus, 100);
+  setTimeout(() => { initSidebarTips(); startOnboardingTour(); }, 800);
 }
 
 // ── Intake / שיחת היכרות ──────────────────────────────────────
@@ -6862,3 +6863,133 @@ async function openBoardRoom() {
 }
 
 window.openBoardRoom = openBoardRoom;
+
+// ─── Onboarding Tour ──────────────────────────────────────────────────────────
+// קורא מ-/onboarding-config.json — הסוכן כותב לקובץ, הלוגיקה לא משתנה
+
+async function startOnboardingTour() {
+  if (localStorage.getItem('onboarding-tour-done')) return;
+
+  let config;
+  try {
+    const res = await fetch('/onboarding-config.json');
+    if (!res.ok) return;
+    config = await res.json();
+  } catch { return; }
+
+  if (!config?.tour?.enabled || !config?.tour?.steps?.length) return;
+
+  const steps = config.tour.steps;
+  let currentStep = 0;
+
+  // overlay שקוף — לחיצה מחוצה לו סוגרת
+  const overlay = document.createElement('div');
+  overlay.id = 'onboarding-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:200;pointer-events:none;';
+  document.body.appendChild(overlay);
+
+  function showStep(idx) {
+    // מנקה tooltip קודם
+    const old = document.getElementById('onboarding-tip');
+    if (old) old.remove();
+    if (idx >= steps.length) { finishTour(); return; }
+
+    const step = steps[idx];
+    const target = document.querySelector(step.target);
+    if (!target) { showStep(idx + 1); return; }  // דלג אם האלמנט לא קיים
+
+    const rect = target.getBoundingClientRect();
+    const tip = document.createElement('div');
+    tip.id = 'onboarding-tip';
+    tip.style.cssText = `
+      position:fixed;z-index:201;
+      background:#fff;border-radius:12px;
+      box-shadow:0 8px 40px rgba(0,0,0,0.18),0 0 0 1px rgba(0,0,0,0.06);
+      padding:16px 18px;max-width:260px;direction:rtl;
+      pointer-events:all;
+    `;
+
+    // מיקום — ימין/שמאל/למעלה
+    const pos = step.position || 'right';
+    const GAP = 12;
+    if (pos === 'right') {
+      tip.style.top  = `${Math.min(rect.top, window.innerHeight - 180)}px`;
+      tip.style.left = `${rect.right + GAP}px`;
+    } else if (pos === 'left') {
+      tip.style.top   = `${Math.min(rect.top, window.innerHeight - 180)}px`;
+      tip.style.right = `${window.innerWidth - rect.left + GAP}px`;
+    } else if (pos === 'top') {
+      tip.style.bottom = `${window.innerHeight - rect.top + GAP}px`;
+      tip.style.left   = `${Math.max(8, rect.left - 60)}px`;
+    }
+
+    // highlight על האלמנט הממוקד
+    const hl = document.createElement('div');
+    hl.id = 'onboarding-highlight';
+    hl.style.cssText = `
+      position:fixed;z-index:199;border-radius:8px;
+      box-shadow:0 0 0 4px rgba(196,96,122,0.5),0 0 0 9999px rgba(0,0,0,0.2);
+      pointer-events:none;transition:all 0.2s;
+      top:${rect.top - 4}px;left:${rect.left - 4}px;
+      width:${rect.width + 8}px;height:${rect.height + 8}px;
+    `;
+    const oldHl = document.getElementById('onboarding-highlight');
+    if (oldHl) oldHl.remove();
+    document.body.appendChild(hl);
+
+    tip.innerHTML = `
+      <div style="font-size:10px;color:rgba(196,96,122,0.8);font-weight:700;letter-spacing:.08em;margin-bottom:6px;">
+        ${idx + 1} / ${steps.length}
+      </div>
+      <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">${step.title}</div>
+      <div style="font-size:13px;color:#555;line-height:1.6;margin-bottom:14px;">${step.text}</div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button id="ob-skip" style="background:none;border:none;color:#aaa;font-size:12px;cursor:pointer;padding:4px 8px;">דלג</button>
+        <button id="ob-next" style="background:#c4607a;border:none;color:#fff;font-size:13px;
+          cursor:pointer;padding:6px 16px;border-radius:8px;font-weight:600;">
+          ${idx === steps.length - 1 ? 'סיים ✓' : 'הבא →'}
+        </button>
+      </div>`;
+
+    document.body.appendChild(tip);
+
+    document.getElementById('ob-next').addEventListener('click', () => showStep(idx + 1));
+    document.getElementById('ob-skip').addEventListener('click', finishTour);
+  }
+
+  function finishTour() {
+    ['onboarding-tip', 'onboarding-highlight', 'onboarding-overlay'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    });
+    localStorage.setItem('onboarding-tour-done', '1');
+  }
+
+  // מתחיל אחרי דיליי קטן (ממתין לטעינת UI)
+  setTimeout(() => showStep(0), 1200);
+}
+
+window.startOnboardingTour = startOnboardingTour;
+
+// ─── Sidebar tooltips מ-onboarding-config ──────────────────────────────────
+async function initSidebarTips() {
+  try {
+    const res = await fetch('/onboarding-config.json');
+    if (!res.ok) return;
+    const config = await res.json();
+    const tips = config?.sidebar_tips;
+    if (!tips) return;
+
+    // מוסיף title attribute לכל sb-item לפי האייקון שלו
+    document.querySelectorAll('.sb-item').forEach(item => {
+      const icon = item.querySelector('.sb-icon');
+      if (!icon) return;
+      const text = icon.textContent?.trim();
+      if (text && tips[text]) {
+        item.setAttribute('title', tips[text]);
+      }
+    });
+  } catch { /* fail silently */ }
+}
+
+window.initSidebarTips = initSidebarTips;
