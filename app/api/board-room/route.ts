@@ -31,10 +31,11 @@ async function getLatestFile(folder: string): Promise<{ date: string; content: s
 }
 
 export async function GET() {
-  const [ceo, naval, ux] = await Promise.all([
+  const [ceo, naval, ux, cfo] = await Promise.all([
     getLatestFile('ceo-reports'),
     getLatestFile('board-notes'),
     getLatestFile('ux-reports'),
+    getLatestFile('cost-reports'),
   ]);
 
   // parse michal's JSON
@@ -51,8 +52,9 @@ export async function GET() {
   }
 
   return NextResponse.json({
-    ran:    ceo   ? { date: ceo.date,   content: ceo.content }                                             : null,
-    naval:  naval ? { date: naval.date, content: naval.content }                                           : null,
+    ran:    ceo   ? { date: ceo.date,   content: ceo.content }                                                : null,
+    naval:  naval ? { date: naval.date, content: naval.content }                                              : null,
     michal: ux    ? { date: ux.date,    feedback: michalFeedback, theorist: michalTheorist, mode: michalMode } : null,
+    shira:  cfo   ? { date: cfo.date,   content: cfo.content }                                                : null,
   });
 }

@@ -6767,6 +6767,52 @@ function buildMichalCard(data) {
   });
 }
 
+function buildShiraCard(data) {
+  const ACC = '#7a4a18';
+  return buildAgentCard({
+    icon: '₪', name: 'שירה', role: 'CFO · מנהלת כספים',
+    date: data?.date, accentColor: ACC,
+    emptyMsg: 'דוח עלויות ראשון יגיע בשבת הקרובה',
+    renderContent: () => {
+      if (!data?.content) return null;
+      const sec = parseMemoSections(data.content);
+      const div = document.createElement('div');
+      div.style.cssText = 'display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.6;';
+
+      // weekly cost — highlight box
+      const costKey = 'עלות שבועית משוערת';
+      if (sec[costKey]) {
+        const box = document.createElement('div');
+        box.style.cssText = `padding:10px 14px;border-radius:8px;background:${ACC}12;border:1px solid ${ACC}30;`;
+        box.innerHTML = `<div style="font-size:10px;font-weight:700;color:${ACC};letter-spacing:.06em;margin-bottom:5px;">${costKey}</div>
+          <div style="color:var(--text);font-size:12px;white-space:pre-wrap;">${sec[costKey]}</div>`;
+        div.appendChild(box);
+      }
+
+      // traffic-light status
+      const statusKey = 'סטטוס תקרות חינמיות';
+      if (sec[statusKey]) {
+        const row = document.createElement('div');
+        row.innerHTML = `<div style="font-size:10px;font-weight:700;color:${ACC};letter-spacing:.06em;margin-bottom:3px;">${statusKey}</div>
+          <div style="color:var(--text);font-size:12px;white-space:pre-wrap;">${sec[statusKey]}</div>`;
+        div.appendChild(row);
+      }
+
+      // pricing floor + recommendation
+      ['רצפת תמחור', 'דגלי סיכון', 'המלצה שבועית'].forEach(key => {
+        if (!sec[key]) return;
+        const row = document.createElement('div');
+        const isFlag = key === 'דגלי סיכון';
+        row.innerHTML = `<div style="font-size:10px;font-weight:700;color:${isFlag ? '#c04a2a' : ACC};letter-spacing:.06em;margin-bottom:3px;">${key}</div>
+          <div style="color:var(--text);line-height:1.55;">${sec[key]}</div>`;
+        div.appendChild(row);
+      });
+
+      return div.children.length ? div : null;
+    },
+  });
+}
+
 async function openBoardRoom() {
   const existing = document.getElementById('board-room-modal');
   if (existing) { existing.remove(); return; }
@@ -6807,6 +6853,7 @@ async function openBoardRoom() {
     body.innerHTML = '';
     body.appendChild(buildRanCard(data.ran));
     body.appendChild(buildNavalCard(data.naval));
+    body.appendChild(buildShiraCard(data.shira));
     body.appendChild(buildMichalCard(data.michal));
   } catch (e) {
     document.getElementById('br-body').innerHTML =
