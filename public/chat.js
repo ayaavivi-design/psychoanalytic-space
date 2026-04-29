@@ -6606,3 +6606,212 @@ async function openUserFeedback() {
 }
 
 window.openUserFeedback = openUserFeedback;
+
+// ─── חדר הבורד ──────────────────────────────────────────────────────────────
+
+function parseMemoSections(md) {
+  const sections = {};
+  const lines = md.split('\n');
+  let current = null;
+  const buf = [];
+  for (const line of lines) {
+    if (line.startsWith('## ')) {
+      if (current) sections[current] = buf.join('\n').trim();
+      current = line.slice(3).trim().replace(/\*/g, '');
+      buf.length = 0;
+    } else if (current) {
+      buf.push(line);
+    }
+  }
+  if (current) sections[current] = buf.join('\n').trim();
+  return sections;
+}
+
+function buildAgentCard({ icon, name, role, date, accentColor, emptyMsg, renderContent }) {
+  const card = document.createElement('div');
+  card.style.cssText = 'border:1px solid var(--border);border-radius:12px;overflow:hidden;';
+
+  const hdr = document.createElement('div');
+  hdr.style.cssText = `padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid ${accentColor}22;background:${accentColor}10;`;
+  hdr.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:15px;line-height:1;">${icon}</span>
+      <span style="font-weight:700;font-size:13px;color:${accentColor};">${name}</span>
+      <span style="font-size:11px;color:var(--muted);">${role}</span>
+    </div>
+    ${date ? `<span style="font-size:10px;color:var(--muted);direction:ltr;">${date}</span>` : ''}`;
+  card.appendChild(hdr);
+
+  const body = document.createElement('div');
+  body.style.cssText = 'padding:14px 16px;';
+  const content = renderContent();
+  if (content) {
+    body.appendChild(content);
+  } else {
+    body.innerHTML = `<div style="color:var(--muted);font-size:12px;text-align:center;padding:10px 0;">${emptyMsg}</div>`;
+  }
+  card.appendChild(body);
+  return card;
+}
+
+function buildRanCard(data) {
+  const ACC = '#2d5a3e';
+  return buildAgentCard({
+    icon: '🧑‍💼', name: 'רן', role: 'מנכ"ל',
+    date: data?.date, accentColor: ACC,
+    emptyMsg: 'ממו ראשון יגיע ביום ראשון הקרוב',
+    renderContent: () => {
+      if (!data?.content) return null;
+      const sec = parseMemoSections(data.content);
+      const div = document.createElement('div');
+      div.style.cssText = 'display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.6;';
+      const FIELDS = [
+        ['השבוע בשלוש שורות',  'השבוע בשלוש שורות'],
+        ['הממצא החשוב ביותר',  'הממצא החשוב ביותר'],
+        ['השאלה הקשה',         'השאלה הקשה'],
+        ['המלצה אחת',          'המלצה אחת'],
+        ['מה לא לעשות עכשיו', 'מה לא לעשות עכשיו'],
+      ];
+      FIELDS.forEach(([label, key]) => {
+        const val = sec[key];
+        if (!val) return;
+        const row = document.createElement('div');
+        row.innerHTML = `<div style="font-size:10px;font-weight:700;color:${ACC};letter-spacing:.06em;margin-bottom:3px;">${label}</div>
+          <div style="color:var(--text);">${val}</div>`;
+        div.appendChild(row);
+      });
+      return div.children.length ? div : null;
+    },
+  });
+}
+
+function buildNavalCard(data) {
+  const ACC = '#1a1a3e';
+  return buildAgentCard({
+    icon: '⬡', name: 'Naval', role: 'חבר בורד',
+    date: data?.date, accentColor: ACC,
+    emptyMsg: 'הערה ראשונה תגיע ביום ראשון הקרוב',
+    renderContent: () => {
+      if (!data?.content) return null;
+      const clean = data.content.replace(/^#+\s.*\n?/gm, '').trim();
+      if (!clean) return null;
+      const div = document.createElement('div');
+      div.style.cssText = 'font-size:14px;line-height:1.9;color:var(--text);font-style:italic;white-space:pre-wrap;';
+      div.textContent = clean;
+      return div;
+    },
+  });
+}
+
+function buildMichalCard(data) {
+  const ACC = '#4a2a5a';
+  return buildAgentCard({
+    icon: '◉', name: 'מיכל', role: 'UX · משתמשת מדומה',
+    date: data?.date, accentColor: ACC,
+    emptyMsg: 'פידבק ראשון יגיע הבוקר',
+    renderContent: () => {
+      const fb = data?.feedback;
+      if (!fb) return null;
+      const div = document.createElement('div');
+      div.style.cssText = 'display:flex;flex-direction:column;gap:10px;font-size:13px;';
+
+      // badges: would_return + theorist + mode
+      const badges = document.createElement('div');
+      badges.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:2px;';
+      badges.innerHTML = `
+        <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
+          background:${fb.would_return ? '#e8f5e9' : '#ffeee8'};
+          color:${fb.would_return ? '#2d7a4a' : '#c04a2a'};">
+          ${fb.would_return ? '✓ תחזור' : '✗ לא תחזור'}
+        </span>
+        ${data.theorist ? `<span style="padding:2px 8px;border-radius:20px;font-size:10px;background:#f0e8f5;color:${ACC};">${data.theorist}</span>` : ''}
+        ${data.mode ? `<span style="padding:2px 8px;border-radius:20px;font-size:10px;background:#f5f0e8;color:#8a6020;">${data.mode === 'clinical' ? 'מצב סשן' : 'ללא סשן'}</span>` : ''}`;
+      div.appendChild(badges);
+
+      // key fields
+      [
+        ['הרגע הכי מתסכל',     fb.biggest_friction],
+        ['הרגע הכי טוב',       fb.best_moment],
+        ['דבר אחד שהיה משנה',  fb.one_change],
+        ['מה חסר לה',          fb.what_i_wish_existed],
+      ].forEach(([label, val]) => {
+        if (!val) return;
+        const row = document.createElement('div');
+        row.innerHTML = `<div style="font-size:10px;font-weight:700;color:${ACC};letter-spacing:.06em;margin-bottom:2px;">${label}</div>
+          <div style="color:var(--text);line-height:1.55;">${val}</div>`;
+        div.appendChild(row);
+      });
+
+      // buttons grid
+      const found  = fb.buttons_found  || [];
+      const missed = fb.buttons_missed || [];
+      if (found.length || missed.length) {
+        const grid = document.createElement('div');
+        grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:6px;border-top:1px solid var(--border);margin-top:4px;';
+        if (found.length) {
+          grid.innerHTML += `<div>
+            <div style="font-size:10px;font-weight:700;color:#2d7a4a;margin-bottom:4px;">מצאה ✓</div>
+            ${found.map(b => `<div style="font-size:11px;color:#2d7a4a;padding:1px 0;">${b}</div>`).join('')}
+          </div>`;
+        }
+        if (missed.length) {
+          grid.innerHTML += `<div>
+            <div style="font-size:10px;font-weight:700;color:#c04a2a;margin-bottom:4px;">פספסה ✗</div>
+            ${missed.map(b => `<div style="font-size:11px;color:#c04a2a;padding:1px 0;">${b}</div>`).join('')}
+          </div>`;
+        }
+        div.appendChild(grid);
+      }
+      return div;
+    },
+  });
+}
+
+async function openBoardRoom() {
+  const existing = document.getElementById('board-room-modal');
+  if (existing) { existing.remove(); return; }
+
+  const overlay = document.createElement('div');
+  overlay.id = 'board-room-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(15,10,25,0.5);backdrop-filter:blur(6px);direction:rtl;';
+
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:16px;width:740px;max-width:95vw;max-height:90vh;
+      display:flex;flex-direction:column;box-shadow:0 16px 60px rgba(0,0,0,0.22);overflow:hidden;">
+      <div style="background:linear-gradient(135deg,#0f0a19,#1e1035);padding:16px 22px;
+        display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="color:rgba(255,255,255,0.7);font-size:17px;">⬡</span>
+          <span style="color:rgba(255,255,255,0.92);font-size:15px;font-weight:500;">חדר הבורד</span>
+          <span style="color:rgba(255,255,255,0.3);font-size:11px;">מרחב פסיכואנליטי</span>
+        </div>
+        <button id="br-close" style="background:none;border:none;color:rgba(255,255,255,0.45);
+          font-size:22px;cursor:pointer;line-height:1;padding:0 4px;">×</button>
+      </div>
+      <div id="br-body" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;">
+        <div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">
+          <div style="font-size:22px;margin-bottom:8px;opacity:0.3;">⬡</div>
+          טוען דוחות...
+        </div>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  document.getElementById('br-close').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+  try {
+    const res  = await fetch('/api/board-room');
+    const data = await res.json();
+    const body = document.getElementById('br-body');
+    body.innerHTML = '';
+    body.appendChild(buildRanCard(data.ran));
+    body.appendChild(buildNavalCard(data.naval));
+    body.appendChild(buildMichalCard(data.michal));
+  } catch (e) {
+    document.getElementById('br-body').innerHTML =
+      `<div style="color:#c00;text-align:center;padding:20px;">שגיאה: ${e.message}</div>`;
+  }
+}
+
+window.openBoardRoom = openBoardRoom;
