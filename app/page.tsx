@@ -353,10 +353,7 @@ export default function Home() {
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◈</span>
               <span className="sb-label">פידבק משתמש</span>
             </div>
-            <div className="sb-item admin-only" onClick={() => (window as any).openBoardRoom()}>
-              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⬡</span>
-              <span className="sb-label">חדר הבורד</span>
-            </div>
+            {/* חדר הבורד — מוסתר בפרודקשין */}
           </div>
 
           {/* Theorists section */}
