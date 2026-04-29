@@ -1,1 +1,4 @@
+@CORE.md
+@BRAIN.md
+@MEMORY.md
 @AGENTS.md
