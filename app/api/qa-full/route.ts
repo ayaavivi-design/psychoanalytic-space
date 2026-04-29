@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { THEORIST_VOICE, SAFETY_PROTOCOL } from '@/lib/theorist-voices';
 import { searchKnowledge, formatChunksForPrompt } from '@/lib/rag';
+import { saveReportToGithub } from '@/lib/github-report';
 
 // /api/qa-full — endpoint קל לcron של Vercel
 // מריץ 3 תורות לכל תיאורטיקן במקביל (~10s) ושולח email
@@ -227,6 +228,31 @@ export async function GET(req: NextRequest) {
       ${conversations}
     </div>
   </div>`;
+
+  // --- שמירת דוח markdown ל-GitHub (לרן) ---
+  const isoDate = now.toISOString().slice(0, 10);
+  const flags = results.flatMap(r =>
+    r.totalIssues.map(issue => `- **${r.name}**: ${issue}`)
+  );
+  const tableRows = results.map(r =>
+    `| ${r.name} | ${r.ok ? '✅' : '⚠️'} | ${r.ragChunks} | ${r.totalIssues.join(', ') || '—'} |`
+  ).join('\n');
+
+  const qaMarkdown = `# דוח QA — ${date}
+
+## תוצאה כוללת
+**${passed}/${results.length} עברו${allOk ? ' ✅' : ' ⚠️'}**
+
+## לפי תיאורטיקן
+| תיאורטיקן | תוצאה | RAG | דגלים |
+|---|---|---|---|
+${tableRows}
+
+## דגלים לתשומת לב
+${flags.length ? flags.join('\n') : 'אין דגלים — כל הבדיקות עברו ✅'}
+`;
+
+  await saveReportToGithub('qa-reports', `QA-${isoDate}.md`, qaMarkdown);
 
   await resend.emails.send({
     from: 'QA מרחב פסיכואנליטי <onboarding@resend.dev>',

@@ -4,6 +4,7 @@ import { Resend } from 'resend';
 import { THEORIST_VOICE, SAFETY_PROTOCOL } from '@/lib/theorist-voices';
 import { JUDGE_SYSTEM_PROMPT, JUDGE_RULES, JUDGE_USER_TEMPLATE } from '@/lib/judge-prompt';
 import { searchKnowledge, formatChunksForPrompt } from '@/lib/rag';
+import { saveReportToGithub } from '@/lib/github-report';
 
 // /api/judge-full — Vercel-native cron endpoint
 // מריץ שיחה + שיפוט לכל 8 תיאורטיקנים ב-2 קבוצות מקביליות ושולח דוח
@@ -353,6 +354,33 @@ export async function GET(req: NextRequest) {
   const subject = allPass
     ? `שיפוט — ${passed}/${results.length} עברו ✅ — ${date}`
     : `שיפוט — ${failed} נכשלו${criticalCount > 0 ? ` · ${criticalCount} קריטיות` : ''} — ${date}`;
+
+  // --- שמירת דוח markdown ל-GitHub (לרן) ---
+  const isoDate = now.toISOString().slice(0, 10);
+  const criticalViolations = results.flatMap(r =>
+    r.violations
+      .filter(v => v.severity === 'critical' || v.severity === 'major')
+      .map(v => `- **${r.name}** [${v.rule}] ${v.severity === 'critical' ? '🔴' : '🟡'}: ${v.explanation}`)
+  );
+  const judgeTableRows = results.map(r =>
+    `| ${r.name} | ${OVERALL_LABEL[r.overall] || r.overall} | ${r.violations.length} | ${r.summary.slice(0, 60)}${r.summary.length > 60 ? '...' : ''} |`
+  ).join('\n');
+
+  const judgeMarkdown = `# דוח שיפוט — ${date}
+
+## תוצאה כוללת
+**${passed} עברו | ${warned} אזהרות | ${failed} נכשלו**
+
+## לפי תיאורטיקן
+| תיאורטיקן | תוצאה | הפרות | סיכום |
+|---|---|---|---|
+${judgeTableRows}
+
+## הפרות חמורות
+${criticalViolations.length ? criticalViolations.join('\n') : 'אין הפרות חמורות ✅'}
+`;
+
+  await saveReportToGithub('judge-reports', `JUDGE-${isoDate}.md`, judgeMarkdown);
 
   await resend.emails.send({
     from: 'שיפוט מרחב פסיכואנליטי <onboarding@resend.dev>',
