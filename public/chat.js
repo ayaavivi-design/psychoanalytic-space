@@ -6671,9 +6671,9 @@ function buildAgentCard({ icon, name, role, date, accentColor, emptyMsg, renderC
 function buildRanCard(data) {
   const ACC = '#2d5a3e';
   return buildAgentCard({
-    icon: '🧑‍💼', name: 'רן', role: 'מנכ"ל',
+    icon: '🧑‍💼', name: 'Adam', role: 'מנכ"ל',
     date: data?.date, accentColor: ACC,
-    emptyMsg: 'ממו ראשון יגיע ביום ראשון הקרוב',
+    emptyMsg: 'הממו הראשון יגיע ביום ראשון הקרוב',
     renderContent: () => {
       if (!data?.content) return null;
       const sec = parseMemoSections(data.content);
@@ -6720,7 +6720,7 @@ function buildNavalCard(data) {
 function buildMichalCard(data) {
   const ACC = '#4a2a5a';
   return buildAgentCard({
-    icon: '◉', name: 'מיכל', role: 'UX · משתמשת מדומה',
+    icon: '◉', name: 'Karen', role: 'UX · משתמשת מדומה',
     date: data?.date, accentColor: ACC,
     emptyMsg: 'פידבק ראשון יגיע הבוקר',
     renderContent: () => {
@@ -6784,9 +6784,9 @@ function buildMichalCard(data) {
 function buildShiraCard(data) {
   const ACC = '#7a4a18';
   return buildAgentCard({
-    icon: '₪', name: 'שירה', role: 'CFO · מנהלת כספים',
+    icon: '₪', name: 'Ella', role: 'CFO · מנהלת כספים',
     date: data?.date, accentColor: ACC,
-    emptyMsg: 'דוח עלויות ראשון יגיע בשבת הקרובה',
+    emptyMsg: 'דוח העלויות הראשון יגיע בשבת הקרובה',
     renderContent: () => {
       if (!data?.content) return null;
       const sec = parseMemoSections(data.content);
