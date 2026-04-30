@@ -17,10 +17,16 @@ Run these commands and read the output:
 Read the latest UX report:
 ls ux-reports/ 2>/dev/null && cat $(ls ux-reports/*.json 2>/dev/null | sort | tail -1) 2>/dev/null || echo "no UX reports yet"
 
-Read the latest QA report:
+Read Eitan's latest QA analysis (his synthesis — read this first):
+ls qa-analysis/ 2>/dev/null && cat $(ls qa-analysis/*.md 2>/dev/null | sort | tail -1) 2>/dev/null || echo "no QA analysis yet"
+
+Read the latest raw QA report (for detail if needed):
 ls qa-reports/ 2>/dev/null && cat $(ls qa-reports/*.md 2>/dev/null | sort | tail -1) 2>/dev/null || echo "no QA reports yet"
 
-Read the latest Judge report:
+Read Lia's latest Judge analysis (her recommendation — read this first):
+ls judge-analysis/ 2>/dev/null && cat $(ls judge-analysis/*.md 2>/dev/null | sort | tail -1) 2>/dev/null || echo "no Judge analysis yet"
+
+Read the latest raw Judge report (for detail if needed):
 ls judge-reports/ 2>/dev/null && cat $(ls judge-reports/*.md 2>/dev/null | sort | tail -1) 2>/dev/null || echo "no Judge reports yet"
 
 Read the latest CFO report:
