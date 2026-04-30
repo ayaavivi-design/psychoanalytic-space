@@ -16,7 +16,10 @@ STEP 1 - Read these files:
 
 STEP 2 - Find and read the latest report in each folder:
 - ceo-reports/ (most recent .md file by name)
-- ux-reports/ (most recent .json file by name)
+- ux-reports/ (most recent .json file by name) — Karen's simulated user sessions
+- onboarding-reports/ (most recent .md file by name) — Maya's onboarding analysis
+- qa-analysis/ (most recent .md file by name) — Eitan's QA pattern analysis
+- judge-analysis/ (most recent .md file by name) — Lia's quality recommendations
 
 STEP 3 - Diagnose silently before writing:
 - Who is the real primary user today?
