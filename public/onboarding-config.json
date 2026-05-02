@@ -1,5 +1,5 @@
 {
-  "version": "2026-04-29",
+  "version": "2026-05-02",
   "updated_by": "seed",
   "tour": {
     "enabled": true,
@@ -10,6 +10,8 @@
         "position": "right",
         "title": "בחרי תיאורטיקן",
         "text": "בחרי את המסגרת התיאורטית שמתאימה למה שעלה — פרויד, קליין, ויניקוט ועוד. אפשר להחליף בכל שיחה.",
+        "title_en": "Choose a theorist",
+        "text_en": "Choose the theoretical framework that fits what came up — Freud, Klein, Winnicott, and more. You can switch between sessions.",
         "personas": ["patient", "therapist", "student"]
       },
       {
@@ -18,6 +20,8 @@
         "position": "left",
         "title": "מצב סשן קליני",
         "text": "הפעילי לפני שמביאה חומר קליני — התיאורטיקן יגיב מתוך הגישה, לא כמרצה.",
+        "title_en": "Clinical session mode",
+        "text_en": "Activate before bringing clinical material — the theorist responds from within the approach, not as a lecturer.",
         "personas": ["therapist", "student"]
       },
       {
@@ -26,6 +30,8 @@
         "position": "top",
         "title": "התחילי לדבר",
         "text": "הביאי מה שעלה בפגישה האחרונה. אין צורך להסביר. תני לשיחה להתפתח.",
+        "title_en": "Start talking",
+        "text_en": "Bring what came up in the last session. No need to explain. Let the conversation unfold.",
         "personas": ["patient", "therapist", "student"]
       }
     ]

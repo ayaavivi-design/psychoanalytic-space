@@ -3344,6 +3344,11 @@ function applyUITranslation(code) {
     const chat = document.getElementById('chat');
     if (chat) { chat.innerHTML = ''; showIntakeQuestion(); }
   }
+  // Re-apply persona-specific placeholder after language change
+  try {
+    const persona = JSON.parse(localStorage.getItem('user_prefs') || '{}').persona;
+    if (persona) applyPersona(persona);
+  } catch(e) {}
 }
 
 function selectLang(code, flag, name) {
@@ -4770,16 +4775,19 @@ async function handleSilence() {
 const PERSONA_CONFIG = {
   therapist: {
     placeholder: 'ספר/י על הפגישה האחרונה...',
+    placeholder_en: 'Tell me about the last session...',
     welcome: 'שלום. מה הבאת מהחדר הטיפולי?',
     label: 'אני מטפל/ת'
   },
   student: {
     placeholder: 'איזה מושג או טקסט מעסיק אותך?',
+    placeholder_en: 'What concept or text is on your mind?',
     welcome: 'שלום. מה אתה/את לומד/ת כרגע?',
     label: 'אני לומד/ת'
   },
   patient: {
     placeholder: 'מה עלה אצלך השבוע?',
+    placeholder_en: 'What came up for you this week?',
     welcome: 'שלום. המרחב הזה הוא שלך.',
     label: 'אני בטיפול'
   }
@@ -4803,7 +4811,10 @@ function applyPersona(type) {
   if (!type || !PERSONA_CONFIG[type]) return;
   const config = PERSONA_CONFIG[type];
   const input = document.getElementById('user-input');
-  if (input) input.placeholder = config.placeholder;
+  if (input) {
+    const isEn = (window.selectedLang?.code === 'en');
+    input.placeholder = (isEn && config.placeholder_en) ? config.placeholder_en : config.placeholder;
+  }
   // Update bio field placeholder in settings modal if open
   const bioEl = document.getElementById('pref-context');
   if (bioEl && BIO_PLACEHOLDER[type]) bioEl.placeholder = BIO_PLACEHOLDER[type];
@@ -6501,6 +6512,15 @@ async function startOnboardingTour() {
     const target = document.querySelector(step.target);
     if (!target) { showStep(idx + 1); return; }  // דלג אם האלמנט לא קיים
 
+    const isEn = (window.selectedLang?.code === 'en');
+    const dir = isEn ? 'ltr' : 'rtl';
+    const title = isEn ? (step.title_en || step.title) : step.title;
+    const text  = isEn ? (step.text_en  || step.text)  : step.text;
+    const skipLabel = isEn ? 'Skip' : 'דלג';
+    const nextLabel = isEn
+      ? (idx === steps.length - 1 ? 'Done ✓' : 'Next →')
+      : (idx === steps.length - 1 ? 'סיים ✓' : 'הבא →');
+
     const rect = target.getBoundingClientRect();
     const tip = document.createElement('div');
     tip.id = 'onboarding-tip';
@@ -6508,7 +6528,7 @@ async function startOnboardingTour() {
       position:fixed;z-index:201;
       background:#fff;border-radius:12px;
       box-shadow:0 8px 40px rgba(0,0,0,0.18),0 0 0 1px rgba(0,0,0,0.06);
-      padding:16px 18px;max-width:260px;direction:rtl;
+      padding:16px 18px;max-width:260px;direction:${dir};
       pointer-events:all;
     `;
 
@@ -6544,13 +6564,13 @@ async function startOnboardingTour() {
       <div style="font-size:10px;color:rgba(196,96,122,0.8);font-weight:700;letter-spacing:.08em;margin-bottom:6px;">
         ${idx + 1} / ${steps.length}
       </div>
-      <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">${step.title}</div>
-      <div style="font-size:13px;color:#555;line-height:1.6;margin-bottom:14px;">${step.text}</div>
+      <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">${title}</div>
+      <div style="font-size:13px;color:#555;line-height:1.6;margin-bottom:14px;">${text}</div>
       <div style="display:flex;gap:8px;justify-content:flex-end;">
-        <button id="ob-skip" style="background:none;border:none;color:#aaa;font-size:12px;cursor:pointer;padding:4px 8px;">דלג</button>
+        <button id="ob-skip" style="background:none;border:none;color:#aaa;font-size:12px;cursor:pointer;padding:4px 8px;">${skipLabel}</button>
         <button id="ob-next" style="background:#c4607a;border:none;color:#fff;font-size:13px;
           cursor:pointer;padding:6px 16px;border-radius:8px;font-weight:600;">
-          ${idx === steps.length - 1 ? 'סיים ✓' : 'הבא →'}
+          ${nextLabel}
         </button>
       </div>`;
 
