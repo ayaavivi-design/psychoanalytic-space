@@ -193,7 +193,7 @@ function showIntakeQuestion() {
     }
   } else {
     const typeHintHtml = step.optional
-      ? `<div style="font-size:11px;color:var(--muted);opacity:0.65;margin-top:10px;">כתוב/י בתיבת הטקסט למטה, או</div>`
+      ? `<div style="font-size:11px;color:var(--muted);opacity:0.65;margin-top:10px;">${t.typeHint || (selectedLang?.code === 'en' ? 'Type in the text box below, or' : 'כתוב/י בתיבת הטקסט למטה, או')}</div>`
       : '';
     msgDiv.innerHTML = `
       <div class="message-role">${t.speaker}</div>
@@ -315,7 +315,7 @@ function completeIntake() {
 function enterMainSpace() {
   const t = getIntakeTranslation();
   const name = intakeData.name || '';
-  const h2Text = name && t.postWelcomeH2 ? t.postWelcomeH2(name) : (t.welcome || 'ברוכ/ה הבא/ה');
+  const h2Text = name && t.postWelcomeH2 ? t.postWelcomeH2(name) : (t.welcome || 'Welcome');
   const pText = t.postWelcomeP || '';
   const chat = document.getElementById('chat');
   if (!chat) return;
@@ -343,10 +343,10 @@ async function signIn() {
   const errEl = document.getElementById('auth-error');
   const _at = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
   errEl.style.color = '#c06060'; errEl.style.display = 'none';
-  if (!supabaseClient) { errEl.textContent = _at.authErrLoading || 'המערכת עדיין נטענת — המתיני רגע ונסי שוב'; errEl.style.display = 'block'; return; }
+  if (!supabaseClient) { errEl.textContent = _at.authErrLoading || 'Still loading — please wait a moment and try again'; errEl.style.display = 'block'; return; }
   const email = document.getElementById('auth-email').value.trim();
   const password = document.getElementById('auth-password').value;
-  if (!email || !password) { errEl.textContent = _at.authErrFillAll || 'יש למלא מייל וסיסמה'; errEl.style.display = 'block'; return; }
+  if (!email || !password) { errEl.textContent = _at.authErrFillAll || 'Please fill in both email and password'; errEl.style.display = 'block'; return; }
   const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
 }
@@ -355,36 +355,37 @@ async function signUp() {
   const errEl = document.getElementById('auth-error');
   const _at = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
   errEl.style.color = '#c06060'; errEl.style.display = 'none';
-  if (!supabaseClient) { errEl.textContent = _at.authErrLoading || 'המערכת עדיין נטענת — המתיני רגע ונסי שוב'; errEl.style.display = 'block'; return; }
+  if (!supabaseClient) { errEl.textContent = _at.authErrLoading || 'Still loading — please wait a moment and try again'; errEl.style.display = 'block'; return; }
   const email = document.getElementById('auth-email').value.trim();
   const password = document.getElementById('auth-password').value;
-  if (!email || !password) { errEl.textContent = _at.authErrFillAll || 'יש למלא מייל וסיסמה'; errEl.style.display = 'block'; return; }
-  if (password.length < 6) { errEl.textContent = _at.authErrPassword || 'סיסמה חייבת להכיל לפחות 6 תווים'; errEl.style.display = 'block'; return; }
+  if (!email || !password) { errEl.textContent = _at.authErrFillAll || 'Please fill in both email and password'; errEl.style.display = 'block'; return; }
+  if (password.length < 6) { errEl.textContent = _at.authErrPassword || 'Password must be at least 6 characters'; errEl.style.display = 'block'; return; }
   const { data, error } = await supabaseClient.auth.signUp({ email, password });
   if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
   else if (data.session) { hideAuthScreen(); loadUserProfile(data.session.user); }
-  else { errEl.style.color = 'var(--accent)'; errEl.textContent = _at.authErrEmailSent || 'נשלח אימות למייל — בדקי את תיבת הדואר שלך.'; errEl.style.display = 'block'; }
+  else { errEl.style.color = 'var(--accent)'; errEl.textContent = _at.authErrEmailSent || 'Verification email sent — check your inbox'; errEl.style.display = 'block'; }
 }
 
 async function resetPassword() {
   const errEl = document.getElementById('auth-error');
   const _at = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
   errEl.style.color = '#c06060'; errEl.style.display = 'none';
-  if (!supabaseClient) { errEl.textContent = _at.authErrLoading || 'המערכת עדיין נטענת — המתיני רגע ונסי שוב'; errEl.style.display = 'block'; return; }
+  if (!supabaseClient) { errEl.textContent = _at.authErrLoading || 'Still loading — please wait a moment and try again'; errEl.style.display = 'block'; return; }
   const email = document.getElementById('auth-email').value.trim();
-  if (!email) { errEl.textContent = _at.authErrEmailOnly || 'הכניסי את כתובת המייל שלך ולחצי שכחתי סיסמה'; errEl.style.display = 'block'; return; }
+  if (!email) { errEl.textContent = _at.authErrEmailOnly || 'Enter your email address and click "Forgot password"'; errEl.style.display = 'block'; return; }
   const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin
   });
   if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
-  else { errEl.style.color = 'var(--accent)'; errEl.textContent = _at.authErrResetSent || 'נשלח קישור לאיפוס סיסמה למייל שלך'; errEl.style.display = 'block'; }
+  else { errEl.style.color = 'var(--accent)'; errEl.textContent = _at.authErrResetSent || 'Password reset link sent to your email'; errEl.style.display = 'block'; }
 }
 
 async function signOut() {
   await supabaseClient.auth.signOut();
   conversationHistory = [];
   const chat = document.getElementById('chat');
-  if (chat) chat.innerHTML = '<div class="welcome" id="welcome"><div class="ornament">ψ</div><h2>ברוכ/ה הבא/ה</h2><p>שאל/י כל שאלה בנושאי פסיכואנליזה.</p></div>';
+  const _soT = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['en'];
+  if (chat) chat.innerHTML = `<div class="welcome" id="welcome"><div class="ornament">ψ</div><h2>${_soT.welcome || 'Welcome'}</h2><p>${_soT.welcomeText || 'Ask any question about psychoanalysis.'}</p></div>`;
   activeTheorists = [];
   document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
 }
@@ -519,7 +520,7 @@ function saveConversation() {
 
 function updateMemoryCount() {
   const memories = loadMemory();
-  const mc = document.getElementById('memory-count'); if (mc) mc.textContent = `${memories.length} זיכרונות`;
+  const mc = document.getElementById('memory-count'); if (mc) mc.textContent = (window._lang === 'en') ? `${memories.length} memories` : `${memories.length} זיכרונות`;
   const sbCount = document.getElementById('sb-memory-count'); if (sbCount) sbCount.textContent = memories.length;
   updateSidebarMemories();
 }
@@ -617,7 +618,7 @@ function performTheoristSwitch(el, name) {
     const titleEl = document.getElementById('session-title');
     if (titleEl) titleEl.textContent = '';
     const chatEl = document.getElementById('chat');
-    if (chatEl) chatEl.innerHTML = `<div class="welcome" id="welcome"><div class="ornament">ψ</div><h2>${t2.welcome || 'ברוכ/ה הבא/ה'}</h2><p>${t2.welcomeText || 'שאל/י כל שאלה בנושאי פסיכואנליזה.'}</p></div>`;
+    if (chatEl) chatEl.innerHTML = `<div class="welcome" id="welcome"><div class="ornament">ψ</div><h2>${t2.welcome || 'Welcome'}</h2><p>${t2.welcomeText || 'Ask any question about psychoanalysis.'}</p></div>`;
   }
 }
 
@@ -662,11 +663,11 @@ function appendMessage(role, content, attribution = '', sourceHTML = '') {
   const div = document.createElement('div');
   div.className = `message ${role}`;
 
-  // Remove raw [מקור: ...] from displayed text
-  const cleanContent = content.replace(/\[מקור: .+?\]/g, '').trim();
+  // Remove raw source tags from displayed text (Hebrew and English formats)
+  const cleanContent = content.replace(/\[מקור: .+?\]/g, '').replace(/\[Source: .+?\]/g, '').trim();
 
   const t = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
-  const roleLabel = role === 'user' ? (t.userLabel || 'שאלתך') : (t.agentLabel || 'הסוכן');
+  const roleLabel = role === 'user' ? (t.userLabel || 'You') : (t.agentLabel || 'Agent');
   div.innerHTML = `
     <div class="message-role">${roleLabel}</div>
     <div class="message-body">${(role === 'assistant' ? formatResponse(stripMarkdown(cleanContent)) : cleanContent.replace(/\n/g, '<br>'))}</div>
@@ -4714,10 +4715,14 @@ window.resetPassword = resetPassword;
   const memories = loadMemory();
   if (memories.length > 0 && conversationHistory.length === 0) {
     const last = memories[memories.length - 1];
-    const date = new Date(last.ts).toLocaleDateString('he-IL');
+    const _rwLang = window._lang || 'he';
+    const _rwIsEn = _rwLang === 'en';
+    const date = new Date(last.ts).toLocaleDateString(_rwIsEn ? 'en-US' : 'he-IL');
     const welcomeP = document.querySelector('.welcome p');
     if (welcomeP) {
-      welcomeP.innerHTML = `ברוכ/ה השב/ה. בפגישה האחרונה (${date}) עסקנו ב: ${last.summary}. <span style="color:var(--accent-dim)">אפשר להמשיך משם או לפתוח כיוון חדש.</span>`;
+      welcomeP.innerHTML = _rwIsEn
+        ? `Welcome back. In our last session (${date}) we explored: ${last.summary}. <span style="color:var(--accent-dim)">You can pick up from there or open a new direction.</span>`
+        : `ברוכ/ה השב/ה. בפגישה האחרונה (${date}) עסקנו ב: ${last.summary}. <span style="color:var(--accent-dim)">אפשר להמשיך משם או לפתוח כיוון חדש.</span>`;
     }
   }
 })();
