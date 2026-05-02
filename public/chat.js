@@ -541,6 +541,50 @@ function updateInputSuggestion() {
 }
 
 function toggleTheorist(el, name) {
+  const isSwitching = !activeTheorists.includes(name) && activeTheorists.length > 0;
+  const hasConversation = conversationHistory.length > 0;
+
+  if (isSwitching && hasConversation) {
+    showTheoristSwitchModal(el, name);
+    return;
+  }
+  performTheoristSwitch(el, name);
+}
+
+function showTheoristSwitchModal(el, name) {
+  const isEn = (window.selectedLang?.code === 'en');
+  const existing = document.getElementById('theorist-switch-modal');
+  if (existing) existing.remove();
+  const heNames = {freud:'פרויד',klein:'קליין',winnicott:'ויניקוט',ogden:'אוגדן',loewald:'לוואלד',bion:'ביון',kohut:'קוהוט',heimann:'היימן'};
+  const enNames = {freud:'Freud',klein:'Klein',winnicott:'Winnicott',ogden:'Ogden',loewald:'Loewald',bion:'Bion',kohut:'Kohut',heimann:'Heimann'};
+  const theoristName = (isEn ? enNames : heNames)[name] || name;
+  const dir = isEn ? 'ltr' : 'rtl';
+  const msg = isEn
+    ? `Switching to ${theoristName} will start a fresh conversation. What's come up so far won't carry over.`
+    : `המעבר ל${theoristName} יפתח שיחה חדשה. מה שעלה עד עכשיו לא יעבור איתך.`;
+  const confirmText = isEn ? 'Start fresh' : 'התחל/י מחדש';
+  const cancelText  = isEn ? 'Stay here'   : 'הישאר/י כאן';
+  const modal = document.createElement('div');
+  modal.id = 'theorist-switch-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
+  modal.innerHTML = `
+    <div style="background:var(--bg);border-radius:16px;padding:32px 28px;max-width:320px;width:90%;text-align:center;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <p style="font-size:15px;color:var(--text);font-family:Rubik,sans-serif;margin:0 0 20px;line-height:1.6;">${msg}</p>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button id="tsm-confirm" style="background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">${confirmText}</button>
+        <button id="tsm-cancel" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">${cancelText}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  document.getElementById('tsm-confirm').addEventListener('click', () => {
+    modal.remove();
+    performTheoristSwitch(el, name);
+  });
+  document.getElementById('tsm-cancel').addEventListener('click', () => modal.remove());
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
+function performTheoristSwitch(el, name) {
   el.classList.toggle('active');
   if (activeTheorists.includes(name)) {
     activeTheorists = activeTheorists.filter(t => t !== name);
@@ -3542,7 +3586,17 @@ function activateClinicalModeUI(on) {
     label.textContent = (selectedLang && selectedLang.code !== 'he' ? 'Session' : 'סשן') + ' ✓';
     const t2 = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
     input.placeholder = t2.placeholderClinical || 'תארי מצב — מה מרגישים? מה קורה? מה מסקרן?';
-    // Show opening if theorist already selected
+    // Default to Winnicott if no theorist is active
+    if (activeTheorists.length === 0) {
+      const winnicottEl = document.querySelector('.theorist-tag[onclick*="winnicott"]');
+      if (winnicottEl) {
+        winnicottEl.classList.add('active');
+      }
+      activeTheorists = ['winnicott'];
+      updateInputSuggestion();
+      updateSessionTitle(true);
+    }
+    // Show opening if exactly one theorist selected
     if (activeTheorists.length === 1) {
       showTheoristOpening(activeTheorists[0]);
     }
