@@ -8,7 +8,7 @@ export default function Home() {
   const [theoristsOpen, setTheoristsOpen] = useState(false);
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
   const [sessionTip, setSessionTip] = useState<{ top: number; left?: number; right?: number } | null>(null);
-  const [currentLang, setCurrentLang] = useState('he');
+  const [currentLang, setCurrentLang] = useState('en');
 
   const THEORIST_CARDS: Record<string, Record<string, { approach: string; concepts: string; forWhom: string }>> = {
     freud: {
