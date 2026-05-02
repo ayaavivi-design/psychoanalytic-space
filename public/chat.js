@@ -3457,28 +3457,41 @@ function showTheoristOpening(theoristKey) {
   const openingObj = THEORIST_OPENING[theoristKey];
   if (!openingObj) return;
   const lang = (selectedLang && selectedLang.code) || 'he';
+  const isEn = (lang === 'en');
   const opening = openingObj[lang] || openingObj['en'] || openingObj['he'];
-  const nameMap = {freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', kohut:'קוהוט', heimann:'היימן'};
-  const fullNames = {freud:'זיגמונד פרויד', klein:'מלאני קליין', winnicott:'דונלד ויניקוט', ogden:'תומאס אוגדן', loewald:'הנס לוואלד', bion:'ויל ביון', kohut:'היינץ קוהוט', heimann:'פאולה היימן'};
+
+  const heShort  = {freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', kohut:'קוהוט', heimann:'היימן'};
+  const enShort  = {freud:'Freud', klein:'Klein', winnicott:'Winnicott', ogden:'Ogden', loewald:'Loewald', bion:'Bion', kohut:'Kohut', heimann:'Heimann'};
+  const heFull   = {freud:'זיגמונד פרויד', klein:'מלאני קליין', winnicott:'דונלד ויניקוט', ogden:'תומאס אוגדן', loewald:'הנס לוואלד', bion:'ויל ביון', kohut:'היינץ קוהוט', heimann:'פאולה היימן'};
+  const enFull   = {freud:'Sigmund Freud', klein:'Melanie Klein', winnicott:'Donald Winnicott', ogden:'Thomas Ogden', loewald:'Hans Loewald', bion:'Wilfred Bion', kohut:'Heinz Kohut', heimann:'Paula Heimann'};
+
+  const shortMap = isEn ? enShort : heShort;
+  const fullMap  = isEn ? enFull  : heFull;
+  const t = UI_TRANSLATIONS[lang] || UI_TRANSLATIONS['he'];
+
+  const contextMsg = isEn
+    ? `Session mode — ${fullMap[theoristKey] || shortMap[theoristKey]} is responding as analyst`
+    : `מצב סשן — ${fullMap[theoristKey] || shortMap[theoristKey]} מגיב/ה כאנליטיקאי/ת בשיחה`;
+
   const chat = document.getElementById('chat');
   const welcome = document.getElementById('welcome');
   if (welcome) welcome.remove();
 
-  // הודעת הקשר — מסביר למשתמש מה עומד לקרות
+  // context notice
   const contextDiv = document.createElement('div');
   contextDiv.style.cssText = 'text-align:center;padding:12px 20px;margin:16px auto;max-width:380px;';
   contextDiv.innerHTML = `<span style="font-size:11px;color:var(--muted);background:var(--surface-alt,#f8f4f2);border:1px solid var(--border);border-radius:20px;padding:5px 14px;display:inline-block;line-height:1.5;">
-    מצב סשן קליני — ${fullNames[theoristKey] || nameMap[theoristKey]} מגיב/ה כאנליטיקאי/ת בשיחה
+    ${contextMsg}
   </span>`;
   chat.appendChild(contextDiv);
 
-  // הודעת הפתיחה של התיאוריסט
+  // opening message
   const div = document.createElement('div');
   div.className = 'message assistant';
   div.innerHTML = `
-    <div class="message-role">הסוכן</div>
+    <div class="message-role">${t.agentLabel || 'Agent'}</div>
     <div class="message-body" style="font-style:italic;color:var(--text);">${opening}</div>
-    <div class="attribution">— ${nameMap[theoristKey] || theoristKey}</div>`;
+    <div class="attribution">— ${shortMap[theoristKey] || theoristKey}</div>`;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
   conversationHistory.push({ role: 'assistant', content: opening });
@@ -3951,20 +3964,21 @@ async function sendMessage() {
     }
 
     // Detect attribution — never in clinical/session mode
-    const _shortNames = { freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', kohut:'קוהוט', heimann:'היימן' };
+    const _isEn = (window.selectedLang?.code === 'en');
+    const _shortNames = _isEn
+      ? { freud:'Freud', klein:'Klein', winnicott:'Winnicott', ogden:'Ogden', loewald:'Loewald', bion:'Bion', kohut:'Kohut', heimann:'Heimann' }
+      : { freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', kohut:'קוהוט', heimann:'היימן' };
     let attribution = null;
     if (!window.clinicalMode && activeTheorists.length === 1) {
       // Single theorist mode: always attribute to the active theorist
       attribution = _shortNames[activeTheorists[0]] || null;
     } else if (!window.clinicalMode) {
-      // Multi-theorist mode: scan reply for explicit theorist name mentions
-      const theoristMentions = {
-        'פרויד': 'פרויד', 'קליין': 'קליין', 'ויניקוט': 'ויניקוט',
-        'אוגדן': 'אוגדן', 'לוואלד': 'לוואלד', 'ביון': 'ביון',
-        'לאקאן': 'לאקאן', 'קוהוט': 'קוהוט'
-      };
-      for (const [heb] of Object.entries(theoristMentions)) {
-        if (reply.includes(heb)) { attribution = heb; break; }
+      // Multi-theorist mode: scan reply for theorist name mentions (Hebrew or English)
+      const theoristMentions = _isEn
+        ? { 'Freud':'Freud', 'Klein':'Klein', 'Winnicott':'Winnicott', 'Ogden':'Ogden', 'Loewald':'Loewald', 'Bion':'Bion', 'Lacan':'Lacan', 'Kohut':'Kohut' }
+        : { 'פרויד':'פרויד', 'קליין':'קליין', 'ויניקוט':'ויניקוט', 'אוגדן':'אוגדן', 'לוואלד':'לוואלד', 'ביון':'ביון', 'לאקאן':'לאקאן', 'קוהוט':'קוהוט' };
+      for (const [name] of Object.entries(theoristMentions)) {
+        if (reply.includes(name)) { attribution = name; break; }
       }
     }
 
