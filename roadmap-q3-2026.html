@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>רודמאפ Q3 2026 — Between</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: #1a1016;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .deck {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    padding: 64px 80px;
+    position: absolute;
+    inset: 0;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .slide.active { display: flex; }
+
+  /* ── SLIDE TYPES ── */
+
+  .slide-cover {
+    background: #1a1016;
+    align-items: center;
+    text-align: center;
+  }
+
+  .slide-section {
+    background: #c4607a;
+  }
+
+  .slide-content {
+    background: #fdf8f5;
+    color: #1a1016;
+  }
+
+  .slide-dark {
+    background: #2d1f24;
+  }
+
+  .slide-close {
+    background: #1a1016;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* ── COVER ── */
+  .cover-eyebrow {
+    font-size: 12px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: #c4607a;
+    margin-bottom: 20px;
+  }
+
+  .cover-title {
+    font-size: 72px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .cover-sub {
+    font-size: 22px;
+    color: rgba(255,255,255,.5);
+    margin-bottom: 48px;
+  }
+
+  .cover-meta {
+    font-size: 13px;
+    color: rgba(255,255,255,.3);
+    letter-spacing: .05em;
+  }
+
+  .cover-psi {
+    font-size: 120px;
+    color: rgba(196,96,122,.15);
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    font-family: serif;
+  }
+
+  /* ── SECTION DIVIDER ── */
+  .section-label {
+    font-size: 11px;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.6);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 56px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+    max-width: 600px;
+  }
+
+  .section-sub {
+    font-size: 18px;
+    color: rgba(255,255,255,.7);
+    margin-top: 20px;
+    max-width: 500px;
+  }
+
+  /* ── CONTENT ── */
+  .slide-eyebrow {
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: #c4607a;
+    margin-bottom: 24px;
+  }
+
+  .slide-title {
+    font-size: 38px;
+    font-weight: 700;
+    color: #1a1016;
+    margin-bottom: 36px;
+    line-height: 1.2;
+  }
+
+  .slide-title-light {
+    color: #fff;
+  }
+
+  /* ── CARDS ── */
+  .cards {
+    display: grid;
+    gap: 16px;
+  }
+
+  .cards-2 { grid-template-columns: 1fr 1fr; }
+  .cards-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px 28px;
+    border: 1px solid rgba(196,96,122,.12);
+  }
+
+  .card-dark {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 14px;
+    padding: 24px 28px;
+  }
+
+  .card-pink {
+    background: rgba(196,96,122,.12);
+    border: 1px solid rgba(196,96,122,.25);
+    border-radius: 14px;
+    padding: 24px 28px;
+  }
+
+  .card-num {
+    font-size: 36px;
+    font-weight: 800;
+    color: #c4607a;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .card-label {
+    font-size: 13px;
+    color: #888;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .card-label-light {
+    font-size: 13px;
+    color: rgba(255,255,255,.5);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .card-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1016;
+    line-height: 1.3;
+  }
+
+  .card-value-light {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: #666;
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .card-desc-light {
+    font-size: 13px;
+    color: rgba(255,255,255,.55);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  /* ── ITEMS LIST ── */
+  .items { display: flex; flex-direction: column; gap: 14px; }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid rgba(196,96,122,.1);
+  }
+
+  .item-dark {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    background: rgba(255,255,255,.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.08);
+  }
+
+  .item-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #c4607a;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .item-dot-done {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #c4607a;
+    color: #fff;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .item-dot-muted {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .item-body { flex: 1; }
+  .item-title { font-size: 15px; font-weight: 600; color: #1a1016; }
+  .item-title-light { font-size: 15px; font-weight: 600; color: #fff; }
+  .item-sub { font-size: 12px; color: #888; margin-top: 3px; line-height: 1.4; }
+  .item-sub-light { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 3px; line-height: 1.4; }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .tag-done   { background: rgba(196,96,122,.15); color: #c4607a; }
+  .tag-now    { background: #c4607a; color: #fff; }
+  .tag-next   { background: rgba(255,255,255,.12); color: rgba(255,255,255,.7); }
+  .tag-risk   { background: rgba(255,180,0,.15); color: #b8890a; }
+  .tag-risk-light { background: rgba(255,200,80,.2); color: #ffd970; }
+
+  /* ── TWO-COL ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; align-items: start; }
+
+  .col-label {
+    font-size: 10px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: #c4607a;
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+
+  .col-label-muted {
+    font-size: 10px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.35);
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+
+  /* ── QUOTE ── */
+  .quote-block {
+    border-right: 3px solid #c4607a;
+    padding-right: 28px;
+    margin-top: 8px;
+  }
+
+  .quote-text {
+    font-size: 22px;
+    line-height: 1.6;
+    color: #fff;
+    font-style: italic;
+  }
+
+  .quote-attr {
+    font-size: 13px;
+    color: rgba(255,255,255,.4);
+    margin-top: 12px;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+
+  .tl-row {
+    display: grid;
+    grid-template-columns: 100px 32px 1fr;
+    gap: 0 16px;
+    align-items: stretch;
+  }
+
+  .tl-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,.5);
+    text-align: left;
+    padding-top: 4px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .tl-line-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tl-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #c4607a;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .tl-dot-muted {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.2);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .tl-connector {
+    width: 2px;
+    flex: 1;
+    background: rgba(255,255,255,.1);
+    margin: 4px 0;
+  }
+
+  .tl-content {
+    padding-bottom: 28px;
+  }
+
+  .tl-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    padding-top: 2px;
+  }
+
+  .tl-title-muted {
+    font-size: 15px;
+    font-weight: 700;
+    color: rgba(255,255,255,.4);
+    padding-top: 2px;
+  }
+
+  .tl-items {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tl-item {
+    font-size: 12px;
+    color: rgba(255,255,255,.55);
+    padding-right: 12px;
+    line-height: 1.5;
+  }
+
+  .tl-item::before {
+    content: "·";
+    color: #c4607a;
+    margin-left: 6px;
+  }
+
+  /* ── SLIDE NUMBER ── */
+  .slide-num {
+    position: absolute;
+    bottom: 28px;
+    left: 80px;
+    font-size: 11px;
+    color: rgba(255,255,255,.2);
+    letter-spacing: .1em;
+  }
+
+  .slide-num-dark {
+    position: absolute;
+    bottom: 28px;
+    left: 80px;
+    font-size: 11px;
+    color: rgba(0,0,0,.2);
+    letter-spacing: .1em;
+  }
+
+  .slide-logo {
+    position: absolute;
+    bottom: 24px;
+    right: 80px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: rgba(255,255,255,.15);
+    font-style: italic;
+  }
+
+  .slide-logo-dark {
+    position: absolute;
+    bottom: 24px;
+    right: 80px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: rgba(0,0,0,.12);
+    font-style: italic;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    z-index: 100;
+  }
+
+  .nav-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+  }
+
+  .nav-dot.active { background: #c4607a; transform: scale(1.4); }
+
+  .nav-arrows {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 20px;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.1);
+    color: rgba(255,255,255,.5);
+    font-size: 18px;
+    cursor: pointer;
+    pointer-events: all;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s;
+    backdrop-filter: blur(4px);
+  }
+
+  .nav-btn:hover { background: rgba(255,255,255,.15); color: #fff; }
+
+  /* ── DONE BADGE ── */
+  .done-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(196,96,122,.15);
+    border: 1px solid rgba(196,96,122,.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #c4607a;
+    margin-bottom: 10px;
+  }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    background: rgba(196,96,122,.1);
+    border: 1px solid rgba(196,96,122,.25);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 16px;
+  }
+
+  .highlight-text {
+    font-size: 14px;
+    color: #fff;
+    line-height: 1.6;
+  }
+
+  .highlight-text strong { color: #e8a0b2; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- ══ SLIDE 1 — COVER ══ -->
+  <div class="slide slide-cover active" id="slide-0">
+    <div class="cover-psi">ψ</div>
+    <div class="cover-eyebrow">Between · רודמאפ אסטרטגי</div>
+    <div class="cover-title">Q3 2026</div>
+    <div class="cover-sub">מה בונים. למה. ובאיזה סדר.</div>
+    <div class="cover-meta">הילי · מאיה · מאי 2026</div>
+    <div class="slide-num">01</div>
+    <div class="slide-logo">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 2 — CONTEXT ══ -->
+  <div class="slide slide-dark" id="slide-1">
+    <div class="slide-eyebrow" style="color:rgba(196,96,122,.8);">נקודת ההתחלה</div>
+    <div class="slide-title slide-title-light" style="margin-bottom:32px;">מה יש. מה חסר.</div>
+    <div class="cards cards-3">
+      <div class="card-dark">
+        <div class="card-label-light">מה עובד</div>
+        <div class="card-value-light">8 תיאורטיקנים</div>
+        <div class="card-desc-light">קול ייחודי, RAG, validation loop. הבסיס קיים.</div>
+      </div>
+      <div class="card-dark">
+        <div class="card-label-light">מה לא ברור</div>
+        <div class="card-value-light">מי המשתמש האמיתי</div>
+        <div class="card-desc-light">מטפל שמפנה? מטופל שמגיע לבד? שני הפלואים שונים לחלוטין.</div>
+      </div>
+      <div class="card-dark">
+        <div class="card-label-light">הסיכון הכי גדול</div>
+        <div class="card-value-light">תחליף לטיפול</div>
+        <div class="card-desc-light">מטופל שמוצא מספיק ב-Between ועוזב את המטפל שלו.</div>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:24px;">
+      <div class="highlight-text">
+        <strong>הנחת הבסיס של הרבעון:</strong> לא מוסיפים תיאורטיקנים. לא מפתחים פיצ'רים חדשים.
+        מוודאים שמי שמגיע — מבין לאן הגיע, ויוצא עם סיבה לחזור לטיפול שלה.
+      </div>
+    </div>
+    <div class="slide-num">02</div>
+    <div class="slide-logo" style="color:rgba(255,255,255,.1);">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 3 — SECTION: עכשיו ══ -->
+  <div class="slide slide-section" id="slide-2">
+    <div class="section-label">חלק ראשון</div>
+    <div class="section-title">עכשיו —<br>הרבעון הזה</div>
+    <div class="section-sub">מה כבר נבנה, מה בבנייה, מה חייבים לסיים.</div>
+    <div class="slide-num">03</div>
+    <div class="slide-logo">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 4 — DONE ══ -->
+  <div class="slide slide-content" id="slide-3">
+    <div class="slide-eyebrow">כבר נבנה</div>
+    <div class="slide-title">מה שנשלם הרבעון הזה</div>
+    <div class="items">
+      <div class="item">
+        <div class="item-dot-done">✓</div>
+        <div class="item-body">
+          <div class="item-title">ויניקוט כברירת מחדל בסשן</div>
+          <div class="item-sub">לחיצה על כפתור סשן → ויניקוט נדלק אוטומטית + טולטיפ הסבר</div>
+        </div>
+        <div class="tag tag-done">הושלם</div>
+      </div>
+      <div class="item">
+        <div class="item-dot-done">✓</div>
+        <div class="item-body">
+          <div class="item-title">החלפת תיאורטיקן מאפסת שיחה</div>
+          <div class="item-sub">מודל אישור לפני מעבר — שיחה לא התחילה: חופשי. שיחה פעילה: דורש אישור.</div>
+        </div>
+        <div class="tag tag-done">הושלם</div>
+      </div>
+      <div class="item">
+        <div class="item-dot-done">✓</div>
+        <div class="item-body">
+          <div class="item-title">ממשק אנגלית מלא</div>
+          <div class="item-sub">כל מחרוזות עברית קשיחות תורגמו — כולל פתיחת סשן, ייחוס, tooltip אונבורדינג</div>
+        </div>
+        <div class="tag tag-done">הושלם</div>
+      </div>
+      <div class="item">
+        <div class="item-dot-done">✓</div>
+        <div class="item-body">
+          <div class="item-title">ניקוי שפות — רק עברית ואנגלית</div>
+          <div class="item-sub">הוסרו 5 שפות מ-intake, UI, LANGUAGES array</div>
+        </div>
+        <div class="tag tag-done">הושלם</div>
+      </div>
+    </div>
+    <div class="slide-num-dark">04</div>
+    <div class="slide-logo-dark">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 5 — IN PROGRESS ══ -->
+  <div class="slide slide-content" id="slide-4">
+    <div class="slide-eyebrow">בבנייה · עדיפות גבוהה</div>
+    <div class="slide-title">מה צריך לקרות לפני שיחה אמיתית</div>
+    <div class="items">
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">פלואו intake חדש — שני נתיבים</div>
+          <div class="item-sub">"הגעת לבד, או שהמטפל/ת שלך הכיר/ה אותך?" → משנה את מה שרואים בפנים</div>
+        </div>
+        <div class="tag tag-now">עדיפות 1</div>
+      </div>
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">סיום שיחה אוטומטי עם hook לטיפול</div>
+          <div class="item-sub">כל שיחה מסתיימת במשפט: "הביאי את זה לפגישה הבאה." — לא כפתור. אמירה.</div>
+        </div>
+        <div class="tag tag-now">עדיפות 2</div>
+      </div>
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">עדכוני קופי — subtitle, welcome, placeholder</div>
+          <div class="item-sub">להחליף "PSYCHOANALYTIC ADVISOR", לשנות welcome text, לתקן disclaimer</div>
+        </div>
+        <div class="tag tag-now">עדיפות 3</div>
+      </div>
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">3 מטפלים אמיתיים שמשתמשים ונותנים פידבק</div>
+          <div class="item-sub">לא קדמה. מחקר. בלי זה — לא יודעים אם מה שבנינו עובד.</div>
+        </div>
+        <div class="tag tag-risk">הנחה מסוכנת</div>
+      </div>
+    </div>
+    <div class="slide-num-dark">05</div>
+    <div class="slide-logo-dark">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 6 — THE BIG QUESTION ══ -->
+  <div class="slide slide-dark" id="slide-5">
+    <div class="slide-eyebrow" style="color:rgba(196,96,122,.8);">השאלה שקובעת הכל</div>
+    <div class="slide-title slide-title-light" style="margin-bottom:28px; font-size:32px;">מי מפעיל את הממשק — מטפל או מטופל?</div>
+    <div class="cards cards-2">
+      <div class="card-dark">
+        <div class="card-label-light">נתיב א׳ — מטופל עצמאי</div>
+        <div class="card-value-light" style="font-size:15px; margin-top:8px;">מגיע לבד, בין פגישות</div>
+        <div class="card-desc-light" style="margin-top:10px;">מצב עיון — ויניקוט כמשקיף, לא כנוכחות בסשן<br>כפתור סשן: נסתר<br>סיום: hook לפגישה הבאה</div>
+      </div>
+      <div class="card-pink">
+        <div class="card-label-light">נתיב ב׳ — מטפל מפנה</div>
+        <div class="card-value-light" style="font-size:15px; margin-top:8px;">שולח קישור / מכין שטח</div>
+        <div class="card-desc-light" style="margin-top:10px;">מצב סשן פעיל מהכניסה<br>ויניקוט טעון כדיפולט<br>המרחב מגדיר את עצמו: "שלחו אותי לכאן"</div>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:20px;">
+      <div class="highlight-text" style="font-size:13px;">
+        <strong>החלטה זו מגדירה</strong> — מחיר, ממשק, שיווק, ומה אנחנו אומרים לעצמנו שאנחנו בונים.
+        כל עוד לא הוחלט — שני הנתיבים נכנסים לאותו דלת.
+      </div>
+    </div>
+    <div class="slide-num">06</div>
+    <div class="slide-logo" style="color:rgba(255,255,255,.1);">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 7 — SECTION: אחר כך ══ -->
+  <div class="slide slide-section" id="slide-6">
+    <div class="section-label">חלק שני</div>
+    <div class="section-title">אחר כך —<br>3 עד 6 חודשים</div>
+    <div class="section-sub">רק אחרי שה-NOW מאומת על משתמשים אמיתיים.</div>
+    <div class="slide-num">07</div>
+    <div class="slide-logo">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 8 — NEXT ══ -->
+  <div class="slide slide-dark" id="slide-7">
+    <div class="slide-eyebrow" style="color:rgba(196,96,122,.8);">3–6 חודשים</div>
+    <div class="slide-title slide-title-light" style="margin-bottom:28px;">בונים אחרי שיש ולידציה</div>
+    <div class="timeline">
+      <div class="tl-row">
+        <div class="tl-label">חודש 3–4</div>
+        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-title">פלואו הפניית מטפל</div>
+          <div class="tl-items">
+            <div class="tl-item">קישור ייחודי שמטפל שולח למטופל</div>
+            <div class="tl-item">כניסה דרך הקישור → סשן נפתח עם ויניקוט אוטומטית</div>
+            <div class="tl-item">כפתור סשן נסתר מנתיב עצמאי</div>
+          </div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-label">חודש 4–5</div>
+        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-title">מודל תשלום — החלטה ובנייה</div>
+          <div class="tl-items">
+            <div class="tl-item">מנוי? תשלום לשיחה? B2B דרך מטפל?</div>
+            <div class="tl-item">סליקה + ניהול משתמשים</div>
+          </div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-label">חודש 5–6</div>
+        <div class="tl-line-wrap"><div class="tl-dot-muted"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-title-muted">הרחבת RAG ויניקוט + תיאורטיקן שני</div>
+          <div class="tl-items">
+            <div class="tl-item" style="opacity:.5;">להשוות איכות ויניקוט לפרויד ולסגור פערים</div>
+            <div class="tl-item" style="opacity:.5;">רק אחרי שהקיימים עמוקים מספיק</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">08</div>
+    <div class="slide-logo" style="color:rgba(255,255,255,.1);">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 9 — NEVER ══ -->
+  <div class="slide slide-content" id="slide-8">
+    <div class="slide-eyebrow">קווים אדומים</div>
+    <div class="slide-title">מה לעולם לא נבנה</div>
+    <div class="items">
+      <div class="item" style="border-color:rgba(200,80,80,.15);">
+        <div class="item-dot" style="background:#c45050;"></div>
+        <div class="item-body">
+          <div class="item-title">ממשק שמאפשר שימוש ללא מטפל</div>
+          <div class="item-sub">אין עוגן טיפולי? המרחב לא מתאים. לא מתפשרים על זה.</div>
+        </div>
+      </div>
+      <div class="item" style="border-color:rgba(200,80,80,.15);">
+        <div class="item-dot" style="background:#c45050;"></div>
+        <div class="item-body">
+          <div class="item-title">תמיכה רגשית ראשונית / תגובה למשבר</div>
+          <div class="item-sub">אין משאב זמין? → 1201. הממשק לא נבנה לזה ולא מתחרה בזה.</div>
+        </div>
+      </div>
+      <div class="item" style="border-color:rgba(200,80,80,.15);">
+        <div class="item-dot" style="background:#c45050;"></div>
+        <div class="item-body">
+          <div class="item-title">מעבר חופשי בין 8 תיאורטיקנים בסשן</div>
+          <div class="item-sub">קניות תיאורטיות ≠ עיבוד. תיאורטיקן בסשן — נעול.</div>
+        </div>
+      </div>
+      <div class="item" style="border-color:rgba(200,80,80,.15);">
+        <div class="item-dot" style="background:#c45050;"></div>
+        <div class="item-body">
+          <div class="item-title">אפליקציית מובייל לפני ולידציה</div>
+          <div class="item-sub">לא לפני שיש 3 מטפלים שמשתמשים. אחרת בונים את הדבר הלא נכון במהירות.</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num-dark">09</div>
+    <div class="slide-logo-dark">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 10 — QUESTIONS ══ -->
+  <div class="slide slide-dark" id="slide-9">
+    <div class="slide-eyebrow" style="color:rgba(196,96,122,.8);">שאלות למייסדת</div>
+    <div class="slide-title slide-title-light" style="margin-bottom:28px; font-size:32px;">מה צריך החלטה כדי להמשיך</div>
+    <div class="items">
+      <div class="item-dark">
+        <div style="font-size:22px; color:#c4607a; flex-shrink:0;">01</div>
+        <div class="item-body">
+          <div class="item-title-light">מי הלקוח — מטפל או מטופל?</div>
+          <div class="item-sub-light">ה-intake, כפתור הסשן, ומחיר — כולם תלויים בזה</div>
+        </div>
+      </div>
+      <div class="item-dark">
+        <div style="font-size:22px; color:#c4607a; flex-shrink:0;">02</div>
+        <div class="item-body">
+          <div class="item-title-light">מה מודל התשלום?</div>
+          <div class="item-sub-light">מנוי / לשיחה / B2B דרך מטפל — כל אחד מביא קהל אחר</div>
+        </div>
+      </div>
+      <div class="item-dark">
+        <div style="font-size:22px; color:#c4607a; flex-shrink:0;">03</div>
+        <div class="item-body">
+          <div class="item-title-light">מה קורה כשמטופל אומר "לא בטיפול"?</div>
+          <div class="item-sub-light">חסימה? הפניה? חוויה אחרת? כרגע ממשיך כרגיל — זה לא פתרון</div>
+        </div>
+      </div>
+      <div class="item-dark">
+        <div style="font-size:22px; color:#c4607a; flex-shrink:0;">04</div>
+        <div class="item-body">
+          <div class="item-title-light">מתי מתחילים לדבר עם מטפלים אמיתיים?</div>
+          <div class="item-sub-light">כל עוד אין פידבק קליני אמיתי — בונים מתוך הנחות</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">10</div>
+    <div class="slide-logo" style="color:rgba(255,255,255,.1);">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 11 — CLOSING ══ -->
+  <div class="slide slide-close" id="slide-10">
+    <div class="cover-psi" style="opacity:.08;">ψ</div>
+    <div class="cover-eyebrow">הרבעון הזה</div>
+    <div class="cover-title" style="font-size:52px; max-width:700px; line-height:1.15;">
+      פחות פיצ'רים.<br>יותר בהירות.
+    </div>
+    <div class="cover-sub" style="max-width:480px; margin-top:20px;">
+      המרחב קיים. הקולות עמוקים. עכשיו לוודא שמי שמגיע — מבין לאן הגיע.
+    </div>
+    <div class="cover-meta" style="margin-top:32px;">Between · Q3 2026 · הילי ומאיה</div>
+    <div class="slide-num">11</div>
+    <div class="slide-logo">Between</div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- NAV ARROWS -->
+<div class="nav-arrows">
+  <button class="nav-btn" id="prev" onclick="go(-1)">‹</button>
+  <button class="nav-btn" id="next" onclick="go(1)">›</button>
+</div>
+
+<!-- NAV DOTS -->
+<nav id="dots"></nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotsEl = document.getElementById('dots');
+  let cur = 0;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(slides.length - 1, n));
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('active');
+    document.getElementById('prev').style.opacity = cur === 0 ? '.2' : '1';
+    document.getElementById('next').style.opacity = cur === slides.length - 1 ? '.2' : '1';
+  }
+
+  function go(dir) { goTo(cur + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
+  });
+
+  // Swipe
+  let tx = 0;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+  document.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+  });
+
+  goTo(0);
+</script>
+</body>
+</html>
