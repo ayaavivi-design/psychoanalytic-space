@@ -4487,6 +4487,8 @@ conversationHistory = loadConversation();
 updateMemoryCount();
 updateReflectionBtn();
 tryInitSupabase();
+// Apply default language (EN) on first load
+applyUITranslation(selectedLang.code);
 window.signIn = signIn;
 window.signUp = signUp;
 window.resetPassword = resetPassword;
