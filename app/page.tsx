@@ -248,13 +248,13 @@ export default function Home() {
           <div style={{ marginBottom: 16 }}>
             <div id="auth-persona-label" style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 10, opacity: 0.8 }}>מי אתה/את?</div>
             <div style={{ display: 'flex', gap: 6 }}>
-              {([['therapist','מטפל/ת'],['student','לומד/ת'],['patient','בטיפול']] as [string,string][]).map(([key, label]) => (
+              {([['therapist','מטפל/ת'],['patient','בטיפול']] as [string,string][]).map(([key, label]) => (
                 <button key={key} id={`persona-auth-${key}`}
                   onClick={() => {
                     const prefs = JSON.parse(localStorage.getItem('user_prefs') || '{}');
                     prefs.persona = key;
                     localStorage.setItem('user_prefs', JSON.stringify(prefs));
-                    ['therapist','student','patient'].forEach(k => {
+                    ['therapist','patient'].forEach(k => {
                       const btn = document.getElementById(`persona-auth-${k}`);
                       if (!btn) return;
                       btn.style.background = k === key ? 'var(--accent-soft)' : 'none';

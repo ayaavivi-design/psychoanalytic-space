@@ -3076,7 +3076,7 @@ const UI_TRANSLATIONS = {
     disclaimer: 'כלי לימודי ומחקרי בלבד · אינו מהווה תחליף לטיפול פסיכולוגי מקצועי',
     tooltips: { freud:'מה שלא נאמר', klein:'מה שקשה לגעת בו', winnicott:'המרחב להיות', ogden:'מה שנוצר בין שנינו', loewald:'הקשר עצמו כגורם המרפא', bion:'מה שעדיין לא ניתן לומר', kohut:'להרגיש מובן', heimann:'מה שהמפגש מעורר בי' },
     authTitle: 'Between', authSubtitle: 'כניסה או הרשמה כדי להתחיל',
-    authPersonaLabel: 'מי אתה/את?', authTherapist: 'מטפל/ת', authStudent: 'לומד/ת', authPatient: 'בטיפול',
+    authPersonaLabel: 'מי אתה/את?', authTherapist: 'מטפל/ת', authPatient: 'בטיפול',
     authEmail: 'כתובת מייל', authPassword: 'סיסמה',
     authSignIn: 'כניסה', authSignUp: 'הרשמה', authForgot: 'שכחתי סיסמה',
     authSecurity: 'השיחות נשמרות רק על המכשיר שלך ולא מועלות לשרת.\nפרטי הכניסה מוצפנים ומאובטחים.',
@@ -3162,7 +3162,7 @@ const UI_TRANSLATIONS = {
     disclaimer: 'For educational use only · Not a substitute for professional psychological treatment',
     tooltips: { freud:'What goes unsaid', klein:"What's hard to touch", winnicott:'The space to simply be', ogden:'What emerges between us', loewald:'The relationship itself as healing', bion:'What cannot yet be spoken', kohut:'To feel understood', heimann:'What the encounter stirs in me' },
     authTitle: 'Between', authSubtitle: 'Sign in or register to begin',
-    authPersonaLabel: 'Who are you?', authTherapist: 'Therapist', authStudent: 'Student', authPatient: 'In therapy',
+    authPersonaLabel: 'Who are you?', authTherapist: 'Therapist', authPatient: 'In therapy',
     authEmail: 'Email address', authPassword: 'Password',
     authSignIn: 'Sign in', authSignUp: 'Register', authForgot: 'Forgot password',
     authSecurity: 'Conversations are stored only on your device and never uploaded.\nLogin details are encrypted and secure.',
@@ -3258,8 +3258,6 @@ function applyUITranslation(code) {
   if (authPersonaLabel && t.authPersonaLabel) authPersonaLabel.textContent = t.authPersonaLabel;
   const authTherapistBtn = document.getElementById('persona-auth-therapist');
   if (authTherapistBtn && t.authTherapist) authTherapistBtn.textContent = t.authTherapist;
-  const authStudentBtn = document.getElementById('persona-auth-student');
-  if (authStudentBtn && t.authStudent) authStudentBtn.textContent = t.authStudent;
   const authPatientBtn = document.getElementById('persona-auth-patient');
   if (authPatientBtn && t.authPatient) authPatientBtn.textContent = t.authPatient;
   const authEmailInput = document.getElementById('auth-email');
