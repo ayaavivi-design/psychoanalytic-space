@@ -106,166 +106,6 @@ const INTAKE_TRANSLATIONS = {
       { key: 'seeking',     q: 'What would you like this space to give you?', options: ['Case consultation', 'Theoretical deepening', 'Clinical thinking', 'Processing between sessions', 'Other'], multiSelect: true },
     ],
   },
-  de: {
-    postWelcomeH2: (name) => `Hallo, ${name}`,
-    postWelcomeP: 'Dieser Raum ist für Sie da.',
-    closing: 'Danke, dass Sie erzählt haben. Dieser Raum ist für Sie da.',
-    btnLabel: 'Kennenlerngespräch',
-    btnTooltip: 'Ein paar kurze Fragen, um den Raum auf Sie abzustimmen. Dauert etwa zwei Minuten.',
-    speaker: 'Der Raum', youLabel: 'Sie', confirm: 'Weiter', skipLabel: 'Überspringen',
-    warningNotInTherapy: 'Dieser Raum begleitet — er ersetzt nicht. Wenn Sie eine schwierige Zeit durchmachen, kann ein Gespräch mit einem Fachmann einen Unterschied machen.',
-    stepsPatient: [
-      { key: 'name',      q: 'Wie können wir Sie ansprechen?' },
-      { key: 'gender',    q: 'Welche Anredeform bevorzugen Sie?', options: ['Weiblich', 'Männlich', 'Neutral'] },
-      { key: 'inTherapy', q: 'Befinden Sie sich derzeit in Therapie?', options: ['Ja', 'Nein', 'Ich war früher in Therapie'], warningOnAnswer: 'Nein' },
-      { key: 'therapyDuration', q: 'Wie lange sind Sie schon in Therapie?', options: ['Weniger als ein Jahr', 'Ein bis drei Jahre', 'Drei bis fünf Jahre', 'Mehr als fünf Jahre'], showIf: (d) => d.inTherapy === 'Ja' },
-      { key: 'reason',    q: 'Was hat Sie heute hierher geführt?' },
-      { key: 'betweenSessions', q: 'Was passiert bei Ihnen zwischen den Sitzungen meistens?', options: ['Ich denke über das Gesagte nach', 'Es kommen Dinge auf, die ich nicht gesagt habe', 'Ich versuche zu verstehen, was dort passiert ist', 'Ich fühle mich allein mit dem, was aufgekommen ist', 'Ich bereite die nächste Sitzung vor', 'Ich gehe weiter, ohne es zu verarbeiten'], multiSelect: true, showIf: (d) => d.inTherapy === 'Ja' },
-      { key: 'waitingOutside', q: 'Gibt es Dinge, die draußen warten — die Sie gerne in den Therapieraum bringen würden, aber etwas hält Sie zurück?', subtext: 'Sie müssen nicht ins Detail gehen — die Wahl selbst reicht', options: ['Ein Traum, der mich verwirrt', 'Ein Gefühl, für das ich mich schäme', 'Eine Frage, bei der ich nicht sicher bin, ob ich sie stellen darf', 'Etwas, das ich nicht in Worte fassen kann', 'Schwierigkeiten in der Beziehung zu meinem Therapeuten, die ich nicht laut sagen kann', 'Etwas, das ich organisieren möchte, bevor ich es einbringe', 'Ich weiß nicht, wie ich es definieren soll'], multiSelect: true, showIf: (d) => d.inTherapy === 'Ja' },
-      { key: 'recentMoment', q: 'Gibt es einen Moment aus der Therapie, der Sie zuletzt beschäftigt hat und noch nachhallt? Beschreiben Sie ihn in ein paar Worten.', optional: true, showIf: (d) => d.inTherapy === 'Ja' && d.therapyDuration && d.therapyDuration !== 'Weniger als ein Jahr' },
-      { key: 'seeking',   q: 'Was soll Ihnen dieser Raum geben?', options: ['Laut denken', 'Verstehen was mit mir passiert', 'Begleitung zwischen Sitzungen', 'Erkunden', 'Anderes'], multiSelect: true },
-    ],
-    stepsStudent: [
-      { key: 'name',      q: 'Wie können wir Sie ansprechen?' },
-      { key: 'reason',    q: 'Was bringt Sie hierher?' },
-      { key: 'inTherapy', q: 'Sind Sie derzeit in persönlicher Therapie?', options: ['Ja', 'Nein', 'In Ausbildung'] },
-      { key: 'seeking',   q: 'Was soll Ihnen dieser Raum geben?', options: ['Theorie durchdenken', 'Konzepte verstehen', 'Klinisches Material durchdenken', 'Erkunden', 'Anderes'], multiSelect: true },
-    ],
-    stepsTherapist: [
-      { key: 'name',        q: 'Wie können wir Sie ansprechen?' },
-      { key: 'reason',      q: 'Was bringt Sie hierher?' },
-      { key: 'supervision', q: 'Befinden Sie sich derzeit in Supervision?', options: ['Ja', 'Nein', 'Früher'] },
-      { key: 'seeking',     q: 'Was soll Ihnen dieser Raum geben?', options: ['Fallberatung', 'Theoretische Vertiefung', 'Klinisches Denken', 'Verarbeitung zwischen Sitzungen', 'Anderes'], multiSelect: true },
-    ],
-  },
-  es: {
-    postWelcomeH2: (name) => `Hola, ${name}`,
-    postWelcomeP: 'Este espacio está aquí para ti.',
-    closing: 'Gracias por compartir. Este espacio está aquí para ti.',
-    btnLabel: 'Conversación de presentación',
-    btnTooltip: 'Unas pocas preguntas para adaptar el espacio a ti. Toma unos dos minutos.',
-    speaker: 'El espacio', youLabel: 'Tú', confirm: 'Continuar', skipLabel: 'Omitir',
-    warningNotInTherapy: 'Este espacio acompaña — no reemplaza. Si estás pasando por un momento difícil, hablar con un profesional puede marcar la diferencia.',
-    stepsPatient: [
-      { key: 'name',      q: '¿Cómo podemos llamarte?' },
-      { key: 'gender',    q: '¿Cómo prefieres que te llamen?', options: ['Ella', 'Él', 'Neutro'] },
-      { key: 'inTherapy', q: '¿Estás actualmente en terapia?', options: ['Sí', 'No', 'Estuve antes'], warningOnAnswer: 'No' },
-      { key: 'therapyDuration', q: '¿Cuánto tiempo llevas en terapia?', options: ['Menos de un año', 'De uno a tres años', 'De tres a cinco años', 'Más de cinco años'], showIf: (d) => d.inTherapy === 'Sí' },
-      { key: 'reason',    q: '¿Qué te trajo aquí hoy?' },
-      { key: 'betweenSessions', q: '¿Qué suele pasarte entre sesiones?', options: ['Pienso en lo que se dijo', 'Surgen cosas que no dije', 'Intento entender qué pasó allí', 'Me siento solo/a con lo que surgió', 'Me preparo para la próxima sesión', 'Sigo adelante sin procesar nada'], multiSelect: true, showIf: (d) => d.inTherapy === 'Sí' },
-      { key: 'waitingOutside', q: '¿Hay cosas que esperan afuera — que te gustaría llevar a la sala de terapia pero algo te detiene?', subtext: 'No hace falta dar detalles — la elección en sí es suficiente', options: ['Un sueño que me confunde', 'Un sentimiento del que me avergüenzo', 'Una pregunta que no sé si está permitido hacer', 'Algo que no sé cómo poner en palabras', 'Dificultad en la relación con mi terapeuta que es difícil decir en voz alta', 'Algo que quiero organizar antes de traerlo', 'No sé cómo definirlo'], multiSelect: true, showIf: (d) => d.inTherapy === 'Sí' },
-      { key: 'recentMoment', q: '¿Hay algún momento de la terapia que te haya llamado la atención recientemente y todavía resuena? Puedes describirlo en pocas palabras.', optional: true, showIf: (d) => d.inTherapy === 'Sí' && d.therapyDuration && d.therapyDuration !== 'Menos de un año' },
-      { key: 'seeking',   q: '¿Qué te gustaría que este espacio te diera?', options: ['Pensar en voz alta', 'Entender lo que me pasa', 'Acompañamiento entre sesiones', 'Explorar', 'Otro'], multiSelect: true },
-    ],
-    stepsStudent: [
-      { key: 'name',      q: '¿Cómo podemos llamarte?' },
-      { key: 'reason',    q: '¿Qué te trae aquí?' },
-      { key: 'inTherapy', q: '¿Estás actualmente en terapia personal?', options: ['Sí', 'No', 'En formación'] },
-      { key: 'seeking',   q: '¿Qué te gustaría que este espacio te diera?', options: ['Pensar teoría', 'Entender conceptos', 'Pensar material clínico', 'Explorar', 'Otro'], multiSelect: true },
-    ],
-    stepsTherapist: [
-      { key: 'name',        q: '¿Cómo podemos llamarte?' },
-      { key: 'reason',      q: '¿Qué te trae aquí?' },
-      { key: 'supervision', q: '¿Estás actualmente en supervisión?', options: ['Sí', 'No', 'Estuve antes'] },
-      { key: 'seeking',     q: '¿Qué te gustaría que este espacio te diera?', options: ['Consulta de casos', 'Profundización teórica', 'Pensamiento clínico', 'Procesamiento entre sesiones', 'Otro'], multiSelect: true },
-    ],
-  },
-  fr: {
-    postWelcomeH2: (name) => `Bonjour, ${name}`,
-    postWelcomeP: 'Cet espace est là pour vous.',
-    closing: 'Merci de vous être confié. Cet espace est là pour vous.',
-    btnLabel: 'Conversation de présentation',
-    btnTooltip: 'Quelques questions courtes pour adapter cet espace à vous. Prend environ deux minutes.',
-    speaker: "L'espace", youLabel: 'Vous', confirm: 'Continuer', skipLabel: 'Passer',
-    warningNotInTherapy: 'Cet espace accompagne — il ne remplace pas. Si vous traversez une période difficile, parler avec un professionnel peut faire la différence.',
-    stepsPatient: [
-      { key: 'name',      q: 'Comment pouvons-nous vous appeler ?' },
-      { key: 'gender',    q: 'Quelle forme d\'adresse préférez-vous ?', options: ['Féminin', 'Masculin', 'Neutre'] },
-      { key: 'inTherapy', q: 'Êtes-vous actuellement en thérapie ?', options: ['Oui', 'Non', "Je l'étais avant"], warningOnAnswer: 'Non' },
-      { key: 'therapyDuration', q: 'Depuis combien de temps êtes-vous en thérapie ?', options: ["Moins d'un an", 'Un à trois ans', 'Trois à cinq ans', 'Plus de cinq ans'], showIf: (d) => d.inTherapy === 'Oui' },
-      { key: 'reason',    q: "Qu'est-ce qui vous amène ici aujourd'hui ?" },
-      { key: 'betweenSessions', q: 'Que se passe-t-il généralement pour vous entre les séances ?', options: ['Je pense à ce qui a été dit', "Des choses me viennent que je n'ai pas dites", "J'essaie de comprendre ce qui s'est passé", 'Je me sens seul/e avec ce qui a émergé', 'Je prépare la prochaine séance', "Je passe à autre chose sans intégrer"], multiSelect: true, showIf: (d) => d.inTherapy === 'Oui' },
-      { key: 'waitingOutside', q: 'Y a-t-il des choses qui attendent dehors — que vous aimeriez apporter en séance mais quelque chose vous en empêche ?', subtext: "Pas besoin d'entrer dans les détails — le choix lui-même suffit", options: ['Un rêve qui me trouble', "Un sentiment dont j'ai honte", "Une question dont je ne sais pas si je peux la poser", "Quelque chose que je ne sais pas mettre en mots", "Une difficulté dans la relation avec mon thérapeute que je n'arrive pas à dire à voix haute", "Quelque chose que je veux organiser avant de l'apporter", "Je ne sais pas comment le définir"], multiSelect: true, showIf: (d) => d.inTherapy === 'Oui' },
-      { key: 'recentMoment', q: "Y a-t-il un moment de la thérapie qui vous a marqué récemment et qui résonne encore ? Vous pouvez le décrire en quelques mots.", optional: true, showIf: (d) => d.inTherapy === 'Oui' && d.therapyDuration && d.therapyDuration !== "Moins d'un an" },
-      { key: 'seeking',   q: 'Que souhaiteriez-vous que cet espace vous apporte ?', options: ['Penser à voix haute', 'Comprendre ce que je vis', 'Accompagnement entre séances', 'Explorer', 'Autre'], multiSelect: true },
-    ],
-    stepsStudent: [
-      { key: 'name',      q: 'Comment pouvons-nous vous appeler ?' },
-      { key: 'reason',    q: "Qu'est-ce qui vous amène ici ?" },
-      { key: 'inTherapy', q: 'Êtes-vous actuellement en thérapie personnelle ?', options: ['Oui', 'Non', 'En formation'] },
-      { key: 'seeking',   q: 'Que souhaiteriez-vous que cet espace vous apporte ?', options: ['Réfléchir à la théorie', 'Comprendre des concepts', 'Réfléchir au matériel clinique', 'Explorer', 'Autre'], multiSelect: true },
-    ],
-    stepsTherapist: [
-      { key: 'name',        q: 'Comment pouvons-nous vous appeler ?' },
-      { key: 'reason',      q: "Qu'est-ce qui vous amène ici ?" },
-      { key: 'supervision', q: 'Êtes-vous actuellement en supervision ?', options: ['Oui', 'Non', "Je l'étais avant"] },
-      { key: 'seeking',     q: 'Que souhaiteriez-vous que cet espace vous apporte ?', options: ['Consultation de cas', 'Approfondissement théorique', 'Pensée clinique', 'Traitement entre séances', 'Autre'], multiSelect: true },
-    ],
-  },
-  ru: {
-    postWelcomeH2: (name) => `Здравствуйте, ${name}`,
-    postWelcomeP: 'Это пространство здесь для вас.',
-    closing: 'Спасибо, что поделились. Это пространство здесь для вас.',
-    btnLabel: 'Вводная беседа',
-    btnTooltip: 'Несколько коротких вопросов для настройки пространства под вас. Займёт около двух минут.',
-    speaker: 'Пространство', youLabel: 'Вы', confirm: 'Продолжить', skipLabel: 'Пропустить',
-    warningNotInTherapy: 'Это пространство сопровождает — но не заменяет. Если вы переживаете трудный период, разговор со специалистом может изменить ситуацию.',
-    stepsPatient: [
-      { key: 'name',      q: 'Как к вам обращаться?' },
-      { key: 'gender',    q: 'Какую форму обращения вы предпочитаете?', options: ['Женский', 'Мужской', 'Нейтральный'] },
-      { key: 'inTherapy', q: 'Вы сейчас в терапии?', options: ['Да', 'Нет', 'Был/а раньше'], warningOnAnswer: 'Нет' },
-      { key: 'therapyDuration', q: 'Как долго вы в терапии?', options: ['Менее года', 'От года до трёх лет', 'От трёх до пяти лет', 'Более пяти лет'], showIf: (d) => d.inTherapy === 'Да' },
-      { key: 'reason',    q: 'Что привело вас сюда сегодня?' },
-      { key: 'betweenSessions', q: 'Что обычно происходит с вами между сессиями?', options: ['Думаю о том, что было сказано', 'Возникают вещи, которые я не сказал/а', 'Пытаюсь понять, что там произошло', 'Чувствую себя одиноко с тем, что всплыло', 'Готовлюсь к следующей сессии', 'Двигаюсь дальше, не перерабатывая'], multiSelect: true, showIf: (d) => d.inTherapy === 'Да' },
-      { key: 'waitingOutside', q: 'Есть ли вещи, ожидающие снаружи — которые вы хотели бы принести в терапевтическую комнату, но что-то останавливает?', subtext: 'Не нужно вдаваться в подробности — сам выбор достаточен', options: ['Сон, который меня смущает', 'Чувство, которого я стыжусь', 'Вопрос, который не знаю, можно ли задавать', 'Что-то, что не знаю как выразить словами', 'Трудность в отношениях с терапевтом, которую сложно произнести вслух', 'Что-то, что хочу упорядочить перед тем как принести', 'Не знаю, как это определить'], multiSelect: true, showIf: (d) => d.inTherapy === 'Да' },
-      { key: 'recentMoment', q: 'Есть ли момент из терапии, который недавно привлёк ваше внимание и всё ещё резонирует? Опишите его в нескольких словах.', optional: true, showIf: (d) => d.inTherapy === 'Да' && d.therapyDuration && d.therapyDuration !== 'Менее года' },
-      { key: 'seeking',   q: 'Что бы вы хотели получить от этого пространства?', options: ['Думать вслух', 'Понять что со мной происходит', 'Поддержка между сессиями', 'Просто исследовать', 'Другое'], multiSelect: true },
-    ],
-    stepsStudent: [
-      { key: 'name',      q: 'Как к вам обращаться?' },
-      { key: 'reason',    q: 'Что привело вас сюда?' },
-      { key: 'inTherapy', q: 'Вы сейчас в личной терапии?', options: ['Да', 'Нет', 'В обучении'] },
-      { key: 'seeking',   q: 'Что бы вы хотели получить от этого пространства?', options: ['Обдумать теорию', 'Понять концепции', 'Обдумать клинический материал', 'Исследовать', 'Другое'], multiSelect: true },
-    ],
-    stepsTherapist: [
-      { key: 'name',        q: 'Как к вам обращаться?' },
-      { key: 'reason',      q: 'Что привело вас сюда?' },
-      { key: 'supervision', q: 'Вы сейчас в супервизии?', options: ['Да', 'Нет', 'Был/а раньше'] },
-      { key: 'seeking',     q: 'Что бы вы хотели получить от этого пространства?', options: ['Консультация по случаям', 'Теоретическое углубление', 'Клиническое мышление', 'Проработка между сессиями', 'Другое'], multiSelect: true },
-    ],
-  },
-  it: {
-    postWelcomeH2: (name) => `Ciao, ${name}`,
-    postWelcomeP: 'Questo spazio è qui per te.',
-    closing: 'Grazie per aver condiviso. Questo spazio è qui per te.',
-    btnLabel: 'Conversazione di presentazione',
-    btnTooltip: 'Alcune brevi domande per personalizzare lo spazio per te. Richiede circa due minuti.',
-    speaker: 'Lo spazio', youLabel: 'Tu', confirm: 'Continua', skipLabel: 'Salta',
-    warningNotInTherapy: 'Questo spazio accompagna — non sostituisce. Se stai attraversando un momento difficile, parlare con un professionista può fare la differenza.',
-    stepsPatient: [
-      { key: 'name',      q: 'Come possiamo chiamarti?' },
-      { key: 'gender',    q: 'Come preferisci essere chiamato/a?', options: ['Femminile', 'Maschile', 'Neutro'] },
-      { key: 'inTherapy', q: 'Sei attualmente in terapia?', options: ['Sì', 'No', 'Lo ero in passato'], warningOnAnswer: 'No' },
-      { key: 'therapyDuration', q: 'Da quanto tempo sei in terapia?', options: ['Meno di un anno', 'Da uno a tre anni', 'Da tre a cinque anni', 'Più di cinque anni'], showIf: (d) => d.inTherapy === 'Sì' },
-      { key: 'reason',    q: 'Cosa ti ha portato qui oggi?' },
-      { key: 'betweenSessions', q: 'Cosa ti succede di solito tra le sedute?', options: ['Penso a quello che è stato detto', 'Mi vengono in mente cose che non ho detto', 'Cerco di capire cosa è successo lì', 'Mi sento solo/a con quello che è emerso', 'Mi preparo per la prossima seduta', 'Vado avanti senza elaborare'], multiSelect: true, showIf: (d) => d.inTherapy === 'Sì' },
-      { key: 'waitingOutside', q: 'Ci sono cose che aspettano fuori — che vorresti portare nella stanza di terapia ma qualcosa ti ferma?', subtext: 'Non è necessario entrare nei dettagli — la scelta stessa è sufficiente', options: ['Un sogno che mi confonde', 'Un sentimento di cui mi vergogno', 'Una domanda che non so se sia consentito fare', 'Qualcosa che non so come mettere in parole', 'Difficoltà nel rapporto con il mio terapeuta che è difficile dire ad alta voce', 'Qualcosa che voglio organizzare prima di portarlo', 'Non so come definirlo'], multiSelect: true, showIf: (d) => d.inTherapy === 'Sì' },
-      { key: 'recentMoment', q: "C'è un momento dalla terapia che ti ha colpito di recente e risuona ancora? Puoi descriverlo in poche parole.", optional: true, showIf: (d) => d.inTherapy === 'Sì' && d.therapyDuration && d.therapyDuration !== 'Meno di un anno' },
-      { key: 'seeking',   q: 'Cosa vorresti che questo spazio ti desse?', options: ['Pensare ad alta voce', 'Capire cosa mi sta succedendo', 'Accompagnamento tra le sedute', 'Esplorare', 'Altro'], multiSelect: true },
-    ],
-    stepsStudent: [
-      { key: 'name',      q: 'Come possiamo chiamarti?' },
-      { key: 'reason',    q: 'Cosa ti porta qui?' },
-      { key: 'inTherapy', q: 'Sei attualmente in terapia personale?', options: ['Sì', 'No', 'In formazione'] },
-      { key: 'seeking',   q: 'Cosa vorresti che questo spazio ti desse?', options: ['Riflettere sulla teoria', 'Capire concetti', 'Riflettere sul materiale clinico', 'Esplorare', 'Altro'], multiSelect: true },
-    ],
-    stepsTherapist: [
-      { key: 'name',        q: 'Come possiamo chiamarti?' },
-      { key: 'reason',      q: 'Cosa ti porta qui?' },
-      { key: 'supervision', q: 'Sei attualmente in supervisione?', options: ['Sì', 'No', 'Lo ero in passato'] },
-      { key: 'seeking',     q: 'Cosa vorresti che questo spazio ti desse?', options: ['Consultazione di casi', 'Approfondimento teorico', 'Pensiero clinico', 'Elaborazione tra le sedute', 'Altro'], multiSelect: true },
-    ],
-  },
 };
 
 function getIntakeTranslation(overrideCode) {
@@ -625,7 +465,7 @@ const API_KEY_STORAGE = 'psycho_api_key';
 let activeTheorists = [];
 let uploadedFileContent = null;
 let uploadedFileName = null;
-let selectedLang = { code: 'he', flag: '🇮🇱', name: 'עברית' };
+let selectedLang = { code: 'en', flag: '🇬🇧', name: 'English' };
 window.selectedLang = selectedLang;
 let isThinking = false;
 let sessionMemorySaved = false;
@@ -3185,7 +3025,7 @@ You are not diagnosing. You are not a hotline. But you are also not a theoretica
 **Skill תרגום:**
 אם המשתמש מבקש תרגום — למשל "תרגמי לאנגלית", "translate to German", "по-русски", "en español" — תרגם את התשובה האחרונה בשיחה לאותה שפה. שמור על כל המונחים הפסיכואנליטיים מדויקים בשפת היעד. אל תוסיף הסברים — רק התרגום.
 
-אתה משיב תמיד בשפה: ${selectedLang ? selectedLang.code : 'he'}. אם השפה היא 'he' — ענה בעברית. אם 'en' — ענה באנגלית. אם 'de' — ענה בגרמנית. אם 'es' — ענה בספרדית. אם 'fr' — ענה בצרפתית. אם 'ru' — ענה ברוסית. שמור על שפת התשובה ללא קשר לשפת השאלה. אתה שולט לעומק בכל הגישות הפסיכואנליטיות העיקריות: פרויד, קליין, ויניקוט, אוגדן, לוואלד, ביון, לאקאן, קוהוט, היימן.${theoristKnowledge}${focusInstruction}${memoryContext}${genderInstruction}${clinicalInstruction}
+Respond always in the selected language: ${selectedLang ? selectedLang.code : 'en'}. If 'he' — respond in Hebrew. If 'en' — respond in English. Maintain this language regardless of the user's input language. אתה שולט לעומק בכל הגישות הפסיכואנליטיות העיקריות: פרויד, קליין, ויניקוט, אוגדן, לוואלד, ביון, לאקאן, קוהוט, היימן.${theoristKnowledge}${focusInstruction}${memoryContext}${genderInstruction}${clinicalInstruction}
 
 SYSTEM TAG — MANDATORY IN ALL MODES:
 The very last line of EVERY response must be: [MEMORY: תמצית קצרה של השאלה המרכזית]
@@ -3202,7 +3042,7 @@ function toggleLangMenu() {
 
 const UI_TRANSLATIONS = {
   he: {
-    title: 'מרחב פסיכואנליטי',
+    title: 'Between',
     subtitle: 'PSYCHOANALYTIC ADVISOR',
     placeholder: 'הגדר/י מטרה או שאלה',
     send: 'שלח',
@@ -3226,14 +3066,21 @@ const UI_TRANSLATIONS = {
     webSearchOff: 'חיפוש רשת: כבוי',
     downloadPDF: 'הורד PDF',
     theoreticalApproach: 'גישה תיאורטית',
+    supervision: 'פיקוח קליני',
+    sessionSummary: 'סיכום סשן',
+    reflection: 'מה לקחתי מהשיחה',
+    comparison: 'השוואת תיאורטיקנים',
+    anonymize: 'אנונימיזציה',
+    userFeedback: 'פידבק משתמש',
+    boardRoom: 'חדר הבורד',
     disclaimer: 'כלי לימודי ומחקרי בלבד · אינו מהווה תחליף לטיפול פסיכולוגי מקצועי',
     tooltips: { freud:'מה שלא נאמר', klein:'מה שקשה לגעת בו', winnicott:'המרחב להיות', ogden:'מה שנוצר בין שנינו', loewald:'הקשר עצמו כגורם המרפא', bion:'מה שעדיין לא ניתן לומר', kohut:'להרגיש מובן', heimann:'מה שהמפגש מעורר בי' },
-    authTitle: 'מרחב פסיכואנליטי', authSubtitle: 'כניסה או הרשמה כדי להתחיל',
+    authTitle: 'Between', authSubtitle: 'כניסה או הרשמה כדי להתחיל',
     authPersonaLabel: 'מי אתה/את?', authTherapist: 'מטפל/ת', authStudent: 'לומד/ת', authPatient: 'בטיפול',
     authEmail: 'כתובת מייל', authPassword: 'סיסמה',
     authSignIn: 'כניסה', authSignUp: 'הרשמה', authForgot: 'שכחתי סיסמה',
     authSecurity: 'השיחות נשמרות רק על המכשיר שלך ולא מועלות לשרת.\nפרטי הכניסה מוצפנים ומאובטחים.',
-    authDisclaimer: '״מרחב פסיכואנליטי״ הוא כלי לחשיבה ולהבנה עצמית ולא תחליף לטיפול. הוא נועד ללוות אנשים שנמצאים בתהליך: בטיפול, בהכשרה, או בחקירה עצמית. פסיכואנליזה מתרחשת בין שני בני אדם בנוכחות, בקשר, ובזמן. הממשק נועד לצד המטפל, לא במקומו.',
+    authDisclaimer: 'הממשק הינו כלי לחשיבה ולהבנה עצמית ולא תחליף לטיפול. הוא נועד ללוות אנשים שנמצאים בתהליך: בטיפול, בהכשרה, או בחקירה עצמית. פסיכואנליזה מתרחשת בין שני בני אדם בנוכחות, בקשר, ובזמן. הממשק נועד לצד המטפל, לא במקומו.',
     settingsTitle: 'הגדרות משתמש', settingsSubtitle: 'המידע שתשתפי ישפיע על האופן שבו התיאורטיקאים פונים אלייך',
     settingsName: 'שם / כינוי', settingsNamePlaceholder: 'איך לפנות אלייך?',
     settingsGender: 'לשון פנייה', settingsFemale: 'נקבה', settingsMale: 'זכר', settingsNeutral: 'ניטרלי',
@@ -3255,7 +3102,7 @@ const UI_TRANSLATIONS = {
     dir: 'rtl'
   },
   en: {
-    title: 'Psychoanalytic Space for the Curious',
+    title: 'Between',
     subtitle: 'PSYCHOANALYTIC ADVISOR',
     placeholder: 'Ask a psychoanalytic question...',
     send: 'Send',
@@ -3305,287 +3152,21 @@ const UI_TRANSLATIONS = {
     webSearchOff: 'Web search: off',
     downloadPDF: 'Download PDF',
     theoreticalApproach: 'Theoretical approach',
+    supervision: 'Clinical supervision',
+    sessionSummary: 'Session summary',
+    reflection: 'What I took from this',
+    comparison: 'Compare theorists',
+    anonymize: 'Anonymize',
+    userFeedback: 'User feedback',
+    boardRoom: 'Board room',
     disclaimer: 'For educational use only · Not a substitute for professional psychological treatment',
     tooltips: { freud:'What goes unsaid', klein:"What's hard to touch", winnicott:'The space to simply be', ogden:'What emerges between us', loewald:'The relationship itself as healing', bion:'What cannot yet be spoken', kohut:'To feel understood', heimann:'What the encounter stirs in me' },
-    authTitle: 'Psychoanalytic Space', authSubtitle: 'Sign in or register to begin',
+    authTitle: 'Between', authSubtitle: 'Sign in or register to begin',
     authPersonaLabel: 'Who are you?', authTherapist: 'Therapist', authStudent: 'Student', authPatient: 'In therapy',
     authEmail: 'Email address', authPassword: 'Password',
     authSignIn: 'Sign in', authSignUp: 'Register', authForgot: 'Forgot password',
     authSecurity: 'Conversations are stored only on your device and never uploaded.\nLogin details are encrypted and secure.',
-    authDisclaimer: '"Psychoanalytic Space" is a tool for reflection and self-understanding, not a substitute for therapy. It is designed to accompany people in process: in therapy, in training, or in self-inquiry. Psychoanalysis takes place between two people — in presence, in relationship, in time. This interface is meant to stand beside the therapist, not in place of one.',
-    dir: 'ltr'
-  },
-  de: {
-    title: 'Psychoanalytischer Raum für Neugierige',
-    subtitle: 'PSYCHOANALYTISCHER BERATER',
-    placeholder: 'Stellen Sie eine psychoanalytische Frage...',
-    send: 'Senden',
-    memories: 'Erinnerungen',
-    welcome: 'Willkommen',
-    welcomeText: 'Stellen Sie jede Frage zur Psychoanalyse — Theorie, Klinik, Konzepte oder Denkweisen verschiedener Analytiker.',
-    theorists: { freud:'Freud', klein:'Klein', winnicott:'Winnicott', ogden:'Ogden', loewald:'Loewald', bion:'Bion', lacan:'Lacan', kohut:'Kohut', heimann:'Heimann' },
-    hint: 'Enter zum Senden · Shift+Enter für neue Zeile',
-    agentLabel: 'Agent',
-    userLabel: 'Ihre Frage',
-    placeholderClinical: 'Beschreibe die Situation — was fühlst du?',
-    newChat: 'Neuer Chat',
-    recentChats: 'Letzte Chats',
-    session: 'Sitzung',
-    settings: 'Einstellungen',
-    changeKey: 'Schlüssel ändern',
-    sbUser: 'Benutzer',
-    sbUserSub: 'Einstellungen',
-    logOut: 'Abmelden',
-    webSearchOn: 'Websuche: ein',
-    webSearchOff: 'Websuche: aus',
-    downloadPDF: 'PDF herunterladen',
-    theoreticalApproach: 'Theoretischer Ansatz',
-    disclaimer: 'Nur zu Bildungszwecken · Kein Ersatz für professionelle psychologische Behandlung',
-    tooltips: { freud:'Was ungesagt bleibt', klein:'Was schwer zu berühren ist', winnicott:'Der Raum zum Sein', ogden:'Was zwischen uns entsteht', loewald:'Die Beziehung selbst als Heilung', bion:'Was noch nicht gesagt werden kann', kohut:'Sich verstanden fühlen', heimann:'Was die Begegnung in mir weckt' },
-    authTitle: 'Psychoanalytischer Raum', authSubtitle: 'Anmelden oder registrieren',
-    authPersonaLabel: 'Wer sind Sie?', authTherapist: 'Therapeut/in', authStudent: 'Lernende/r', authPatient: 'In Therapie',
-    authEmail: 'E-Mail-Adresse', authPassword: 'Passwort',
-    authSignIn: 'Anmelden', authSignUp: 'Registrieren', authForgot: 'Passwort vergessen',
-    authSecurity: 'Gespräche werden nur auf Ihrem Gerät gespeichert.\nAnmeldedaten sind verschlüsselt und sicher.',
-    authDisclaimer: '„Psychoanalytischer Raum" ist ein Werkzeug zur Reflexion und Selbsterkenntnis, kein Ersatz für Therapie. Er begleitet Menschen in Prozessen: in Therapie, Ausbildung oder Selbsterforschung. Psychoanalyse findet zwischen zwei Menschen statt — in Präsenz, Beziehung und Zeit.',
-    settingsTitle: 'Benutzereinstellungen', settingsSubtitle: 'Die Informationen, die Sie teilen, beeinflussen, wie die Theoretiker Sie ansprechen',
-    settingsName: 'Name / Spitzname', settingsNamePlaceholder: 'Wie sollen wir Sie nennen?',
-    settingsGender: 'Anredeform', settingsFemale: 'Weiblich', settingsMale: 'Männlich', settingsNeutral: 'Neutral',
-    settingsLevel: 'Hintergrund in der Psychoanalyse', settingsBeginner: 'Anfänger/in', settingsIntermediate: 'Mittel', settingsAdvanced: 'Fortgeschritten',
-    settingsPurpose: 'Was bringt Sie hierher?', settingsCuriosity: 'Neugier', settingsStudy: 'Studium', settingsClinical: 'Klinische Arbeit', settingsPersonal: 'Persönliche Suche',
-    settingsBio: 'Etwas, das die Theoretiker über Sie wissen sollen <span style="opacity:0.6">(optional)</span>', settingsBioPlaceholder: 'z.B. Ich bin Therapeut/in in Ausbildung...',
-    settingsSave: 'Speichern', settingsClose: 'Schließen',
-    settingsPersonaLabel: 'Wer sind Sie?',
-    settingsTimer: 'Sitzungs-Timer', settingsTimerDesc: '50 Min · klinischer Rahmen',
-    settingsTimerWarnPre: 'Min vor Ende', settingsTimerWarnSuf: 'Warnung',
-    settingsIntakeDone: 'Kennenlerngespräch abgeschlossen ✓', settingsIntakeReset: 'Zurücksetzen',
-    sessionTooltipTitle: 'Klinischer Sitzungsmodus',
-    sessionTooltipText: 'Der ausgewählte Theoretiker antwortet als Analytiker — nicht als Dozent. Geeignet für klinisches Material, Träume oder persönliche Situationen.',
-    welcomeApiText: 'Gespräche werden über die Anthropic-API verarbeitet und weder von uns gespeichert noch zum Training von Modellen verwendet.',
-    privacyLink: 'Datenschutzrichtlinie',
-    privacyTitle: 'Datenschutzrichtlinie',
-    privacyContent: '<p style="margin-bottom:12px"><strong>Gespräche</strong> — werden nur über die Anthropic-API verarbeitet. Nicht von uns gespeichert, nicht zum Trainieren von Modellen verwendet.</p><p style="margin-bottom:12px"><strong>Gedächtnis</strong> — wird nur lokal in Ihrem Browser gespeichert. Wir können es weder sehen noch darauf zugreifen.</p><p style="margin-bottom:12px"><strong>Wissensbasis</strong> — Auszüge aus der psychoanalytischen Literatur werden nur als Zahlen für die Suche gespeichert. Ihr Gesprächsinhalt wird dort nicht gespeichert.</p><p style="margin-bottom:20px"><strong>Identität</strong> — keine Speicherung von IP-Adressen, Benutzeridentität oder identifizierenden Daten über das für die Kontoverwaltung Erforderliche hinaus.</p>',
-    privacyBtnOk: 'Verstanden',
-    dir: 'ltr'
-  },
-  es: {
-    title: 'Espacio Psicoanalítico para Curiosos',
-    subtitle: 'ASESOR PSICOANALÍTICO',
-    placeholder: 'Haz una pregunta psicoanalítica...',
-    send: 'Enviar',
-    memories: 'memorias',
-    welcome: 'Bienvenido',
-    welcomeText: 'Haz cualquier pregunta sobre psicoanálisis — teoría, clínica, conceptos o el pensamiento de diferentes analistas.',
-    theorists: { freud:'Freud', klein:'Klein', winnicott:'Winnicott', ogden:'Ogden', loewald:'Loewald', bion:'Bion', lacan:'Lacan', kohut:'Kohut', heimann:'Heimann' },
-    hint: 'Enter para enviar · Shift+Enter para nueva línea',
-    agentLabel: 'Agente',
-    userLabel: 'Tu pregunta',
-    placeholderClinical: 'Describe la situación — ¿qué sientes?',
-    newChat: 'Nueva conversación',
-    recentChats: 'Recientes',
-    session: 'Sesión',
-    settings: 'Ajustes',
-    changeKey: 'Cambiar clave',
-    sbUser: 'Usuario',
-    sbUserSub: 'Ajustes',
-    logOut: 'Cerrar sesión',
-    webSearchOn: 'Búsqueda web: activada',
-    webSearchOff: 'Búsqueda web: desactivada',
-    downloadPDF: 'Descargar PDF',
-    theoreticalApproach: 'Enfoque teórico',
-    disclaimer: 'Solo para uso educativo · No es sustituto del tratamiento psicológico profesional',
-    tooltips: { freud:'Lo que no se dice', klein:'Lo que es difícil tocar', winnicott:'El espacio para simplemente ser', ogden:'Lo que surge entre nosotros', loewald:'La relación misma como curación', bion:'Lo que aún no puede decirse', kohut:'Sentirse comprendido', heimann:'Lo que el encuentro despierta en mí' },
-    authTitle: 'Espacio Psicoanalítico', authSubtitle: 'Inicia sesión o regístrate para comenzar',
-    authPersonaLabel: '¿Quién eres?', authTherapist: 'Terapeuta', authStudent: 'Estudiante', authPatient: 'En terapia',
-    authEmail: 'Correo electrónico', authPassword: 'Contraseña',
-    authSignIn: 'Entrar', authSignUp: 'Registrarse', authForgot: 'Olvidé mi contraseña',
-    authSecurity: 'Las conversaciones se guardan solo en tu dispositivo.\nLos datos de acceso están cifrados y seguros.',
-    authDisclaimer: '"Espacio Psicoanalítico" es una herramienta de reflexión y comprensión personal, no un sustituto de la terapia. Está diseñado para acompañar a personas en proceso: en terapia, en formación o en exploración personal. El psicoanálisis ocurre entre dos personas — en presencia, en relación, en el tiempo.',
-    settingsTitle: 'Configuración de usuario', settingsSubtitle: 'La información que compartas influirá en cómo los teóricos se dirigen a ti',
-    settingsName: 'Nombre / Apodo', settingsNamePlaceholder: '¿Cómo debemos llamarte?',
-    settingsGender: 'Forma de dirigirse', settingsFemale: 'Femenino', settingsMale: 'Masculino', settingsNeutral: 'Neutral',
-    settingsLevel: 'Experiencia en psicoanálisis', settingsBeginner: 'Principiante', settingsIntermediate: 'Intermedio', settingsAdvanced: 'Avanzado',
-    settingsPurpose: '¿Qué te trae aquí?', settingsCuriosity: 'Curiosidad', settingsStudy: 'Estudios', settingsClinical: 'Trabajo clínico', settingsPersonal: 'Búsqueda personal',
-    settingsBio: 'Algo que quisieras que los teóricos supieran de ti <span style="opacity:0.6">(opcional)</span>', settingsBioPlaceholder: 'p.ej. Soy terapeuta en formación...',
-    settingsSave: 'Guardar', settingsClose: 'Cerrar',
-    settingsPersonaLabel: '¿Quién eres?',
-    settingsTimer: 'Temporizador de sesión', settingsTimerDesc: '50 min · marco clínico',
-    settingsTimerWarnPre: 'min antes del final', settingsTimerWarnSuf: 'aviso',
-    settingsIntakeDone: 'Conversación de presentación completada ✓', settingsIntakeReset: 'Restablecer',
-    sessionTooltipTitle: 'Modo de sesión clínica',
-    sessionTooltipText: 'El teórico seleccionado responde como analista — no como conferenciante. Adecuado para material clínico, sueños o situaciones personales.',
-    welcomeApiText: 'Las conversaciones se procesan a través de la API de Anthropic y no son almacenadas por nosotros ni utilizadas para entrenar modelos.',
-    privacyLink: 'Política de privacidad',
-    privacyTitle: 'Política de privacidad',
-    privacyContent: '<p style="margin-bottom:12px"><strong>Conversaciones</strong> — procesadas solo a través de la API de Anthropic. No almacenadas, no usadas para entrenar modelos.</p><p style="margin-bottom:12px"><strong>Memoria</strong> — almacenada solo localmente en tu navegador. No podemos verla ni acceder a ella.</p><p style="margin-bottom:12px"><strong>Base de conocimiento</strong> — fragmentos de literatura psicoanalítica almacenados como números para búsqueda. Tu contenido de conversación no se almacena allí.</p><p style="margin-bottom:20px"><strong>Identidad</strong> — no se almacenan direcciones IP, identidad de usuario ni datos personales identificables más allá de lo necesario para la gestión de la cuenta.</p>',
-    privacyBtnOk: 'Entendido',
-    dir: 'ltr'
-  },
-  fr: {
-    title: 'Espace Psychanalytique pour les Curieux',
-    subtitle: 'CONSEILLER PSYCHANALYTIQUE',
-    placeholder: 'Posez une question psychanalytique...',
-    send: 'Envoyer',
-    memories: 'souvenirs',
-    welcome: 'Bienvenue',
-    welcomeText: "Posez toute question sur la psychanalyse — théorie, clinique, concepts ou façons de penser des différents analystes.",
-    theorists: { freud:'Freud', klein:'Klein', winnicott:'Winnicott', ogden:'Ogden', loewald:'Loewald', bion:'Bion', lacan:'Lacan', kohut:'Kohut', heimann:'Heimann' },
-    hint: 'Enter pour envoyer · Shift+Enter pour nouvelle ligne',
-    agentLabel: 'Agent',
-    userLabel: 'Votre question',
-    placeholderClinical: 'Décris la situation — que ressens-tu?',
-    newChat: 'Nouvelle discussion',
-    recentChats: 'Récents',
-    session: 'Session',
-    settings: 'Paramètres',
-    changeKey: 'Changer clé',
-    sbUser: 'Utilisateur',
-    sbUserSub: 'Paramètres',
-    logOut: 'Se déconnecter',
-    webSearchOn: 'Recherche web: activée',
-    webSearchOff: 'Recherche web: désactivée',
-    downloadPDF: 'Télécharger PDF',
-    theoreticalApproach: 'Approche théorique',
-    disclaimer: 'À des fins éducatives uniquement · Ne remplace pas un traitement psychologique professionnel',
-    tooltips: { freud:'Ce qui reste non dit', klein:"Ce qu'il est difficile de toucher", winnicott:'L\'espace pour simplement être', ogden:'Ce qui émerge entre nous', loewald:'La relation elle-même comme guérison', bion:'Ce qui ne peut pas encore être dit', kohut:'Se sentir compris', heimann:'Ce que la rencontre éveille en moi' },
-    authTitle: 'Espace Psychanalytique', authSubtitle: 'Connectez-vous ou inscrivez-vous pour commencer',
-    authPersonaLabel: 'Qui êtes-vous?', authTherapist: 'Thérapeute', authStudent: 'Étudiant/e', authPatient: 'En thérapie',
-    authEmail: 'Adresse e-mail', authPassword: 'Mot de passe',
-    authSignIn: 'Se connecter', authSignUp: "S'inscrire", authForgot: 'Mot de passe oublié',
-    authSecurity: 'Les conversations sont stockées uniquement sur votre appareil.\nLes identifiants sont chiffrés et sécurisés.',
-    authDisclaimer: '« Espace Psychanalytique » est un outil de réflexion et de compréhension de soi, non un substitut à la thérapie. Il accompagne des personnes en processus : en thérapie, en formation ou en exploration personnelle. La psychanalyse se déroule entre deux personnes — en présence, en relation, dans le temps.',
-    settingsTitle: 'Paramètres utilisateur', settingsSubtitle: 'Les informations que vous partagez influenceront la façon dont les théoriciens s\'adressent à vous',
-    settingsName: 'Nom / Surnom', settingsNamePlaceholder: 'Comment devrions-nous vous appeler ?',
-    settingsGender: 'Forme d\'adresse', settingsFemale: 'Féminin', settingsMale: 'Masculin', settingsNeutral: 'Neutre',
-    settingsLevel: 'Expérience en psychanalyse', settingsBeginner: 'Débutant/e', settingsIntermediate: 'Intermédiaire', settingsAdvanced: 'Avancé/e',
-    settingsPurpose: 'Qu\'est-ce qui vous amène ?', settingsCuriosity: 'Curiosité', settingsStudy: 'Études', settingsClinical: 'Travail clinique', settingsPersonal: 'Recherche personnelle',
-    settingsBio: 'Quelque chose que vous souhaiteriez que les théoriciens sachent de vous <span style="opacity:0.6">(optionnel)</span>', settingsBioPlaceholder: 'p.ex. Je suis thérapeute en formation...',
-    settingsSave: 'Enregistrer', settingsClose: 'Fermer',
-    settingsPersonaLabel: 'Qui êtes-vous ?',
-    settingsTimer: 'Minuteur de séance', settingsTimerDesc: '50 min · cadre clinique',
-    settingsTimerWarnPre: 'min avant la fin', settingsTimerWarnSuf: 'alerte',
-    settingsIntakeDone: 'Conversation de présentation complétée ✓', settingsIntakeReset: 'Réinitialiser',
-    sessionTooltipTitle: 'Mode session clinique',
-    sessionTooltipText: 'Le théoricien sélectionné répond comme analyste — pas comme conférencier. Adapté au matériel clinique, aux rêves ou aux situations personnelles.',
-    welcomeApiText: "Les conversations sont traitées via l'API Anthropic et ne sont ni stockées par nous ni utilisées pour entraîner des modèles.",
-    privacyLink: 'Politique de confidentialité',
-    privacyTitle: 'Politique de confidentialité',
-    privacyContent: "<p style=\"margin-bottom:12px\"><strong>Conversations</strong> — traitées uniquement via l'API Anthropic. Non stockées, non utilisées pour entraîner des modèles.</p><p style=\"margin-bottom:12px\"><strong>Mémoire</strong> — stockée uniquement localement dans votre navigateur. Nous ne pouvons pas la voir ni y accéder.</p><p style=\"margin-bottom:12px\"><strong>Base de connaissances</strong> — des extraits de littérature psychanalytique sont stockés sous forme de chiffres pour la recherche. Le contenu de vos conversations n'y est pas stocké.</p><p style=\"margin-bottom:20px\"><strong>Identité</strong> — aucun stockage d'adresses IP, d'identité d'utilisateur ou de données personnelles identifiantes au-delà de ce qui est nécessaire à la gestion du compte.</p>",
-    privacyBtnOk: 'Compris',
-    dir: 'ltr'
-  },
-  ru: {
-    title: 'Психоаналитическое пространство для любопытных',
-    subtitle: 'ПСИХОАНАЛИТИЧЕСКИЙ СОВЕТНИК',
-    placeholder: 'Задайте психоаналитический вопрос...',
-    send: 'Отправить',
-    memories: 'воспоминания',
-    welcome: 'Добро пожаловать',
-    welcomeText: 'Задайте любой вопрос о психоанализе — теория, клиника, концепции или способы мышления разных аналитиков.',
-    theorists: { freud:'Фрейд', klein:'Кляйн', winnicott:'Винникотт', ogden:'Огден', loewald:'Лёвальд', bion:'Бион', lacan:'Лакан', kohut:'Кохут', heimann:'Хайманн' },
-    hint: 'Enter для отправки · Shift+Enter для новой строки',
-    agentLabel: 'Агент',
-    userLabel: 'Ваш вопрос',
-    placeholderClinical: 'Опишите ситуацию — что вы чувствуете?',
-    newChat: 'Новый чат',
-    recentChats: 'Недавние',
-    session: 'Сессия',
-    settings: 'Настройки',
-    changeKey: 'Сменить ключ',
-    sbUser: 'Пользователь',
-    sbUserSub: 'Настройки',
-    logOut: 'Выйти',
-    webSearchOn: 'Веб-поиск: включён',
-    webSearchOff: 'Веб-поиск: выключен',
-    downloadPDF: 'Скачать PDF',
-    theoreticalApproach: 'Теоретический подход',
-    disclaimer: 'Только в образовательных целях · Не заменяет профессиональное психологическое лечение',
-    tooltips: { freud:'То, что остаётся несказанным', klein:'То, чего трудно коснуться', winnicott:'Пространство просто быть', ogden:'То, что возникает между нами', loewald:'Сами отношения как исцеление', bion:'То, что ещё нельзя сказать', kohut:'Чувствовать себя понятым', heimann:'То, что пробуждает встреча' },
-    authTitle: 'Психоаналитическое пространство', authSubtitle: 'Войдите или зарегистрируйтесь',
-    authPersonaLabel: 'Кто вы?', authTherapist: 'Терапевт', authStudent: 'Студент', authPatient: 'В терапии',
-    authEmail: 'Электронная почта', authPassword: 'Пароль',
-    authSignIn: 'Войти', authSignUp: 'Регистрация', authForgot: 'Забыл пароль',
-    authSecurity: 'Разговоры хранятся только на вашем устройстве.\nДанные для входа зашифрованы и защищены.',
-    authDisclaimer: '«Психоаналитическое пространство» — инструмент для размышления и самопознания, а не замена терапии. Оно создано для сопровождения людей в процессе: в терапии, в обучении или в самоисследовании. Психоанализ происходит между двумя людьми — в присутствии, в отношениях, во времени.',
-    settingsTitle: 'Настройки пользователя', settingsSubtitle: 'Информация, которую вы предоставите, повлияет на то, как теоретики будут к вам обращаться',
-    settingsName: 'Имя / Псевдоним', settingsNamePlaceholder: 'Как к вам обращаться?',
-    settingsGender: 'Форма обращения', settingsFemale: 'Женский', settingsMale: 'Мужской', settingsNeutral: 'Нейтральный',
-    settingsLevel: 'Опыт в психоанализе', settingsBeginner: 'Начинающий/ая', settingsIntermediate: 'Средний', settingsAdvanced: 'Продвинутый',
-    settingsPurpose: 'Что привело вас сюда?', settingsCuriosity: 'Любопытство', settingsStudy: 'Учёба', settingsClinical: 'Клиническая работа', settingsPersonal: 'Личный поиск',
-    settingsBio: 'Что-то, что вы хотели бы, чтобы теоретики знали о вас <span style="opacity:0.6">(необязательно)</span>', settingsBioPlaceholder: 'напр. Я терапевт в обучении...',
-    settingsSave: 'Сохранить', settingsClose: 'Закрыть',
-    settingsPersonaLabel: 'Кто вы?',
-    settingsTimer: 'Таймер сессии', settingsTimerDesc: '50 мин · клинические рамки',
-    settingsTimerWarnPre: 'мин до конца', settingsTimerWarnSuf: 'предупреждение',
-    settingsIntakeDone: 'Вводная беседа завершена ✓', settingsIntakeReset: 'Сбросить',
-    sessionTooltipTitle: 'Режим клинической сессии',
-    sessionTooltipText: 'Выбранный теоретик отвечает как аналитик — не как лектор. Подходит для клинического материала, сновидений или личных ситуаций.',
-    welcomeApiText: 'Разговоры обрабатываются через API Anthropic и не хранятся нами и не используются для обучения моделей.',
-    privacyLink: 'Политика конфиденциальности',
-    privacyTitle: 'Политика конфиденциальности',
-    privacyContent: '<p style="margin-bottom:12px"><strong>Разговоры</strong> — обрабатываются только через API Anthropic. Не хранятся нами, не используются для обучения моделей.</p><p style="margin-bottom:12px"><strong>Память</strong> — хранится только локально в вашем браузере. Мы не можем её видеть или получить к ней доступ.</p><p style="margin-bottom:12px"><strong>База знаний</strong> — фрагменты психоаналитической литературы хранятся в виде чисел для поиска. Содержание ваших разговоров там не хранится.</p><p style="margin-bottom:20px"><strong>Личность</strong> — никакого хранения IP-адресов, личных данных или идентифицирующей информации сверх необходимого для управления аккаунтом.</p>',
-    privacyBtnOk: 'Понятно',
-    dir: 'ltr'
-  },
-  it: {
-    title: 'Spazio Psicoanalitico per i Curiosi',
-    subtitle: 'CONSULENTE PSICOANALITICO',
-    placeholder: 'Fai una domanda psicoanalitica...',
-    send: 'Invia',
-    memories: 'ricordi',
-    welcome: 'Benvenuto',
-    welcomeText: 'Fai qualsiasi domanda sulla psicoanalisi — teoria, pratica clinica,<br>concetti o il pensiero dei diversi analisti.',
-    theorists: { freud:'Freud', klein:'Klein', winnicott:'Winnicott', ogden:'Ogden', loewald:'Loewald', bion:'Bion', lacan:'Lacan', kohut:'Kohut', heimann:'Heimann' },
-    hint: 'Enter per inviare · Shift+Enter per nuova riga',
-    agentLabel: 'Agente',
-    userLabel: 'La tua domanda',
-    placeholderClinical: 'Descrivi la situazione — cosa senti?',
-    settingsTitle: 'Impostazioni utente',
-    settingsSubtitle: 'Le informazioni che condividi influenzeranno il modo in cui i teorici si rivolgono a te',
-    settingsName: 'Nome / Soprannome',
-    settingsNamePlaceholder: 'Come dovremmo chiamarti?',
-    settingsGender: 'Come rivolgersi a te',
-    settingsFemale: 'Femminile', settingsMale: 'Maschile', settingsNeutral: 'Neutro',
-    settingsLevel: 'Esperienza in psicoanalisi',
-    settingsBeginner: 'Principiante', settingsIntermediate: 'Intermedio', settingsAdvanced: 'Avanzato',
-    settingsPurpose: 'Cosa ti porta qui?',
-    settingsCuriosity: 'Curiosità', settingsStudy: 'Studio', settingsClinical: 'Lavoro clinico', settingsPersonal: 'Ricerca personale',
-    settingsContext: 'Qualcosa che vorresti che i teorici sapessero (opzionale)',
-    settingsContextPlaceholder: 'es. Sono un terapeuta in formazione, interessato al legame tra arte e teoria...',
-    settingsSave: 'Salva', settingsClose: 'Chiudi',
-    settingsBio: 'Qualcosa che vorresti che i teorici sapessero di te <span style="opacity:0.6">(opzionale)</span>',
-    settingsBioPlaceholder: 'es. Sono un terapeuta in formazione, interessato al legame tra arte e teoria...',
-    settingsPersonaLabel: 'Chi sei?',
-    settingsTimer: 'Timer di sessione', settingsTimerDesc: '50 min · cornice clinica',
-    settingsTimerWarnPre: 'min prima della fine', settingsTimerWarnSuf: 'avviso',
-    settingsIntakeDone: 'Conversazione di presentazione completata ✓', settingsIntakeReset: 'Reimposta',
-    sessionTooltipTitle: 'Modalità sessione clinica',
-    sessionTooltipText: 'Il teorico selezionato risponde come analista — non come docente. Adatto per materiale clinico, sogni o situazioni personali.',
-    welcomeApiText: "Le conversazioni vengono elaborate tramite l'API di Anthropic e non vengono conservate da noi né utilizzate per addestrare modelli.",
-    privacyLink: 'Informativa sulla privacy',
-    privacyTitle: 'Informativa sulla privacy',
-    privacyContent: "<p style=\"margin-bottom:12px\"><strong>Conversazioni</strong> — elaborate solo tramite l'API di Anthropic. Non conservate, non usate per addestrare modelli.</p><p style=\"margin-bottom:12px\"><strong>Memoria</strong> — conservata solo localmente nel tuo browser. Non possiamo vederla né accedervi.</p><p style=\"margin-bottom:12px\"><strong>Base di conoscenza</strong> — estratti della letteratura psicoanalitica conservati come numeri per la ricerca. Il contenuto delle tue conversazioni non è conservato lì.</p><p style=\"margin-bottom:20px\"><strong>Identità</strong> — nessuna conservazione di indirizzi IP, identità utente o dati personali identificativi oltre a quanto necessario per la gestione dell'account.</p>",
-    privacyBtnOk: 'Capito',
-    newChat: 'Nuova chat',
-    recentChats: 'Chat recenti',
-    session: 'Sessione',
-    settings: 'Impostazioni',
-    changeKey: 'Cambia chiave',
-    logOut: 'Esci',
-    sbUser: 'Utente',
-    sbUserSub: 'Impostazioni',
-    webSearchOn: 'Ricerca web: attiva',
-    webSearchOff: 'Ricerca web: disattiva',
-    downloadPDF: 'Scarica PDF',
-    theoreticalApproach: 'Approccio teorico',
-    disclaimer: 'Solo per uso educativo · Non sostituisce il trattamento psicologico professionale',
-    tooltips: { freud:'Ciò che resta non detto', klein:'Ciò che è difficile toccare', winnicott:'Lo spazio per semplicemente essere', ogden:'Ciò che emerge tra noi', loewald:'La relazione stessa come guarigione', bion:'Ciò che non può ancora essere detto', kohut:'Sentirsi compresi', heimann:'Ciò che il incontro risveglia in me' },
-    authTitle: 'Spazio Psicoanalitico', authSubtitle: 'Accedi o registrati per iniziare',
-    authPersonaLabel: 'Chi sei?', authTherapist: 'Terapeuta', authStudent: 'Studente', authPatient: 'In terapia',
-    authEmail: 'Indirizzo email', authPassword: 'Password',
-    authSignIn: 'Accedi', authSignUp: 'Registrati', authForgot: 'Password dimenticata',
-    authSecurity: 'Le conversazioni sono salvate solo sul tuo dispositivo.\nI dati di accesso sono crittografati e sicuri.',
-    authDisclaimer: '"Spazio Psicoanalitico" è uno strumento di riflessione e comprensione di sé, non un sostituto della terapia. È pensato per accompagnare persone in percorso: in terapia, in formazione o in esplorazione personale. La psicoanalisi avviene tra due persone — in presenza, in relazione, nel tempo.',
+    authDisclaimer: '"Between" is a tool for reflection and self-understanding, not a substitute for therapy. It is designed to accompany people in process: in therapy, in training, or in self-inquiry. Psychoanalysis takes place between two people — in presence, in relationship, in time. This interface is meant to stand beside the therapist, not in place of one.',
     dir: 'ltr'
   },
 };
@@ -3653,6 +3234,21 @@ function applyUITranslation(code) {
   // Theoretical approach label
   const theoristsLabel = document.getElementById('sb-theorists-label');
   if (theoristsLabel) theoristsLabel.textContent = t.theoreticalApproach || 'Theoretical approach';
+  // Tool labels
+  const sbSupervision = document.getElementById('sb-supervision-label');
+  if (sbSupervision) sbSupervision.textContent = t.supervision || 'Clinical supervision';
+  const sbSummary = document.getElementById('sb-summary-label');
+  if (sbSummary) sbSummary.textContent = t.sessionSummary || 'Session summary';
+  const sbReflection = document.getElementById('sb-reflection-label');
+  if (sbReflection) sbReflection.textContent = t.reflection || 'What I took from this';
+  const sbComparison = document.getElementById('sb-comparison-label');
+  if (sbComparison) sbComparison.textContent = t.comparison || 'Compare theorists';
+  const sbAnon = document.getElementById('sb-anon-label');
+  if (sbAnon) sbAnon.textContent = t.anonymize || 'Anonymize';
+  const sbFeedback = document.getElementById('sb-feedback-label');
+  if (sbFeedback) sbFeedback.textContent = t.userFeedback || 'User feedback';
+  const sbBoard = document.getElementById('sb-board-label');
+  if (sbBoard) sbBoard.textContent = t.boardRoom || 'Board room';
   // Auth screen translations
   const authTitle = document.getElementById('auth-title');
   if (authTitle && t.authTitle) authTitle.textContent = t.authTitle;
@@ -3939,9 +3535,7 @@ function activateClinicalModeUI(on) {
   const label = document.getElementById('clinical-label');
   const input = document.getElementById('user-input');
   if (on) {
-    btn.style.background = 'rgba(196,96,122,0.12)';
-    btn.style.color = 'var(--accent)';
-    btn.style.borderColor = 'var(--accent)';
+    btn.classList.add('clinical-active');
     label.textContent = (selectedLang && selectedLang.code !== 'he' ? 'Session' : 'סשן') + ' ✓';
     const t2 = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
     input.placeholder = t2.placeholderClinical || 'תארי מצב — מה מרגישים? מה קורה? מה מסקרן?';
@@ -3950,9 +3544,7 @@ function activateClinicalModeUI(on) {
       showTheoristOpening(activeTheorists[0]);
     }
   } else {
-    btn.style.background = '';
-    btn.style.color = '';
-    btn.style.borderColor = '';
+    btn.classList.remove('clinical-active');
     label.textContent = selectedLang && selectedLang.code !== 'he' ? 'Session' : 'סשן';
     input.placeholder = 'הגדר/י מטרה או שאלה';
   }
@@ -4931,17 +4523,8 @@ window.resetPassword = resetPassword;
 
 // Build language menu
 const LANGUAGES = [
-  {code:'he',flag:'🇮🇱',name:'עברית'},
   {code:'en',flag:'🇬🇧',name:'English'},
-  {code:'de',flag:'🇩🇪',name:'Deutsch'},
-  {code:'es',flag:'🇪🇸',name:'Español'},
-  {code:'fr',flag:'🇫🇷',name:'Français'},
-  {code:'ru',flag:'🇷🇺',name:'Русский'},
-  {code:'ar',flag:'🇸🇦',name:'العربية'},
-  {code:'it',flag:'🇮🇹',name:'Italiano'},
-  {code:'pt',flag:'🇧🇷',name:'Português'},
-  {code:'ja',flag:'🇯🇵',name:'日本語'},
-  {code:'zh',flag:'🇨🇳',name:'中文'},
+  {code:'he',flag:'🇮🇱',name:'עברית'},
 ];
 
 
@@ -6892,7 +6475,14 @@ async function startOnboardingTour() {
 
   if (!config?.tour?.enabled || !config?.tour?.steps?.length) return;
 
-  const steps = config.tour.steps;
+  // סינון צעדים לפי פרסונה
+  const persona = (() => {
+    try { return JSON.parse(localStorage.getItem('user_prefs') || '{}').persona || 'patient'; }
+    catch { return 'patient'; }
+  })();
+  const steps = config.tour.steps.filter(s =>
+    !s.personas || s.personas.includes(persona)
+  );
   let currentStep = 0;
 
   // overlay שקוף — לחיצה מחוצה לו סוגרת

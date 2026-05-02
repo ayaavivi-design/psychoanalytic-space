@@ -4,6 +4,7 @@ import { PenLine, Globe, Brain, Settings, LogOut, Languages, Sofa, Download, Che
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
+  const [isLocalhost, setIsLocalhost] = useState(false);
   const [theoristsOpen, setTheoristsOpen] = useState(false);
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
   const [sessionTip, setSessionTip] = useState<{ top: number; left?: number; right?: number } | null>(null);
@@ -196,6 +197,7 @@ export default function Home() {
   useEffect(() => {
     setMounted(true);
     setTheoristsOpen(true);
+    setIsLocalhost(window.location.hostname === 'localhost');
     const code = (window as any).selectedLang?.code || 'he';
     setTimeout(() => (window as any).applyUITranslation?.(code), 0);
   }, []);
@@ -226,9 +228,7 @@ export default function Home() {
             {authLangOpen && (
               <div style={{ position: 'absolute', top: '100%', left: 0, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '4px', boxShadow: '0 4px 16px rgba(45,36,32,0.1)', zIndex: 210, minWidth: 130 }}>
                 {([
-                  ['he','🇮🇱','עברית'],['en','🇬🇧','English'],['de','🇩🇪','Deutsch'],
-                  ['es','🇪🇸','Español'],['fr','🇫🇷','Français'],['ru','🇷🇺','Русский'],
-                  ['it','🇮🇹','Italiano']
+                  ['en','🇬🇧','English'],['he','🇮🇱','עברית']
                 ] as [string,string,string][]).map(([code, flag, name]) => (
                   <div key={code}
                     onClick={() => { (window as any).selectLangSB(code, flag, name); setAuthLangOpen(false); }}
@@ -242,8 +242,7 @@ export default function Home() {
             )}
           </div>
         <div style={{ textAlign: 'center', maxWidth: 420, width: '90%', padding: '0 20px' }}>
-          <div style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 52, color: 'var(--accent)', opacity: 0.2, marginBottom: 16 }}>ψ</div>
-          <h2 id="auth-title" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 22, fontWeight: 300, fontStyle: 'italic', color: 'var(--accent)', marginBottom: 8 }}>מרחב פסיכואנליטי</h2>
+          <h2 id="auth-title" dir="ltr" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 28, fontWeight: 300, fontStyle: 'italic', color: 'var(--accent)', marginBottom: 8, direction: 'ltr' }} suppressHydrationWarning>Between</h2>
           <p id="auth-subtitle" style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8, marginBottom: 12 }}>כניסה או הרשמה כדי להתחיל</p>
 
           <div style={{ marginBottom: 16 }}>
@@ -303,7 +302,7 @@ export default function Home() {
             פרטי הכניסה מוצפנים ומאובטחים.
           </p>
           <p id="auth-disclaimer" style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.85, marginTop: 12, opacity: 0.6, borderTop: '1px solid var(--border)', paddingTop: 14, width: 'calc(100% + 320px)', marginLeft: '-160px', marginRight: '-160px' }}>
-״מרחב פסיכואנליטי״ הוא כלי לחשיבה ולהבנה עצמית ולא תחליף לטיפול. הוא נועד ללוות אנשים שנמצאים בתהליך: בטיפול, בהכשרה, או בחקירה עצמית. פסיכואנליזה מתרחשת בין שני בני אדם בנוכחות, בקשר, ובזמן. הממשק נועד לצד המטפל, לא במקומו.
+הממשק הינו כלי לחשיבה ולהבנה עצמית ולא תחליף לטיפול. הוא נועד ללוות אנשים שנמצאים בתהליך: בטיפול, בהכשרה, או בחקירה עצמית. פסיכואנליזה מתרחשת בין שני בני אדם בנוכחות, בקשר, ובזמן. הממשק נועד לצד המטפל, לא במקומו.
           </p>
         </div>
         </>}
@@ -331,33 +330,38 @@ export default function Home() {
             </div>
             <div className="sb-item admin-only" onClick={() => (window as any).openSupervision()}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⚲</span>
-              <span className="sb-label">פיקוח קליני</span>
+              <span className="sb-label" id="sb-supervision-label">פיקוח קליני</span>
             </div>
             <div className="sb-item admin-only" onClick={() => (window as any).openSessionSummary()}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
-              <span className="sb-label">סיכום סשן</span>
+              <span className="sb-label" id="sb-summary-label">סיכום סשן</span>
             </div>
             <div id="patient-reflection-btn" className="sb-item admin-only" onClick={() => (window as any).openPatientReflection()} style={{ display: 'none' }}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◉</span>
-              <span className="sb-label">מה לקחתי מהשיחה</span>
+              <span className="sb-label" id="sb-reflection-label">מה לקחתי מהשיחה</span>
             </div>
             <div className="sb-item admin-only" onClick={() => (window as any).openComparison()}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⇌</span>
-              <span className="sb-label">השוואת תיאורטיקנים</span>
+              <span className="sb-label" id="sb-comparison-label">השוואת תיאורטיקנים</span>
             </div>
-            <div className="sb-item admin-only" onClick={() => (window as any).openAnonymizer()}>
-              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◌</span>
-              <span className="sb-label">אנונימיזציה</span>
-            </div>
-            <div className="sb-item admin-only" onClick={() => (window as any).openUserFeedback()}>
-              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◈</span>
-              <span className="sb-label">פידבק משתמש</span>
-            </div>
+            {/* אנונימיזציה ופידבק — גלויים רק ב-localhost */}
+            {isLocalhost && (
+              <div className="sb-item admin-only" onClick={() => (window as any).openAnonymizer()}>
+                <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◌</span>
+                <span className="sb-label" id="sb-anon-label">אנונימיזציה</span>
+              </div>
+            )}
+            {isLocalhost && (
+              <div className="sb-item admin-only" onClick={() => (window as any).openUserFeedback()}>
+                <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◈</span>
+                <span className="sb-label" id="sb-feedback-label">פידבק משתמש</span>
+              </div>
+            )}
             {/* חדר הבורד — גלוי רק ב-localhost */}
-            {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
+            {isLocalhost && (
               <div className="sb-item admin-only" onClick={() => (window as any).openBoardRoom()}>
                 <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⬡</span>
-                <span className="sb-label">חדר הבורד</span>
+                <span className="sb-label" id="sb-board-label">חדר הבורד</span>
               </div>
             )}
           </div>
@@ -429,13 +433,11 @@ export default function Home() {
             </div>
             <div className="sb-item" id="lang-btn-sb" onClick={(e) => { e.stopPropagation(); (window as any).sbLangToggle(); }}>
               <span className="sb-icon"><Languages size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label" id="sb-lang-label">עברית</span>
+              <span className="sb-label" id="sb-lang-label">English</span>
             </div>
             <div id="sb-lang-expand" style={{ display: 'none', padding: '2px 4px' }}>
               {[
-                ['he','🇮🇱','עברית'],['en','🇬🇧','English'],['de','🇩🇪','Deutsch'],
-                ['es','🇪🇸','Español'],['fr','🇫🇷','Français'],['ru','🇷🇺','Русский'],
-                ['it','🇮🇹','Italiano']
+                ['en','🇬🇧','English'],['he','🇮🇱','עברית']
               ].map(([code, flag, name]) => (
                 <div key={code} className="sb-item" style={{ fontSize: 12, paddingRight: 24 }}
                   onClick={(e) => { e.stopPropagation(); (window as any).selectLangSB(code, flag, name); }}>
@@ -457,8 +459,7 @@ export default function Home() {
                 <line x1="6" y1="1" x2="6" y2="17" stroke="currentColor" strokeWidth="1.3"/>
               </svg>
             </div>
-            <h1>מרחב פסיכואנליטי</h1>
-            <div className="header-psi">ψ</div>
+            <h1 dir="ltr" style={{ direction: 'ltr' }} suppressHydrationWarning>Between</h1>
           </div>
           <div className="header-session">
             <div id="session-title" style={{ display: 'none' }}></div>

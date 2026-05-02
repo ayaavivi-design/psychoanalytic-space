@@ -34,8 +34,8 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: 'מרחב פסיכואנליטי',
-  description: 'Psychoanalytic Space',
+  title: 'Between',
+  description: 'Between — the space between sessions',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

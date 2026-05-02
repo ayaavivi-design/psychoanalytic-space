@@ -59,7 +59,7 @@ def chunk_text(text, size=CHUNK_SIZE, overlap=CHUNK_OVERLAP):
 
 def insert_chunks(theorist, source_title, source_year, chunks):
     texts      = [c for c in chunks if len(c.strip()) > 50]
-    embeddings = model.encode(texts, show_progress_bar=True).tolist()
+    embeddings = model.encode(texts, show_progress_bar=True, normalize_embeddings=True).tolist()
 
     rows = [
         {

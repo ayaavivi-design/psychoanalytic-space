@@ -158,15 +158,16 @@ header {
 }
 .header-psi {
   font-family: var(--font-cormorant), serif;
-  font-size: 52px;
+  font-size: 64px;
   color: var(--accent);
-  opacity: 0.85;
+  opacity: 0.07;
   line-height: 1;
   user-select: none;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, calc(-50% - 4.5px));
+  pointer-events: none;
 }
 .header-session {
   padding: 6px 16px 6px 16px;
@@ -192,11 +193,18 @@ header {
   align-items: center;
 }
 header h1 {
-  font-family: var(--font-david), serif;
-  font-size: 24px;
-  font-weight: 400;
+  font-family: var(--font-cormorant), serif;
+  font-size: 26px;
+  font-weight: 300;
+  font-style: italic;
   color: var(--accent);
-  letter-spacing: 0.01em;
+  letter-spacing: 0.04em;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  white-space: nowrap;
 }
 header span {
   font-size: 12px;
@@ -217,6 +225,11 @@ header span {
   transition: all 0.2s;
 }
 .memory-indicator:hover { border-color: var(--accent-dim); color: var(--accent); }
+.memory-indicator.clinical-active {
+  background: rgba(196,96,122,0.12);
+  color: var(--accent);
+  border-color: var(--accent);
+}
 .memory-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
