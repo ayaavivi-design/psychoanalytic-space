@@ -149,7 +149,7 @@ function startIntake() {
   const chat = document.getElementById('chat');
   chat.innerHTML = '';
   const inputEl = document.getElementById('user-input');
-  if (inputEl) inputEl.placeholder = 'כתוב/י כאן...';
+  if (inputEl) { const _t = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he']; inputEl.placeholder = _t.intakePlaceholder || 'כתוב/י כאן...'; }
   showIntakeQuestion();
 }
 
@@ -302,7 +302,7 @@ function completeIntake() {
   if (headerBtn) headerBtn.style.display = 'none';
   // Restore default placeholder
   const inputEl = document.getElementById('user-input');
-  if (inputEl) inputEl.placeholder = 'הגדר/י מטרה או שאלה';
+  if (inputEl) { const _t = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he']; inputEl.placeholder = _t.placeholderGeneral || 'הגדר/י מטרה או שאלה'; }
   const chat = document.getElementById('chat');
   const closeDiv = document.createElement('div');
   closeDiv.className = 'message agent';
@@ -341,40 +341,43 @@ function resetIntake() {
 
 async function signIn() {
   const errEl = document.getElementById('auth-error');
+  const _at = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
   errEl.style.color = '#c06060'; errEl.style.display = 'none';
-  if (!supabaseClient) { errEl.textContent = 'המערכת עדיין נטענת — המתיני רגע ונסי שוב'; errEl.style.display = 'block'; return; }
+  if (!supabaseClient) { errEl.textContent = _at.authErrLoading || 'המערכת עדיין נטענת — המתיני רגע ונסי שוב'; errEl.style.display = 'block'; return; }
   const email = document.getElementById('auth-email').value.trim();
   const password = document.getElementById('auth-password').value;
-  if (!email || !password) { errEl.textContent = 'יש למלא מייל וסיסמה'; errEl.style.display = 'block'; return; }
+  if (!email || !password) { errEl.textContent = _at.authErrFillAll || 'יש למלא מייל וסיסמה'; errEl.style.display = 'block'; return; }
   const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
 }
 
 async function signUp() {
   const errEl = document.getElementById('auth-error');
+  const _at = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
   errEl.style.color = '#c06060'; errEl.style.display = 'none';
-  if (!supabaseClient) { errEl.textContent = 'המערכת עדיין נטענת — המתיני רגע ונסי שוב'; errEl.style.display = 'block'; return; }
+  if (!supabaseClient) { errEl.textContent = _at.authErrLoading || 'המערכת עדיין נטענת — המתיני רגע ונסי שוב'; errEl.style.display = 'block'; return; }
   const email = document.getElementById('auth-email').value.trim();
   const password = document.getElementById('auth-password').value;
-  if (!email || !password) { errEl.textContent = 'יש למלא מייל וסיסמה'; errEl.style.display = 'block'; return; }
-  if (password.length < 6) { errEl.textContent = 'סיסמה חייבת להכיל לפחות 6 תווים'; errEl.style.display = 'block'; return; }
+  if (!email || !password) { errEl.textContent = _at.authErrFillAll || 'יש למלא מייל וסיסמה'; errEl.style.display = 'block'; return; }
+  if (password.length < 6) { errEl.textContent = _at.authErrPassword || 'סיסמה חייבת להכיל לפחות 6 תווים'; errEl.style.display = 'block'; return; }
   const { data, error } = await supabaseClient.auth.signUp({ email, password });
   if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
   else if (data.session) { hideAuthScreen(); loadUserProfile(data.session.user); }
-  else { errEl.style.color = 'var(--accent)'; errEl.textContent = 'נשלח אימות למייל — בדקי את תיבת הדואר שלך.'; errEl.style.display = 'block'; }
+  else { errEl.style.color = 'var(--accent)'; errEl.textContent = _at.authErrEmailSent || 'נשלח אימות למייל — בדקי את תיבת הדואר שלך.'; errEl.style.display = 'block'; }
 }
 
 async function resetPassword() {
   const errEl = document.getElementById('auth-error');
+  const _at = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
   errEl.style.color = '#c06060'; errEl.style.display = 'none';
-  if (!supabaseClient) { errEl.textContent = 'המערכת עדיין נטענת — המתיני רגע ונסי שוב'; errEl.style.display = 'block'; return; }
+  if (!supabaseClient) { errEl.textContent = _at.authErrLoading || 'המערכת עדיין נטענת — המתיני רגע ונסי שוב'; errEl.style.display = 'block'; return; }
   const email = document.getElementById('auth-email').value.trim();
-  if (!email) { errEl.textContent = 'הכניסי את כתובת המייל שלך ולחצי שכחתי סיסמה'; errEl.style.display = 'block'; return; }
+  if (!email) { errEl.textContent = _at.authErrEmailOnly || 'הכניסי את כתובת המייל שלך ולחצי שכחתי סיסמה'; errEl.style.display = 'block'; return; }
   const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin
   });
   if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
-  else { errEl.style.color = 'var(--accent)'; errEl.textContent = 'נשלח קישור לאיפוס סיסמה למייל שלך'; errEl.style.display = 'block'; }
+  else { errEl.style.color = 'var(--accent)'; errEl.textContent = _at.authErrResetSent || 'נשלח קישור לאיפוס סיסמה למייל שלך'; errEl.style.display = 'block'; }
 }
 
 async function signOut() {
@@ -3069,7 +3072,20 @@ You are not diagnosing. You are not a hotline. But you are also not a theoretica
 **Skill תרגום:**
 אם המשתמש מבקש תרגום — למשל "תרגמי לאנגלית", "translate to German", "по-русски", "en español" — תרגם את התשובה האחרונה בשיחה לאותה שפה. שמור על כל המונחים הפסיכואנליטיים מדויקים בשפת היעד. אל תוסיף הסברים — רק התרגום.
 
-Respond always in the selected language: ${selectedLang ? selectedLang.code : 'en'}. If 'he' — respond in Hebrew. If 'en' — respond in English. Maintain this language regardless of the user's input language. אתה שולט לעומק בכל הגישות הפסיכואנליטיות העיקריות: פרויד, קליין, ויניקוט, אוגדן, לוואלד, ביון, לאקאן, קוהוט, היימן.${theoristKnowledge}${focusInstruction}${memoryContext}${genderInstruction}${clinicalInstruction}
+אתה שולט לעומק בכל הגישות הפסיכואנליטיות העיקריות: פרויד, קליין, ויניקוט, אוגדן, לוואלד, ביון, לאקאן, קוהוט, היימן.${theoristKnowledge}${focusInstruction}${memoryContext}${genderInstruction}${clinicalInstruction}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ABSOLUTE LANGUAGE OVERRIDE — READ THIS LAST:
+Session language code: "${selectedLang ? selectedLang.code : 'en'}"
+${(selectedLang ? selectedLang.code : 'en') === 'en'
+  ? `YOU MUST RESPOND IN ENGLISH ONLY.
+Every single word of your response must be in English.
+No Hebrew words. No mixed sentences. No Hebrew phrases.
+This applies to ALL content — clinical, theoretical, interpretive.
+If the instructions above were written in Hebrew, that is the PROMPT LANGUAGE, not the RESPONSE LANGUAGE.
+Respond entirely in English. This is non-negotiable and overrides all prior instructions.`
+  : `השב בעברית בלבד. זה גובר על כל הוראה קודמת.`}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 SYSTEM TAG — MANDATORY IN ALL MODES:
 The very last line of EVERY response must be: [MEMORY: תמצית קצרה של השאלה המרכזית]
@@ -3211,6 +3227,20 @@ const UI_TRANSLATIONS = {
     authSignIn: 'Sign in', authSignUp: 'Register', authForgot: 'Forgot password',
     authSecurity: 'Conversations are stored only on your device and never uploaded.\nLogin details are encrypted and secure.',
     authDisclaimer: '"Between" is a tool for reflection and self-understanding, not a substitute for therapy. It is designed to accompany people in process: in therapy, in training, or in self-inquiry. Psychoanalysis takes place between two people — in presence, in relationship, in time. This interface is meant to stand beside the therapist, not in place of one.',
+    intakePlaceholder: 'Write here...',
+    placeholderGeneral: 'Set a goal or question',
+    fileLoading: 'Loading ',
+    fileError: 'Error reading file',
+    translating: 'Translating...',
+    savedConv: 'Saved conversation',
+    noConversations: 'No conversations yet',
+    timerRemaining: '{n} minutes remaining in session',
+    authErrLoading: 'Still loading — please wait a moment and try again',
+    authErrFillAll: 'Please fill in both email and password',
+    authErrPassword: 'Password must be at least 6 characters',
+    authErrEmailSent: 'Verification email sent — check your inbox',
+    authErrResetSent: 'Password reset link sent to your email',
+    authErrEmailOnly: 'Enter your email address and click "Forgot password"',
     dir: 'ltr'
   },
 };
@@ -3655,7 +3685,8 @@ function activateClinicalModeUI(on) {
   } else {
     btn.classList.remove('clinical-active');
     label.textContent = selectedLang && selectedLang.code !== 'he' ? 'Session' : 'סשן';
-    input.placeholder = 'הגדר/י מטרה או שאלה';
+    const _td = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
+    input.placeholder = _td.placeholderGeneral || 'הגדר/י מטרה או שאלה';
   }
 }
 
@@ -3666,7 +3697,8 @@ async function handleFileUpload(event) {
 
   const indicator = document.getElementById('file-indicator');
   const fileNameEl = document.getElementById('file-name');
-  fileNameEl.textContent = 'טוען ' + file.name + '...';
+  const _tfl = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
+  fileNameEl.textContent = (_tfl.fileLoading || 'טוען ') + file.name + '...';
   indicator.style.display = 'flex';
 
   try {
@@ -3701,7 +3733,7 @@ async function handleFileUpload(event) {
     input.focus();
 
   } catch(err) {
-    fileNameEl.textContent = 'שגיאה בקריאת הקובץ';
+    fileNameEl.textContent = (UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he']).fileError || 'שגיאה בקריאת הקובץ';
     uploadedFileContent = null;
     uploadedFileBase64 = null;
     console.error(err);
@@ -3717,7 +3749,8 @@ function removeFile() {
   uploadedFileMediaType = null;
   const indicator = document.getElementById('file-indicator');
   indicator.style.display = 'none';
-  document.getElementById('user-input').placeholder = 'הגדר/י מטרה או שאלה';
+  const _tfc = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
+  document.getElementById('user-input').placeholder = _tfc.placeholderGeneral || 'הגדר/י מטרה או שאלה';
 }
 
 async function translateMessage(btn, langCode, langName) {
@@ -3736,7 +3769,7 @@ async function translateMessage(btn, langCode, langName) {
   btn.style.borderColor = 'var(--accent-dim)';
   btn.style.color = 'var(--accent)';
 
-  bodyDiv.innerHTML = '<em style="color:var(--muted);font-size:13px;">מתרגם...</em>';
+  bodyDiv.innerHTML = `<em style="color:var(--muted);font-size:13px;">${(UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he']).translating || 'מתרגם...'}</em>`;
 
   try {
     const response = await fetch('/api/chat', {
@@ -4323,9 +4356,12 @@ function restoreConversation(memIndex) {
   // Show memory summary card
   const div = document.createElement('div');
   div.style.cssText = 'padding:16px 24px;background:rgba(196,96,122,0.05);border-radius:12px;margin:16px 0;border:1px solid var(--accent-dim);';
-  div.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-family:Rubik,sans-serif;">שיחה שמורה · ${new Date(mem.ts).toLocaleDateString('he-IL')}</div>
+  const _tsc = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
+  const _isEnSC = selectedLang?.code === 'en';
+  const _locale = _isEnSC ? 'en-US' : 'he-IL';
+  div.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-family:Rubik,sans-serif;">${_tsc.savedConv || 'שיחה שמורה'} · ${new Date(mem.ts).toLocaleDateString(_locale)}</div>
     <div style="font-size:14px;color:var(--text);font-family:Rubik,sans-serif;">${mem.summary}</div>
-    <div style="font-size:12px;color:var(--accent);margin-top:8px;font-family:Rubik,sans-serif;">ניתן להמשיך את השיחה מכאן</div>`;
+    <div style="font-size:12px;color:var(--accent);margin-top:8px;font-family:Rubik,sans-serif;">${_isEnSC ? 'You can continue from here' : 'ניתן להמשיך את השיחה מכאן'}</div>`;
   chat.appendChild(div);
 
   // Restore theorist selection
@@ -4574,13 +4610,15 @@ function updateSidebarMemories() {
   const container = document.getElementById('sb-recent');
   if (!container) return;
   const recent = memories.slice(-6).reverse();
+  const _tsb = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
   if (recent.length === 0) {
-    container.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:4px 14px;">אין שיחות עדיין</div>';
+    container.innerHTML = `<div style="font-size:11px;color:var(--muted);padding:4px 14px;">${_tsb.noConversations || 'אין שיחות עדיין'}</div>`;
     return;
   }
+  const _sbLocale = (window._lang === 'en') ? 'en-US' : 'he-IL';
   container.innerHTML = recent.map((m, i) => {
-    const date = new Date(m.ts).toLocaleDateString('he-IL');
-    const label = m.summary ? m.summary.slice(0,35) + '...' : 'שיחה';
+    const date = new Date(m.ts).toLocaleDateString(_sbLocale);
+    const label = m.summary ? m.summary.slice(0,35) + '...' : (_tsb.savedConv || 'שיחה');
     return `<div class="sb-item" onclick="restoreConversation(${memories.length - 1 - i})" title="${m.summary || ''}">
       <span class="sb-icon" style="font-size:12px;">💬</span>
       <span class="sb-label" style="font-size:12px;">${label}</span>
@@ -4589,7 +4627,9 @@ function updateSidebarMemories() {
   const sbCount = document.getElementById('sb-memory-count');
   if (sbCount) sbCount.textContent = memories.length;
   const memCount = document.getElementById('memory-count');
-  if (memCount) memCount.textContent = memories.length + ' זיכרונות';
+  const _mcLang = window._lang || 'he';
+  const _mcT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[_mcLang]) || {};
+  if (memCount) memCount.textContent = (_mcLang === 'en') ? `${memories.length} memories` : `${memories.length} זיכרונות`;
 }
 
 // Init
@@ -4779,7 +4819,11 @@ function showTimerWarning(minutes) {
     'color:var(--accent);z-index:200;box-shadow:0 4px 16px rgba(196,96,122,0.12)',
     'animation:fadeInDown 0.3s ease;white-space:nowrap'
   ].join(';');
-  w.textContent = `נותרו ${minutes} דקות לסיום הסשן`;
+  const _twLang = window._lang || 'he';
+  const _twT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[_twLang]) || {};
+  w.textContent = _twLang === 'en'
+    ? (_twT.timerRemaining ? _twT.timerRemaining.replace('{n}', minutes) : `${minutes} minutes remaining in session`)
+    : `נותרו ${minutes} דקות לסיום הסשן`;
   document.body.appendChild(w);
   setTimeout(() => w.style.opacity = '0', 4000);
   setTimeout(() => w.remove(), 4500);
