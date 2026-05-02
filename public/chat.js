@@ -582,6 +582,15 @@ function showTheoristSwitchModal(el, name) {
   document.body.appendChild(modal);
   document.getElementById('tsm-confirm').addEventListener('click', () => {
     modal.remove();
+    // Deactivate ALL current theorist buttons before switching — prevents multiple active at once
+    document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
+    activeTheorists = [];
+    // Clear conversation and reset chat
+    conversationHistory = [];
+    saveConversation();
+    const _tsmChatEl = document.getElementById('chat');
+    const _tsmT = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['en'];
+    if (_tsmChatEl) _tsmChatEl.innerHTML = `<div class="welcome" id="welcome"><div class="ornament">ψ</div><h2>${_tsmT.welcome || 'Welcome'}</h2><p>${_tsmT.welcomeText || 'Ask any question about psychoanalysis.'}</p></div>`;
     performTheoristSwitch(el, name);
   });
   document.getElementById('tsm-cancel').addEventListener('click', () => modal.remove());
