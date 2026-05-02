@@ -3576,6 +3576,44 @@ function requireTherapistConsent(onConfirm) {
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
 }
 
+function showWinnicottDefaultTooltip(anchorEl) {
+  const existing = document.getElementById('winnicott-default-tip');
+  if (existing) existing.remove();
+
+  const isEn = (window.selectedLang?.code === 'en');
+  const dir  = isEn ? 'ltr' : 'rtl';
+  const line1 = isEn ? 'Winnicott is the default for this session.'      : 'ויניקוט נבחר כברירת מחדל לסשן.';
+  const line2 = isEn ? 'You can switch to another theorist at any time.'  : 'ניתן להחליף לתיאורטיקן אחר בכל עת.';
+
+  const rect = anchorEl.getBoundingClientRect();
+  const tip  = document.createElement('div');
+  tip.id = 'winnicott-default-tip';
+  tip.style.cssText = `
+    position:fixed;z-index:400;
+    background:#2d1f1f;color:#fff;
+    border-radius:10px;padding:10px 14px;
+    max-width:220px;font-size:12px;line-height:1.6;
+    direction:${dir};pointer-events:none;
+    box-shadow:0 4px 20px rgba(0,0,0,0.25);
+    top:${rect.top - 4}px;
+    left:${rect.right + 10}px;
+  `;
+  tip.innerHTML = `
+    <div style="font-weight:700;margin-bottom:3px;">${line1}</div>
+    <div style="opacity:.75;">${line2}</div>
+  `;
+  document.body.appendChild(tip);
+
+  // Auto-dismiss after 4 seconds
+  setTimeout(() => {
+    if (tip.parentNode) {
+      tip.style.transition = 'opacity 0.4s';
+      tip.style.opacity = '0';
+      setTimeout(() => tip.remove(), 400);
+    }
+  }, 4000);
+}
+
 function activateClinicalModeUI(on) {
   window.clinicalMode = on;
   const btn = document.getElementById('clinical-btn');
@@ -3588,9 +3626,10 @@ function activateClinicalModeUI(on) {
     input.placeholder = t2.placeholderClinical || 'תארי מצב — מה מרגישים? מה קורה? מה מסקרן?';
     // Default to Winnicott if no theorist is active
     if (activeTheorists.length === 0) {
-      const winnicottEl = document.querySelector('.theorist-tag[onclick*="winnicott"]');
+      const winnicottEl = document.querySelector('[data-key="winnicott"]');
       if (winnicottEl) {
         winnicottEl.classList.add('active');
+        showWinnicottDefaultTooltip(winnicottEl);
       }
       activeTheorists = ['winnicott'];
       updateInputSuggestion();
