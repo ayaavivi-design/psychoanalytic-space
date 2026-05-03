@@ -4189,17 +4189,18 @@ async function sendMessage() {
     updateReflectionBtn();
 
     // Build source attribution — never in clinical mode
+    // IMPORTANT: match() must come BEFORE replace() — once the tag is stripped it can't be found
     let sourceAttribution = '';
-    reply = reply.replace(/\[מקור: .+?\]/, '').trim();
     if (!window.clinicalMode) {
-      const sourceMatch = reply.match(/\[מקור: (.+?)\]/);
+      const sourceMatch = reply.match(/\[(?:מקור|Source): (.+?)\]/);
       if (sourceMatch) {
         const sourceText = sourceMatch[1];
         const searchQuery = encodeURIComponent(sourceText.replace(/[—–]/g, '').trim());
         sourceAttribution = `<a href="https://scholar.google.com/scholar?q=${searchQuery}" target="_blank" style="color:var(--accent);font-size:12px;font-family:'Rubik',sans-serif;text-decoration:none;opacity:0.75;border-bottom:1px dotted var(--accent-dim);" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75">📖 ${sourceText}</a>`;
-        reply = reply.replace(/\[מקור: .+?\]/, '').trim();
       }
     }
+    // Strip all citation tags (both Hebrew and English, with /g to catch multiples)
+    reply = reply.replace(/\[(?:מקור|Source): .+?\]/g, '').trim();
     if (webSources && webSources.length > 0) {
       const linksHTML = '<div style="margin-top:4px">' + webSources.slice(0, 5).map((s, i) =>
         `<a href="${s.url}" target="_blank" style="display:inline-block;margin:3px 4px 3px 0;padding:3px 10px;background:rgba(196,96,122,0.06);border:1px solid var(--accent-dim);border-radius:20px;color:var(--accent);font-size:11px;font-family:'Rubik',sans-serif;text-decoration:none;opacity:0.8;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8">[${i+1}] ${s.title.slice(0,45)}${s.title.length>45?'...':''}</a>`

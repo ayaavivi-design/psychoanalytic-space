@@ -1,4 +1,5 @@
 @CORE.md
 @BRAIN.md
 @MEMORY.md
+@OPEN_DECISIONS.md
 @AGENTS.md

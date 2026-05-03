@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
-import { searchKnowledge, formatChunksForPrompt } from '@/lib/rag';
+import { searchKnowledgeHybrid, formatChunksForPrompt } from '@/lib/rag';
 
 const THEORISTS_WITH_RAG = new Set(['freud', 'klein', 'winnicott', 'ogden', 'loewald', 'bion', 'kohut', 'heimann']);
 
@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
         : lastUserMessage?.content?.[0]?.text || '';
 
       if (query) {
-        const chunks = await searchKnowledge(query, theorist, 4);
+        const chunks = await searchKnowledgeHybrid(query, theorist, 4);
         console.log(`[RAG] ${theorist} — נמצאו ${chunks.length} קטעים:`, chunks.map(c => `${c.source_title} (${c.source_year}) — דמיון: ${c.similarity?.toFixed(2)}`));
         const ragContext = formatChunksForPrompt(chunks);
         if (ragContext) enrichedSystem = system + ragContext;

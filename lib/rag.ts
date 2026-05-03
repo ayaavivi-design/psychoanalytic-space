@@ -32,11 +32,18 @@ async function getEmbedding(text: string, attempt = 0): Promise<number[]> {
   return norm > 0 ? embedding.map(v => v / norm) : embedding;
 }
 
+export type KnowledgeChunk = {
+  content: string;
+  source_title: string;
+  source_year: number | null;
+  similarity: number;
+};
+
 export async function searchKnowledge(
   query: string,
   theorist: string,
   count = 4
-): Promise<{ content: string; source_title: string; source_year: number | null; similarity: number }[]> {
+): Promise<KnowledgeChunk[]> {
   try {
     const embedding = await getEmbedding(query);
 
@@ -62,6 +69,48 @@ export async function searchKnowledge(
   }
 }
 
+// ────────────────────────────────────────────────────────────────
+// היברידי — vector + BM25/trigram עם RRF
+// דורש שמיגרציה 20260503_hybrid_search.sql רצה על ה-DB.
+// כדי להפעיל: שנה את הקריאה ב-app/api/chat/route.ts מ-searchKnowledge ל-searchKnowledgeHybrid.
+// ────────────────────────────────────────────────────────────────
+export async function searchKnowledgeHybrid(
+  query: string,
+  theorist: string,
+  count = 4,
+  vectorWeight = 0.7,
+  textWeight = 0.3
+): Promise<KnowledgeChunk[]> {
+  try {
+    const embedding = await getEmbedding(query);
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const { data, error } = await supabase.rpc('match_knowledge_chunks_hybrid', {
+      query_embedding: embedding,
+      query_text: query,
+      match_theorist: theorist,
+      match_count: count,
+      vector_weight: vectorWeight,
+      text_weight: textWeight,
+    });
+
+    if (error || !data) {
+      // fallback לחיפוש וקטורי בלבד אם הפונקציה החדשה לא קיימת עדיין
+      console.warn('[RAG] hybrid RPC failed, falling back to vector-only:', error?.message);
+      return searchKnowledge(query, theorist, count);
+    }
+
+    return data;
+  } catch (e) {
+    console.error('RAG hybrid search error:', e);
+    return searchKnowledge(query, theorist, count);   // fallback
+  }
+}
+
 export function formatChunksForPrompt(
   chunks: { content: string; source_title: string; source_year: number | null }[]
 ): string {
@@ -76,5 +125,5 @@ export function formatChunksForPrompt(
     })
     .join('\n\n---\n\n');
 
-  return `\n\nRELEVANT PASSAGES FROM ORIGINAL TEXTS — these are direct excerpts. Use them as ground for your response. You may quote directly with attribution:\n\n${passages}\n\n---\n`;
+  return `\n\nRELEVANT PASSAGES FROM ORIGINAL TEXTS — these are direct excerpts. Use them as ground for your response. You may quote directly with attribution:\n\n${passages}\n\n---\n\nIMPORTANT: If you used any of the passages above, add exactly one citation tag at the very end of your response, on its own line. Format: [מקור: title, year] if responding in Hebrew, or [Source: title, year] if responding in English. Use the title and year exactly as shown in the passage header. Only add this tag if you actually drew from one of the passages — omit it entirely if you did not.\n`;
 }

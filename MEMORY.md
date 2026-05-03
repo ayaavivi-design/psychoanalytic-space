@@ -65,17 +65,14 @@ _קובץ זה הוא append-only — לא מוחקים, מוסיפים.
 
 ---
 
-## החלטות פתוחות — מחכות לבעלים
+## החלטות פתוחות
 
-| שאלה | הקשר |
-|------|-------|
-| מי מפעיל את המרחב — מטפל או מטופל? | ישפיע על ממשק, מחיר, שיווק |
-| מה מודל התשלום? | מנוי / לשיחה / דרך מטפל |
-| האם QA results יגיעו לרן? | צריך GITHUB_TOKEN ב-Vercel |
+עברו לקובץ נפרד: [OPEN_DECISIONS.md](OPEN_DECISIONS.md)
+הסיבה: זה תוכן עם life cycle אחר — נסגר ונמחק, לא append-only כמו שאר MEMORY.md.
 
 ---
 
 ## לכל מי שמצטרף לצוות
 
-קרא קודם: CORE.md → BRAIN.md → MEMORY.md → STRATEGIC_PRIORITIES.md
+קרא קודם: CORE.md → BRAIN.md → MEMORY.md → OPEN_DECISIONS.md → STRATEGIC_PRIORITIES.md
 אז תתחיל לעבוד.
