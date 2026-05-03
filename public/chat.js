@@ -471,6 +471,7 @@ let uploadedFileContent = null;
 let uploadedFileName = null;
 let selectedLang = { code: 'en', flag: '🇬🇧', name: 'English' };
 window.selectedLang = selectedLang;
+window._lang = 'en'; // always in sync with selectedLang
 let isThinking = false;
 let sessionMemorySaved = false;
 let conversationHistory = [];
@@ -3305,6 +3306,7 @@ const UI_TRANSLATIONS = {
 };
 
 function applyUITranslation(code) {
+  window._lang = code; // keep window._lang in sync for all consumers
   const t = UI_TRANSLATIONS[code] || UI_TRANSLATIONS['he'];
   // Title & subtitle
   const h1 = document.querySelector('header h1');
@@ -3482,6 +3484,21 @@ function applyUITranslation(code) {
     const persona = JSON.parse(localStorage.getItem('user_prefs') || '{}').persona;
     if (persona) applyPersona(persona);
   } catch(e) {}
+  // Re-render memory-aware welcome in the correct language if it's showing
+  const _apWelcomeP = document.querySelector('.welcome p');
+  if (_apWelcomeP && conversationHistory.length === 0) {
+    const _apMemories = loadMemory();
+    if (_apMemories.length > 0) {
+      const _apLast = _apMemories[_apMemories.length - 1];
+      const _apIsEn = code === 'en';
+      const _apDate = new Date(_apLast.ts).toLocaleDateString(_apIsEn ? 'en-US' : 'he-IL');
+      _apWelcomeP.innerHTML = _apIsEn
+        ? `Welcome back. In our last session (${_apDate}) we explored: ${_apLast.summary}. <span style="color:var(--accent-dim)">You can pick up from there or open a new direction.</span>`
+        : `ברוכ/ה השב/ה. בפגישה האחרונה (${_apDate}) עסקנו ב: ${_apLast.summary}. <span style="color:var(--accent-dim)">אפשר להמשיך משם או לפתוח כיוון חדש.</span>`;
+    } else {
+      _apWelcomeP.innerHTML = t.welcomeText || '';
+    }
+  }
 }
 
 function selectLang(code, flag, name) {
