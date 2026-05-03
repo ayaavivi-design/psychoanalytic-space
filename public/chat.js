@@ -3219,6 +3219,52 @@ const UI_TRANSLATIONS = {
     privacyTitle: 'מדיניות פרטיות',
     privacyContent: '<p style="margin-bottom:12px"><strong>שיחות</strong> — מעובדות דרך ממשק ה-API של אנתרופיק בלבד. אינן נשמרות על ידינו, ואינן משמשות לאימון מודלים.</p><p style="margin-bottom:12px"><strong>זיכרון</strong> — נשמר באופן מקומי בדפדפן שלך בלבד. אנחנו לא רואים אותו ולא מאחסנים אותו.</p><p style="margin-bottom:12px"><strong>מאגר ידע</strong> — קטעים מהספרות הפסיכואנליטית מאוחסנים אצלנו כמספרים בלבד לצורך חיפוש. תוכן השיחות שלך אינו נשמר שם.</p><p style="margin-bottom:20px"><strong>זיהוי</strong> — אין שמירה של כתובות IP, זהות משתמש, או כל מידע מזהה אישי מעבר לנדרש לניהול החשבון.</p>',
     privacyBtnOk: 'הבנתי',
+    noMemories: 'אין זיכרונות עדיין',
+    conversation: 'שיחה',
+    errGeneric: 'משהו השתבש — נסה שוב.',
+    errNetwork: 'שגיאת רשת — נסה שוב.',
+    supLoading: 'מכין פיקוח קליני...',
+    supNetErr: 'שגיאת רשת',
+    supUnknownErr: 'שגיאה לא ידועה',
+    supRunBtn: 'הרץ פיקוח',
+    supParseErr: 'המודל לא החזיר תשובה תקינה. נסה שוב — אם השגיאה חוזרת, נסה להריץ הפיקוח מחדש.',
+    supFailHeader: 'הפיקוח לא הצליח להיווצר',
+    clearMemoryConfirm: 'למחוק את כל הזיכרונות?',
+    noConversationToDownload: 'אין שיחה להוריד',
+    timerTooltip: 'זמן שנותר בסשן',
+    openMemoryEmpty: 'אין זיכרונות עדיין. התחל שיחה.',
+    openMemoryConv: 'שיחה',
+    openMemoryClickToOpen: 'לחץ לפתיחה',
+    openMemoryTooltip: 'לחץ לפתיחת שיחה זו',
+    noActiveConvToSummarize: 'אין שיחה פעילה לסכם.',
+    summaryError: 'שגיאה בייצור הסיכום.',
+    supMinTurns: 'נדרשות לפחות 2 תורות לפיקוח.',
+    supNoActiveInfo: 'אין שיחה פעילה עם מספיק תורות — השתמש בלשונית "הדבק שיחה".',
+    supSelectSingleTheorist: 'בחר תיאורטיקן יחיד כדי להשתמש בשיחה הפעילה.',
+    fileUploadPlaceholder: 'סכמי / הסבירי במילים פשוטות / שאלה ספציפית על הקטע...',
+    cmpRunning: 'מריץ...',
+    cmpSending: 'שולח לתיאורטיקנים במקביל...',
+    cmpPatientQuote: 'ציטוט המטופל',
+    cmpError: 'שגיאה',
+    cmpRunAgain: 'הרץ שוב',
+    cmpRunError: 'שגיאה בהרצת ההשוואה.',
+    cmpRoundTable: '🪑 שולחן עגול — סיבוב שני',
+    cmpRunRound2: 'מריץ סיבוב שני...',
+    cmpDownload: '↓ הורד השוואה',
+    cmpResponse: 'תגובה',
+    cmpRound2Error: 'שגיאה בסיבוב השני.',
+    anonProcessing: 'מעבד...',
+    anonIdentifying: 'מזהה פרטים מזהים...',
+    anonError: 'שגיאה',
+    anonNoChanges: '✓ לא נמצאו פרטים מזהים בטקסט',
+    anonChanges: 'שינויים שבוצעו',
+    anonOutputLabel: 'טקסט מאונונים',
+    anonCopy: '📋 העתק טקסט מאונונים',
+    anonCopied: '✓ הועתק',
+    anonInsert: '→ הכנס לשורת הקלט',
+    anonRunAgain: 'הרץ שוב',
+    anonTextError: 'שגיאה בעיבוד הטקסט.',
+    supDownloadBtn: '↓ הורד דוח פיקוח',
     dir: 'rtl'
   },
   en: {
@@ -3301,6 +3347,52 @@ const UI_TRANSLATIONS = {
     authErrEmailSent: 'Verification email sent — check your inbox',
     authErrResetSent: 'Password reset link sent to your email',
     authErrEmailOnly: 'Enter your email address and click "Forgot password"',
+    noMemories: 'No memories yet',
+    conversation: 'Conversation',
+    errGeneric: 'Something went wrong — please try again.',
+    errNetwork: 'Network error — please try again.',
+    supLoading: 'Preparing clinical supervision...',
+    supNetErr: 'Network error',
+    supUnknownErr: 'Unknown error',
+    supRunBtn: 'Run supervision',
+    supParseErr: 'The model did not return a valid response. Please try again.',
+    supFailHeader: 'Supervision could not be created',
+    clearMemoryConfirm: 'Delete all memories?',
+    noConversationToDownload: 'No conversation to download',
+    timerTooltip: 'Time remaining in session',
+    openMemoryEmpty: 'No memories yet. Start a conversation.',
+    openMemoryConv: 'Conversation',
+    openMemoryClickToOpen: 'Click to open',
+    openMemoryTooltip: 'Click to open this conversation',
+    noActiveConvToSummarize: 'No active conversation to summarize.',
+    summaryError: 'Error generating the summary.',
+    supMinTurns: 'At least 2 turns are required for supervision.',
+    supNoActiveInfo: 'No active conversation with enough turns — use the "Paste conversation" tab.',
+    supSelectSingleTheorist: 'Select a single theorist to use the active conversation.',
+    fileUploadPlaceholder: 'Summarise / explain / ask a specific question about this excerpt...',
+    cmpRunning: 'Running...',
+    cmpSending: 'Sending to theorists in parallel...',
+    cmpPatientQuote: 'Patient quote',
+    cmpError: 'Error',
+    cmpRunAgain: 'Run again',
+    cmpRunError: 'Error running comparison.',
+    cmpRoundTable: '🪑 Round table — second round',
+    cmpRunRound2: 'Running second round...',
+    cmpDownload: '↓ Download comparison',
+    cmpResponse: 'Response',
+    cmpRound2Error: 'Error in second round.',
+    anonProcessing: 'Processing...',
+    anonIdentifying: 'Identifying personal details...',
+    anonError: 'Error',
+    anonNoChanges: '✓ No identifying details found in the text',
+    anonChanges: 'Changes made',
+    anonOutputLabel: 'Anonymized text',
+    anonCopy: '📋 Copy anonymized text',
+    anonCopied: '✓ Copied',
+    anonInsert: '→ Insert into chat',
+    anonRunAgain: 'Run again',
+    anonTextError: 'Error processing text.',
+    supDownloadBtn: '↓ Download supervision report',
     dir: 'ltr'
   },
 };
@@ -3740,9 +3832,9 @@ function activateClinicalModeUI(on) {
   const input = document.getElementById('user-input');
   if (on) {
     btn.classList.add('clinical-active');
-    label.textContent = (selectedLang && selectedLang.code !== 'he' ? 'Session' : 'סשן') + ' ✓';
     const t2 = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
-    input.placeholder = t2.placeholderClinical || 'תארי מצב — מה מרגישים? מה קורה? מה מסקרן?';
+    label.textContent = (t2.session || 'Session') + ' ✓';
+    input.placeholder = t2.placeholderClinical || 'Describe the situation — what do you feel? what is happening?';
     // Default to Winnicott if no theorist is active
     if (activeTheorists.length === 0) {
       const winnicottEl = document.querySelector('[data-key="winnicott"]');
@@ -3760,9 +3852,9 @@ function activateClinicalModeUI(on) {
     }
   } else {
     btn.classList.remove('clinical-active');
-    label.textContent = selectedLang && selectedLang.code !== 'he' ? 'Session' : 'סשן';
     const _td = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
-    input.placeholder = _td.placeholderGeneral || 'הגדר/י מטרה או שאלה';
+    label.textContent = _td.session || 'Session';
+    input.placeholder = _td.placeholderGeneral || 'Ask a psychoanalytic question...';
   }
 }
 
@@ -3804,7 +3896,8 @@ async function handleFileUpload(event) {
     fileNameEl.textContent = file.name;
     const input = document.getElementById('user-input');
     if (!input.value) {
-      input.placeholder = 'סכמי / הסבירי במילים פשוטות / שאלה ספציפית על הקטע...';
+      const _fuT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
+      input.placeholder = _fuT.fileUploadPlaceholder || 'Summarise / explain / ask a specific question about this excerpt...';
     }
     input.focus();
 
@@ -4140,15 +4233,17 @@ function toggleMemoryDropdown() {
   if (!dropdown) return;
   if (dropdown.style.display === 'none') {
     const memories = loadMemory();
+    const _tmT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
+    const _tmLocale = (window._lang === 'en') ? 'en-US' : 'he-IL';
     if (memories.length === 0) {
-      list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px;">אין זיכרונות עדיין</div>';
+      list.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:8px;">${_tmT.noMemories || 'No memories yet'}</div>`;
     } else {
       list.innerHTML = memories.slice().reverse().map((m, i) => {
         const realIdx = memories.length - 1 - i;
-        const date = new Date(m.ts).toLocaleDateString('he-IL');
+        const date = new Date(m.ts).toLocaleDateString(_tmLocale);
         return `<div onclick="restoreConversation(${realIdx});toggleMemoryDropdown()" style="padding:7px 10px;cursor:pointer;border-radius:8px;font-size:12px;color:var(--text);" onmouseover="this.style.background='rgba(196,96,122,0.06)'" onmouseout="this.style.background=''">
           <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">${date}${m.theorist ? ' · ' + m.theorist : ''}</div>
-          <div>${m.summary ? m.summary.slice(0,60) + '...' : 'שיחה'}</div>
+          <div>${m.summary ? m.summary.slice(0,60) + '...' : (_tmT.conversation || 'Conversation')}</div>
         </div>`;
       }).join('');
     }
@@ -4170,12 +4265,14 @@ function toggleMemoryDropdown() {
 function openMemory() {
   const memories = loadMemory();
   const list = document.getElementById('memory-list');
+  const _omT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
+  const _omLocale = (window._lang === 'en') ? 'en-US' : 'he-IL';
   if (memories.length === 0) {
-    list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px 0">אין זיכרונות עדיין. התחל שיחה.</div>';
+    list.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:12px 0">${_omT.openMemoryEmpty || 'No memories yet. Start a conversation.'}</div>`;
   } else {
     list.innerHTML = memories.map((m, i) => `
-      <div class="memory-entry" onclick="restoreConversation(${i})" style="cursor:pointer;" title="לחץ לפתיחת שיחה זו">
-        <div class="mem-q">שיחה ${i+1} · ${new Date(m.ts).toLocaleDateString('he-IL')} <span style="float:left;opacity:0.5;font-size:10px;">לחץ לפתיחה</span></div>
+      <div class="memory-entry" onclick="restoreConversation(${i})" style="cursor:pointer;" title="${_omT.openMemoryTooltip || 'Click to open this conversation'}">
+        <div class="mem-q">${_omT.openMemoryConv || 'Conversation'} ${i+1} · ${new Date(m.ts).toLocaleDateString(_omLocale)} <span style="float:left;opacity:0.5;font-size:10px;">${_omT.openMemoryClickToOpen || 'Click to open'}</span></div>
         <div>${m.summary}</div>
       </div>
     `).join('');
@@ -4188,7 +4285,8 @@ function closeMemory() {
 }
 
 function clearMemory() {
-  if (confirm('למחוק את כל הזיכרונות?')) {
+  const _cmT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
+  if (confirm(_cmT.clearMemoryConfirm || 'Delete all memories?')) {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(CONV_KEY);
     conversationHistory = [];
@@ -4199,7 +4297,8 @@ function clearMemory() {
 
 async function exportPDF() {
   const messages = document.querySelectorAll('.message');
-  if (messages.length === 0) { alert('אין שיחה להוריד'); return; }
+  const _pdfT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
+  if (messages.length === 0) { alert(_pdfT.noConversationToDownload || 'No conversation to download'); return; }
 
   const date = new Date().toLocaleDateString('he-IL');
   const heNames = {freud:'פרויד',klein:'קליין',winnicott:'ויניקוט',ogden:'אוגדן',loewald:'לוואלד',bion:'ביון',kohut:'קוהוט',heimann:'היימן'};
@@ -4705,7 +4804,7 @@ function updateSidebarMemories() {
   const memCount = document.getElementById('memory-count');
   const _mcLang = window._lang || 'he';
   const _mcT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[_mcLang]) || {};
-  if (memCount) memCount.textContent = (_mcLang === 'en') ? `${memories.length} memories` : `${memories.length} זיכרונות`;
+  if (memCount) memCount.textContent = `${memories.length} ${_mcT.memories || 'memories'}`;
 }
 
 // Init
@@ -4819,7 +4918,8 @@ function createTimerDisplay() {
 
   const el = document.createElement('div');
   el.id = 'session-timer-display';
-  el.title = 'זמן שנותר בסשן';
+  const _timerT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
+  el.title = _timerT.timerTooltip || 'Time remaining in session';
   el.style.cssText = [
     'display:flex;align-items:center;gap:8px;flex-shrink:0',
     'font-family:"Rubik",sans-serif;font-size:12px;color:var(--muted)',
@@ -4962,7 +5062,9 @@ async function handleSilence() {
     const recentHistory = conversationHistory.slice(-16);
     const messages = [
       ...recentHistory.map(m => ({ role: m.role, content: m.content })),
-      { role: 'user', content: '[שתיקה — המטופל נמצא אך לא מדבר כרגע]' }
+      { role: 'user', content: window._lang === 'en'
+          ? '[Silence — the patient is present but not speaking]'
+          : '[שתיקה — המטופל נמצא אך לא מדבר כרגע]' }
     ];
 
     const response = await fetch('/api/chat', {
@@ -5126,16 +5228,19 @@ function _openSupervision() {
   // עדכן מידע על שיחה פעילה
   const infoEl = document.getElementById('sup-active-info');
   if (infoEl) {
+    const _supInfoT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
     if (conversationHistory.length >= 4 && activeTheorists.length === 1) {
       const name = theoristNameHe(activeTheorists[0]);
       const turns = Math.floor(conversationHistory.length / 2);
-      infoEl.innerHTML = `תיאורטיקן: <strong>${name}</strong> &nbsp;·&nbsp; ${turns} תורות`;
+      const turnsLabel = window._lang === 'en' ? 'turns' : 'תורות';
+      const theoristLabel = window._lang === 'en' ? 'Theorist' : 'תיאורטיקן';
+      infoEl.innerHTML = `${theoristLabel}: <strong>${name}</strong> &nbsp;·&nbsp; ${turns} ${turnsLabel}`;
       infoEl.style.color = 'var(--text)';
     } else if (conversationHistory.length < 4) {
-      infoEl.textContent = 'אין שיחה פעילה עם מספיק תורות — השתמש בלשונית "הדבק שיחה".';
+      infoEl.textContent = _supInfoT.supNoActiveInfo || 'No active conversation with enough turns — use the "Paste conversation" tab.';
       infoEl.style.color = 'var(--muted)';
     } else {
-      infoEl.textContent = 'בחר תיאורטיקן יחיד כדי להשתמש בשיחה הפעילה.';
+      infoEl.textContent = _supInfoT.supSelectSingleTheorist || 'Select a single theorist to use the active conversation.';
       infoEl.style.color = 'var(--muted)';
     }
   }
@@ -5166,7 +5271,8 @@ async function runSupervisionPanel() {
   if (!pasteVisible) {
     // שיחה פעילה
     if (conversationHistory.length < 4) {
-      alert('נדרשות לפחות 2 תורות לפיקוח.');
+      const _smtT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
+      alert(_smtT.supMinTurns || 'At least 2 turns are required for supervision.');
       return;
     }
     const turns = [];
@@ -5178,17 +5284,18 @@ async function runSupervisionPanel() {
   } else {
     // הדבק שיחה
     transcript = (document.getElementById('sup-paste-input').value || '').trim();
-    if (!transcript) { alert('אנא הדבק שיחה.'); return; }
+    if (!transcript) { alert(window._lang === 'en' ? 'Please paste a conversation.' : 'אנא הדבק שיחה.'); return; }
     const sel  = document.getElementById('sup-theorist-select');
     theorist   = theoristNameHe(sel ? sel.value : '');
   }
 
+  const _supT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
   const btn = document.getElementById('sup-run-btn');
   if (btn) { btn.textContent = '...'; btn.disabled = true; }
 
   const resultsEl = document.getElementById('sup-results');
   if (resultsEl) {
-    resultsEl.innerHTML = '<div style="text-align:center;color:#7a5080;padding:20px;font-size:13px;">מכין פיקוח קליני...</div>';
+    resultsEl.innerHTML = `<div style="text-align:center;color:#7a5080;padding:20px;font-size:13px;">${_supT.supLoading || 'Preparing clinical supervision...'}</div>`;
   }
 
   try {
@@ -5203,22 +5310,22 @@ async function runSupervisionPanel() {
       if (report.error) {
         resultsEl.innerHTML = `
           <div style="padding:16px;background:#fff5f5;border:1px solid #fca5a5;border-radius:8px;direction:rtl;">
-            <div style="font-size:13px;font-weight:600;color:#b91c1c;margin-bottom:6px;">⚠️ הפיקוח לא הצליח להיווצר</div>
+            <div style="font-size:13px;font-weight:600;color:#b91c1c;margin-bottom:6px;">⚠️ ${_supT.supFailHeader || 'Supervision could not be created'}</div>
             <div style="font-size:12px;color:#7f1d1d;line-height:1.7;">
               ${report.error === 'parse_failed'
-                ? 'המודל לא החזיר תשובה תקינה. נסה שוב — אם השגיאה חוזרת, נסה להריץ הפיקוח מחדש.'
-                : `שגיאה: ${report.error}`}
+                ? (_supT.supParseErr || 'The model did not return a valid response. Please try again.')
+                : `${_supT.supNetErr || 'Error'}: ${report.error}`}
             </div>
-            ${report.raw ? `<details style="margin-top:8px;"><summary style="font-size:11px;color:#aaa;cursor:pointer;">תגובה גולמית</summary><pre style="font-size:10px;color:#888;white-space:pre-wrap;margin-top:4px;">${report.raw.slice(0,400)}</pre></details>` : ''}
+            ${report.raw ? `<details style="margin-top:8px;"><summary style="font-size:11px;color:#aaa;cursor:pointer;">raw</summary><pre style="font-size:10px;color:#888;white-space:pre-wrap;margin-top:4px;">${report.raw.slice(0,400)}</pre></details>` : ''}
           </div>`;
       } else {
         resultsEl.appendChild(buildSupervisionCard(report, theorist));
       }
     }
   } catch (err) {
-    if (resultsEl) resultsEl.innerHTML = `<div style="color:#b91c1c;padding:12px;font-size:13px;">שגיאת רשת: ${err?.message || 'שגיאה לא ידועה'}</div>`;
+    if (resultsEl) resultsEl.innerHTML = `<div style="color:#b91c1c;padding:12px;font-size:13px;">${_supT.supNetErr || 'Network error'}: ${err?.message || (_supT.supUnknownErr || 'Unknown error')}</div>`;
   } finally {
-    if (btn) { btn.textContent = 'הרץ פיקוח'; btn.disabled = false; }
+    if (btn) { btn.textContent = _supT.supRunBtn || 'Run supervision'; btn.disabled = false; }
   }
 }
 
@@ -5279,8 +5386,9 @@ function buildSupervisionCard(r, theoristLabel) {
   // Add download button safely via JS (avoids escaping issues in inline onclick)
   const footer = card.querySelector('#sup-download-footer');
   if (footer) {
+    const _supDlT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
     const dlBtn = document.createElement('button');
-    dlBtn.textContent = '↓ הורד דוח פיקוח';
+    dlBtn.textContent = _supDlT.supDownloadBtn || '↓ Download supervision report';
     dlBtn.style.cssText = 'background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;';
     dlBtn.addEventListener('click', () => downloadSupervisionReport(r, name));
     footer.appendChild(dlBtn);
@@ -5406,7 +5514,8 @@ function openSessionSummary() {
 function _openSessionSummary() {
   const transcript = buildSessionSummaryTranscript();
   if (!transcript) {
-    alert('אין שיחה פעילה לסכם.');
+    const _ssT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
+    alert(_ssT.noActiveConvToSummarize || 'No active conversation to summarize.');
     return;
   }
 
@@ -5464,7 +5573,8 @@ function _openSessionSummary() {
     })
     .catch(() => {
       const resultsEl = document.getElementById('session-summary-results');
-      if (resultsEl) resultsEl.innerHTML = '<div style="color:#c00;text-align:center;padding:20px;">שגיאה בייצור הסיכום.</div>';
+      const _sseT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
+      if (resultsEl) resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;">${_sseT.summaryError || 'Error generating the summary.'}</div>`;
     });
 }
 
@@ -5694,11 +5804,12 @@ async function runComparison(overlay) {
 
   const resultsEl = overlay.querySelector('#cmp-results');
   const runBtn    = overlay.querySelector('#cmp-run');
+  const _cmpT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
   runBtn.disabled = true;
-  runBtn.textContent = 'מריץ...';
+  runBtn.textContent = _cmpT.cmpRunning || 'Running...';
   resultsEl.innerHTML = `
     <div style="text-align:center;padding:20px;color:#888;font-size:13px;">
-      שולח ל-${selected.length} תיאורטיקנים במקביל...
+      ${_cmpT.cmpSending || 'Sending to theorists in parallel...'}
     </div>`;
 
   try {
@@ -5714,7 +5825,7 @@ async function runComparison(overlay) {
     // Patient quote header
     const quoteEl = document.createElement('div');
     quoteEl.style.cssText = 'margin-bottom:16px;padding:10px 14px;background:#f8f6fb;border-right:3px solid #aaa;border-radius:0 6px 6px 0;';
-    quoteEl.innerHTML = `<div style="font-size:10px;color:#aaa;font-weight:600;margin-bottom:3px;">ציטוט המטופל</div>
+    quoteEl.innerHTML = `<div style="font-size:10px;color:#aaa;font-weight:600;margin-bottom:3px;">${_cmpT.cmpPatientQuote || 'Patient quote'}</div>
       <div style="font-size:13px;color:#333;font-style:italic;">"${patient_message.replace(/</g,'&lt;').replace(/>/g,'&gt;')}"</div>`;
     resultsEl.appendChild(quoteEl);
 
@@ -5730,9 +5841,9 @@ async function runComparison(overlay) {
         <div style="background:${info.color};padding:8px 12px;">
           <span style="color:#fff;font-size:13px;font-weight:600;">${c.name}</span>
         </div>
-        <div style="padding:12px;font-size:13px;color:#333;line-height:1.8;direction:rtl;min-height:80px;">
+        <div style="padding:12px;font-size:13px;color:#333;line-height:1.8;min-height:80px;">
           ${c.error
-            ? `<span style="color:#c00;font-size:12px;">שגיאה: ${c.error}</span>`
+            ? `<span style="color:#c00;font-size:12px;">${_cmpT.cmpError || 'Error'}: ${c.error}</span>`
             : c.response.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
         </div>`;
       grid.appendChild(card);
@@ -5745,17 +5856,17 @@ async function runComparison(overlay) {
     actRow.style.cssText = 'margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;';
 
     const rtBtn = document.createElement('button');
-    rtBtn.textContent = '🪑 שולחן עגול — סיבוב שני';
+    rtBtn.textContent = _cmpT.cmpRoundTable || '🪑 Round table — second round';
     rtBtn.style.cssText = 'padding:6px 16px;border-radius:7px;border:1px solid #b0c4cc;background:#f0f7fa;color:#2d4a5e;font-size:12px;font-weight:600;cursor:pointer;';
     rtBtn.addEventListener('click', () => {
       rtBtn.disabled = true;
-      rtBtn.textContent = 'מריץ סיבוב שני...';
+      rtBtn.textContent = _cmpT.cmpRunRound2 || 'Running second round...';
       runRoundtable(overlay, patient_message, data.comparisons || []);
     });
     actRow.appendChild(rtBtn);
 
     const dlBtn = document.createElement('button');
-    dlBtn.textContent = '↓ הורד השוואה';
+    dlBtn.textContent = _cmpT.cmpDownload || '↓ Download comparison';
     dlBtn.style.cssText = 'background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;';
     dlBtn.addEventListener('click', () => downloadComparison(patient_message, data.comparisons || []));
     actRow.appendChild(dlBtn);
@@ -5763,10 +5874,10 @@ async function runComparison(overlay) {
     resultsEl.appendChild(actRow);
 
   } catch (err) {
-    resultsEl.innerHTML = '<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">שגיאה בהרצת ההשוואה.</div>';
+    resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">${_cmpT.cmpRunError || 'Error running comparison.'}</div>`;
   } finally {
     runBtn.disabled = false;
-    runBtn.textContent = 'הרץ שוב';
+    runBtn.textContent = _cmpT.cmpRunAgain || 'Run again';
   }
 }
 
@@ -5886,9 +5997,10 @@ async function runAnonymizer(overlay) {
 
   const results = overlay.querySelector('#anon-results');
   const runBtn  = overlay.querySelector('#anon-run');
+  const _anonT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
   runBtn.disabled = true;
-  runBtn.textContent = 'מעבד...';
-  results.innerHTML = '<div style="text-align:center;color:#888;font-size:13px;padding:16px;">מזהה פרטים מזהים...</div>';
+  runBtn.textContent = _anonT.anonProcessing || 'Processing...';
+  results.innerHTML = `<div style="text-align:center;color:#888;font-size:13px;padding:16px;">${_anonT.anonIdentifying || 'Identifying personal details...'}</div>`;
 
   try {
     const res  = await fetch('/api/anonymize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
@@ -5897,7 +6009,7 @@ async function runAnonymizer(overlay) {
     results.innerHTML = '';
 
     if (data.error) {
-      results.innerHTML = `<div style="color:#c00;font-size:13px;">שגיאה: ${data.error}</div>`;
+      results.innerHTML = `<div style="color:#c00;font-size:13px;">${_anonT.anonError || 'Error'}: ${data.error}</div>`;
       return;
     }
 
@@ -5906,7 +6018,7 @@ async function runAnonymizer(overlay) {
       const changesEl = document.createElement('div');
       changesEl.style.cssText = 'margin-bottom:14px;';
       changesEl.innerHTML = `
-        <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">שינויים שבוצעו (${data.changes.length})</div>
+        <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">${_anonT.anonChanges || 'Changes made'} (${data.changes.length})</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;">
           ${data.changes.map(c => `
             <span style="background:#fff3e0;border:1px solid #ffe082;border-radius:12px;padding:2px 10px;font-size:11px;color:#6d4c00;">
@@ -5918,17 +6030,18 @@ async function runAnonymizer(overlay) {
     } else {
       const noChanges = document.createElement('div');
       noChanges.style.cssText = 'margin-bottom:12px;font-size:12px;color:#2d8a5e;';
-      noChanges.textContent = '✓ לא נמצאו פרטים מזהים בטקסט';
+      noChanges.textContent = _anonT.anonNoChanges || '✓ No identifying details found in the text';
       results.appendChild(noChanges);
     }
 
     // Anonymized text box
+    const _anonDir = (window._lang === 'en') ? 'ltr' : 'rtl';
     const anonBox = document.createElement('div');
     anonBox.style.cssText = 'margin-bottom:12px;';
     anonBox.innerHTML = `
-      <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">טקסט מאונונים</div>
+      <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">${_anonT.anonOutputLabel || 'Anonymized text'}</div>
       <div id="anon-output" style="background:#f6faf6;border:1px solid #c3e6cb;border-radius:8px;padding:12px 14px;
-        font-size:13px;color:#333;line-height:1.8;white-space:pre-wrap;direction:rtl;">
+        font-size:13px;color:#333;line-height:1.8;white-space:pre-wrap;direction:${_anonDir};">
         ${(data.anonymized || text).replace(/</g,'&lt;').replace(/>/g,'&gt;')}
       </div>`;
     results.appendChild(anonBox);
@@ -5938,12 +6051,12 @@ async function runAnonymizer(overlay) {
     btns.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
 
     const copyBtn = document.createElement('button');
-    copyBtn.textContent = '📋 העתק טקסט מאונונים';
+    copyBtn.textContent = _anonT.anonCopy || '📋 Copy anonymized text';
     copyBtn.style.cssText = 'padding:7px 16px;border-radius:7px;border:1px solid #c3e6cb;background:#f6faf6;color:#2d8a5e;font-size:12px;cursor:pointer;';
     copyBtn.addEventListener('click', () => {
       navigator.clipboard.writeText(data.anonymized || text).then(() => {
-        copyBtn.textContent = '✓ הועתק';
-        setTimeout(() => { copyBtn.textContent = '📋 העתק טקסט מאונונים'; }, 2000);
+        copyBtn.textContent = _anonT.anonCopied || '✓ Copied';
+        setTimeout(() => { copyBtn.textContent = _anonT.anonCopy || '📋 Copy anonymized text'; }, 2000);
       });
     });
     btns.appendChild(copyBtn);
@@ -5952,7 +6065,7 @@ async function runAnonymizer(overlay) {
     const inputEl = document.getElementById('user-input');
     if (inputEl) {
       const insertBtn = document.createElement('button');
-      insertBtn.textContent = '→ הכנס לשורת הקלט';
+      insertBtn.textContent = _anonT.anonInsert || '→ Insert into chat';
       insertBtn.style.cssText = 'padding:7px 16px;border-radius:7px;border:1px solid #d4c2e0;background:#f7f5fb;color:#5b3a5e;font-size:12px;cursor:pointer;';
       insertBtn.addEventListener('click', () => {
         inputEl.value = data.anonymized || text;
@@ -5965,10 +6078,10 @@ async function runAnonymizer(overlay) {
     results.appendChild(btns);
 
   } catch {
-    results.innerHTML = '<div style="color:#c00;text-align:center;font-size:13px;">שגיאה בעיבוד הטקסט.</div>';
+    results.innerHTML = `<div style="color:#c00;text-align:center;font-size:13px;">${_anonT.anonTextError || 'Error processing text.'}</div>`;
   } finally {
     runBtn.disabled = false;
-    runBtn.textContent = 'הרץ שוב';
+    runBtn.textContent = _anonT.anonRunAgain || 'Run again';
   }
 }
 
@@ -5981,6 +6094,11 @@ window.openAnonymizer = openAnonymizer;
 async function runRoundtable(overlay, patientMessage, initialComparisons) {
   const resultsEl = overlay.querySelector('#cmp-results');
   if (!resultsEl) return;
+  const _cmpT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
+  const _rtTableLabel = window._lang === 'en'
+    ? 'Round table — each theorist sees what their colleagues said'
+    : 'שולחן עגול — כל תיאורטיקן רואה מה שאר עמיתיו אמרו';
+  const _rtSendingLabel = window._lang === 'en' ? 'Sending to second round...' : 'שולח לסיבוב שני...';
 
   // Add roundtable section
   const rtSection = document.createElement('div');
@@ -5988,9 +6106,9 @@ async function runRoundtable(overlay, patientMessage, initialComparisons) {
   rtSection.innerHTML = `
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-top:16px;border-top:1px solid #e8e0ec;">
       <span style="font-size:14px;">🪑</span>
-      <div style="font-size:12px;font-weight:600;color:#444;">שולחן עגול — כל תיאורטיקן רואה מה שאר עמיתיו אמרו</div>
+      <div style="font-size:12px;font-weight:600;color:#444;">${_rtTableLabel}</div>
     </div>
-    <div id="rt-loading" style="text-align:center;color:#888;font-size:13px;padding:12px;">שולח לסיבוב שני...</div>
+    <div id="rt-loading" style="text-align:center;color:#888;font-size:13px;padding:12px;">${_rtSendingLabel}</div>
     <div id="rt-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;"></div>`;
   resultsEl.appendChild(rtSection);
 
@@ -6016,18 +6134,18 @@ async function runRoundtable(overlay, patientMessage, initialComparisons) {
       card.innerHTML = `
         <div style="background:${info.color};padding:6px 12px;display:flex;align-items:center;gap:6px;">
           <span style="color:#fff;font-size:13px;font-weight:600;">${r.name}</span>
-          <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:9px;padding:1px 7px;border-radius:10px;">תגובה</span>
+          <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:9px;padding:1px 7px;border-radius:10px;">${_cmpT.cmpResponse || 'Response'}</span>
         </div>
-        <div style="padding:10px 12px;font-size:13px;color:#333;line-height:1.8;direction:rtl;font-style:italic;">
+        <div style="padding:10px 12px;font-size:13px;color:#333;line-height:1.8;font-style:italic;">
           ${r.error
-            ? `<span style="color:#c00;font-size:12px;font-style:normal;">שגיאה: ${r.error}</span>`
+            ? `<span style="color:#c00;font-size:12px;font-style:normal;">${_cmpT.cmpError || 'Error'}: ${r.error}</span>`
             : r.reaction.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
         </div>`;
       rtGrid.appendChild(card);
     });
 
   } catch {
-    document.getElementById('rt-loading').textContent = 'שגיאה בסיבוב השני.';
+    document.getElementById('rt-loading').textContent = _cmpT.cmpRound2Error || 'Error in second round.';
   }
 }
 
@@ -6187,15 +6305,17 @@ async function openPatientReflection() {
       const resultsEl = document.getElementById('patient-reflection-results');
       if (!resultsEl) return;
       resultsEl.innerHTML = '';
+      const _rfT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
       if (data.error) {
-        resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">משהו השתבש — נסה שוב.</div>`;
+        resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">${_rfT.errGeneric || 'Something went wrong — please try again.'}</div>`;
         return;
       }
       resultsEl.appendChild(buildReflectionCard(data));
     })
     .catch(() => {
       const resultsEl = document.getElementById('patient-reflection-results');
-      if (resultsEl) resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">שגיאת רשת — נסה שוב.</div>`;
+      const _rfT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
+      if (resultsEl) resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">${_rfT.errNetwork || 'Network error — please try again.'}</div>`;
     });
 }
 
