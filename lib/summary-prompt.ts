@@ -19,18 +19,20 @@ FORMAT:
   ],
   "what_opened": "1–2 sentences — what became alive, what surfaced or shifted during the session",
   "what_remained": "1–2 sentences — threads left unresolved, material that was touched but not worked through",
-  "therapist_moves": "1–2 sentences — what the therapist did well, what characterized their approach in this session",
-  "next_session_focus": "1 concrete suggestion for where to begin next time"
+  "theorist_approach": "1–2 sentences — what characterized the theorist's approach in this session. Do NOT use the word 'מטפל' — refer to the theorist by name or as 'הגישה'.",
+  "next_session_focus": "1 concrete suggestion — written in first person from the patient's perspective — what I want to bring to my next therapy session"
 }
 
 Rules:
 - key_moments: 1–3 items maximum. Choose only the sharpest ones.
 - Be clinically precise, not generic. "resistance appeared" is not useful. "The patient deflected each time X was named" is.
-- next_session_focus: specific, not vague. Not "continue exploring feelings" — name the actual thread.
+- next_session_focus: specific, not vague. Written as "אני רוצה להביא..." or "לחקור עם המטפל/ת..." — from the patient's voice.
+- GENDER: You will receive the patient's gender. Use it consistently throughout ALL Hebrew text. Feminine: את/שלך/לך feminine verb endings. Masculine: אתה/שלך/לך masculine verb endings. Neutral: את/ה.
 - Write in the voice of a thoughtful clinician, not a bureaucrat.`;
 
-export const SUMMARY_USER_TEMPLATE = (transcript: string, theorist: string) => `
+export const SUMMARY_USER_TEMPLATE = (transcript: string, theorist: string, gender?: string) => `
 תיאורטיקן: ${theorist}
+מגדר המשתמש/ת: ${gender || 'לא ידוע — השתמש בלשון ניטרלית (את/ה)'}
 
 תמליל הסשן:
 ${transcript}

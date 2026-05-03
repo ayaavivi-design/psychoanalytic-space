@@ -8,7 +8,7 @@ import { SUMMARY_SYSTEM_PROMPT, SUMMARY_USER_TEMPLATE } from '@/lib/summary-prom
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { transcript, theorist } = body;
+  const { transcript, theorist, gender } = body;
 
   if (!transcript || typeof transcript !== 'string') {
     return NextResponse.json({ error: 'Missing transcript' }, { status: 400 });
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     messages: [
       {
         role: 'user',
-        content: SUMMARY_USER_TEMPLATE(transcript, theorist || 'לא צוין'),
+        content: SUMMARY_USER_TEMPLATE(transcript, theorist || 'לא צוין', gender),
       },
     ],
   });

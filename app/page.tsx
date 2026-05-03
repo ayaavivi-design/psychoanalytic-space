@@ -346,10 +346,6 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◉</span>
               <span className="sb-label" id="sb-reflection-label">מה לקחתי מהשיחה</span>
             </div>
-            <div className="sb-item admin-only" onClick={() => (window as any).openComparison()}>
-              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⇌</span>
-              <span className="sb-label" id="sb-comparison-label">השוואת תיאורטיקנים</span>
-            </div>
             {/* אנונימיזציה ופידבק — גלויים רק ב-localhost */}
             {isLocalhost && (
               <div className="sb-item admin-only" onClick={() => (window as any).openAnonymizer()}>
@@ -580,6 +576,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
 
 
         <div className="input-area-outer">
+          <div id="active-theorist-bar" style={{ display: 'none', textAlign: 'center', fontSize: 11, color: 'var(--accent)', opacity: 0.8, paddingBottom: 4, letterSpacing: '0.03em' }}></div>
           <div className="input-area">
             <div id="file-indicator" style={{ display: 'none', background: 'rgba(196,96,122,0.06)', border: '1px solid var(--accent-dim)', borderRadius: 10, padding: '8px 14px', marginBottom: 8, alignItems: 'center', gap: 10, fontSize: 12, color: 'var(--accent)' }}>
               <span>📄</span>

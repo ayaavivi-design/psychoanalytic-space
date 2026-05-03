@@ -264,7 +264,13 @@ header span {
   border-color: var(--accent);
   color: #fff;
   background: var(--accent);
-  box-shadow: 0 2px 8px rgba(196,96,122,0.25);
+  box-shadow: 0 2px 10px rgba(196,96,122,0.35);
+  font-weight: 600;
+}
+.theorist-tag.active::after {
+  content: ' ✓';
+  font-size: 10px;
+  opacity: 0.85;
 }
 
 #chat {

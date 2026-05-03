@@ -58,5 +58,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'parse_failed', raw }, { status: 500 });
   }
 
-  return NextResponse.json(report);
+  // Strip stray Arabic characters that sometimes appear in Hebrew text generation
+  // (e.g. Arabic ها U+0647 appearing instead of Hebrew ה U+05D4)
+  const sanitizeHebrew = (val: unknown): unknown => {
+    if (typeof val === 'string') return val.replace(/[؀-ۿ]/g, (c) => {
+      const arabicToHebrew: Record<string, string> = { 'ه': 'ה', 'و': 'ו', 'ى': 'י', 'ي': 'י' };
+      return arabicToHebrew[c] ?? '';
+    });
+    if (Array.isArray(val)) return val.map(sanitizeHebrew);
+    if (val && typeof val === 'object') return Object.fromEntries(Object.entries(val as Record<string, unknown>).map(([k, v]) => [k, sanitizeHebrew(v)]));
+    return val;
+  };
+
+  return NextResponse.json(sanitizeHebrew(report));
 }

@@ -98,7 +98,7 @@ function showTherapyGateExit() {
   gate.innerHTML = isHe ? `
     <div style="text-align:center;max-width:400px;width:90%;padding:0 20px;">
       <h2 style="font-family:var(--font-cormorant),serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:28px;">Between</h2>
-      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:10px;">Between מיועד לאנשים שנמצאים בתהליך טיפול.</p>
+      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:10px;">הממשק מיועד לאנשים שנמצאים בתהליך טיפול.</p>
       <p style="font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:32px;">נשמח לראות אותך כאן כשהזמן יגיע.</p>
       <a href="https://www.psychology.org.il" target="_blank" rel="noopener noreferrer"
         style="font-size:14px;color:var(--accent);text-decoration:underline;opacity:0.85;">
@@ -106,14 +106,11 @@ function showTherapyGateExit() {
       </a>
     </div>
   ` : `
-    <div style="text-align:center;max-width:400px;width:90%;padding:0 20px;">
+    <div style="text-align:center;max-width:420px;width:90%;padding:0 20px;">
       <h2 style="font-family:var(--font-cormorant),serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:28px;">Between</h2>
       <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:10px;">Between is for people in therapy.</p>
-      <p style="font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:32px;">We'll be here when the time is right.</p>
-      <a href="https://www.psychology.org.il" target="_blank" rel="noopener noreferrer"
-        style="font-size:14px;color:var(--accent);text-decoration:underline;opacity:0.85;">
-        ← Find a therapist — Israeli Psychological Association
-      </a>
+      <p style="font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:28px;">We'll be here when the time is right.</p>
+      <p style="font-size:14px;color:var(--muted);line-height:1.8;">Consider reaching out to a licensed therapist in your area.</p>
     </div>
   `;
 }
@@ -332,12 +329,16 @@ function submitIntakeAnswer(answer) {
   while (intakeStep < steps.length && steps[intakeStep].showIf && !steps[intakeStep].showIf(intakeData)) {
     intakeStep++;
   }
-  const needsWarning = step.warningOnAnswer && answer === step.warningOnAnswer && t.warningNotInTherapy;
+  const needsWarning = step.warningOnAnswer && answer === step.warningOnAnswer;
   if (needsWarning) {
-    showIntakeWarning(t.warningNotInTherapy, t.speaker, () => {
-      if (intakeStep < steps.length) setTimeout(showIntakeQuestion, 300);
-      else setTimeout(completeIntake, 400);
-    });
+    // User is not in therapy — stop intake and show exit screen
+    intakeMode = false;
+    localStorage.removeItem('therapy_gate_passed');
+    const gate = document.getElementById('therapy-gate');
+    if (gate) {
+      showTherapyGateExit();
+      gate.style.display = 'flex';
+    }
   } else if (intakeStep < steps.length) {
     setTimeout(showIntakeQuestion, 600);
   } else {
@@ -502,10 +503,6 @@ function loadUserProfile(user) {
 const STORAGE_KEY = 'psycho_agent_v2';
 
 function formatResponse(text) {
-  // Apply comparison formatting if multiple theorists selected
-  if (window.activeTheorists && window.activeTheorists.length > 1) {
-    text = formatComparison(text);
-  }
   // Style follow-up questions
   const lines = text.split('\n');
   const formatted = lines.map(line => {
@@ -537,10 +534,6 @@ function stripMarkdown(text) {
     .trim();
 }
 
-function formatComparison(text) {
-  // Convert **section title** to styled headers for comparison mode
-  return text.replace(/\*\*(.+?)\*\*/g, '<span style="display:block;margin-top:18px;margin-bottom:4px;font-size:13px;font-weight:600;color:var(--accent);letter-spacing:0.03em;font-family:Rubik,sans-serif;">$1</span>');
-}
 const CONV_KEY = 'psycho_conv_v2';
 const API_KEY_STORAGE = 'psycho_api_key';
 
@@ -740,6 +733,18 @@ function updateSessionTitle(forceNew = false) {
     }
   } else {
     titleEl.textContent = '';
+  }
+  // Update active theorist bar above input
+  const bar = document.getElementById('active-theorist-bar');
+  if (bar) {
+    const isHe = (selectedLang?.code || 'he') !== 'en';
+    if (activeTheorists.length > 0) {
+      const names = activeTheorists.map(k => nameMap[k] || k).join(', ');
+      bar.textContent = isHe ? `מדברים עם ${names}` : `Speaking with ${names}`;
+      bar.style.display = 'block';
+    } else {
+      bar.style.display = 'none';
+    }
   }
 }
 
@@ -2035,15 +2040,6 @@ function buildSystemPrompt() {
         ? `\n\nCRITICAL: Respond ONLY from within the approach of ${t}.\n\nIf the question concerns a concept not central to ${t}'s approach — state this explicitly at the start of your response. For example: "This concept is not central to ${t}'s framework, but approached from within his conceptual world..." Then give ${t}'s angle on the topic, even if indirect.\n\nDo not give a response from another approach and attribute it to ${t}. The source at the end of the response must be from ${t}'s own authors and texts only.`
         : `\n\nחשוב מאוד: ענה אך ורק מתוך הגישה של ${t}.\n\nאם השאלה עוסקת במושג שאינו מרכזי בגישה של ${t} — אמור זאת במפורש בתחילת התשובה. לדוגמה: "מושג זה אינו מרכזי בגישתו של ${t}, אך ניתן לגשת אליו כך מתוך עולמו המושגי..." ואז תן את הזווית של ${t} על הנושא, גם אם היא עקיפה.\n\nאל תתן תשובה מגישה אחרת ותייחס אותה ל-${t}. המקור בסוף התשובה חייב להיות ממחברים/טקסטים של ${t} בלבד.`;
     }
-  } else if (activeTheorists.length > 1) {
-    const namesEn = activeTheorists.join(' and ');
-    const namesHe = activeTheorists.join(' ו-');
-    activeTheorists.forEach(t => {
-      if (!_isEnPrompt && THEORIST_KNOWLEDGE[t]) theoristKnowledge += '\n\n--- ' + t + ' ---' + THEORIST_KNOWLEDGE[t];
-    });
-    focusInstruction = _isEnPrompt
-      ? `\n\nThe user has chosen to compare ${namesEn}. Structure your response exactly as follows:\n\n[First theorist name]\nTheir position on the topic — one focused paragraph.\n\n[Second theorist name]\nTheir position on the topic — one focused paragraph.\n\n(And so on for each selected theorist)\n\nCore point of disagreement:\nOne or two sentences sharpening exactly where they diverge — the real tension between them.\n\nThe productive tension:\nWhat question remains open between the approaches — what neither of them resolves.`
-      : `\n\nהמשתמש בחר להשוות בין ${namesHe}. בנה את תשובתך במבנה הזה בדיוק:\n\n[שם תיאורטיקאי ראשון]\nעמדתו על הנושא — פסקה אחת, ממוקדת.\n\n[שם תיאורטיקאי שני]\nעמדתו על הנושא — פסקה אחת, ממוקדת.\n\n(וכן הלאה לכל תיאורטיקאי שנבחר)\n\nנקודת המחלוקת המרכזית:\nמשפט או שניים שמחדדים בדיוק היכן הם נפרדים — מה המתח האמיתי ביניהם.\n\nהמתח הפרודוקטיבי:\nמה השאלה שנשארת פתוחה בין הגישות — מה כל אחד מהם לא פותר.`;
   }
 
   const fullNameMap = { freud:'זיגמונד פרויד', klein:'מלאני קליין', winnicott:'דונלד ויניקוט', ogden:'תומאס אוגדן', loewald:'הנס לוואלד', bion:'ויל ביון', kohut:'היינץ קוהוט', heimann:'פאולה היימן' };
@@ -2374,6 +2370,11 @@ ONE QUESTION ONLY — THIS IS ABSOLUTE:
 Each response may contain at most one question. Not two, not three. One. Winnicott's power was in precision and restraint — a single question that opens space, not multiple questions that crowd it. If you find yourself asking a second question, it means the first was not the right one. Find the one that matters and ask only that.
 THE TWO-QUESTION TEMPTATION: The temptation is strongest when the patient brings emotionally charged material and you want to capture several threads at once. Resist it. Choose the single thread that matters most. The second question can always wait — the patient will find it themselves if given space.
 A follow-up clause is not a second question. "מה זה עושה לך" is one question. "מה זה עושה לך — לחיות עם זה?" is still one question. But "מה זה עושה לך? ומה קורה בגוף שלך?" is two. Count the question marks.
+MANDATORY SELF-CHECK BEFORE SENDING: Count the question marks in your response. If there are two or more — delete everything after the first question. No exceptions.
+
+NO PARROTING — THIS IS STRUCTURAL:
+Do not open your response by echoing the patient's own words back to them. Not even paraphrased. Not even as a launching pad. If the patient said "הרגש הזה משתחרר ומציף אותי" — do not begin with "הרגש שמשתחרר..." or "הציפה שאת מתארת..." This is parroting. It sounds like listening but it is not — it is returning the patient's material without transformation.
+Winnicott received and then responded from a different place. The difference between a mirror and a holding environment is that the holding environment adds something — a presence, a slight tilt, a different angle. Begin your response from your own analytic standpoint, not from a reflection of what was just said.
 
 REGRESSION IS NOT PATHOLOGY:
 When a patient regresses — becomes more dependent, more vulnerable, more primitive — do not treat this as deterioration. It may be the most important therapeutic movement available. Hold it. Do not interpret it away.
@@ -3134,7 +3135,7 @@ You may only reference material the patient has explicitly brought in THIS conve
 GLOBAL RULE — NO CITATIONS IN CLINICAL SESSION:
 Do not include any bibliographic reference, book title, paper name, year, or "📖" symbol at the end of your response. This applies to ALL theorists in ALL clinical exchanges. You are in a session — not writing an academic paper. A therapist does not append citations to their words in the room.
 MANDATORY SELF-CHECK: Look at the last two lines of your response. If they contain a title, a year, a "📖", or an author name — delete them before sending.
-CRITICAL EXCEPTION — [MEMORY:] IS NOT A CITATION: The tag [MEMORY: ...] is a hidden system tag, not a bibliographic citation. The no-citations rule does NOT apply to it. You MUST include [MEMORY: brief summary] as the very last line of every response, even in clinical mode. This tag is invisible to the user and will be stripped automatically.
+CRITICAL EXCEPTION — [MEMORY:] IS NOT A CITATION: The tag [MEMORY: ...] is a hidden system tag, not a bibliographic citation. The no-citations rule does NOT apply to it. You MUST include [MEMORY: תיאור קצר של השאלה או הנושא המרכזי — בעברית בלבד] as the very last line of every response, even in clinical mode. This tag is invisible to the user and will be stripped automatically.
 
 SAFETY PROTOCOL — THIS OVERRIDES EVERYTHING ELSE:
 If the person says ANYTHING that could indicate suicidal ideation or self-harm — even a hint — immediately step out of the analytic role and respond as a human being. This includes but is not limited to:
@@ -3223,7 +3224,9 @@ Respond entirely in English. This is non-negotiable and overrides all prior inst
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 SYSTEM TAG — MANDATORY IN ALL MODES:
-The very last line of EVERY response must be: [MEMORY: brief summary of the core question or theme]
+${_isEnPrompt
+  ? `The very last line of EVERY response must be: [MEMORY: brief summary of the core question or theme]`
+  : `השורה האחרונה של כל תגובה חייבת להיות: [MEMORY: תיאור קצר של השאלה או הנושא המרכזי — בעברית בלבד]`}
 This tag is a hidden system marker, not a citation. It is stripped before display. Include it always, without exception, even in clinical mode.
 
 ${window.clinicalMode ? '' : (_isEnPrompt
@@ -3267,7 +3270,6 @@ const UI_TRANSLATIONS = {
     supervision: 'פיקוח קליני',
     sessionSummary: 'סיכום סשן',
     reflection: 'מה לקחתי מהשיחה',
-    comparison: 'השוואת תיאורטיקנים',
     anonymize: 'אנונימיזציה',
     userFeedback: 'פידבק משתמש',
     boardRoom: 'חדר הבורד',
@@ -3320,17 +3322,6 @@ const UI_TRANSLATIONS = {
     supNoActiveInfo: 'אין שיחה פעילה עם מספיק תורות — השתמש בלשונית "הדבק שיחה".',
     supSelectSingleTheorist: 'בחר תיאורטיקן יחיד כדי להשתמש בשיחה הפעילה.',
     fileUploadPlaceholder: 'סכמי / הסבירי במילים פשוטות / שאלה ספציפית על הקטע...',
-    cmpRunning: 'מריץ...',
-    cmpSending: 'שולח לתיאורטיקנים במקביל...',
-    cmpPatientQuote: 'ציטוט המטופל',
-    cmpError: 'שגיאה',
-    cmpRunAgain: 'הרץ שוב',
-    cmpRunError: 'שגיאה בהרצת ההשוואה.',
-    cmpRoundTable: '🪑 שולחן עגול — סיבוב שני',
-    cmpRunRound2: 'מריץ סיבוב שני...',
-    cmpDownload: '↓ הורד השוואה',
-    cmpResponse: 'תגובה',
-    cmpRound2Error: 'שגיאה בסיבוב השני.',
     anonProcessing: 'מעבד...',
     anonIdentifying: 'מזהה פרטים מזהים...',
     anonError: 'שגיאה',
@@ -3399,7 +3390,6 @@ const UI_TRANSLATIONS = {
     supervision: 'Clinical supervision',
     sessionSummary: 'Session summary',
     reflection: 'What I took from this',
-    comparison: 'Compare theorists',
     anonymize: 'Anonymize',
     userFeedback: 'User feedback',
     boardRoom: 'Board room',
@@ -3448,17 +3438,6 @@ const UI_TRANSLATIONS = {
     supNoActiveInfo: 'No active conversation with enough turns — use the "Paste conversation" tab.',
     supSelectSingleTheorist: 'Select a single theorist to use the active conversation.',
     fileUploadPlaceholder: 'Summarise / explain / ask a specific question about this excerpt...',
-    cmpRunning: 'Running...',
-    cmpSending: 'Sending to theorists in parallel...',
-    cmpPatientQuote: 'Patient quote',
-    cmpError: 'Error',
-    cmpRunAgain: 'Run again',
-    cmpRunError: 'Error running comparison.',
-    cmpRoundTable: '🪑 Round table — second round',
-    cmpRunRound2: 'Running second round...',
-    cmpDownload: '↓ Download comparison',
-    cmpResponse: 'Response',
-    cmpRound2Error: 'Error in second round.',
     anonProcessing: 'Processing...',
     anonIdentifying: 'Identifying personal details...',
     anonError: 'Error',
@@ -3546,8 +3525,6 @@ function applyUITranslation(code) {
   if (sbSummary) sbSummary.textContent = t.sessionSummary || 'Session summary';
   const sbReflection = document.getElementById('sb-reflection-label');
   if (sbReflection) sbReflection.textContent = t.reflection || 'What I took from this';
-  const sbComparison = document.getElementById('sb-comparison-label');
-  if (sbComparison) sbComparison.textContent = t.comparison || 'Compare theorists';
   const sbAnon = document.getElementById('sb-anon-label');
   if (sbAnon) sbAnon.textContent = t.anonymize || 'Anonymize';
   const sbFeedback = document.getElementById('sb-feedback-label');
@@ -4422,7 +4399,7 @@ async function exportPDF() {
     </style>
   </head><body>
     <div style="display:flex;align-items:center;gap:10px;">
-      <h1 style="direction:rtl;">מרחב פסיכואנליטי</h1>
+      <h1 style="direction:ltr;font-family:'Cormorant Garamond',serif;font-style:italic;">Between</h1>
       <span style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent);opacity:0.7;line-height:1;margin-top:2px;">ψ</span>
     </div>
     <div class="meta">${topic ? `${sessionTitle} · ${date}` : sessionTitle}</div>
@@ -4751,7 +4728,7 @@ function openSettings() {
         <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;">
           <label id="st-persona-label" style="font-size:12px;color:var(--muted);display:block;margin-bottom:8px;">מי אתה/את?</label>
           <div style="display:flex;gap:8px;margin-bottom:4px;">
-            ${['therapist','student','patient'].map(k => `
+            ${['therapist','patient'].map(k => `
               <div id="persona-st-${k}" onclick="selectPersona('${k}')"
                 style="flex:1;text-align:center;padding:7px 4px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;color:var(--muted);background:none;transition:all 0.15s;">
                 ${PERSONA_CONFIG[k].label}
@@ -5234,7 +5211,7 @@ function applyPersona(type) {
 
 function updatePersonaButtons(type) {
   // Auth screen buttons
-  ['therapist','student','patient'].forEach(k => {
+  ['therapist','patient'].forEach(k => {
     const btn = document.getElementById(`persona-auth-${k}`);
     if (!btn) return;
     if (k === type) {
@@ -5248,7 +5225,7 @@ function updatePersonaButtons(type) {
     }
   });
   // Settings buttons
-  ['therapist','student','patient'].forEach(k => {
+  ['therapist','patient'].forEach(k => {
     const btn = document.getElementById(`persona-st-${k}`);
     if (!btn) return;
     if (k === type) {
@@ -5556,7 +5533,7 @@ function downloadSupervisionReport(r, theoristLabel) {
   ${r.summary ? `<section><h2>סיכום</h2><div class="note-box">${r.summary}</div></section>` : ''}
   ${r.one_thing ? `<section><h2>דבר אחד לסשן הבא</h2><div class="one-thing"><strong>המלצה</strong>${r.one_thing}</div></section>` : ''}
 
-  <div class="footer">נוצר על ידי מרחב הפסיכואנליזה</div>
+  <div class="footer">נוצר על ידי Between</div>
 </body>
 </html>`;
 
@@ -5633,7 +5610,7 @@ function _openSessionSummary() {
   fetch('/api/session-summary', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ transcript, theorist })
+    body: JSON.stringify({ transcript, theorist, gender: (JSON.parse(localStorage.getItem('intake_completed') || '{}').gender) || '' })
   })
     .then(r => r.json())
     .then(data => {
@@ -5676,8 +5653,12 @@ function buildSummaryCard(s, theoristLabel) {
     ${momentsHTML ? `<div style="margin-bottom:16px;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">רגעים קליניים מרכזיים</div>${momentsHTML}</div>` : ''}
     ${s.what_opened ? `<div style="margin-bottom:14px;padding:10px 14px;background:#f0faf3;border-radius:6px;border:1px solid #c3e6cb;"><div style="font-size:11px;color:#2d8a5e;font-weight:600;margin-bottom:4px;">מה נפתח בסשן זה</div><div style="font-size:12px;color:#333;">${s.what_opened}</div></div>` : ''}
     ${s.what_remained ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff9f0;border-radius:6px;border:1px solid #f5c97a;"><div style="font-size:11px;color:#92600a;font-weight:600;margin-bottom:4px;">מה נותר פתוח</div><div style="font-size:12px;color:#333;">${s.what_remained}</div></div>` : ''}
-    ${s.therapist_moves ? `<div style="margin-bottom:14px;padding:10px 14px;background:#f7f5fb;border-radius:6px;border:1px solid #d8c8e0;"><div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:4px;">המהלכים הטיפוליים</div><div style="font-size:12px;color:#333;">${s.therapist_moves}</div></div>` : ''}
+    ${s.theorist_approach ? `<div style="margin-bottom:14px;padding:10px 14px;background:#f7f5fb;border-radius:6px;border:1px solid #d8c8e0;"><div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:4px;">הגישה הטיפולית</div><div style="font-size:12px;color:#333;">${s.theorist_approach}</div></div>` : ''}
     ${s.next_session_focus ? `<div style="padding:10px 14px;background:rgba(58,37,64,0.07);border-radius:6px;border-right:3px solid #3a2540;"><div style="font-size:11px;color:#3a2540;font-weight:600;margin-bottom:4px;">המוקד לסשן הבא</div><div style="font-size:12px;color:#333;font-weight:500;">${s.next_session_focus}</div></div>` : ''}
+    <div style="margin-top:14px;padding:12px 14px;background:#faf7fc;border-radius:6px;border:1px dashed #c4b0cc;">
+      <div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:6px;">מה אני רוצה להביא לפגישה הבאה</div>
+      <textarea id="ss-next-session-note" placeholder="כתוב/י כאן בחופשיות..." style="width:100%;min-height:60px;padding:8px 10px;border:1px solid #d4c2e0;border-radius:6px;font-family:'Rubik',sans-serif;font-size:12px;color:#333;background:#fff;resize:vertical;outline:none;box-sizing:border-box;line-height:1.6;"></textarea>
+    </div>
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid #e8e0ec;display:flex;gap:8px;flex-wrap:wrap;">
       <button id="ss-download-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
         ↓ הורד סיכום
@@ -5746,7 +5727,7 @@ function buildSummaryHTML(s, theoristLabel) {
   ${momentsHTML ? `<section><h2>רגעים קליניים מרכזיים</h2>${momentsHTML}</section>` : ''}
   ${s.what_opened ? `<section><h2>מה נפתח</h2><div class="box box-green">${s.what_opened}</div></section>` : ''}
   ${s.what_remained ? `<section><h2>מה נותר פתוח</h2><div class="box box-yellow">${s.what_remained}</div></section>` : ''}
-  ${s.therapist_moves ? `<section><h2>מהלכים טיפוליים</h2><div class="box box-purple">${s.therapist_moves}</div></section>` : ''}
+  ${s.theorist_approach ? `<section><h2>הגישה הטיפולית</h2><div class="box box-purple">${s.theorist_approach}</div></section>` : ''}
   ${s.next_session_focus ? `<section><h2>מוקד לסשן הבא</h2><div class="box box-dark"><strong>המלצה</strong>${s.next_session_focus}</div></section>` : ''}
   <div class="footer">נוצר על ידי Between</div>
 </body>
@@ -5839,268 +5820,6 @@ function openSendToTherapistForm(container, htmlContent, subject) {
 }
 
 window.openSessionSummary = openSessionSummary;
-
-// ============================================================
-// THEORIST COMPARISON
-// ============================================================
-
-const COMPARISON_THEORISTS = [
-  { key: 'freud',    label: 'פרויד',   color: '#4a6fa5' },
-  { key: 'klein',    label: 'קליין',   color: '#8b3a52' },
-  { key: 'winnicott',label: 'ויניקוט', color: '#3a7a5a' },
-  { key: 'ogden',    label: 'אוגדן',   color: '#4a7a8a' },
-  { key: 'loewald',  label: 'לוואלד',  color: '#7a5a3a' },
-  { key: 'bion',     label: 'ביון',    color: '#4a4a6a' },
-  { key: 'kohut',    label: 'קוהוט',   color: '#8a6a20' },
-  { key: 'heimann',  label: 'היימן',   color: '#7a3a6a' },
-];
-
-function openComparison() {
-  requireTherapistConsent(() => _openComparison());
-}
-function _openComparison() {
-  if (document.getElementById('comparison-modal')) {
-    document.getElementById('comparison-modal').remove();
-    return;
-  }
-
-  // Last patient message from conversation (if exists)
-  const lastPatientMsg = conversationHistory.length > 0
-    ? conversationHistory.filter(m => m.role === 'user').at(-1)?.content || ''
-    : '';
-
-  const overlay = document.createElement('div');
-  overlay.id = 'comparison-modal';
-  overlay.style.cssText = [
-    'position:fixed;inset:0;z-index:150;display:flex;align-items:flex-start;justify-content:center;',
-    'background:rgba(45,36,32,0.3);backdrop-filter:blur(4px);direction:rtl;overflow-y:auto;padding:40px 16px;'
-  ].join('');
-
-  // Build theorist checkboxes
-  const checkboxes = COMPARISON_THEORISTS.map(t => `
-    <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin:3px 4px;
-      padding:4px 10px;border-radius:16px;border:1px solid ${t.color}33;background:${t.color}11;
-      font-size:12px;color:${t.color};">
-      <input type="checkbox" value="${t.key}" checked
-        style="accent-color:${t.color};cursor:pointer;">
-      ${t.label}
-    </label>`).join('');
-
-  overlay.innerHTML = `
-    <div id="comparison-box" style="background:#fff;border-radius:14px;width:720px;max-width:95vw;
-      box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:rtl;">
-
-      <!-- Header -->
-      <div style="background:#2d3a4a;padding:14px 20px;display:flex;justify-content:space-between;
-        align-items:center;border-radius:14px 14px 0 0;position:sticky;top:0;z-index:1;">
-        <span style="color:rgba(255,255,255,0.85);font-size:14px;">⇌ השוואת תיאורטיקנים</span>
-        <button id="cmp-close" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;">×</button>
-      </div>
-
-      <div style="padding:20px;">
-
-        <!-- Input area -->
-        <div style="margin-bottom:14px;">
-          <div style="font-size:12px;color:#888;margin-bottom:6px;">ציטוט מטופל לבדיקה:</div>
-          <textarea id="cmp-input" rows="3"
-            style="width:100%;border:1px solid #ddd;border-radius:8px;padding:10px 12px;
-            font-size:13px;direction:rtl;resize:vertical;font-family:inherit;color:#333;"
-            placeholder="הדביקו משפט או קטע של המטופל — כל התיאורטיקנים הנבחרים יענו לאותו ציטוט"
-          >${lastPatientMsg ? lastPatientMsg.replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''}</textarea>
-          ${lastPatientMsg ? `<div style="font-size:11px;color:#aaa;margin-top:3px;">מולא אוטומטית מהתגובה האחרונה של המטופל בשיחה. ניתן לערוך.</div>` : ''}
-        </div>
-
-        <!-- Theorist selection -->
-        <div style="margin-bottom:16px;">
-          <div style="font-size:12px;color:#888;margin-bottom:6px;">תיאורטיקנים להשוואה:</div>
-          <div id="cmp-theorists" style="display:flex;flex-wrap:wrap;">${checkboxes}</div>
-          <div style="margin-top:6px;">
-            <span style="font-size:11px;color:#bbb;cursor:pointer;" id="cmp-select-all">בחר הכל</span>
-            <span style="font-size:11px;color:#bbb;margin:0 6px;">·</span>
-            <span style="font-size:11px;color:#bbb;cursor:pointer;" id="cmp-select-none">נקה</span>
-          </div>
-        </div>
-
-        <!-- Run button -->
-        <button id="cmp-run"
-          style="width:100%;padding:10px;border-radius:8px;border:none;background:#2d3a4a;
-          color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:6px;">
-          הרץ השוואה
-        </button>
-        <div style="font-size:11px;color:#bbb;text-align:center;margin-bottom:16px;">
-          כל תיאורטיקן יענה באופן עצמאי לאותו ציטוט — התגובות מגיעות במקביל
-        </div>
-
-        <!-- Results -->
-        <div id="cmp-results"></div>
-      </div>
-    </div>`;
-
-  document.body.appendChild(overlay);
-
-  // Close handlers
-  document.getElementById('cmp-close').addEventListener('click', () => overlay.remove());
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
-
-  // Select all / none
-  document.getElementById('cmp-select-all').addEventListener('click', () => {
-    overlay.querySelectorAll('#cmp-theorists input[type=checkbox]').forEach(cb => cb.checked = true);
-  });
-  document.getElementById('cmp-select-none').addEventListener('click', () => {
-    overlay.querySelectorAll('#cmp-theorists input[type=checkbox]').forEach(cb => cb.checked = false);
-  });
-
-  // Run
-  document.getElementById('cmp-run').addEventListener('click', () => runComparison(overlay));
-}
-
-async function runComparison(overlay) {
-  const input = overlay.querySelector('#cmp-input');
-  const patient_message = input ? input.value.trim() : '';
-  if (!patient_message) {
-    input && (input.style.borderColor = '#c00');
-    setTimeout(() => input && (input.style.borderColor = '#ddd'), 1500);
-    return;
-  }
-
-  const selected = [...overlay.querySelectorAll('#cmp-theorists input[type=checkbox]:checked')]
-    .map(cb => cb.value);
-  if (selected.length === 0) return;
-
-  const resultsEl = overlay.querySelector('#cmp-results');
-  const runBtn    = overlay.querySelector('#cmp-run');
-  const _cmpT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
-  runBtn.disabled = true;
-  runBtn.textContent = _cmpT.cmpRunning || 'Running...';
-  resultsEl.innerHTML = `
-    <div style="text-align:center;padding:20px;color:#888;font-size:13px;">
-      ${_cmpT.cmpSending || 'Sending to theorists in parallel...'}
-    </div>`;
-
-  try {
-    const res  = await fetch('/api/compare-theorists', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ patient_message, theorists: selected }),
-    });
-    const data = await res.json();
-
-    resultsEl.innerHTML = '';
-
-    // Patient quote header
-    const quoteEl = document.createElement('div');
-    quoteEl.style.cssText = 'margin-bottom:16px;padding:10px 14px;background:#f8f6fb;border-right:3px solid #aaa;border-radius:0 6px 6px 0;';
-    quoteEl.innerHTML = `<div style="font-size:10px;color:#aaa;font-weight:600;margin-bottom:3px;">${_cmpT.cmpPatientQuote || 'Patient quote'}</div>
-      <div style="font-size:13px;color:#333;font-style:italic;">"${patient_message.replace(/</g,'&lt;').replace(/>/g,'&gt;')}"</div>`;
-    resultsEl.appendChild(quoteEl);
-
-    // Grid of theorist cards
-    const grid = document.createElement('div');
-    grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;';
-
-    (data.comparisons || []).forEach(c => {
-      const info = COMPARISON_THEORISTS.find(t => t.key === c.theorist) || { color: '#888', label: c.name };
-      const card = document.createElement('div');
-      card.style.cssText = `border:1px solid ${info.color}33;border-radius:10px;overflow:hidden;`;
-      card.innerHTML = `
-        <div style="background:${info.color};padding:8px 12px;">
-          <span style="color:#fff;font-size:13px;font-weight:600;">${c.name}</span>
-        </div>
-        <div style="padding:12px;font-size:13px;color:#333;line-height:1.8;min-height:80px;">
-          ${c.error
-            ? `<span style="color:#c00;font-size:12px;">${_cmpT.cmpError || 'Error'}: ${c.error}</span>`
-            : c.response.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
-        </div>`;
-      grid.appendChild(card);
-    });
-
-    resultsEl.appendChild(grid);
-
-    // Action row: roundtable + download
-    const actRow = document.createElement('div');
-    actRow.style.cssText = 'margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;';
-
-    const rtBtn = document.createElement('button');
-    rtBtn.textContent = _cmpT.cmpRoundTable || '🪑 Round table — second round';
-    rtBtn.style.cssText = 'padding:6px 16px;border-radius:7px;border:1px solid #b0c4cc;background:#f0f7fa;color:#2d4a5e;font-size:12px;font-weight:600;cursor:pointer;';
-    rtBtn.addEventListener('click', () => {
-      rtBtn.disabled = true;
-      rtBtn.textContent = _cmpT.cmpRunRound2 || 'Running second round...';
-      runRoundtable(overlay, patient_message, data.comparisons || []);
-    });
-    actRow.appendChild(rtBtn);
-
-    const dlBtn = document.createElement('button');
-    dlBtn.textContent = _cmpT.cmpDownload || '↓ Download comparison';
-    dlBtn.style.cssText = 'background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;';
-    dlBtn.addEventListener('click', () => downloadComparison(patient_message, data.comparisons || []));
-    actRow.appendChild(dlBtn);
-
-    resultsEl.appendChild(actRow);
-
-  } catch (err) {
-    resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">${_cmpT.cmpRunError || 'Error running comparison.'}</div>`;
-  } finally {
-    runBtn.disabled = false;
-    runBtn.textContent = _cmpT.cmpRunAgain || 'Run again';
-  }
-}
-
-function downloadComparison(patientMessage, comparisons) {
-  const dateStr = new Date().toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
-
-  const cardsHTML = comparisons.map(c => {
-    const info = COMPARISON_THEORISTS.find(t => t.key === c.theorist) || { color: '#888' };
-    return `
-      <div class="card">
-        <div class="card-header" style="background:${info.color};">${c.name}</div>
-        <div class="card-body">${c.error ? `<em style="color:#c00">שגיאה: ${c.error}</em>` : c.response.replace(/\n/g,'<br>')}</div>
-      </div>`;
-  }).join('');
-
-  const html = `<!DOCTYPE html>
-<html dir="rtl" lang="he">
-<head>
-<meta charset="UTF-8">
-<title>השוואת תיאורטיקנים</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #222; padding: 40px; direction: rtl; }
-  h1 { font-size: 20px; color: #2d3a4a; margin-bottom: 4px; }
-  .meta { font-size: 12px; color: #888; margin-bottom: 20px; }
-  .quote-box { background: #f8f6fb; border-right: 3px solid #aaa; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 24px; }
-  .quote-label { font-size: 10px; color: #aaa; font-weight: 700; margin-bottom: 4px; }
-  .quote-text { font-size: 13px; color: #333; font-style: italic; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
-  .card { border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden; }
-  .card-header { padding: 8px 12px; color: #fff; font-size: 13px; font-weight: 600; }
-  .card-body { padding: 12px; font-size: 13px; line-height: 1.8; color: #333; }
-  .footer { margin-top: 32px; font-size: 10px; color: #bbb; border-top: 1px solid #eee; padding-top: 10px; }
-  @media print { body { padding: 20px; } }
-</style>
-</head>
-<body>
-  <h1>השוואת תיאורטיקנים</h1>
-  <div class="meta">${dateStr}</div>
-  <div class="quote-box">
-    <div class="quote-label">ציטוט המטופל</div>
-    <div class="quote-text">"${patientMessage.replace(/</g,'&lt;').replace(/>/g,'&gt;')}"</div>
-  </div>
-  <div class="grid">${cardsHTML}</div>
-  <div class="footer">נוצר על ידי מרחב הפסיכואנליזה</div>
-</body>
-</html>`;
-
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = `השוואת-תיאורטיקנים-${new Date().toISOString().slice(0,10)}.html`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 3000);
-}
-
-window.openComparison = openComparison;
 
 // ============================================================
 // ANONYMIZER
@@ -6251,68 +5970,6 @@ async function runAnonymizer(overlay) {
 }
 
 window.openAnonymizer = openAnonymizer;
-
-// ============================================================
-// THEORIST ROUNDTABLE — round 2 inside comparison panel
-// ============================================================
-
-async function runRoundtable(overlay, patientMessage, initialComparisons) {
-  const resultsEl = overlay.querySelector('#cmp-results');
-  if (!resultsEl) return;
-  const _cmpT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
-  const _rtTableLabel = window._lang === 'en'
-    ? 'Round table — each theorist sees what their colleagues said'
-    : 'שולחן עגול — כל תיאורטיקן רואה מה שאר עמיתיו אמרו';
-  const _rtSendingLabel = window._lang === 'en' ? 'Sending to second round...' : 'שולח לסיבוב שני...';
-
-  // Add roundtable section
-  const rtSection = document.createElement('div');
-  rtSection.style.cssText = 'margin-top:20px;';
-  rtSection.innerHTML = `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-top:16px;border-top:1px solid #e8e0ec;">
-      <span style="font-size:14px;">🪑</span>
-      <div style="font-size:12px;font-weight:600;color:#444;">${_rtTableLabel}</div>
-    </div>
-    <div id="rt-loading" style="text-align:center;color:#888;font-size:13px;padding:12px;">${_rtSendingLabel}</div>
-    <div id="rt-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;"></div>`;
-  resultsEl.appendChild(rtSection);
-
-  // Scroll to it
-  rtSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  try {
-    const res  = await fetch('/api/theorist-roundtable', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ patient_message: patientMessage, initial_responses: initialComparisons }),
-    });
-    const data = await res.json();
-
-    document.getElementById('rt-loading')?.remove();
-    const rtGrid = document.getElementById('rt-grid');
-    if (!rtGrid) return;
-
-    (data.reactions || []).forEach(r => {
-      const info = COMPARISON_THEORISTS.find(t => t.key === r.theorist) || { color: '#888' };
-      const card = document.createElement('div');
-      card.style.cssText = `border:1px solid ${info.color}33;border-radius:10px;overflow:hidden;`;
-      card.innerHTML = `
-        <div style="background:${info.color};padding:6px 12px;display:flex;align-items:center;gap:6px;">
-          <span style="color:#fff;font-size:13px;font-weight:600;">${r.name}</span>
-          <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:9px;padding:1px 7px;border-radius:10px;">${_cmpT.cmpResponse || 'Response'}</span>
-        </div>
-        <div style="padding:10px 12px;font-size:13px;color:#333;line-height:1.8;font-style:italic;">
-          ${r.error
-            ? `<span style="color:#c00;font-size:12px;font-style:normal;">${_cmpT.cmpError || 'Error'}: ${r.error}</span>`
-            : r.reaction.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
-        </div>`;
-      rtGrid.appendChild(card);
-    });
-
-  } catch {
-    document.getElementById('rt-loading').textContent = _cmpT.cmpRound2Error || 'Error in second round.';
-  }
-}
 
 // Init silence detection after DOM ready
 initSilenceDetection();
@@ -6966,7 +6623,7 @@ async function openBoardRoom() {
         <div style="display:flex;align-items:center;gap:10px;">
           <span style="color:rgba(255,255,255,0.7);font-size:17px;">⬡</span>
           <span style="color:rgba(255,255,255,0.92);font-size:15px;font-weight:500;">חדר הבורד</span>
-          <span style="color:rgba(255,255,255,0.3);font-size:11px;">מרחב פסיכואנליטי</span>
+          <span style="color:rgba(255,255,255,0.3);font-size:11px;font-family:'Cormorant Garamond',serif;font-style:italic;">Between</span>
         </div>
         <button id="br-close" style="background:none;border:none;color:rgba(255,255,255,0.45);
           font-size:22px;cursor:pointer;line-height:1;padding:0 4px;">×</button>
