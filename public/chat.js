@@ -98,19 +98,18 @@ function showTherapyGateExit() {
   gate.innerHTML = isHe ? `
     <div style="text-align:center;max-width:400px;width:90%;padding:0 20px;">
       <h2 style="font-family:var(--font-cormorant),serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:28px;">Between</h2>
-      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:10px;">הממשק מיועד לאנשים שנמצאים בתהליך טיפול.</p>
-      <p style="font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:32px;">נשמח לראות אותך כאן כשהזמן יגיע.</p>
+      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:16px;">המקום הזה עובד בתוך מרחב טיפולי.</p>
+      <p style="font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:32px;">אם יש לך מטפל.ת — אנחנו כאן.</p>
       <a href="https://www.psychology.org.il" target="_blank" rel="noopener noreferrer"
         style="font-size:14px;color:var(--accent);text-decoration:underline;opacity:0.85;">
-        ← למצוא מטפל — האיגוד הפסיכולוגים הישראלי
+        למצוא מטפל.ת ←
       </a>
     </div>
   ` : `
     <div style="text-align:center;max-width:420px;width:90%;padding:0 20px;">
       <h2 style="font-family:var(--font-cormorant),serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:28px;">Between</h2>
-      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:10px;">Between is for people in therapy.</p>
-      <p style="font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:28px;">We'll be here when the time is right.</p>
-      <p style="font-size:14px;color:var(--muted);line-height:1.8;">Consider reaching out to a licensed therapist in your area.</p>
+      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:16px;">Between is for people in therapy.</p>
+      <p style="font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:28px;">When you're ready to start — we'll be here.</p>
     </div>
   `;
 }
