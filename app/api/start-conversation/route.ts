@@ -4,17 +4,14 @@ import { createClient } from '@supabase/supabase-js';
 const MAX_CONVERSATIONS = 3;
 
 export async function POST(req: NextRequest) {
-  // בפיתוח — תמיד מאפשרים
-  if (process.env.NODE_ENV !== 'production') {
-    return NextResponse.json({ allowed: true });
-  }
-
   const authHeader = req.headers.get('authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const token = authHeader.slice(7);
+  const body = await req.json().catch(() => ({}));
+  const theorist = (body.theorist as string) || null;
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -27,24 +24,41 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }
 
+  // בפיתוח — תמיד מאפשרים (אחרי אימות, כדי לשמור נתונים)
+  const isDev = process.env.NODE_ENV !== 'production';
+
   // אדמין — ללא הגבלה
-  if (user.user_metadata?.is_admin === true) {
-    return NextResponse.json({ allowed: true, admin: true });
-  }
+  const isAdmin = user.user_metadata?.is_admin === true;
 
   const used = (user.user_metadata?.conversations_used ?? 0) as number;
 
-  if (used >= MAX_CONVERSATIONS) {
+  if (!isDev && !isAdmin && used >= MAX_CONVERSATIONS) {
     return NextResponse.json({ allowed: false, used, max: MAX_CONVERSATIONS }, { status: 403 });
   }
 
-  // עדכון מונה ב-user_metadata
-  await supabase.auth.admin.updateUserById(user.id, {
-    user_metadata: { ...user.user_metadata, conversations_used: used + 1 }
+  // עדכון מונה ב-user_metadata (לא לאדמין)
+  if (!isAdmin) {
+    await supabase.auth.admin.updateUserById(user.id, {
+      user_metadata: { ...user.user_metadata, conversations_used: used + 1 }
+    });
+  }
+
+  // רישום שיחה עם theorist ומספר שיחה
+  const { data: conv } = await supabase
+    .from('user_conversations')
+    .insert({
+      user_id: user.id,
+      theorist,
+      conversation_number: isAdmin ? null : used + 1,
+    })
+    .select('id')
+    .single();
+
+  return NextResponse.json({
+    allowed: true,
+    admin: isAdmin || undefined,
+    used: isAdmin ? undefined : used + 1,
+    max: isAdmin ? undefined : MAX_CONVERSATIONS,
+    conversation_id: conv?.id ?? null,
   });
-
-  // רישום מינימלי — user_id + created_at בלבד
-  await supabase.from('user_conversations').insert({ user_id: user.id });
-
-  return NextResponse.json({ allowed: true, used: used + 1, max: MAX_CONVERSATIONS });
 }

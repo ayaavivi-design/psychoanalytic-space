@@ -3670,6 +3670,26 @@ let uploadedFileBase64 = null;
 let uploadedFileMediaType = null;
 window.clinicalMode = false;
 window.webSearch = false;
+let currentConversationId = null; // מזהה שורת user_conversations הנוכחית
+
+// שולח אירוע tracking ל-Supabase (fire-and-forget)
+async function trackEvent(eventName) {
+  if (!currentConversationId || !supabaseClient) return;
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+    fetch('/api/track-event', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+      body: JSON.stringify({
+        conversation_id: currentConversationId,
+        event: eventName,
+        message_count: conversationHistory.length,
+        used_clinical_mode: !!window.clinicalMode,
+      }),
+    }).catch(() => {});
+  } catch {}
+}
 
 const THEORIST_OPENING = {
   freud: {
@@ -4426,6 +4446,7 @@ async function exportPDF() {
   win.document.write(html);
   win.document.close();
   setTimeout(() => win.print(), 500);
+  trackEvent('pdf_downloaded');
 }
 
 function newChat() {
@@ -4535,14 +4556,20 @@ async function checkConversationLimit() {
     if (!supabaseClient) return true;
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return true;
+    // שולחים את התיאורטיקן הנוכחי כדי לשמור בסטטיסטיקות
+    const theorist = window.selectedTheorist || 'winnicott';
     const res = await fetch('/api/start-conversation', {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${session.access_token}` }
+      headers: { 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ theorist }),
     });
     if (res.status === 403) {
       showBlockedScreen();
       return false;
     }
+    // שמירת conversation_id לאירועי tracking
+    const data = await res.json().catch(() => ({}));
+    currentConversationId = data.conversation_id || null;
     return true;
   } catch {
     return true; // על שגיאת רשת — לא חוסמים
@@ -5376,6 +5403,7 @@ async function runSupervisionPanel() {
           </div>`;
       } else {
         resultsEl.appendChild(buildSupervisionCard(report, theorist));
+        trackEvent('had_supervision');
       }
     }
   } catch (err) {
@@ -5544,6 +5572,7 @@ function downloadSupervisionReport(r, theoristLabel) {
   a.download = `פיקוח-קליני-${name}-${new Date().toISOString().slice(0,10)}.html`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 3000);
+  trackEvent('pdf_downloaded');
 }
 
 window.openSupervision          = openSupervision;
@@ -5626,6 +5655,7 @@ function _openSessionSummary() {
         return;
       }
       resultsEl.appendChild(buildSummaryCard(data, theorist));
+      trackEvent('had_summary');
     })
     .catch(() => {
       const resultsEl = document.getElementById('session-summary-results');
@@ -5804,6 +5834,7 @@ function openSendToTherapistForm(container, htmlContent, subject) {
         status.style.color = '#2d8a5e';
         status.textContent = isHe ? '✓ נשלח בהצלחה' : '✓ Sent successfully';
         btn.textContent = isHe ? '✓ נשלח' : '✓ Sent';
+        trackEvent('sent_to_therapist');
       } else {
         throw new Error(data.error || 'error');
       }
