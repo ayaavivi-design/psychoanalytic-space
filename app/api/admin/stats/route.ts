@@ -90,25 +90,24 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // כל המשתמשים עם סטטיסטיקות — לטבלת משתמשים
-  const userStats: Record<string, { email: string; convCount: number; lastActive: string; features: string[] }> = {};
+  // מיפוי user_id → שיחות לצורך הטבלה
+  const userConvCount: Record<string, number> = {};
+  const userLastActive: Record<string, string> = {};
   for (const c of convs) {
     const uid = c.user_id as string;
-    if (!userStats[uid]) {
-      userStats[uid] = { email: '—', convCount: 0, lastActive: c.created_at as string, features: [] };
+    userConvCount[uid] = (userConvCount[uid] || 0) + 1;
+    if (!userLastActive[uid] || new Date(c.created_at as string) > new Date(userLastActive[uid])) {
+      userLastActive[uid] = c.created_at as string;
     }
-    userStats[uid].convCount++;
-    if (new Date(c.created_at as string) > new Date(userStats[uid].lastActive)) {
-      userStats[uid].lastActive = c.created_at as string;
-    }
-  }
-  for (const u of (users || [])) {
-    if (userStats[u.id]) userStats[u.id].email = u.email || '—';
   }
 
-  const userList = Object.values(userStats)
-    .sort((a, b) => new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime())
-    .slice(0, 30);
+  // רשימת כל המשתמשים הרשומים — כולל כאלה שלא פתחו שיחה עדיין
+  const allUsers = (users || []).map(u => ({
+    email: u.email || '—',
+    createdAt: u.created_at as string,
+    convCount: userConvCount[u.id] || 0,
+    lastActive: userLastActive[u.id] || null,
+  })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   return NextResponse.json({
     totalRegistered: users?.length || 0,
@@ -118,6 +117,6 @@ export async function GET(req: NextRequest) {
     features: { hadSummary, hadSupervision, pdfDownloaded, sentToTherapist, usedClinicalMode },
     theorists: theoristsSorted,
     avgMessages: messagesWithCount > 0 ? Math.round(totalMessages / messagesWithCount) : 0,
-    userList,
+    allUsers,
   });
 }
