@@ -87,36 +87,52 @@ All text values in Hebrew. Save to: /tmp/ux_feedback.json
 ═══════════════════════════════
 STEP 5 — Assemble and commit
 ═══════════════════════════════
-Use Python to assemble the final JSON file:
+Write the actual THEORIST and MODE values you determined in STEP 1 into a temp file,
+then assemble and commit using a single bash script (so variables persist):
 
-python3 << 'EOF'
-import json, datetime
+# First: write the values you chose in STEP 1 to /tmp/ux_meta.txt
+# Format: two lines — first line = theorist name, second line = session_mode
+# Example: if today is Monday and day-of-month is odd:
+#   echo "freud" > /tmp/ux_meta.txt && echo "clinical" >> /tmp/ux_meta.txt
+
+echo "YOUR_THEORIST" > /tmp/ux_meta.txt
+echo "YOUR_MODE" >> /tmp/ux_meta.txt
+
+# Then run this single script (all in one Bash call so variables persist):
+bash << 'SCRIPT'
+set -e
+THEORIST=$(sed -n '1p' /tmp/ux_meta.txt)
+MODE=$(sed -n '2p' /tmp/ux_meta.txt)
+
+python3 << EOF
+import json, datetime, os
 
 nav  = open('/tmp/ux_nav.txt').read()
 conv = json.load(open('/tmp/ux_conv.json'))
 fb   = json.load(open('/tmp/ux_feedback.json'))
+theorist = open('/tmp/ux_meta.txt').read().splitlines()[0].strip()
+mode     = open('/tmp/ux_meta.txt').read().splitlines()[1].strip()
 
 result = {
   "date": datetime.datetime.utcnow().isoformat() + 'Z',
   "persona": "karen",
-  "theorist": "THEORIST_PLACEHOLDER",
-  "session_mode": "MODE_PLACEHOLDER",
+  "theorist": theorist,
+  "session_mode": mode,
   "nav_log": nav,
   "transcript": conv,
   "feedback": fb
 }
 
-import os
 os.makedirs('ux-reports', exist_ok=True)
 filename = f"ux-reports/{datetime.date.today().isoformat()}.json"
 json.dump(result, open(filename, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
 print(f"Saved: {filename}")
 EOF
 
-(Replace THEORIST_PLACEHOLDER and MODE_PLACEHOLDER with actual values before running)
-
 git config user.email "ux-agent@psychoanalytic-space.ai"
 git config user.name "UX Feedback Agent"
 git add ux-reports/
 git commit -m "UX feedback: $(date +%Y-%m-%d) [${THEORIST}, mode=${MODE}]"
 git push origin main
+echo "Done. Pushed to main."
+SCRIPT
