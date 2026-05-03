@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 const MAX_CONVERSATIONS = 3;
+const ADMIN_EMAIL = 'ayaavivi@gmail.com';
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -27,8 +28,8 @@ export async function POST(req: NextRequest) {
   // בפיתוח — תמיד מאפשרים (אחרי אימות, כדי לשמור נתונים)
   const isDev = process.env.NODE_ENV !== 'production';
 
-  // אדמין — ללא הגבלה
-  const isAdmin = user.user_metadata?.is_admin === true;
+  // אדמין — ללא הגבלה (לפי מייל או is_admin במטאדאטה, עקבי עם chat.js)
+  const isAdmin = user.email === ADMIN_EMAIL || user.user_metadata?.is_admin === true;
 
   const used = (user.user_metadata?.conversations_used ?? 0) as number;
 

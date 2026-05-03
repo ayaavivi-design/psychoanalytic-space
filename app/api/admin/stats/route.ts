@@ -3,7 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 
 // GET /api/admin/stats
 // Authorization: Bearer <token>
-// מחזיר נתוני אנליטיקה מלאים — נגיש רק למשתמשים עם is_admin: true
+// מחזיר נתוני אנליטיקה מלאים — נגיש רק לאדמין
+
+const ADMIN_EMAIL = 'ayaavivi@gmail.com';
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -17,9 +19,13 @@ export async function GET(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // אימות וודא אדמין
+  // אימות — אדמין לפי מייל (עקבי עם chat.js) או לפי is_admin במטאדאטה
   const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-  if (authError || !user || user.user_metadata?.is_admin !== true) {
+  const isAdmin = !authError && user && (
+    user.email === ADMIN_EMAIL ||
+    user.user_metadata?.is_admin === true
+  );
+  if (!isAdmin) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
