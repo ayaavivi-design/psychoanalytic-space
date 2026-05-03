@@ -5678,20 +5678,29 @@ function buildSummaryCard(s, theoristLabel) {
     ${s.what_remained ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff9f0;border-radius:6px;border:1px solid #f5c97a;"><div style="font-size:11px;color:#92600a;font-weight:600;margin-bottom:4px;">מה נותר פתוח</div><div style="font-size:12px;color:#333;">${s.what_remained}</div></div>` : ''}
     ${s.therapist_moves ? `<div style="margin-bottom:14px;padding:10px 14px;background:#f7f5fb;border-radius:6px;border:1px solid #d8c8e0;"><div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:4px;">המהלכים הטיפוליים</div><div style="font-size:12px;color:#333;">${s.therapist_moves}</div></div>` : ''}
     ${s.next_session_focus ? `<div style="padding:10px 14px;background:rgba(58,37,64,0.07);border-radius:6px;border-right:3px solid #3a2540;"><div style="font-size:11px;color:#3a2540;font-weight:600;margin-bottom:4px;">המוקד לסשן הבא</div><div style="font-size:12px;color:#333;font-weight:500;">${s.next_session_focus}</div></div>` : ''}
-    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #e8e0ec;text-align:left;">
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #e8e0ec;display:flex;gap:8px;flex-wrap:wrap;">
       <button id="ss-download-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
         ↓ הורד סיכום
       </button>
-    </div>`;
+      <button id="ss-send-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
+        ✉ שלח למטפל/ת
+      </button>
+    </div>
+    <div id="ss-send-form-slot"></div>`;
 
-  // Attach download after render
   wrap.querySelector('#ss-download-btn').addEventListener('click', () =>
     downloadSessionSummary(s, theoristLabel));
+
+  wrap.querySelector('#ss-send-btn').addEventListener('click', function() {
+    const isHe = (window._lang || 'he') !== 'en';
+    const subject = isHe ? `סיכום סשן — ${s.theorist || theoristLabel || ''}` : `Session Summary — ${s.theorist || theoristLabel || ''}`;
+    openSendToTherapistForm(wrap.querySelector('#ss-send-form-slot'), buildSummaryHTML(s, theoristLabel), subject);
+  });
 
   return wrap;
 }
 
-function downloadSessionSummary(s, theoristLabel) {
+function buildSummaryHTML(s, theoristLabel) {
   const name = s.theorist || theoristLabel || '';
   const dateStr = new Date().toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -5705,7 +5714,7 @@ function downloadSessionSummary(s, theoristLabel) {
       <div class="sig">${m.clinical_significance || ''}</div>
     </div>`).join('');
 
-  const html = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -5739,10 +5748,14 @@ function downloadSessionSummary(s, theoristLabel) {
   ${s.what_remained ? `<section><h2>מה נותר פתוח</h2><div class="box box-yellow">${s.what_remained}</div></section>` : ''}
   ${s.therapist_moves ? `<section><h2>מהלכים טיפוליים</h2><div class="box box-purple">${s.therapist_moves}</div></section>` : ''}
   ${s.next_session_focus ? `<section><h2>מוקד לסשן הבא</h2><div class="box box-dark"><strong>המלצה</strong>${s.next_session_focus}</div></section>` : ''}
-  <div class="footer">נוצר על ידי מרחב הפסיכואנליזה</div>
+  <div class="footer">נוצר על ידי Between</div>
 </body>
 </html>`;
+}
 
+function downloadSessionSummary(s, theoristLabel) {
+  const name = s.theorist || theoristLabel || '';
+  const html = buildSummaryHTML(s, theoristLabel);
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -5750,6 +5763,79 @@ function downloadSessionSummary(s, theoristLabel) {
   a.download = `סיכום-סשן-${name}-${new Date().toISOString().slice(0,10)}.html`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
+
+// ── שלח למטפל/ת ───────────────────────────────────────────────
+function openSendToTherapistForm(container, htmlContent, subject) {
+  // Toggle: אם הטופס כבר פתוח — סגור
+  const existing = container.querySelector('.send-therapist-form');
+  if (existing) { existing.remove(); return; }
+
+  const saved = localStorage.getItem('therapist_email') || '';
+  const isHe  = (window._lang || 'he') !== 'en';
+
+  const form = document.createElement('div');
+  form.className = 'send-therapist-form';
+  form.style.cssText = 'margin-top:10px;padding:12px 14px;background:#faf7f5;border-radius:8px;border:1px solid #e8d8d0;';
+  form.innerHTML = `
+    <div style="font-size:12px;color:#888;margin-bottom:8px;">${isHe ? 'מייל המטפל/ת שלך' : 'Your therapist\'s email'}</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input type="email" class="therapist-email-input"
+        placeholder="${isHe ? 'therapist@example.com' : 'therapist@example.com'}"
+        value="${saved}"
+        style="flex:1;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:var(--font-rubik),sans-serif;direction:ltr;" />
+      <button class="therapist-send-btn"
+        style="padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:13px;font-family:var(--font-rubik),sans-serif;cursor:pointer;white-space:nowrap;">
+        ${isHe ? 'שלח' : 'Send'}
+      </button>
+    </div>
+    <div class="therapist-send-status" style="font-size:12px;margin-top:6px;min-height:18px;"></div>`;
+
+  container.appendChild(form);
+
+  const input  = form.querySelector('.therapist-email-input');
+  const btn    = form.querySelector('.therapist-send-btn');
+  const status = form.querySelector('.therapist-send-status');
+
+  input.focus();
+
+  btn.addEventListener('click', async () => {
+    const email = input.value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      status.style.color = '#c4607a';
+      status.textContent = isHe ? 'נא להזין כתובת מייל תקינה' : 'Please enter a valid email address';
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = isHe ? 'שולח...' : 'Sending...';
+    status.style.color = '#888';
+    status.textContent = '';
+
+    try {
+      const res  = await fetch('/api/send-to-therapist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, subject, html: htmlContent }),
+      });
+      const data = await res.json();
+      if (data.sent) {
+        localStorage.setItem('therapist_email', email);
+        status.style.color = '#2d8a5e';
+        status.textContent = isHe ? '✓ נשלח בהצלחה' : '✓ Sent successfully';
+        btn.textContent = isHe ? '✓ נשלח' : '✓ Sent';
+      } else {
+        throw new Error(data.error || 'error');
+      }
+    } catch {
+      status.style.color = '#c4607a';
+      status.textContent = isHe ? 'שגיאה בשליחה — נסה שוב' : 'Error sending — please try again';
+      btn.disabled = false;
+      btn.textContent = isHe ? 'שלח' : 'Send';
+    }
+  });
+
+  // שליחה עם Enter
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
 }
 
 window.openSessionSummary = openSessionSummary;
@@ -6279,19 +6365,29 @@ function buildReflectionCard(r) {
       <div style="font-size:10px;color:#5a3060;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">שאלה שנשארתי איתה</div>
       <div style="font-size:13px;color:#3a2040;line-height:1.8;font-style:italic;">${r.one_question}</div>
     </div>` : ''}
-    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #ede4e0;text-align:left;">
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #ede4e0;display:flex;gap:8px;flex-wrap:wrap;">
       <button id="pr-download-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
         ↓ שמור את הרפלקציה
       </button>
-    </div>`;
+      <button id="pr-send-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
+        ✉ שלח למטפל/ת
+      </button>
+    </div>
+    <div id="pr-send-form-slot"></div>`;
 
   wrap.querySelector('#pr-download-btn').addEventListener('click', () =>
     downloadReflection(r));
 
+  wrap.querySelector('#pr-send-btn').addEventListener('click', function() {
+    const isHe = (window._lang || 'he') !== 'en';
+    const subject = isHe ? 'מה לקחתי מהשיחה' : 'What I took from the session';
+    openSendToTherapistForm(wrap.querySelector('#pr-send-form-slot'), buildReflectionHTML(r), subject);
+  });
+
   return wrap;
 }
 
-function downloadReflection(r) {
+function buildReflectionHTML(r) {
   const dateStr = new Date().toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
   const forTherapistHTML = (r.for_therapist || []).map(t => `<li>${t}</li>`).join('');
 
@@ -6332,10 +6428,13 @@ function downloadReflection(r) {
   ${r.what_stayed ? `<div class="block green"><div class="block-label">מה נשאר איתי</div><div class="block-text">${r.what_stayed}</div></div>` : ''}
   ${forTherapistHTML ? `<div class="block gold"><div class="block-label">אני רוצה להביא לטיפול</div><ul>${forTherapistHTML}</ul></div>` : ''}
   ${r.one_question ? `<div class="block purple"><div class="block-label">שאלה שנשארתי איתה</div><div class="block-text" style="font-style:italic;">${r.one_question}</div></div>` : ''}
-  <div class="footer">נוצר על ידי מרחב הפסיכואנליזה</div>
+  <div class="footer">נוצר על ידי Between</div>
 </body>
 </html>`;
+}
 
+function downloadReflection(r) {
+  const html = buildReflectionHTML(r);
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
