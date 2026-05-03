@@ -243,7 +243,7 @@ export default function Home() {
           </div>
         <div style={{ textAlign: 'center', maxWidth: 420, width: '90%', padding: '0 20px' }}>
           <h2 id="auth-title" dir="ltr" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 28, fontWeight: 300, fontStyle: 'italic', color: 'var(--accent)', marginBottom: 8, direction: 'ltr' }} suppressHydrationWarning>Between</h2>
-          <p id="auth-subtitle" style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8, marginBottom: 12 }}>כניסה או הרשמה כדי להתחיל</p>
+          <p id="auth-subtitle" style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8, marginBottom: 12 }}>מה שעלה בפגישה — אפשר להביא לכאן.</p>
 
           <div style={{ marginBottom: 16 }}>
             <div id="auth-persona-label" style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 10, opacity: 0.8 }}>מי אתה/את?</div>
@@ -302,7 +302,7 @@ export default function Home() {
             פרטי הכניסה מוצפנים ומאובטחים.
           </p>
           <p id="auth-disclaimer" style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.85, marginTop: 12, opacity: 0.6, borderTop: '1px solid var(--border)', paddingTop: 14, width: 'calc(100% + 320px)', marginLeft: '-160px', marginRight: '-160px' }}>
-הממשק הינו כלי לחשיבה ולהבנה עצמית ולא תחליף לטיפול. הוא נועד ללוות אנשים שנמצאים בתהליך: בטיפול, בהכשרה, או בחקירה עצמית. פסיכואנליזה מתרחשת בין שני בני אדם בנוכחות, בקשר, ובזמן. הממשק נועד לצד המטפל, לא במקומו.
+Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף לטיפול. הוא נועד ללוות אנשים שנמצאים בתהליך: בטיפול, בהכשרה, או בחקירה עצמית. פסיכואנליזה מתרחשת בין שני בני אדם בנוכחות, בקשר, ובזמן. הממשק נועד לצד המטפל, לא במקומו.
           </p>
         </div>
         </>}
@@ -506,7 +506,7 @@ export default function Home() {
           <div className="welcome" id="welcome">
             <div className="ornament">ψ</div>
             <h2>ברוכ/ה הבא/ה</h2>
-            <p>שאל/י כל שאלה בנושאי פסיכואנליזה — על תיאוריה, קליניקה, מושגים, או דרכי חשיבה של אנליטיקאים שונים.</p>
+            <p>יש לך משהו מהפגישה האחרונה שעדיין מהדהד?</p>
             <p id="welcome-api-text" suppressHydrationWarning style={{ fontSize: 11, color: 'var(--muted)', marginTop: 16, lineHeight: 1.6 }}>
               {(WELCOME_I18N[currentLang] || WELCOME_I18N['he']).apiText}{' '}
               <span id="privacy-link" suppressHydrationWarning onClick={() => { const m = document.getElementById('privacy-modal'); if(m) m.style.display='flex'; }}
