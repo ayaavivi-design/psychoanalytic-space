@@ -308,6 +308,12 @@ export default function Home() {
         </>}
       </div>
 
+      {/* Therapy gate — shown after auth for new users */}
+      <div id="therapy-gate" style={{
+        position: 'fixed', inset: 0, zIndex: 190, background: 'var(--bg)',
+        display: 'none', alignItems: 'center', justifyContent: 'center'
+      }} />
+
       {/* Sidebar */}
       <div id="sidebar">
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>

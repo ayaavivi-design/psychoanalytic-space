@@ -36,8 +36,86 @@ function showAuthScreen() {
 function hideAuthScreen() {
   const el = document.getElementById('auth-screen');
   if (el) el.style.display = 'none';
+  // משתמשים שכבר השלימו intake — עוברים אוטומטית את השער
+  if (!localStorage.getItem('therapy_gate_passed') && localStorage.getItem('intake_completed')) {
+    localStorage.setItem('therapy_gate_passed', 'yes');
+  }
+  if (!localStorage.getItem('therapy_gate_passed')) {
+    showTherapyGate();
+  } else {
+    proceedToApp();
+  }
+}
+
+function proceedToApp() {
   setTimeout(checkIntakeStatus, 100);
   setTimeout(() => { initSidebarTips(); startOnboardingTour(); }, 800);
+}
+
+function showTherapyGate() {
+  const gate = document.getElementById('therapy-gate');
+  if (!gate) { proceedToApp(); return; }
+  const isHe = (selectedLang?.code || 'he') !== 'en';
+  gate.style.display = 'flex';
+  gate.innerHTML = isHe ? `
+    <div style="text-align:center;max-width:400px;width:90%;padding:0 20px;">
+      <h2 style="font-family:var(--font-cormorant),serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:28px;">Between</h2>
+      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:6px;">Between בנוי בשביל הזמן שבין פגישות הטיפול.</p>
+      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:32px;">זה נכון לגביך?</p>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button onclick="therapyGateAnswer('yes')" style="flex:1;max-width:160px;padding:12px 16px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-family:var(--font-rubik),sans-serif;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">כן</button>
+        <button onclick="therapyGateAnswer('no')" style="flex:1;max-width:160px;padding:12px 16px;background:none;border:1px solid var(--border);border-radius:10px;font-size:15px;font-family:var(--font-rubik),sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">לא ממש</button>
+      </div>
+    </div>
+  ` : `
+    <div style="text-align:center;max-width:400px;width:90%;padding:0 20px;">
+      <h2 style="font-family:var(--font-cormorant),serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:28px;">Between</h2>
+      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:6px;">Between is built for the time between therapy sessions.</p>
+      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:32px;">Does that sound like you?</p>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button onclick="therapyGateAnswer('yes')" style="flex:1;max-width:160px;padding:12px 16px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-family:var(--font-rubik),sans-serif;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Yes</button>
+        <button onclick="therapyGateAnswer('no')" style="flex:1;max-width:160px;padding:12px 16px;background:none;border:1px solid var(--border);border-radius:10px;font-size:15px;font-family:var(--font-rubik),sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">Not quite</button>
+      </div>
+    </div>
+  `;
+}
+
+function therapyGateAnswer(answer) {
+  if (answer === 'yes') {
+    localStorage.setItem('therapy_gate_passed', 'yes');
+    const gate = document.getElementById('therapy-gate');
+    if (gate) gate.style.display = 'none';
+    proceedToApp();
+  } else {
+    showTherapyGateExit();
+  }
+}
+
+function showTherapyGateExit() {
+  const gate = document.getElementById('therapy-gate');
+  if (!gate) return;
+  const isHe = (selectedLang?.code || 'he') !== 'en';
+  gate.innerHTML = isHe ? `
+    <div style="text-align:center;max-width:400px;width:90%;padding:0 20px;">
+      <h2 style="font-family:var(--font-cormorant),serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:28px;">Between</h2>
+      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:10px;">Between מיועד לאנשים שנמצאים בתהליך טיפול.</p>
+      <p style="font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:32px;">נשמח לראות אותך כאן כשהזמן יגיע.</p>
+      <a href="https://www.psychology.org.il" target="_blank" rel="noopener noreferrer"
+        style="font-size:14px;color:var(--accent);text-decoration:underline;opacity:0.85;">
+        ← למצוא מטפל — האיגוד הפסיכולוגים הישראלי
+      </a>
+    </div>
+  ` : `
+    <div style="text-align:center;max-width:400px;width:90%;padding:0 20px;">
+      <h2 style="font-family:var(--font-cormorant),serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:28px;">Between</h2>
+      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:10px;">Between is for people in therapy.</p>
+      <p style="font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:32px;">We'll be here when the time is right.</p>
+      <a href="https://www.psychology.org.il" target="_blank" rel="noopener noreferrer"
+        style="font-size:14px;color:var(--accent);text-decoration:underline;opacity:0.85;">
+        ← Find a therapist — Israeli Psychological Association
+      </a>
+    </div>
+  `;
 }
 
 // ── Intake / שיחת היכרות ──────────────────────────────────────
@@ -6944,7 +7022,8 @@ async function startOnboardingTour() {
   setTimeout(() => showStep(0), 1200);
 }
 
-window.startOnboardingTour = startOnboardingTour;
+window.startOnboardingTour  = startOnboardingTour;
+window.therapyGateAnswer    = therapyGateAnswer;
 
 // ─── Sidebar tooltips מ-onboarding-config ──────────────────────────────────
 async function initSidebarTips() {
