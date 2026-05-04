@@ -380,12 +380,9 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                 {([
                   ['freud','פרויד','מה שלא נאמר'],
                   ['klein','קליין','מה שקשה לגעת בו'],
-                  ['winnicott','ויניקוט','המרחב להיות'],
                   ['ogden','אוגדן','מה שנוצר בין שנינו'],
-                  ['loewald','לוואלד','הקשר עצמו כגורם המרפא'],
-                  ['bion','ביון','מה שעדיין לא ניתן לומר'],
-                  ['kohut','קוהוט','להרגיש מובן'],
-                  ['heimann','היימן','מה שהמפגש מעורר בי'],
+                  // winnicott — returning after QA verification
+                  // loewald, bion, kohut, heimann — coming in next release
                 ] as [string, string, string][]).map(([key, label, tooltipText]) => (
                   <div key={key} className="theorist-tag sb-item" data-key={key}
                     style={{ paddingRight: 10, fontSize: 13 }}
@@ -550,12 +547,8 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <select id="sup-theorist-select" style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 13, marginBottom: 10, direction: 'rtl' }}>
                 <option value="freud">פרויד</option>
                 <option value="klein">קליין</option>
-                <option value="winnicott">ויניקוט</option>
                 <option value="ogden">אוגדן</option>
-                <option value="loewald">לוואלד</option>
-                <option value="bion">ביון</option>
-                <option value="kohut">קוהוט</option>
-                <option value="heimann">היימן</option>
+                {/* winnicott — returning after QA verification */}
               </select>
               <textarea id="sup-paste-input" placeholder="הדבק שיחה — כל פורמט מתקבל"
                 style={{ width: '100%', minHeight: 150, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 12, resize: 'vertical', direction: 'rtl', lineHeight: 1.7, boxSizing: 'border-box', fontFamily: 'var(--font-rubik), sans-serif' }}></textarea>
