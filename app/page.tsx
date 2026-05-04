@@ -209,6 +209,23 @@ export default function Home() {
     window.addEventListener('langchange', handleLangChange);
     return () => window.removeEventListener('langchange', handleLangChange);
   }, []);
+
+  const isProd = process.env.NODE_ENV === 'production';
+  const THEORIST_LIST: [string, string, string][] = isProd ? [
+    ['freud','פרויד','מה שלא נאמר'],
+    ['klein','קליין','מה שקשה לגעת בו'],
+    ['ogden','אוגדן','מה שנוצר בין שנינו'],
+  ] : [
+    ['freud','פרויד','מה שלא נאמר'],
+    ['klein','קליין','מה שקשה לגעת בו'],
+    ['winnicott','ויניקוט','המרחב להיות'],
+    ['ogden','אוגדן','מה שנוצר בין שנינו'],
+    ['loewald','לוואלד','הקשר עצמו כגורם המרפא'],
+    ['bion','ביון','מה שעדיין לא ניתן לומר'],
+    ['kohut','קוהוט','להרגיש מובן'],
+    ['heimann','היימן','מה שהמפגש מעורר בי'],
+  ];
+
   return (
     <>
       {/* Auth screen */}
@@ -377,21 +394,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
             </div>
             {theoristsOpen && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 1, paddingTop: 2 }}>
-                {(process.env.NODE_ENV === 'production' ? [
-                  ['freud','פרויד','מה שלא נאמר'],
-                  ['klein','קליין','מה שקשה לגעת בו'],
-                  ['ogden','אוגדן','מה שנוצר בין שנינו'],
-                  // winnicott — returning after QA verification
-                ] : [
-                  ['freud','פרויד','מה שלא נאמר'],
-                  ['klein','קליין','מה שקשה לגעת בו'],
-                  ['winnicott','ויניקוט','המרחב להיות'],
-                  ['ogden','אוגדן','מה שנוצר בין שנינו'],
-                  ['loewald','לוואלד','הקשר עצמו כגורם המרפא'],
-                  ['bion','ביון','מה שעדיין לא ניתן לומר'],
-                  ['kohut','קוהוט','להרגיש מובן'],
-                  ['heimann','היימן','מה שהמפגש מעורר בי'],
-                ]) as [string, string, string][]).map(([key, label, tooltipText]) => (
+                {THEORIST_LIST.map(([key, label, tooltipText]) => (
                   <div key={key} className="theorist-tag sb-item" data-key={key}
                     style={{ paddingRight: 10, fontSize: 13 }}
                     onClick={(e) => (window as any).toggleTheorist(e.currentTarget, key)}
