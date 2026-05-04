@@ -377,13 +377,21 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
             </div>
             {theoristsOpen && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 1, paddingTop: 2 }}>
-                {([
+                {(process.env.NODE_ENV === 'production' ? [
                   ['freud','פרויד','מה שלא נאמר'],
                   ['klein','קליין','מה שקשה לגעת בו'],
                   ['ogden','אוגדן','מה שנוצר בין שנינו'],
                   // winnicott — returning after QA verification
-                  // loewald, bion, kohut, heimann — coming in next release
-                ] as [string, string, string][]).map(([key, label, tooltipText]) => (
+                ] : [
+                  ['freud','פרויד','מה שלא נאמר'],
+                  ['klein','קליין','מה שקשה לגעת בו'],
+                  ['winnicott','ויניקוט','המרחב להיות'],
+                  ['ogden','אוגדן','מה שנוצר בין שנינו'],
+                  ['loewald','לוואלד','הקשר עצמו כגורם המרפא'],
+                  ['bion','ביון','מה שעדיין לא ניתן לומר'],
+                  ['kohut','קוהוט','להרגיש מובן'],
+                  ['heimann','היימן','מה שהמפגש מעורר בי'],
+                ]) as [string, string, string][]).map(([key, label, tooltipText]) => (
                   <div key={key} className="theorist-tag sb-item" data-key={key}
                     style={{ paddingRight: 10, fontSize: 13 }}
                     onClick={(e) => (window as any).toggleTheorist(e.currentTarget, key)}
@@ -547,8 +555,12 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <select id="sup-theorist-select" style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 13, marginBottom: 10, direction: 'rtl' }}>
                 <option value="freud">פרויד</option>
                 <option value="klein">קליין</option>
+                {process.env.NODE_ENV !== 'production' && <option value="winnicott">ויניקוט</option>}
                 <option value="ogden">אוגדן</option>
-                {/* winnicott — returning after QA verification */}
+                {process.env.NODE_ENV !== 'production' && <option value="loewald">לוואלד</option>}
+                {process.env.NODE_ENV !== 'production' && <option value="bion">ביון</option>}
+                {process.env.NODE_ENV !== 'production' && <option value="kohut">קוהוט</option>}
+                {process.env.NODE_ENV !== 'production' && <option value="heimann">היימן</option>}
               </select>
               <textarea id="sup-paste-input" placeholder="הדבק שיחה — כל פורמט מתקבל"
                 style={{ width: '100%', minHeight: 150, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 12, resize: 'vertical', direction: 'rtl', lineHeight: 1.7, boxSizing: 'border-box', fontFamily: 'var(--font-rubik), sans-serif' }}></textarea>
