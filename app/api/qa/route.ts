@@ -10,7 +10,8 @@ export const maxDuration = 300; // 5 דקות — מקסימום Vercel Pro
 const resend = new Resend(process.env.RESEND_API_KEY);
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const THEORISTS = ['freud', 'klein', 'winnicott', 'ogden', 'loewald', 'bion', 'kohut', 'heimann'];
+// 4 תיאורטיקנים בפרודקשן בלבד — לעדכן כשמוסיפים תיאורטיקן חדש
+const THEORISTS = ['freud', 'klein', 'winnicott', 'ogden'];
 const THEORIST_NAMES: Record<string, string> = {
   freud: 'פרויד', klein: 'קליין', winnicott: 'ויניקוט', ogden: 'אוגדן',
   loewald: 'לוואלד', bion: 'ביון', kohut: 'קוהוט', heimann: 'היימן',
