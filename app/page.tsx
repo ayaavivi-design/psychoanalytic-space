@@ -214,6 +214,7 @@ export default function Home() {
   const THEORIST_LIST: [string, string, string][] = isProd ? [
     ['freud','פרויד','מה שלא נאמר'],
     ['klein','קליין','מה שקשה לגעת בו'],
+    ['winnicott','ויניקוט','המרחב להיות'],
     ['ogden','אוגדן','מה שנוצר בין שנינו'],
   ] : [
     ['freud','פרויד','מה שלא נאמר'],
@@ -558,7 +559,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <select id="sup-theorist-select" style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 13, marginBottom: 10, direction: 'rtl' }}>
                 <option value="freud">פרויד</option>
                 <option value="klein">קליין</option>
-                {process.env.NODE_ENV !== 'production' && <option value="winnicott">ויניקוט</option>}
+                <option value="winnicott">ויניקוט</option>
                 <option value="ogden">אוגדן</option>
                 {process.env.NODE_ENV !== 'production' && <option value="loewald">לוואלד</option>}
                 {process.env.NODE_ENV !== 'production' && <option value="bion">ביון</option>}
