@@ -4,6 +4,70 @@ import { searchKnowledgeHybrid, formatChunksForPrompt } from '@/lib/rag';
 
 const THEORISTS_WITH_RAG = new Set(['freud', 'klein', 'winnicott', 'ogden', 'loewald', 'bion', 'kohut', 'heimann']);
 
+// ─────────────────────────────────────────────────────────────────────────────
+// SAFETY INTERCEPTOR — בודק תוכן אובדני/פגיעה עצמית לפני כל עיבוד אחר.
+// אם מזוהה — מחזיר תגובה קבועה מ-Between (לא מהתיאורטיקן) וחוסם את המשך הזרימה.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CRISIS_KEYWORDS_HE = [
+  'אובדנות', 'אובדני', 'אובדנית',
+  'להתאבד', 'התאבדות', 'התאבדתי', 'אתאבד',
+  'לפגוע בעצמי', 'פוגע בעצמי', 'פוגעת בעצמי', 'פגעתי בעצמי',
+  'פגיעה עצמית', 'חותך את עצמי', 'חותכת את עצמי',
+  'לא רוצה לחיות', 'לא רוצה לחיות יותר', 'לא רוצה להמשיך לחיות',
+  'לסיים את החיים', 'לסיים את חיי', 'לסיים הכל',
+  'לשים לזה סוף', 'לשים קץ', 'לשים קץ לחיים',
+  'לגמור עם זה', 'לגמור עם הכל',
+  'חשבתי לסיים', 'רוצה למות', 'רוצה להיעלם',
+  'אין לי סיבה לחיות', 'אין טעם להמשיך',
+  'לא יכול יותר', 'לא יכולה יותר', 'כבר לא יכול', 'כבר לא יכולה',
+  'לא רוצה להתעורר', 'אם לא הייתי פה',
+];
+
+const CRISIS_KEYWORDS_EN = [
+  'suicid', 'kill myself', 'end my life', 'end it all',
+  'self-harm', 'self harm', 'cutting myself', 'hurt myself',
+  'don\'t want to live', 'want to die', 'want to disappear',
+  'no reason to live', 'no point in living',
+  'can\'t go on', 'can\'t take it anymore',
+];
+
+const CRISIS_RESPONSE = `אני צריך לעצור כאן ולדבר איתך ישירות — לא כתיאורטיקן, אלא כ-Between.
+
+מה שכתבת מדאיג אותי. אם אתה/את עוברת מחשבות על פגיעה בעצמך או על לא להמשיך לחיות — המקום הנכון עכשיו הוא לא כאן.
+
+**פנה/י לעזרה עכשיו:**
+- **ער"ן (עזרה ראשונה נפשית): 1201** — חינמי, 24/7, אנונימי
+- **סה"ר (תמיכה מקוונת): [sahar.org.il](https://sahar.org.il)** — צ'אט ותמיכה
+- **מד"א: 101**
+- **המטפל/ת שלך** — אם אפשר, פנה/י אליה/ו גם מחוץ לשעות הפגישה
+
+Between לא מחליף תמיכה אנושית, ולא בנוי לרגעים כאלה. יש אנשים שמוכנים לענות לך עכשיו.`;
+
+function detectCrisis(text: string): boolean {
+  const normalized = text.toLowerCase();
+  for (const keyword of CRISIS_KEYWORDS_HE) {
+    if (normalized.includes(keyword)) return true;
+  }
+  for (const keyword of CRISIS_KEYWORDS_EN) {
+    if (normalized.includes(keyword)) return true;
+  }
+  return false;
+}
+
+function extractLastUserText(messages: { role: string; content: unknown }[]): string {
+  const lastUser = [...messages].reverse().find(m => m.role === 'user');
+  if (!lastUser) return '';
+  if (typeof lastUser.content === 'string') return lastUser.content;
+  if (Array.isArray(lastUser.content)) {
+    return (lastUser.content as { type: string; text?: string }[])
+      .filter(b => b.type === 'text')
+      .map(b => b.text || '')
+      .join(' ');
+  }
+  return '';
+}
+
 // הנחיית גבולות אוניברסלית — מצורפת לכל פרומפט של כל תיאורטיקן
 const UNIVERSAL_SCOPE_INSTRUCTION = `
 
@@ -104,6 +168,22 @@ export async function POST(req: NextRequest) {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const body = await req.json();
     const { messages, system, webSearch, theorist } = body;
+
+    // ─── SAFETY INTERCEPTOR ─── חייב לרוץ ראשון, לפני RAG ולפני כל עיבוד ───
+    const userText = extractLastUserText(messages || []);
+    if (detectCrisis(userText)) {
+      console.log(`[SAFETY] זוהה תוכן אובדני — interceptor פעל, חוזר תגובת חירום`);
+      return NextResponse.json({
+        id: 'safety_intercept',
+        type: 'message',
+        role: 'assistant',
+        content: [{ type: 'text', text: CRISIS_RESPONSE }],
+        model: 'safety-intercept',
+        stop_reason: 'end_turn',
+        usage: { input_tokens: 0, output_tokens: 0 },
+      });
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     // RAG
     let enrichedSystem = system + UNIVERSAL_SCOPE_INSTRUCTION;
