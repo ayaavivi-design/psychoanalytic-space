@@ -35,8 +35,6 @@
 
   .slide.active { display: flex; }
 
-  /* ── SLIDE TYPES ── */
-
   .slide-cover {
     background: #1a1016;
     align-items: center;
@@ -62,7 +60,6 @@
     text-align: center;
   }
 
-  /* ── COVER ── */
   .cover-eyebrow {
     font-size: 12px;
     letter-spacing: .2em;
@@ -102,7 +99,6 @@
     font-family: serif;
   }
 
-  /* ── SECTION DIVIDER ── */
   .section-label {
     font-size: 11px;
     letter-spacing: .25em;
@@ -126,7 +122,6 @@
     max-width: 500px;
   }
 
-  /* ── CONTENT ── */
   .slide-eyebrow {
     font-size: 11px;
     letter-spacing: .2em;
@@ -147,7 +142,6 @@
     color: #fff;
   }
 
-  /* ── CARDS ── */
   .cards {
     display: grid;
     gap: 16px;
@@ -173,6 +167,13 @@
   .card-pink {
     background: rgba(196,96,122,.12);
     border: 1px solid rgba(196,96,122,.25);
+    border-radius: 14px;
+    padding: 24px 28px;
+  }
+
+  .card-green {
+    background: rgba(80,180,120,.1);
+    border: 1px solid rgba(80,180,120,.25);
     border-radius: 14px;
     padding: 24px 28px;
   }
@@ -227,14 +228,13 @@
     line-height: 1.5;
   }
 
-  /* ── ITEMS LIST ── */
-  .items { display: flex; flex-direction: column; gap: 14px; }
+  .items { display: flex; flex-direction: column; gap: 12px; }
 
   .item {
     display: flex;
     align-items: flex-start;
     gap: 16px;
-    padding: 16px 20px;
+    padding: 14px 20px;
     background: #fff;
     border-radius: 12px;
     border: 1px solid rgba(196,96,122,.1);
@@ -244,7 +244,7 @@
     display: flex;
     align-items: flex-start;
     gap: 16px;
-    padding: 16px 20px;
+    padding: 14px 20px;
     background: rgba(255,255,255,.05);
     border-radius: 12px;
     border: 1px solid rgba(255,255,255,.08);
@@ -303,9 +303,8 @@
   .tag-now    { background: #c4607a; color: #fff; }
   .tag-next   { background: rgba(255,255,255,.12); color: rgba(255,255,255,.7); }
   .tag-risk   { background: rgba(255,180,0,.15); color: #b8890a; }
-  .tag-risk-light { background: rgba(255,200,80,.2); color: #ffd970; }
+  .tag-resolved { background: rgba(80,180,120,.2); color: #3a9e6a; }
 
-  /* ── TWO-COL ── */
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
   .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; align-items: start; }
 
@@ -327,7 +326,6 @@
     font-weight: 700;
   }
 
-  /* ── QUOTE ── */
   .quote-block {
     border-right: 3px solid #c4607a;
     padding-right: 28px;
@@ -347,7 +345,6 @@
     margin-top: 12px;
   }
 
-  /* ── TIMELINE ── */
   .timeline { display: flex; flex-direction: column; gap: 0; }
 
   .tl-row {
@@ -399,7 +396,7 @@
   }
 
   .tl-content {
-    padding-bottom: 28px;
+    padding-bottom: 24px;
   }
 
   .tl-title {
@@ -436,7 +433,6 @@
     margin-left: 6px;
   }
 
-  /* ── SLIDE NUMBER ── */
   .slide-num {
     position: absolute;
     bottom: 28px;
@@ -477,7 +473,6 @@
     font-style: italic;
   }
 
-  /* ── NAV ── */
   nav {
     position: fixed;
     bottom: 0;
@@ -532,25 +527,17 @@
 
   .nav-btn:hover { background: rgba(255,255,255,.15); color: #fff; }
 
-  /* ── DONE BADGE ── */
-  .done-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(196,96,122,.15);
-    border: 1px solid rgba(196,96,122,.3);
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 11px;
-    font-weight: 700;
-    color: #c4607a;
-    margin-bottom: 10px;
-  }
-
-  /* ── HIGHLIGHT BOX ── */
   .highlight-box {
     background: rgba(196,96,122,.1);
     border: 1px solid rgba(196,96,122,.25);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 16px;
+  }
+
+  .highlight-box-green {
+    background: rgba(80,180,120,.08);
+    border: 1px solid rgba(80,180,120,.2);
     border-radius: 12px;
     padding: 16px 20px;
     margin-top: 16px;
@@ -563,6 +550,8 @@
   }
 
   .highlight-text strong { color: #e8a0b2; }
+  .highlight-text-green { font-size: 14px; color: rgba(255,255,255,.85); line-height: 1.6; }
+  .highlight-text-green strong { color: #6fd4a0; }
 </style>
 </head>
 <body>
@@ -573,7 +562,7 @@
     <div class="cover-psi">ψ</div>
     <div class="cover-eyebrow">Between · רודמאפ אסטרטגי</div>
     <div class="cover-title">Q3 2026</div>
-    <div class="cover-sub">מה בונים. למה. ובאיזה סדר.</div>
+    <div class="cover-sub">עדכון · 4 במאי 2026</div>
     <div class="cover-meta">הילי · מאיה · מאי 2026</div>
     <div class="slide-num">01</div>
     <div class="slide-logo">Between</div>
@@ -582,28 +571,27 @@
   <!-- ══ SLIDE 2 — CONTEXT ══ -->
   <div class="slide slide-dark" id="slide-1">
     <div class="slide-eyebrow" style="color:rgba(196,96,122,.8);">נקודת ההתחלה</div>
-    <div class="slide-title slide-title-light" style="margin-bottom:32px;">מה יש. מה חסר.</div>
+    <div class="slide-title slide-title-light" style="margin-bottom:28px;">מה יש. מה השתנה.</div>
     <div class="cards cards-3">
       <div class="card-dark">
         <div class="card-label-light">מה עובד</div>
-        <div class="card-value-light">8 תיאורטיקנים</div>
-        <div class="card-desc-light">קול ייחודי, RAG, validation loop. הבסיס קיים.</div>
+        <div class="card-value-light">4 תיאורטיקנים</div>
+        <div class="card-desc-light">פרויד, קליין, ויניקוט, אוגדן — פרומפטים שוכתבו, RAG מועשר, QA עבר 4/4. עוד 4 בפיתוח.</div>
+      </div>
+      <div class="card-green">
+        <div class="card-label-light" style="color:rgba(111,212,160,.7);">הוחלט השבוע</div>
+        <div class="card-value-light" style="color:#6fd4a0;">B2C — מטופל ישירות</div>
+        <div class="card-desc-light">המטופל מגיע לבד. מטפל אינו בתמונה כרגע. ממשק, שיווק ומחיר — מכוונים למטופל.</div>
       </div>
       <div class="card-dark">
-        <div class="card-label-light">מה לא ברור</div>
-        <div class="card-value-light">מי המשתמש האמיתי</div>
-        <div class="card-desc-light">מטפל שמפנה? מטופל שמגיע לבד? שני הפלואים שונים לחלוטין.</div>
-      </div>
-      <div class="card-dark">
-        <div class="card-label-light">הסיכון הכי גדול</div>
-        <div class="card-value-light">תחליף לטיפול</div>
-        <div class="card-desc-light">מטופל שמוצא מספיק ב-Between ועוזב את המטפל שלו.</div>
+        <div class="card-label-light">הסיכון שנשאר</div>
+        <div class="card-value-light">0 משתמשים אמיתיים</div>
+        <div class="card-desc-light">כל ההחלטות מבוססות על הנחות. צריך מטפל אחד אמיתי שמשתמש.</div>
       </div>
     </div>
-    <div class="highlight-box" style="margin-top:24px;">
-      <div class="highlight-text">
-        <strong>הנחת הבסיס של הרבעון:</strong> לא מוסיפים תיאורטיקנים. לא מפתחים פיצ'רים חדשים.
-        מוודאים שמי שמגיע — מבין לאן הגיע, ויוצא עם סיבה לחזור לטיפול שלה.
+    <div class="highlight-box-green" style="margin-top:20px;">
+      <div class="highlight-text-green">
+        <strong>מה השתנה השבוע:</strong> דומיין נרכש, ברנד חדש, מודל תמחור הוחלט, שון מניע ניוזלטר יומי, chat.getbetween.app פעיל. ליה שכתבה 4 פרומפטים — QA עבר 4/4.
       </div>
     </div>
     <div class="slide-num">02</div>
@@ -613,46 +601,70 @@
   <!-- ══ SLIDE 3 — SECTION: עכשיו ══ -->
   <div class="slide slide-section" id="slide-2">
     <div class="section-label">חלק ראשון</div>
-    <div class="section-title">עכשיו —<br>הרבעון הזה</div>
-    <div class="section-sub">מה כבר נבנה, מה בבנייה, מה חייבים לסיים.</div>
+    <div class="section-title">מה נשלם —<br>השבוע</div>
+    <div class="section-sub">MVP בפרודקשן. החלטות שהיו פתוחות — נסגרו. תשתית שהייתה חסרה — קיימת.</div>
     <div class="slide-num">03</div>
     <div class="slide-logo">Between</div>
   </div>
 
-  <!-- ══ SLIDE 4 — DONE ══ -->
+  <!-- ══ SLIDE 4 — DONE (UPDATED) ══ -->
   <div class="slide slide-content" id="slide-3">
-    <div class="slide-eyebrow">כבר נבנה</div>
-    <div class="slide-title">מה שנשלם הרבעון הזה</div>
+    <div class="slide-eyebrow">MVP בפרודקשן — עדכון 5.5.2026</div>
+    <div class="slide-title" style="margin-bottom:24px; font-size:32px;">מה שנשלם הרבעון הזה</div>
     <div class="items">
       <div class="item">
         <div class="item-dot-done">✓</div>
         <div class="item-body">
-          <div class="item-title">ויניקוט כברירת מחדל בסשן</div>
-          <div class="item-sub">לחיצה על כפתור סשן → ויניקוט נדלק אוטומטית + טולטיפ הסבר</div>
+          <div class="item-title">ברנד חדש — chat.getbetween.app</div>
+          <div class="item-sub">דומיין getbetween.app נרכש · DNS מוגדר ב-Cloudflare · Supabase מעודכן · פעיל</div>
         </div>
         <div class="tag tag-done">הושלם</div>
       </div>
       <div class="item">
         <div class="item-dot-done">✓</div>
         <div class="item-body">
-          <div class="item-title">החלפת תיאורטיקן מאפסת שיחה</div>
-          <div class="item-sub">מודל אישור לפני מעבר — שיחה לא התחילה: חופשי. שיחה פעילה: דורש אישור.</div>
+          <div class="item-title">שכתוב פרומפטים — ליה (פרויד, קליין, ויניקוט, אוגדן)</div>
+          <div class="item-sub">4 פרומפטים שוכתבו מהשורש — זהות קלינית מדויקת, ניסוח ביוגרפי, הסרת השוואות בין-תיאורטיקנים</div>
         </div>
         <div class="tag tag-done">הושלם</div>
       </div>
       <div class="item">
         <div class="item-dot-done">✓</div>
         <div class="item-body">
-          <div class="item-title">ממשק אנגלית מלא</div>
-          <div class="item-sub">כל מחרוזות עברית קשיחות תורגמו — כולל פתיחת סשן, ייחוס, tooltip אונבורדינג</div>
+          <div class="item-title">העשרת RAG — טקסטים מקוריים לכל 4 התיאורטיקנים</div>
+          <div class="item-sub">קליין: Love Guilt, Psychoanalysis of Children, Loneliness · ויניקוט: Playing and Reality, Fear of Breakdown, False Self, Mirror Role · אוגדן: Reverie, Art of Psychoanalysis, Matrix of the Mind, Primitive Edge</div>
         </div>
         <div class="tag tag-done">הושלם</div>
       </div>
       <div class="item">
         <div class="item-dot-done">✓</div>
         <div class="item-body">
-          <div class="item-title">ניקוי שפות — רק עברית ואנגלית</div>
-          <div class="item-sub">הוסרו 5 שפות מ-intake, UI, LANGUAGES array</div>
+          <div class="item-title">מסמכים ליגליים — טיוטות</div>
+          <div class="item-sub">תנאי שימוש + מדיניות פרטיות + גילוי AI — כתובים ומחויבים לגיט · ממתינים לאישור עורך דין לפני פרסום</div>
+        </div>
+        <div class="tag tag-done">טיוטה מוכנה</div>
+      </div>
+      <div class="item">
+        <div class="item-dot-done">✓</div>
+        <div class="item-body">
+          <div class="item-title">מודל תמחור — החלטה</div>
+          <div class="item-sub">חינמי: 5 שיחות/חודש, תיאורטיקן אחד · Pro: ₪69/חודש | ₪660/שנה · תוכנית Stripe מוכנה</div>
+        </div>
+        <div class="tag tag-done">הושלם</div>
+      </div>
+      <div class="item">
+        <div class="item-dot-done">✓</div>
+        <div class="item-body">
+          <div class="item-title">תוכנית מרקטינג מלאה — שון</div>
+          <div class="item-sub">פוזישנינג · ניוזלטר ראשון · תוכנית אתר 6 דפים · ניוזלטר יומי אוטומטי פעיל</div>
+        </div>
+        <div class="tag tag-done">הושלם</div>
+      </div>
+      <div class="item">
+        <div class="item-dot-done">✓</div>
+        <div class="item-body">
+          <div class="item-title">בטיחות אומתה — 4/4</div>
+          <div class="item-sub">תסריט "סימנים אובדניים" — פרויד, קליין, ויניקוט, אוגדן הפנו לערן 1201. interceptor עבד.</div>
         </div>
         <div class="tag tag-done">הושלם</div>
       </div>
@@ -661,119 +673,157 @@
     <div class="slide-logo-dark">Between</div>
   </div>
 
-  <!-- ══ SLIDE 5 — IN PROGRESS ══ -->
-  <div class="slide slide-content" id="slide-4">
+  <!-- ══ SLIDE 5 — DECISIONS RESOLVED ══ -->
+  <div class="slide slide-dark" id="slide-4">
+    <div class="slide-eyebrow" style="color:rgba(111,212,160,.7);">הוחלט — נסגר</div>
+    <div class="slide-title slide-title-light" style="margin-bottom:28px; font-size:32px;">שאלות שהיו פתוחות — נסגרו</div>
+    <div class="cards cards-2">
+      <div class="card-green">
+        <div class="card-label-light" style="color:rgba(111,212,160,.7);">מי הלקוח</div>
+        <div class="card-value-light" style="color:#6fd4a0; font-size:22px;">B2C</div>
+        <div class="card-desc-light" style="margin-top:10px;">המטופל מגיע ישירות. מטפל אינו בתמונה כרגע. בהמשך — אם דיסקברי יעלה צורך ממשי.</div>
+      </div>
+      <div class="card-green">
+        <div class="card-label-light" style="color:rgba(111,212,160,.7);">מחיר</div>
+        <div class="card-value-light" style="color:#6fd4a0; font-size:22px;">₪69 / חודש</div>
+        <div class="card-desc-light" style="margin-top:10px;">חינמי: 5 שיחות/חודש · Pro ₪69 חודשי | ₪660 שנתי · 14 יום ניסיון חינם</div>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:20px;">
+      <div class="highlight-text" style="font-size:13px;">
+        <strong>נשאר פתוח:</strong> כמה לגבות בדולרים לשוק בינ"ל · מתי להוסיף מסלול מטפל · איך מודדים retention
+      </div>
+    </div>
+    <div class="slide-num">05</div>
+    <div class="slide-logo" style="color:rgba(255,255,255,.1);">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 6 — SECTION: בנייה ══ -->
+  <div class="slide slide-section" id="slide-5">
+    <div class="section-label">חלק שני</div>
+    <div class="section-title">עכשיו —<br>בבנייה</div>
+    <div class="section-sub">מה שנשאר לפני שיחה עם משתמש אמיתי.</div>
+    <div class="slide-num">06</div>
+    <div class="slide-logo">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 7 — IN PROGRESS ══ -->
+  <div class="slide slide-content" id="slide-6">
     <div class="slide-eyebrow">בבנייה · עדיפות גבוהה</div>
-    <div class="slide-title">מה צריך לקרות לפני שיחה אמיתית</div>
+    <div class="slide-title" style="font-size:30px; margin-bottom:24px;">מה צריך לקרות לפני שיחה אמיתית</div>
     <div class="items">
       <div class="item">
         <div class="item-dot"></div>
         <div class="item-body">
-          <div class="item-title">פלואו intake חדש — שני נתיבים</div>
-          <div class="item-sub">"הגעת לבד, או שהמטפל/ת שלך הכיר/ה אותך?" → משנה את מה שרואים בפנים</div>
+          <div class="item-title">Stripe integration — תשלום</div>
+          <div class="item-sub">תוכנית מוכנה. צריך לבנות: webhook, לוגיקת חסימה בגבול 5 שיחות, מסך תשלום</div>
         </div>
         <div class="tag tag-now">עדיפות 1</div>
       </div>
       <div class="item">
         <div class="item-dot"></div>
         <div class="item-body">
-          <div class="item-title">סיום שיחה אוטומטי עם hook לטיפול</div>
-          <div class="item-sub">כל שיחה מסתיימת במשפט: "הביאי את זה לפגישה הבאה." — לא כפתור. אמירה.</div>
+          <div class="item-title">אתר שיווקי — getbetween.app</div>
+          <div class="item-sub">כפתור "כניסה" ← chat.getbetween.app · תוכנית 6 דפים מוכנה · כלי: base44</div>
         </div>
         <div class="tag tag-now">עדיפות 2</div>
       </div>
       <div class="item">
         <div class="item-dot"></div>
         <div class="item-body">
-          <div class="item-title">עדכוני קופי — subtitle, welcome, placeholder</div>
-          <div class="item-sub">להחליף "PSYCHOANALYTIC ADVISOR", לשנות welcome text, לתקן disclaimer</div>
+          <div class="item-title">השלמת 4 תיאורטיקנים נוספים</div>
+          <div class="item-sub">לוואלד, ביון, קוהוט, היימן — שכתוב פרומפטים + העשרת RAG + QA. אחרי שלב א׳.</div>
+        </div>
+        <div class="tag tag-next">הבא</div>
+      </div>
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">אישור עורך דין — מסמכים ליגליים</div>
+          <div class="item-sub">תנאי שימוש + פרטיות + גילוי AI כתובים. צריך סקירת עו"ד לפני שהם עולים לאתר ולפני יציאה לציבור</div>
+        </div>
+        <div class="tag tag-risk">בלוקר לפני השקה</div>
+      </div>
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">פרסום מסמכים ליגליים באתר</div>
+          <div class="item-sub">getbetween.app/terms · /privacy · /ai-disclosure — חייב להיות חי לפני כל משתמש משלם</div>
         </div>
         <div class="tag tag-now">עדיפות 3</div>
       </div>
       <div class="item">
         <div class="item-dot"></div>
         <div class="item-body">
-          <div class="item-title">3 מטפלים אמיתיים שמשתמשים ונותנים פידבק</div>
-          <div class="item-sub">לא קדמה. מחקר. בלי זה — לא יודעים אם מה שבנינו עובד.</div>
+          <div class="item-title">מטפל אמיתי אחד — שיחה</div>
+          <div class="item-sub">אדם אמור לתזמן. עד שאין פידבק קליני אמיתי — בונים מתוך הנחות</div>
         </div>
         <div class="tag tag-risk">הנחה מסוכנת</div>
       </div>
     </div>
-    <div class="slide-num-dark">05</div>
+    <div class="slide-num-dark">07</div>
     <div class="slide-logo-dark">Between</div>
   </div>
 
-  <!-- ══ SLIDE 6 — THE BIG QUESTION ══ -->
-  <div class="slide slide-dark" id="slide-5">
-    <div class="slide-eyebrow" style="color:rgba(196,96,122,.8);">השאלה שקובעת הכל</div>
-    <div class="slide-title slide-title-light" style="margin-bottom:28px; font-size:32px;">מי מפעיל את הממשק — מטפל או מטופל?</div>
-    <div class="cards cards-2">
-      <div class="card-dark">
-        <div class="card-label-light">נתיב א׳ — מטופל עצמאי</div>
-        <div class="card-value-light" style="font-size:15px; margin-top:8px;">מגיע לבד, בין פגישות</div>
-        <div class="card-desc-light" style="margin-top:10px;">מצב עיון — ויניקוט כמשקיף, לא כנוכחות בסשן<br>כפתור סשן: נסתר<br>סיום: hook לפגישה הבאה</div>
-      </div>
-      <div class="card-pink">
-        <div class="card-label-light">נתיב ב׳ — מטפל מפנה</div>
-        <div class="card-value-light" style="font-size:15px; margin-top:8px;">שולח קישור / מכין שטח</div>
-        <div class="card-desc-light" style="margin-top:10px;">מצב סשן פעיל מהכניסה<br>ויניקוט טעון כדיפולט<br>המרחב מגדיר את עצמו: "שלחו אותי לכאן"</div>
-      </div>
-    </div>
-    <div class="highlight-box" style="margin-top:20px;">
-      <div class="highlight-text" style="font-size:13px;">
-        <strong>החלטה זו מגדירה</strong> — מחיר, ממשק, שיווק, ומה אנחנו אומרים לעצמנו שאנחנו בונים.
-        כל עוד לא הוחלט — שני הנתיבים נכנסים לאותו דלת.
-      </div>
-    </div>
-    <div class="slide-num">06</div>
-    <div class="slide-logo" style="color:rgba(255,255,255,.1);">Between</div>
-  </div>
-
-  <!-- ══ SLIDE 7 — SECTION: אחר כך ══ -->
-  <div class="slide slide-section" id="slide-6">
-    <div class="section-label">חלק שני</div>
-    <div class="section-title">אחר כך —<br>3 עד 6 חודשים</div>
-    <div class="section-sub">רק אחרי שה-NOW מאומת על משתמשים אמיתיים.</div>
-    <div class="slide-num">07</div>
-    <div class="slide-logo">Between</div>
-  </div>
-
-  <!-- ══ SLIDE 8 — NEXT ══ -->
+  <!-- ══ SLIDE 8 — TEAM ══ -->
   <div class="slide slide-dark" id="slide-7">
-    <div class="slide-eyebrow" style="color:rgba(196,96,122,.8);">3–6 חודשים</div>
-    <div class="slide-title slide-title-light" style="margin-bottom:28px;">בונים אחרי שיש ולידציה</div>
-    <div class="timeline">
-      <div class="tl-row">
-        <div class="tl-label">חודש 3–4</div>
-        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-connector"></div></div>
-        <div class="tl-content">
-          <div class="tl-title">פלואו הפניית מטפל</div>
-          <div class="tl-items">
-            <div class="tl-item">קישור ייחודי שמטפל שולח למטופל</div>
-            <div class="tl-item">כניסה דרך הקישור → סשן נפתח עם ויניקוט אוטומטית</div>
-            <div class="tl-item">כפתור סשן נסתר מנתיב עצמאי</div>
+    <div class="slide-eyebrow" style="color:rgba(196,96,122,.8);">הצוות האוטונומי</div>
+    <div class="slide-title slide-title-light" style="margin-bottom:24px; font-size:30px;">מי עובד — ומתי</div>
+    <div class="three-col">
+      <div>
+        <div class="col-label">יומי</div>
+        <div class="items" style="gap:8px;">
+          <div class="item-dark">
+            <div class="item-body">
+              <div class="item-title-light" style="font-size:13px;">איתן — QA</div>
+              <div class="item-sub-light">כל יום 11:00</div>
+            </div>
+          </div>
+          <div class="item-dark">
+            <div class="item-body">
+              <div class="item-title-light" style="font-size:13px;">שון — ניוזלטר</div>
+              <div class="item-sub-light">כל לילה 22:00</div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="tl-row">
-        <div class="tl-label">חודש 4–5</div>
-        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-connector"></div></div>
-        <div class="tl-content">
-          <div class="tl-title">מודל תשלום — החלטה ובנייה</div>
-          <div class="tl-items">
-            <div class="tl-item">מנוי? תשלום לשיחה? B2B דרך מטפל?</div>
-            <div class="tl-item">סליקה + ניהול משתמשים</div>
+      <div>
+        <div class="col-label">שבועי</div>
+        <div class="items" style="gap:8px;">
+          <div class="item-dark">
+            <div class="item-body">
+              <div class="item-title-light" style="font-size:13px;">מאיה — UX + עיצוב</div>
+              <div class="item-sub-light">שישי 8:00</div>
+            </div>
+          </div>
+          <div class="item-dark">
+            <div class="item-body">
+              <div class="item-title-light" style="font-size:13px;">אלה — CFO</div>
+              <div class="item-sub-light">שבת 9:00</div>
+            </div>
+          </div>
+          <div class="item-dark">
+            <div class="item-body">
+              <div class="item-title-light" style="font-size:13px;">אדם + Naval</div>
+              <div class="item-sub-light">ראשון 9:00 / 10:00</div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="tl-row">
-        <div class="tl-label">חודש 5–6</div>
-        <div class="tl-line-wrap"><div class="tl-dot-muted"></div><div class="tl-connector"></div></div>
-        <div class="tl-content">
-          <div class="tl-title-muted">הרחבת RAG ויניקוט + תיאורטיקן שני</div>
-          <div class="tl-items">
-            <div class="tl-item" style="opacity:.5;">להשוות איכות ויניקוט לפרויד ולסגור פערים</div>
-            <div class="tl-item" style="opacity:.5;">רק אחרי שהקיימים עמוקים מספיק</div>
+      <div>
+        <div class="col-label">תקופתי</div>
+        <div class="items" style="gap:8px;">
+          <div class="item-dark">
+            <div class="item-body">
+              <div class="item-title-light" style="font-size:13px;">ליה — שיפוט קליני</div>
+              <div class="item-sub-light">כל 3 ימים 8:00</div>
+            </div>
+          </div>
+          <div class="item-dark">
+            <div class="item-body">
+              <div class="item-title-light" style="font-size:13px;">הילי — PM</div>
+              <div class="item-sub-light">ראשון לחודש</div>
+            </div>
           </div>
         </div>
       </div>
@@ -782,8 +832,52 @@
     <div class="slide-logo" style="color:rgba(255,255,255,.1);">Between</div>
   </div>
 
-  <!-- ══ SLIDE 9 — NEVER ══ -->
-  <div class="slide slide-content" id="slide-8">
+  <!-- ══ SLIDE 9 — NEXT ══ -->
+  <div class="slide slide-dark" id="slide-8">
+    <div class="slide-eyebrow" style="color:rgba(196,96,122,.8);">3–6 חודשים</div>
+    <div class="slide-title slide-title-light" style="margin-bottom:24px;">בונים אחרי שיש ולידציה</div>
+    <div class="timeline">
+      <div class="tl-row">
+        <div class="tl-label">חודש 2–3</div>
+        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-title">Stripe חי + אתר שיווקי</div>
+          <div class="tl-items">
+            <div class="tl-item">תשלום עובד — מנוי חודשי ושנתי</div>
+            <div class="tl-item">getbetween.app — דף נחיתה + כניסה</div>
+            <div class="tl-item">50 משתמשים פעילים ראשונים</div>
+          </div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-label">חודש 3–4</div>
+        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-title">פלואו הפניית מטפל (אם יאומת)</div>
+          <div class="tl-items">
+            <div class="tl-item">קישור ייחודי שמטפל שולח למטופל</div>
+            <div class="tl-item">רק אחרי 3 מטפלים שנתנו פידבק</div>
+          </div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-label">חודש 5–6</div>
+        <div class="tl-line-wrap"><div class="tl-dot-muted"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-title-muted">השלמת 4 תיאורטיקנים נוספים</div>
+          <div class="tl-items">
+            <div class="tl-item" style="opacity:.5;">לוואלד, ביון, קוהוט, היימן — שכתוב + RAG + QA</div>
+            <div class="tl-item" style="opacity:.5;">רק אחרי ולידציה עם משתמשים אמיתיים</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">09</div>
+    <div class="slide-logo" style="color:rgba(255,255,255,.1);">Between</div>
+  </div>
+
+  <!-- ══ SLIDE 10 — NEVER ══ -->
+  <div class="slide slide-content" id="slide-9">
     <div class="slide-eyebrow">קווים אדומים</div>
     <div class="slide-title">מה לעולם לא נבנה</div>
     <div class="items">
@@ -791,52 +885,52 @@
         <div class="item-dot" style="background:#c45050;"></div>
         <div class="item-body">
           <div class="item-title">ממשק שמאפשר שימוש ללא מטפל</div>
-          <div class="item-sub">אין עוגן טיפולי? המרחב לא מתאים. לא מתפשרים על זה.</div>
+          <div class="item-sub">אין עוגן טיפולי? המרחב לא מתאים. לא מתפשרים.</div>
         </div>
       </div>
       <div class="item" style="border-color:rgba(200,80,80,.15);">
         <div class="item-dot" style="background:#c45050;"></div>
         <div class="item-body">
           <div class="item-title">תמיכה רגשית ראשונית / תגובה למשבר</div>
-          <div class="item-sub">אין משאב זמין? → 1201. הממשק לא נבנה לזה ולא מתחרה בזה.</div>
-        </div>
-      </div>
-      <div class="item" style="border-color:rgba(200,80,80,.15);">
-        <div class="item-dot" style="background:#c45050;"></div>
-        <div class="item-body">
-          <div class="item-title">מעבר חופשי בין 8 תיאורטיקנים בסשן</div>
-          <div class="item-sub">קניות תיאורטיות ≠ עיבוד. תיאורטיקן בסשן — נעול.</div>
+          <div class="item-sub">אין משאב זמין? → 1201. הממשק לא נבנה לזה.</div>
         </div>
       </div>
       <div class="item" style="border-color:rgba(200,80,80,.15);">
         <div class="item-dot" style="background:#c45050;"></div>
         <div class="item-body">
           <div class="item-title">אפליקציית מובייל לפני ולידציה</div>
-          <div class="item-sub">לא לפני שיש 3 מטפלים שמשתמשים. אחרת בונים את הדבר הלא נכון במהירות.</div>
+          <div class="item-sub">לא לפני retention מוכח. אחרת בונים את הדבר הלא נכון במהירות.</div>
+        </div>
+      </div>
+      <div class="item" style="border-color:rgba(200,80,80,.15);">
+        <div class="item-dot" style="background:#c45050;"></div>
+        <div class="item-body">
+          <div class="item-title">פרסום ממומן לפני מטפלים אמיתיים</div>
+          <div class="item-sub">שון ממליץ: אורגני ראשון. מטפלים ← מטופלים. לא הפוך.</div>
         </div>
       </div>
     </div>
-    <div class="slide-num-dark">09</div>
+    <div class="slide-num-dark">10</div>
     <div class="slide-logo-dark">Between</div>
   </div>
 
-  <!-- ══ SLIDE 10 — QUESTIONS ══ -->
-  <div class="slide slide-dark" id="slide-9">
-    <div class="slide-eyebrow" style="color:rgba(196,96,122,.8);">שאלות למייסדת</div>
-    <div class="slide-title slide-title-light" style="margin-bottom:28px; font-size:32px;">מה צריך החלטה כדי להמשיך</div>
+  <!-- ══ SLIDE 11 — QUESTIONS ══ -->
+  <div class="slide slide-dark" id="slide-10">
+    <div class="slide-eyebrow" style="color:rgba(196,96,122,.8);">שאלות פתוחות</div>
+    <div class="slide-title slide-title-light" style="margin-bottom:28px; font-size:30px;">מה עדיין צריך החלטה</div>
     <div class="items">
       <div class="item-dark">
         <div style="font-size:22px; color:#c4607a; flex-shrink:0;">01</div>
         <div class="item-body">
-          <div class="item-title-light">מי הלקוח — מטפל או מטופל?</div>
-          <div class="item-sub-light">ה-intake, כפתור הסשן, ומחיר — כולם תלויים בזה</div>
+          <div class="item-title-light">מתי מתחילים לדבר עם מטפלים אמיתיים?</div>
+          <div class="item-sub-light">אדם אמור לתזמן שיחה. כל עוד אין פידבק קליני — בונים מתוך הנחות</div>
         </div>
       </div>
       <div class="item-dark">
         <div style="font-size:22px; color:#c4607a; flex-shrink:0;">02</div>
         <div class="item-body">
-          <div class="item-title-light">מה מודל התשלום?</div>
-          <div class="item-sub-light">מנוי / לשיחה / B2B דרך מטפל — כל אחד מביא קהל אחר</div>
+          <div class="item-title-light">מחיר בינ"ל — כמה בדולרים?</div>
+          <div class="item-sub-light">אלה ממליצה $18/חודש | $165/שנה — לא להחליט עד שיש משתמשים אנגלופונים</div>
         </div>
       </div>
       <div class="item-dark">
@@ -846,42 +940,34 @@
           <div class="item-sub-light">חסימה? הפניה? חוויה אחרת? כרגע ממשיך כרגיל — זה לא פתרון</div>
         </div>
       </div>
-      <div class="item-dark">
-        <div style="font-size:22px; color:#c4607a; flex-shrink:0;">04</div>
-        <div class="item-body">
-          <div class="item-title-light">מתי מתחילים לדבר עם מטפלים אמיתיים?</div>
-          <div class="item-sub-light">כל עוד אין פידבק קליני אמיתי — בונים מתוך הנחות</div>
-        </div>
-      </div>
     </div>
-    <div class="slide-num">10</div>
+    <div class="slide-num">11</div>
     <div class="slide-logo" style="color:rgba(255,255,255,.1);">Between</div>
   </div>
 
-  <!-- ══ SLIDE 11 — CLOSING ══ -->
-  <div class="slide slide-close" id="slide-10">
+  <!-- ══ SLIDE 12 — CLOSING ══ -->
+  <div class="slide slide-close" id="slide-11">
     <div class="cover-psi" style="opacity:.08;">ψ</div>
     <div class="cover-eyebrow">הרבעון הזה</div>
     <div class="cover-title" style="font-size:52px; max-width:700px; line-height:1.15;">
-      פחות פיצ'רים.<br>יותר בהירות.
+      ברנד. מחיר. בטיחות.<br>עכשיו — משתמש אמיתי.
     </div>
-    <div class="cover-sub" style="max-width:480px; margin-top:20px;">
-      המרחב קיים. הקולות עמוקים. עכשיו לוודא שמי שמגיע — מבין לאן הגיע.
+    <div class="cover-sub" style="max-width:520px; margin-top:20px;">
+      chat.getbetween.app פעיל. המחיר הוחלט. הבטיחות אומתה.<br>
+      הצעד הבא הוא לא עוד תשתית — הוא שיחה עם אדם אמיתי.
     </div>
-    <div class="cover-meta" style="margin-top:32px;">Between · Q3 2026 · הילי ומאיה</div>
-    <div class="slide-num">11</div>
+    <div class="cover-meta" style="margin-top:32px;">Between · Q3 2026 · עדכון 4 במאי · הילי ומאיה</div>
+    <div class="slide-num">12</div>
     <div class="slide-logo">Between</div>
   </div>
 
 </div><!-- /deck -->
 
-<!-- NAV ARROWS -->
 <div class="nav-arrows">
   <button class="nav-btn" id="prev" onclick="go(-1)">‹</button>
   <button class="nav-btn" id="next" onclick="go(1)">›</button>
 </div>
 
-<!-- NAV DOTS -->
 <nav id="dots"></nav>
 
 <script>
@@ -889,7 +975,6 @@
   const dotsEl = document.getElementById('dots');
   let cur = 0;
 
-  // Build dots
   slides.forEach((_, i) => {
     const d = document.createElement('div');
     d.className = 'nav-dot' + (i === 0 ? ' active' : '');
@@ -914,7 +999,6 @@
     if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
   });
 
-  // Swipe
   let tx = 0;
   document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
   document.addEventListener('touchend',   e => {
