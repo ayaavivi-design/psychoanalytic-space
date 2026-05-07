@@ -533,6 +533,46 @@ header span {
 #send-btn:hover { background: #b0506a; transform: scale(1.04); }
 #send-btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
 
+/* Suggestion bubbles */
+#suggestion-bubbles {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  direction: rtl;
+}
+.suggestion-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 300;
+  font-family: var(--font-rubik), sans-serif;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+.suggestion-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-dim);
+  color: var(--text);
+}
+#suggestion-bubbles.subtle .suggestion-btn {
+  font-size: 11px;
+  padding: 4px 10px;
+  opacity: 0.6;
+}
+#suggestion-bubbles.subtle .suggestion-btn:hover {
+  opacity: 1;
+  background: var(--accent-soft);
+  border-color: var(--accent-dim);
+  color: var(--text);
+}
+
 .hint {
   display: none;
   margin-top: 10px;

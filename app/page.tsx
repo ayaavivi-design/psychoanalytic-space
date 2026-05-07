@@ -606,6 +606,19 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                 </svg>
               </button>
             </div>
+            <div id="suggestion-bubbles">
+              {(currentLang === 'en' ? [
+                'Still processing my last session',
+                'I have a session coming up',
+                "Something I can't shake"
+              ] : [
+                'הפגישה השאירה משהו',
+                'יש לי פגישה בקרוב',
+                'משהו שלא עוזב אותי'
+              ]).map(txt => (
+                <button key={txt} className="suggestion-btn" onClick={() => (window as any).fillSuggestion(txt)}>{txt}</button>
+              ))}
+            </div>
             <div className="hint" id="input-hint">Enter לשליחה · Shift+Enter לשורה חדשה</div>
             <div id="input-disclaimer" style={{ fontSize: 10, color: 'var(--muted)', opacity: 0.55, textAlign: 'center', paddingTop: 6, lineHeight: 1.5 }}>
               כלי לימודי ומחקרי בלבד · אינו מהווה תחליף לטיפול פסיכולוגי מקצועי

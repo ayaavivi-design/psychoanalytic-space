@@ -119,10 +119,10 @@ const INTAKE_TRANSLATIONS = {
   he: {
     postWelcomeH2: (name) => `שלום, ${name}`,
     postWelcomeP: 'Between כאן בשבילך.',
-    closing: 'תודה שסיפרת. Between כאן בשבילך.',
+    closing: 'תודה ששיתפת. אני כאן.',
     btnLabel: 'שיחת היכרות',
     btnTooltip: 'כמה שאלות קצרות שיעזרו לנו להתאים את המרחב אליך. לוקח כשתי דקות.',
-    speaker: 'המרחב', youLabel: 'את/ה', confirm: 'המשך', skipLabel: 'דלג',
+    speaker: 'ויניקוט', youLabel: 'את/ה', confirm: 'המשך', skipLabel: 'דלג',
     warningNotInTherapy: 'Between נועד ללוות — לא להחליף. אם את/ה עובר/ת תקופה קשה, שיחה עם איש מקצוע יכולה לעשות הבדל.',
     stepsPatient: [
       { key: 'name',      q: 'איך אפשר לפנות אליך?' },
@@ -151,10 +151,10 @@ const INTAKE_TRANSLATIONS = {
   en: {
     postWelcomeH2: (name) => `Hello, ${name}`,
     postWelcomeP: 'This space is here for you.',
-    closing: 'Thank you for sharing. This space is here for you.',
+    closing: "Thank you for sharing. I'm here.",
     btnLabel: 'Intro conversation',
     btnTooltip: 'A few short questions to help us tailor the space to you. Takes about two minutes.',
-    speaker: 'The space', youLabel: 'You', confirm: 'Continue', skipLabel: 'Skip',
+    speaker: 'Winnicott', youLabel: 'You', confirm: 'Continue', skipLabel: 'Skip',
     warningNotInTherapy: 'This space is here to accompany — not replace. If you\'re going through a difficult time, speaking with a professional can make a difference.',
     stepsPatient: [
       { key: 'name',      q: 'What should we call you?' },
@@ -407,6 +407,15 @@ function enterMainSpace() {
         ${pText ? `<p>${pText}</p>` : ''}
       </div>`;
     chat.style.opacity = '1';
+    // Auto-select Winnicott as default voice after intake
+    if (activeTheorists.length === 0) {
+      const winnicottEl = document.querySelector('[data-key="winnicott"]');
+      if (winnicottEl) winnicottEl.classList.add('active');
+      activeTheorists = ['winnicott'];
+      updateInputSuggestion();
+      updateSessionTitle(true);
+      showWinnicottDefaultTooltip(winnicottEl || document.querySelector('.theorist-tag'));
+    }
   }, 500);
 }
 
@@ -4257,6 +4266,10 @@ async function sendMessage() {
   appendMessage('user', text);
   conversationHistory.push({ role: 'user', content: text });
 
+  // After first user message — shrink suggestion bubbles to subtle mode
+  const _sb = document.getElementById('suggestion-bubbles');
+  if (_sb && !_sb.classList.contains('subtle')) _sb.classList.add('subtle');
+
   if (checkCrisis(text)) showCrisisBanner();
 
   showThinking();
@@ -4707,6 +4720,8 @@ function performNewChat() {
   silenceResponseSent = false;
   conversationHistory = [];
   sessionMemorySaved = false;
+  const _sbNew = document.getElementById('suggestion-bubbles');
+  if (_sbNew) _sbNew.classList.remove('subtle');
   saveConversation();
   const titleEl = document.getElementById('session-title');
   if (titleEl) titleEl.textContent = '';
@@ -6959,3 +6974,12 @@ async function initSidebarTips() {
 }
 
 window.initSidebarTips = initSidebarTips;
+
+function fillSuggestion(text) {
+  const input = document.getElementById('user-input');
+  if (!input) return;
+  input.value = text;
+  input.focus();
+  if (typeof autoResize === 'function') autoResize(input);
+}
+window.fillSuggestion = fillSuggestion;
