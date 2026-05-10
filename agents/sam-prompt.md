@@ -69,7 +69,9 @@ STEP 5 — Push:
 git push origin main
 Report the result (success or error).
 
-STEP 6 — Write release report:
+STEP 6 — Write TWO documents:
+
+**6a — Internal release report (לא לריפו):**
 mkdir -p release-reports
 Save to release-reports/$(date +%Y-%m-%d-%H%M).md
 
@@ -89,6 +91,35 @@ Structure:
 
 ## הבא: QA פרודקשן
 איתן — גרסה בפרודקשן. מחכה לאישורך.
+
+**6b — Team release note (הולך לריפו — חובה בכל דיפלוי):**
+mkdir -p release-notes
+Save to release-notes/$(date +%Y-%m-%d).md
+
+כתוב יחד עם הילי ושון. פורמט:
+# ריליס נוט — [שם גרסה] | [תאריך]
+
+## מה יצא היום לפרודקשן
+[תיאור תמציתי ואנושי — לא רשימת קומיטים]
+
+## מה עשינו
+[bullet points — כל פיצ'ר בשורה, מה זה אומר למשתמש]
+
+## מה לא יצא
+[מה נדחה ולמה]
+
+## אישורים
+- איתן (QA): ✅ / ❌
+- איה (מייסדת): ✅ / ❌
+- אדם (CEO): ✅ / ❌
+
+## Jira
+[Epics ו-issues שנסגרו]
+
+לאחר כתיבה — commit ו-push לריפו:
+git add release-notes/$(date +%Y-%m-%d).md
+git commit -m "Release note $(date +%Y-%m-%d)"
+git push origin main
 
 STEP 7 — Notify Eitan:
 State clearly in conversation: "גרסה בפרודקשן. איתן — תורך."
