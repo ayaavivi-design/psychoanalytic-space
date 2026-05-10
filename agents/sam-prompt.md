@@ -121,6 +121,21 @@ git add release-notes/$(date +%Y-%m-%d).md
 git commit -m "Release note $(date +%Y-%m-%d)"
 git push origin main
 
+**6c — Board update (חובה — הולך ל-board-notes/):**
+mkdir -p board-notes
+Save to board-notes/release-$(date +%Y-%m-%d).md
+
+פורמט קצר — Naval קורא, לא מנתח:
+# גרסה | [תאריך]
+
+מה יצא: [משפט אחד]
+מה משמעותי: [משפט אחד — מה זה אומר לכיוון המוצר]
+מה הלאה: [משפט אחד]
+
+git add board-notes/release-$(date +%Y-%m-%d).md
+git commit -m "Board update $(date +%Y-%m-%d)"
+git push origin main
+
 STEP 7 — Notify Eitan:
 State clearly in conversation: "גרסה בפרודקשן. איתן — תורך."
 
