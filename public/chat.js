@@ -597,6 +597,7 @@ function renderAnalystBadge() {
 
 function renderFlowButtons() {
   const welcome = document.getElementById('welcome');
+  console.log('[BW-38] renderFlowButtons() called | welcome:', !!welcome, '| selectedLang.code:', window.selectedLang?.code);
   if (!welcome) return;
   const existing = document.getElementById('flow-buttons');
   if (existing) existing.remove();
@@ -625,6 +626,31 @@ function renderFlowButtons() {
   const apiNote = document.getElementById('welcome-api-text');
   if (apiNote) welcome.insertBefore(container, apiNote);
   else welcome.appendChild(container);
+  // BW-38 fix: if React wipes our buttons (e.g. StrictMode double-render in dev),
+  // re-inject them once. The observer disconnects after one re-injection to avoid loops.
+  let _reinjected = false;
+  const _obs = new MutationObserver((mutations) => {
+    if (_reinjected) return;
+    for (const m of mutations) {
+      for (const node of m.removedNodes) {
+        if (node.id === 'flow-buttons') {
+          console.warn('[BW-38] flow-buttons removed by DOM mutation — re-injecting (lang:', window.selectedLang?.code, ')');
+          _reinjected = true;
+          _obs.disconnect();
+          if (document.getElementById('welcome') && conversationHistory.length === 0) {
+            requestAnimationFrame(() => {
+              if (document.getElementById('welcome') && conversationHistory.length === 0) {
+                renderFlowButtons();
+                renderAnalystBadge();
+              }
+            });
+          }
+        }
+      }
+    }
+  });
+  _obs.observe(welcome, { childList: true });
+  console.log('[BW-38] MutationObserver attached | lang:', window.selectedLang?.code);
 }
 
 async function startFlow(flowKey) {
@@ -4065,15 +4091,32 @@ function selectLang(code, flag, name) {
   const ll = document.getElementById('lang-label'); if (ll) ll.textContent = name;
   const menu = document.getElementById('lang-menu'); if (menu) menu.style.display = 'none';
   applyUITranslation(code);
-  // Re-render flow buttons and analyst badge in new language (welcome screen only).
-  // setTimeout(0) מבטיח שהריצה תהיה אחרי שRreact סיים את ה-re-render cycle
-  // שנגרם ע"י ה-langchange event שהוזרק מ-applyUITranslation.
-  // בלי זה — React מוחק את הכפתורים שהוזרקו ע"י vanilla JS.
-  if (document.getElementById('welcome') && conversationHistory.length === 0) {
+  // DEBUG BW-38 — remove after diagnosis
+  const _welcomeAtCall = document.getElementById('welcome');
+  const _historyAtCall = conversationHistory.length;
+  console.log('[BW-38] selectLang called:', code, '| welcome exists:', !!_welcomeAtCall, '| history:', _historyAtCall);
+  // Re-render flow buttons after React finishes its re-render cycle.
+  // React 18 uses MessageChannel for scheduling (higher priority than setTimeout(0)),
+  // so we use requestAnimationFrame inside setTimeout to guarantee we run
+  // after React has committed its update to the DOM.
+  if (_welcomeAtCall && _historyAtCall === 0) {
     setTimeout(() => {
-      renderFlowButtons();
-      renderAnalystBadge();
+      console.log('[BW-38] setTimeout fired | window.selectedLang.code:', window.selectedLang?.code, '| welcome exists:', !!document.getElementById('welcome'), '| history:', conversationHistory.length);
+      requestAnimationFrame(() => {
+        const welcomeNow = document.getElementById('welcome');
+        console.log('[BW-38] rAF fired | welcome exists:', !!welcomeNow, '| selectedLang.code:', window.selectedLang?.code, '| flow-buttons:', !!document.getElementById('flow-buttons'));
+        if (welcomeNow && conversationHistory.length === 0) {
+          console.log('[BW-38] calling renderFlowButtons() with lang:', window.selectedLang?.code);
+          renderFlowButtons();
+          renderAnalystBadge();
+          console.log('[BW-38] renderFlowButtons done | flow-buttons text:', document.getElementById('flow-buttons')?.innerText?.substring(0, 60));
+        } else {
+          console.log('[BW-38] SKIPPED — welcome:', !!welcomeNow, 'history:', conversationHistory.length);
+        }
+      });
     }, 0);
+  } else {
+    console.log('[BW-38] outer check FAILED — welcome:', !!_welcomeAtCall, 'history:', _historyAtCall);
   }
 }
 
