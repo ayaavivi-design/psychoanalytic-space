@@ -662,7 +662,12 @@ async function startFlow(flowKey) {
     conversationHistory = [];
   }
   window.activeFlow = flowKey;
+  // Guard the MutationObserver: this removal is intentional (user clicked a flow button),
+  // not a React Fast Refresh wipe. Without the flag, the observer would re-inject the
+  // buttons mid-flow and cause the click to appear to do nothing.
+  window._bw38Rendering = true;
   document.getElementById('flow-buttons')?.remove();
+  window._bw38Rendering = false;
 
   const theoristKey = activeTheorists.length === 1 ? activeTheorists[0] : null;
   const lang = (window.selectedLang?.code) || 'en';
@@ -734,6 +739,7 @@ function selectWinnicottDefault() {
   activeTheorists = ['winnicott'];
   const wEl = document.querySelector('[data-key="winnicott"]');
   if (wEl) wEl.classList.add('active');
+  updateSessionTitle(true); // BW-37: sync bottom bar with default theorist selection
 }
 let uploadedFileContent = null;
 let uploadedFileName = null;
