@@ -30,14 +30,12 @@ function initSupabase() {
 
 function showAuthScreen() {
   const el = document.getElementById('auth-screen');
-  if (el) el.style.display = 'flex';
+  if (el) el.removeAttribute('data-bw-hidden');
 }
 
 function hideAuthScreen() {
   const el = document.getElementById('auth-screen');
-  if (el) el.style.display = 'none';
-  // Sync React state so HMR re-renders don't reset auth-screen back to visible
-  if (window.__setAuthVisible) window.__setAuthVisible(false);
+  if (el) el.setAttribute('data-bw-hidden', '1');
   // משתמשים שכבר השלימו intake — עוברים אוטומטית את השער
   if (!localStorage.getItem('therapy_gate_passed') && localStorage.getItem('intake_completed')) {
     localStorage.setItem('therapy_gate_passed', 'yes');
@@ -600,11 +598,8 @@ function renderAnalystBadge() {
 function renderFlowButtons() {
   const welcome = document.getElementById('welcome');
   if (!welcome) return;
-  // Flag so the MutationObserver knows this removal is intentional (not React wiping our node)
-  window._bw38Rendering = true;
   const existing = document.getElementById('flow-buttons');
   if (existing) existing.remove();
-  window._bw38Rendering = false;
   const isEn = (window.selectedLang?.code === 'en');
   const buttons = isEn
     ? [
@@ -630,46 +625,12 @@ function renderFlowButtons() {
   const apiNote = document.getElementById('welcome-api-text');
   if (apiNote) welcome.insertBefore(container, apiNote);
   else welcome.appendChild(container);
-  // Guard: if something external (e.g. React Fast Refresh) removes our buttons, re-inject once.
-  // The _bw38Rendering flag prevents the observer from firing on our OWN removals.
-  let _reinjected = false;
-  const _obs = new MutationObserver((mutations) => {
-    if (window._bw38Rendering || _reinjected) return;
-    for (const m of mutations) {
-      for (const node of m.removedNodes) {
-        if (node.id === 'flow-buttons') {
-          _reinjected = true;
-          _obs.disconnect();
-          if (document.getElementById('welcome')) {
-            requestAnimationFrame(() => {
-              if (document.getElementById('welcome')) {
-                renderFlowButtons();
-                renderAnalystBadge();
-              }
-            });
-          }
-        }
-      }
-    }
-  });
-  _obs.observe(welcome, { childList: true });
 }
 
 async function startFlow(flowKey) {
   if (isThinking) return;
-  // Detect state mismatch that happens after Fast Refresh in dev:
-  // React resets the UI to the welcome screen but conversationHistory still
-  // holds the previous session's messages. Sync the state before proceeding.
-  if (document.getElementById('welcome') && !document.querySelector('#chat .message') && conversationHistory.length > 0) {
-    conversationHistory = [];
-  }
   window.activeFlow = flowKey;
-  // Guard the MutationObserver: this removal is intentional (user clicked a flow button),
-  // not a React Fast Refresh wipe. Without the flag, the observer would re-inject the
-  // buttons mid-flow and cause the click to appear to do nothing.
-  window._bw38Rendering = true;
   document.getElementById('flow-buttons')?.remove();
-  window._bw38Rendering = false;
 
   const theoristKey = activeTheorists.length === 1 ? activeTheorists[0] : null;
   const lang = (window.selectedLang?.code) || 'en';
@@ -741,7 +702,6 @@ function selectWinnicottDefault() {
   activeTheorists = ['winnicott'];
   const wEl = document.querySelector('[data-key="winnicott"]');
   if (wEl) wEl.classList.add('active');
-  updateSessionTitle(true); // BW-37: sync bottom bar with default theorist selection
 }
 let uploadedFileContent = null;
 let uploadedFileName = null;
@@ -4105,20 +4065,10 @@ function selectLang(code, flag, name) {
   const ll = document.getElementById('lang-label'); if (ll) ll.textContent = name;
   const menu = document.getElementById('lang-menu'); if (menu) menu.style.display = 'none';
   applyUITranslation(code);
-  // Re-render flow buttons in the new language if the welcome screen is showing.
-  // Condition: #welcome exists in the DOM (React renders it while no conversation is active).
-  // We do NOT check conversationHistory.length here — after Fast Refresh, React resets
-  // the UI to the welcome screen but conversationHistory still holds the previous session's
-  // messages. Using the DOM as source of truth is correct.
-  if (document.getElementById('welcome')) {
-    setTimeout(() => {
-      requestAnimationFrame(() => {
-        if (document.getElementById('welcome')) {
-          renderFlowButtons();
-          renderAnalystBadge();
-        }
-      });
-    }, 0);
+  // Re-render flow buttons and analyst badge in new language (welcome screen only)
+  if (document.getElementById('welcome') && conversationHistory.length === 0) {
+    renderFlowButtons();
+    renderAnalystBadge();
   }
 }
 
@@ -5203,7 +5153,6 @@ function restoreConversation(memIndex) {
       const el = document.querySelector(`.theorist-tag[data-key="${t}"]`);
       if (el) el.classList.add('active');
     });
-    updateSessionTitle(false); // sync "מדברים עם X" bar after restoring theorist
   }
   // Restore clinical mode (bypass consent modal — session already confirmed previously)
   if (mem.clinical && !window.clinicalMode) { window.clinicalMode = true; activateClinicalModeUI(true); }

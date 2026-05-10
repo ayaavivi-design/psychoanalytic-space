@@ -9,7 +9,6 @@ export default function Home() {
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
   const [sessionTip, setSessionTip] = useState<{ top: number; left?: number; right?: number } | null>(null);
   const [currentLang, setCurrentLang] = useState('en');
-  const [authVisible, setAuthVisible] = useState(true);
 
   const THEORIST_CARDS: Record<string, Record<string, { approach: string; concepts: string; forWhom: string }>> = {
     freud: {
@@ -202,28 +201,6 @@ export default function Home() {
     const code = (window as any).selectedLang?.code || 'he';
     setTimeout(() => (window as any).applyUITranslation?.(code), 0);
   }, []);
-  // Expose auth-screen visibility setter to vanilla JS (chat.js).
-  // Without this, HMR re-renders reset auth-screen to display:flex, blocking all clicks.
-  useEffect(() => {
-    (window as any).__setAuthVisible = (v: boolean) => { (window as any).__authVisible = v; setAuthVisible(v); };
-    (window as any).__authVisible = true;
-    // On mount, check if user is already logged in and hide auth screen immediately.
-    const sc = (window as any).supabaseClient;
-    if (sc) {
-      sc.auth.getSession().then(({ data: { session } }: any) => {
-        if (session) setAuthVisible(false);
-      });
-    } else {
-      // supabaseClient loads asynchronously — retry once after chat.js initialises
-      setTimeout(() => {
-        const sc2 = (window as any).supabaseClient;
-        if (sc2) sc2.auth.getSession().then(({ data: { session } }: any) => {
-          if (session) setAuthVisible(false);
-        });
-      }, 600);
-    }
-    return () => { delete (window as any).__setAuthVisible; };
-  }, []);
   useEffect(() => {
     const handleLangChange = (e: Event) => {
       const code = (e as CustomEvent).detail?.code;
@@ -254,7 +231,7 @@ export default function Home() {
       {/* Auth screen */}
       <div id="auth-screen" style={{
         position: 'fixed', inset: 0, zIndex: 200, background: 'var(--bg)',
-        display: authVisible ? 'flex' : 'none', alignItems: 'center', justifyContent: 'center'
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
       }} suppressHydrationWarning>
         {mounted && <>
           {/* Language selector — top right */}
