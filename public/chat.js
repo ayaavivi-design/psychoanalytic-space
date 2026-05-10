@@ -4065,10 +4065,15 @@ function selectLang(code, flag, name) {
   const ll = document.getElementById('lang-label'); if (ll) ll.textContent = name;
   const menu = document.getElementById('lang-menu'); if (menu) menu.style.display = 'none';
   applyUITranslation(code);
-  // Re-render flow buttons and analyst badge in new language (welcome screen only)
+  // Re-render flow buttons and analyst badge in new language (welcome screen only).
+  // setTimeout(0) מבטיח שהריצה תהיה אחרי שRreact סיים את ה-re-render cycle
+  // שנגרם ע"י ה-langchange event שהוזרק מ-applyUITranslation.
+  // בלי זה — React מוחק את הכפתורים שהוזרקו ע"י vanilla JS.
   if (document.getElementById('welcome') && conversationHistory.length === 0) {
-    renderFlowButtons();
-    renderAnalystBadge();
+    setTimeout(() => {
+      renderFlowButtons();
+      renderAnalystBadge();
+    }, 0);
   }
 }
 
