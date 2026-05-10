@@ -205,7 +205,8 @@ export default function Home() {
   // Expose auth-screen visibility setter to vanilla JS (chat.js).
   // Without this, HMR re-renders reset auth-screen to display:flex, blocking all clicks.
   useEffect(() => {
-    (window as any).__setAuthVisible = setAuthVisible;
+    (window as any).__setAuthVisible = (v: boolean) => { (window as any).__authVisible = v; setAuthVisible(v); };
+    (window as any).__authVisible = true;
     // On mount, check if user is already logged in and hide auth screen immediately.
     const sc = (window as any).supabaseClient;
     if (sc) {
