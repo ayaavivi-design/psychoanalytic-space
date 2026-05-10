@@ -4613,13 +4613,22 @@ async function sendMessage() {
   }
 
   appendMessage('user', text);
-  conversationHistory.push({ role: 'user', content: text });
 
   // After first user message — shrink suggestion bubbles to subtle mode
   const _sb = document.getElementById('suggestion-bubbles');
   if (_sb && !_sb.classList.contains('subtle')) _sb.classList.add('subtle');
 
-  if (checkCrisis(text)) showCrisisBanner();
+  // Safety interceptor — client-side. אם זוהה תוכן משברי: מציג בנר וחוזר מיד.
+  // לא שולחים ל-API ולא מוסיפים להיסטוריה — הבנר הוא התגובה.
+  if (checkCrisis(text)) {
+    showCrisisBanner();
+    isThinking = false;
+    document.getElementById('send-btn').disabled = false;
+    input.focus();
+    return;
+  }
+
+  conversationHistory.push({ role: 'user', content: text });
 
   showThinking();
 
@@ -4667,6 +4676,17 @@ async function sendMessage() {
     let data = await response.json();
     if (data.error) {
       throw new Error(`שגיאה מהשרת: ${data.error.type} — ${data.error.message}`);
+    }
+
+    // Server-side safety intercept fallback — במקרה שהשרת תפס אבל הלקוח לא.
+    // מציגים בנר ולא מרנדרים בועת צ'אט.
+    if (data.model === 'safety-intercept') {
+      removeThinking();
+      showCrisisBanner();
+      isThinking = false;
+      document.getElementById('send-btn').disabled = false;
+      input.focus();
+      return;
     }
 
     // web_search is a server tool - API handles it automatically, no loop needed
