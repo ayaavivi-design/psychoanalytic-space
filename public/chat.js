@@ -5158,6 +5158,7 @@ function restoreConversation(memIndex) {
       const el = document.querySelector(`.theorist-tag[data-key="${t}"]`);
       if (el) el.classList.add('active');
     });
+    updateSessionTitle(false); // sync "מדברים עם X" bar after restoring theorist
   }
   // Restore clinical mode (bypass consent modal — session already confirmed previously)
   if (mem.clinical && !window.clinicalMode) { window.clinicalMode = true; activateClinicalModeUI(true); }
