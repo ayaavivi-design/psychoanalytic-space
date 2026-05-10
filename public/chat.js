@@ -49,6 +49,12 @@ function hideAuthScreen() {
 
 function proceedToApp() {
   setTimeout(checkIntakeStatus, 100);
+  // Select Winnicott + render flow buttons on load
+  setTimeout(() => {
+    if (activeTheorists.length === 0) selectWinnicottDefault();
+    renderFlowButtons();
+    renderAnalystBadge();
+  }, 350);
   setTimeout(() => { initSidebarTips(); startOnboardingTour(); }, 800);
 }
 
@@ -393,7 +399,7 @@ function completeIntake() {
 function enterMainSpace() {
   const t = getIntakeTranslation();
   const name = intakeData.name || '';
-  const h2Text = name && t.postWelcomeH2 ? t.postWelcomeH2(name) : (t.welcome || 'Welcome');
+  const h2Text = name && t.postWelcomeH2 ? t.postWelcomeH2(name) : (t.welcomeHeading || t.welcome || 'מה עולה לך היום?');
   const pText = t.postWelcomeP || '';
   const chat = document.getElementById('chat');
   if (!chat) return;
@@ -402,19 +408,20 @@ function enterMainSpace() {
   setTimeout(() => {
     chat.innerHTML = `
       <div class="welcome" id="welcome">
-        <div class="ornament">ψ</div>
+        
         <h2>${h2Text}</h2>
         ${pText ? `<p>${pText}</p>` : ''}
       </div>`;
     chat.style.opacity = '1';
+    renderApiNote();
+    renderFlowButtons();
+    renderAnalystBadge();
     // Auto-select Winnicott as default voice after intake
     if (activeTheorists.length === 0) {
-      const winnicottEl = document.querySelector('[data-key="winnicott"]');
-      if (winnicottEl) winnicottEl.classList.add('active');
-      activeTheorists = ['winnicott'];
+      selectWinnicottDefault();
       updateInputSuggestion();
       updateSessionTitle(true);
-      showWinnicottDefaultTooltip(winnicottEl || document.querySelector('.theorist-tag'));
+      showWinnicottDefaultTooltip(document.querySelector('[data-key="winnicott"]') || document.querySelector('.theorist-tag'));
     }
   }, 500);
 }
@@ -472,7 +479,7 @@ async function signOut() {
   conversationHistory = [];
   const chat = document.getElementById('chat');
   const _soT = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['en'];
-  if (chat) chat.innerHTML = `<div class="welcome" id="welcome"><div class="ornament">ψ</div><h2>${_soT.welcome || 'Welcome'}</h2><p>${_soT.welcomeText || 'Ask any question about psychoanalysis.'}</p></div>`;
+  if (chat) chat.innerHTML = `<div class="welcome" id="welcome"><h2>${_soT.welcome || 'Welcome'}</h2><p>${_soT.welcomeText || 'Ask any question about psychoanalysis.'}</p></div>`;
   activeTheorists = [];
   document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
 }
@@ -546,6 +553,156 @@ const CONV_KEY = 'psycho_conv_v2';
 const API_KEY_STORAGE = 'psycho_api_key';
 
 let activeTheorists = [];
+
+// ── Flow Buttons ───────────────────────────────────────────────
+window.activeFlow = null;
+
+function renderApiNote() {
+  const welcome = document.getElementById('welcome');
+  if (!welcome) return;
+  if (document.getElementById('welcome-api-text')) return; // already present (from SSR)
+  const t = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
+  const isEn = (window.selectedLang?.code === 'en');
+  const p = document.createElement('p');
+  p.id = 'welcome-api-text';
+  p.style.cssText = 'font-size:11px;color:var(--muted);line-height:1.6;margin:0;margin-top:auto;padding-top:36px;';
+  const linkText = t.privacyLink || (isEn ? 'Privacy Policy' : 'מדיניות פרטיות');
+  const mainText = isEn
+    ? "Conversations are processed through Anthropic's API and are not stored by us or used for model training."
+    : 'השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.';
+  p.innerHTML = `${mainText} <span id="privacy-link" onclick="document.getElementById('privacy-modal').style.display='flex'" style="color:var(--accent);cursor:pointer;text-decoration:underline;">${linkText}</span>`;
+  welcome.appendChild(p);
+}
+
+function renderAnalystBadge() {
+  const welcome = document.getElementById('welcome');
+  if (!welcome) return;
+  const existing = document.getElementById('analyst-badge');
+  if (existing) existing.remove();
+  const isEn = (window.selectedLang?.code === 'en');
+  const enNames = {freud:'Freud',klein:'Klein',winnicott:'Winnicott',ogden:'Ogden',loewald:'Loewald',bion:'Bion',kohut:'Kohut',heimann:'Heimann'};
+  const heNames = {freud:'פרויד',klein:'קליין',winnicott:'ויניקוט',ogden:'אוגדן',loewald:'לוואלד',bion:'ביון',kohut:'קוהוט',heimann:'היימן'};
+  const activeT = activeTheorists[0] || 'winnicott';
+  const name = (isEn ? enNames : heNames)[activeT] || activeT;
+  const changeLabel = isEn ? 'change' : 'החלף';
+  const withLabel = isEn ? `with ${name}` : `עם ${name}`;
+  const badge = document.createElement('div');
+  badge.id = 'analyst-badge';
+  badge.style.cssText = 'font-size:11px;color:var(--muted);letter-spacing:0.03em;margin-top:6px;margin-bottom:16px;';
+  badge.innerHTML = `${withLabel} · <span onclick="document.getElementById('sb-theorists-label')?.closest('.sb-item')?.click()" style="color:var(--accent);cursor:pointer;text-decoration:underline;">${changeLabel}</span>`;
+  const h2 = welcome.querySelector('h2');
+  if (h2 && h2.nextSibling) welcome.insertBefore(badge, h2.nextSibling);
+  else welcome.appendChild(badge);
+}
+
+function renderFlowButtons() {
+  const welcome = document.getElementById('welcome');
+  if (!welcome) return;
+  const existing = document.getElementById('flow-buttons');
+  if (existing) existing.remove();
+  const isEn = (window.selectedLang?.code === 'en');
+  const buttons = isEn
+    ? [
+        { key: 'after_session',  label: 'Still with my last session' },
+        { key: 'before_session', label: 'Session coming up' },
+        { key: 'something_else', label: 'Something else' },
+      ]
+    : [
+        { key: 'after_session',  label: 'הפגישה עוד כאן' },
+        { key: 'before_session', label: 'יש לי פגישה בקרוב' },
+        { key: 'something_else', label: 'משהו אחר' },
+      ];
+  const isMobile = window.innerWidth < 600;
+  const container = document.createElement('div');
+  container.id = 'flow-buttons';
+  container.style.cssText = `display:flex;flex-direction:${isMobile ? 'column' : 'row'};gap:10px;width:100%;max-width:${isMobile ? '340px' : '560px'};margin:0 auto;direction:${isEn ? 'ltr' : 'rtl'};justify-content:center;`;
+  container.innerHTML = buttons.map(b =>
+    `<button onclick="startFlow('${b.key}')"
+      style="background:var(--surface-alt,#faf7f6);color:var(--text);border:1px solid var(--border,#e8ddd9);padding:20px 22px;border-radius:12px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;transition:background 0.15s,border-color 0.15s;text-align:center;flex:1;min-width:0;font-weight:400;line-height:1.4;"
+      onmouseover="this.style.background='var(--accent-light,#f8eff2)';this.style.borderColor='var(--accent,#c4607a)'"
+      onmouseout="this.style.background='var(--surface-alt,#faf7f6)';this.style.borderColor='var(--border,#e8ddd9)'">${b.label}</button>`
+  ).join('');
+  const apiNote = document.getElementById('welcome-api-text');
+  if (apiNote) welcome.insertBefore(container, apiNote);
+  else welcome.appendChild(container);
+}
+
+async function startFlow(flowKey) {
+  if (isThinking) return;
+  window.activeFlow = flowKey;
+  document.getElementById('flow-buttons')?.remove();
+
+  const theoristKey = activeTheorists.length === 1 ? activeTheorists[0] : null;
+  const lang = (window.selectedLang?.code) || 'en';
+  const fixedOpening = theoristKey && ENTRY_OPENING[flowKey]?.[theoristKey]?.[lang];
+
+  if (fixedOpening) {
+    // Hybrid approach — display Lia-approved fixed text, no API call.
+    // System prompt injection (window.activeFlow) persists for all subsequent messages.
+    if (conversationHistory.length === 0) {
+      const allowed = await checkConversationLimit();
+      if (!allowed) { window.activeFlow = null; renderFlowButtons(); return; }
+    }
+    if (!sessionTimerInterval) startSessionTimer();
+    const _sb = document.getElementById('suggestion-bubbles');
+    if (_sb) _sb.classList.add('subtle');
+    appendMessage('assistant', fixedOpening);
+    conversationHistory.push({ role: 'assistant', content: fixedOpening });
+    updateReflectionBtn();
+    return;
+  }
+
+  // Fallback: API call for theorists not yet in ENTRY_OPENING
+  if (conversationHistory.length === 0) {
+    const allowed = await checkConversationLimit();
+    if (!allowed) { window.activeFlow = null; renderFlowButtons(); return; }
+  }
+  isThinking = true;
+  document.getElementById('send-btn').disabled = true;
+  if (!sessionTimerInterval) startSessionTimer();
+  const _sb = document.getElementById('suggestion-bubbles');
+  if (_sb) _sb.classList.add('subtle');
+  showThinking();
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: '__FLOW_OPEN__' }],
+        system: buildSystemPrompt(),
+        webSearch: false,
+        theorist: theoristKey,
+      })
+    });
+    const data = await response.json();
+    hideThinking();
+    isThinking = false;
+    document.getElementById('send-btn').disabled = false;
+    if (data.error) throw new Error(data.error.message);
+    const reply = Array.isArray(data.content)
+      ? data.content.filter(b => b.type === 'text').map(b => b.text).join('')
+      : (data.text || '');
+    if (reply) {
+      appendMessage('assistant', reply);
+      conversationHistory.push({ role: 'assistant', content: reply });
+      updateReflectionBtn();
+    }
+    window.activeFlow = null;
+  } catch(e) {
+    hideThinking();
+    isThinking = false;
+    document.getElementById('send-btn').disabled = false;
+    window.activeFlow = null;
+    console.error('[startFlow] error:', e);
+  }
+}
+
+function selectWinnicottDefault() {
+  document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
+  activeTheorists = ['winnicott'];
+  const wEl = document.querySelector('[data-key="winnicott"]');
+  if (wEl) wEl.classList.add('active');
+}
 let uploadedFileContent = null;
 let uploadedFileName = null;
 let selectedLang = { code: 'en', flag: '🇬🇧', name: 'English' };
@@ -554,6 +711,42 @@ window._lang = 'en'; // always in sync with selectedLang
 let isThinking = false;
 let sessionMemorySaved = false;
 let conversationHistory = [];
+
+// ── Interpretive Memory ───────────────────────────────────────
+const INTERPRET_MEMORY_KEY = 'between_interpret_v1';
+
+function loadInterpretiveMemories() {
+  try {
+    const raw = localStorage.getItem(INTERPRET_MEMORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveInterpretiveMemory(theorist, summary) {
+  const memories = loadInterpretiveMemories();
+  memories.push({ theorist, summary, ts: Date.now() });
+  if (memories.length > 20) memories.shift(); // keep last 20 sessions
+  localStorage.setItem(INTERPRET_MEMORY_KEY, JSON.stringify(memories));
+}
+
+// Fire-and-forget: called before history is cleared. Never blocks UX.
+function generateInterpretiveMemory(theorist, history) {
+  if (!theorist || !history || history.length < 6) return;
+  const snapshot = history.slice(-20); // truncate before sending
+  fetch('/api/interpret-session', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: snapshot, theorist }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.summary) {
+        saveInterpretiveMemory(theorist, data.summary);
+        console.log('[interpret-memory] saved for', theorist);
+      }
+    })
+    .catch(e => console.log('[interpret-memory] failed silently', e));
+}
 
 // ── Session Timer ──────────────────────────────────────────────
 let sessionTimerInterval = null;
@@ -641,27 +834,45 @@ function showTheoristSwitchModal(el, name) {
   if (existing) existing.remove();
   const heNames = {freud:'פרויד',klein:'קליין',winnicott:'ויניקוט',ogden:'אוגדן',loewald:'לוואלד',bion:'ביון',kohut:'קוהוט',heimann:'היימן'};
   const enNames = {freud:'Freud',klein:'Klein',winnicott:'Winnicott',ogden:'Ogden',loewald:'Loewald',bion:'Bion',kohut:'Kohut',heimann:'Heimann'};
-  const theoristName = (isEn ? enNames : heNames)[name] || name;
+  const newName     = (isEn ? enNames : heNames)[name] || name;
+  const currentKey  = activeTheorists[0] || null;
+  const currentName = currentKey ? (isEn ? enNames : heNames)[currentKey] || currentKey : null;
   const dir = isEn ? 'ltr' : 'rtl';
+
+  const title = currentName
+    ? (isEn
+        ? `Leave ${currentName} and move to ${newName}?`
+        : `לעזוב את ${currentName} ולעבור ל${newName}?`)
+    : (isEn ? `Move to ${newName}?` : `לעבור ל${newName}?`);
+
   const msg = isEn
-    ? `Switching to ${theoristName} will start a fresh conversation. What's come up so far won't carry over.`
-    : `המעבר ל${theoristName} יפתח שיחה חדשה. מה שעלה עד עכשיו לא יעבור איתך.`;
-  const confirmText = isEn ? 'Start fresh' : 'התחל/י מחדש';
-  const cancelText  = isEn ? 'Stay here'   : 'הישאר/י כאן';
+    ? `Every analyst starts fresh — ${newName} won't know what came up here.`
+    : `כל אנליטיקאי מתחיל מחדש — הוא לא יידע מה עלה עד עכשיו.`;
+
+  const confirmText = isEn ? `Move to ${newName}`       : `לעבור ל${newName}`;
+  const cancelText  = isEn
+    ? (currentName ? `Stay with ${currentName}` : 'Stay')
+    : (currentName ? `להישאר עם ${currentName}` : 'להישאר');
+
   const modal = document.createElement('div');
   modal.id = 'theorist-switch-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
   modal.innerHTML = `
-    <div style="background:var(--bg);border-radius:16px;padding:32px 28px;max-width:320px;width:90%;text-align:center;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
-      <p style="font-size:15px;color:var(--text);font-family:Rubik,sans-serif;margin:0 0 20px;line-height:1.6;">${msg}</p>
+    <div style="background:var(--bg);border-radius:16px;padding:32px 28px;max-width:340px;width:90%;text-align:center;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <h3 style="font-size:16px;font-weight:600;color:var(--text);font-family:Rubik,sans-serif;margin:0 0 12px;line-height:1.5;">${title}</h3>
+      <p style="font-size:14px;color:var(--muted);font-family:Rubik,sans-serif;margin:0 0 24px;line-height:1.6;">${msg}</p>
       <div style="display:flex;gap:12px;justify-content:center;">
-        <button id="tsm-confirm" style="background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">${confirmText}</button>
-        <button id="tsm-cancel" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">${cancelText}</button>
+        <button id="tsm-confirm" style="background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;flex:1;">${confirmText}</button>
+        <button id="tsm-cancel" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;flex:1;">${cancelText}</button>
       </div>
     </div>`;
   document.body.appendChild(modal);
   document.getElementById('tsm-confirm').addEventListener('click', () => {
     modal.remove();
+    // Generate interpretive memory before clearing — fire-and-forget
+    if (activeTheorists.length === 1 && conversationHistory.length >= 6) {
+      generateInterpretiveMemory(activeTheorists[0], conversationHistory);
+    }
     // Deactivate ALL current theorist buttons before switching — prevents multiple active at once
     document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
     activeTheorists = [];
@@ -670,7 +881,13 @@ function showTheoristSwitchModal(el, name) {
     saveConversation();
     const _tsmChatEl = document.getElementById('chat');
     const _tsmT = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['en'];
-    if (_tsmChatEl) _tsmChatEl.innerHTML = `<div class="welcome" id="welcome"><div class="ornament">ψ</div><h2>${_tsmT.welcome || 'Welcome'}</h2><p>${_tsmT.welcomeText || 'Ask any question about psychoanalysis.'}</p></div>`;
+    if (_tsmChatEl) {
+      _tsmChatEl.innerHTML = `<div class="welcome" id="welcome"><h2>${_tsmT.welcomeHeading || 'מה עולה לך היום?'}</h2></div>`;
+      renderApiNote();
+      renderFlowButtons();
+      renderAnalystBadge();
+      window.activeFlow = null;
+    }
     performTheoristSwitch(el, name);
   });
   document.getElementById('tsm-cancel').addEventListener('click', () => modal.remove());
@@ -678,11 +895,16 @@ function showTheoristSwitchModal(el, name) {
 }
 
 function performTheoristSwitch(el, name) {
-  el.classList.toggle('active');
   if (activeTheorists.includes(name)) {
-    activeTheorists = activeTheorists.filter(t => t !== name);
+    // Deselect current theorist
+    el.classList.remove('active');
+    activeTheorists = [];
   } else {
-    activeTheorists.push(name);
+    // Single-select: deselect all, then select this one
+    document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
+    activeTheorists = [];
+    el.classList.add('active');
+    activeTheorists = [name];
   }
   updateInputSuggestion();
   updateSessionTitle(true);
@@ -707,7 +929,7 @@ function performTheoristSwitch(el, name) {
     const titleEl = document.getElementById('session-title');
     if (titleEl) titleEl.textContent = '';
     const chatEl = document.getElementById('chat');
-    if (chatEl) chatEl.innerHTML = `<div class="welcome" id="welcome"><div class="ornament">ψ</div><h2>${t2.welcome || 'Welcome'}</h2><p>${t2.welcomeText || 'Ask any question about psychoanalysis.'}</p></div>`;
+    if (chatEl) chatEl.innerHTML = `<div class="welcome" id="welcome"><h2>${t2.welcome || 'Welcome'}</h2><p>${t2.welcomeText || 'Ask any question about psychoanalysis.'}</p></div>`;
   }
 }
 
@@ -801,6 +1023,8 @@ function removeThinking() {
   const t = document.getElementById('thinking');
   if (t) t.remove();
 }
+
+function hideThinking() { removeThinking(); }
 
 const THEORIST_KNOWLEDGE = {
   freud: `פרויד — ידע מעמיק
@@ -2033,6 +2257,23 @@ function buildSystemPrompt() {
           const date = new Date(m.ts).toLocaleDateString('he-IL');
           return `${i+1}. [${date}] ${m.summary}`;
         }).join('\n')}`)
+    : '';
+
+  // Interpretive memory — cross-session psychoanalytic patterns (last 3 sessions for this theorist)
+  const interpretMemories = loadInterpretiveMemories();
+  const filteredInterpret = activeT
+    ? interpretMemories.filter(m => m.theorist === activeT).slice(-3)
+    : [];
+  const interpretContext = filteredInterpret.length > 0
+    ? (_isEnPrompt
+      ? `\n\nInterpretive memory — previous sessions with this patient (use as background understanding only — do not quote or reference directly):\n${filteredInterpret.map((m, i) => {
+          const date = new Date(m.ts).toLocaleDateString('en-US');
+          return `Session ${i + 1} [${date}]:\n${m.summary}`;
+        }).join('\n\n')}`
+      : `\n\nזיכרון פרשני — שיחות קודמות עם המטופל הזה (רקע עמוק בלבד — אל תצטט ישירות ואל תציין שאתה "זוכר" משהו. השתמש בידע זה כדי לחוש לאן החומר שייך — לא כדי להזכיר אותו):\n${filteredInterpret.map((m, i) => {
+          const date = new Date(m.ts).toLocaleDateString('he-IL');
+          return `שיחה ${i + 1} [${date}]:\n${m.summary}`;
+        }).join('\n\n')}`)
     : '';
 
   // Build deep knowledge for selected theorists
@@ -3342,7 +3583,28 @@ Skill תרגום: אם המשתמש מבקש תרגום — למשל "תרגמי
 
 אתה שולט לעומק בכל הגישות הפסיכואנליטיות העיקריות: פרויד, קליין, ויניקוט, אוגדן, לוואלד, ביון, לאקאן, קוהוט, היימן.`;
 
-  return `${promptOpener}${theoristKnowledge}${focusInstruction}${memoryContext}${genderInstruction}${clinicalInstruction}
+  // Flow context — injected for every message in the conversation (hybrid approach: fixed opening + persistent context)
+  const flowMap = {
+    after_session:
+      '\n\n[Entry context: The user is coming directly from a recent therapy session and is still carrying something from it — unprocessed, not yet put into words. They have already been shown an opening reflection. Continue the conversation from that opening with this awareness. Do not re-open with another question — respond to what the user brings next.]',
+    before_session:
+      '\n\n[Entry context: The user has a therapy session coming up and wants to prepare — to clarify what they want to bring, or what they have not yet been able to say. They have already been shown an opening question. Continue from there with this awareness.]',
+    something_else:
+      '\n\n[Entry context: The user arrived without a specific frame — not post-session processing, not pre-session preparation. They have something, but it may not yet have a name. They have been shown an open invitation. Continue with maximum space and no assumptions about what they are carrying.]',
+    // Legacy keys — fallback for API-path theorists
+    process_session: _isEnPrompt
+      ? '\n\nSESSION FLOW — PROCESSING: The person wants to process what came up in their last session. This is the VERY FIRST message in the session — you are opening. Speak ONE opening question or reflection that is unhurried and creates space. Do not interpret yet. Do not summarize what therapy is. Just open a door.'
+      : '\n\nפלואו — עיבוד פגישה: המשתמש/ת רוצה לעבד מה שעלה בפגישה האחרונה. זו ההודעה הראשונה בשיחה — אתה פותח. שאלה אחת עדינה, ללא מהירות, שיוצרת מקום. אל תפרש עדיין. פשוט פתח דלת.',
+    something_recurring: _isEnPrompt
+      ? '\n\nSESSION FLOW — SOMETHING RECURRING: The person wants to sit with something that keeps returning and resists being grasped. This is the VERY FIRST message — you are opening. Open with presence, not a direct question. Acknowledge without naming. Let the thing have room before it has a word.'
+      : '\n\nפלואו — משהו שחוזר: המשתמש/ת רוצה לשבת עם משהו שחוזר ולא עוזב. זו ההודעה הראשונה — אתה פותח. פתח בנוכחות, לא בשאלה ישירה. הכר/י בכך שיש משהו שמתעקש — בלי לנסות לפענח. תן למשהו מקום לפני שיש לו שם.',
+    prepare_upcoming: _isEnPrompt
+      ? '\n\nSESSION FLOW — PREPARING: The person has a session coming up and wants to prepare. This is the VERY FIRST message — you are opening. Ask ONE question that helps them feel into what is alive right now — not what they "should" bring, but what is already pulling at them.'
+      : '\n\nפלואו — הכנה לפגישה: למשתמש/ת יש פגישה בקרוב. זו ההודעה הראשונה — אתה פותח. שאלה אחת שעוזרת להרגיש מה חי עכשיו — לא מה "צריך" להביא, אלא מה כבר מושך.',
+  };
+  const flowContext = window.activeFlow ? (flowMap[window.activeFlow] || '') : '';
+
+  return `${promptOpener}${theoristKnowledge}${focusInstruction}${memoryContext}${interpretContext}${flowContext}${genderInstruction}${clinicalInstruction}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ABSOLUTE LANGUAGE OVERRIDE — READ THIS LAST:
@@ -3383,6 +3645,7 @@ const UI_TRANSLATIONS = {
     send: 'שלח',
     memories: 'זיכרונות',
     welcome: 'ברוכ/ה הבא/ה',
+    welcomeHeading: 'מה עולה לך היום?',
     welcomeText: 'יש לך משהו מהפגישה האחרונה שעדיין מהדהד?',
     theorists: { freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', lacan:'לאקאן', kohut:'קוהוט', heimann:'היימן' },
     hint: 'Enter לשליחה · Shift+Enter לשורה חדשה',
@@ -3477,6 +3740,7 @@ const UI_TRANSLATIONS = {
     send: 'Send',
     memories: 'memories',
     welcome: 'Welcome',
+    welcomeHeading: "What's on your mind?",
     welcomeText: 'Is there something from your last session that still resonates?',
     theorists: { freud:'Freud', klein:'Klein', winnicott:'Winnicott', ogden:'Ogden', loewald:'Loewald', bion:'Bion', lacan:'Lacan', kohut:'Kohut', heimann:'Heimann' },
     hint: 'Enter to send · Shift+Enter for new line',
@@ -3617,9 +3881,17 @@ function applyUITranslation(code) {
   document.documentElement.setAttribute('dir', t.dir);
   // Welcome screen
   const welcomeH2 = document.querySelector('.welcome h2');
-  if (welcomeH2) welcomeH2.textContent = t.welcome;
-  const welcomeP = document.querySelector('.welcome p');
-  if (welcomeP) welcomeP.innerHTML = t.welcomeText;
+  if (welcomeH2) welcomeH2.textContent = t.welcomeHeading || t.welcome;
+  // Update api-note text (by id — not .welcome p which may be memory text)
+  const _apNote = document.getElementById('welcome-api-text');
+  if (_apNote) {
+    const _apIsEn = (code === 'en');
+    const _apMain = _apIsEn
+      ? "Conversations are processed through Anthropic's API and are not stored by us or used for model training."
+      : 'השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.';
+    const _apLink = t.privacyLink || (_apIsEn ? 'Privacy Policy' : 'מדיניות פרטיות');
+    _apNote.innerHTML = `${_apMain} <span id="privacy-link" onclick="document.getElementById('privacy-modal').style.display='flex'" style="color:var(--accent);cursor:pointer;text-decoration:underline;">${_apLink}</span>`;
+  }
   // Hint text
   const hint = document.getElementById('input-hint');
   if (hint && t.hint) hint.textContent = t.hint;
@@ -3765,19 +4037,23 @@ function applyUITranslation(code) {
     const persona = JSON.parse(localStorage.getItem('user_prefs') || '{}').persona;
     if (persona) applyPersona(persona);
   } catch(e) {}
-  // Re-render memory-aware welcome in the correct language if it's showing
-  const _apWelcomeP = document.querySelector('.welcome p');
-  if (_apWelcomeP && conversationHistory.length === 0) {
+  // Re-render memory-aware welcome text in correct language (targets dedicated element, not api-note)
+  const _apMemoryEl = document.querySelector('.welcome p:not(#welcome-api-text)');
+  if (_apMemoryEl && conversationHistory.length === 0) {
     const _apMemories = loadMemory();
     if (_apMemories.length > 0) {
       const _apLast = _apMemories[_apMemories.length - 1];
       const _apIsEn = code === 'en';
       const _apDate = new Date(_apLast.ts).toLocaleDateString(_apIsEn ? 'en-US' : 'he-IL');
-      _apWelcomeP.innerHTML = _apIsEn
-        ? `Welcome back. In our last session (${_apDate}) we explored: ${_apLast.summary}. <span style="color:var(--accent-dim)">You can pick up from there or open a new direction.</span>`
-        : `ברוכ/ה השב/ה. בפגישה האחרונה (${_apDate}) עסקנו ב: ${_apLast.summary}. <span style="color:var(--accent-dim)">אפשר להמשיך משם או לפתוח כיוון חדש.</span>`;
-    } else {
-      _apWelcomeP.innerHTML = t.welcomeText || '';
+      const summaryLang = /[֐-׿]/.test(_apLast.summary) ? 'he' : 'en';
+      const langMatch = summaryLang === code;
+      _apMemoryEl.innerHTML = _apIsEn
+        ? (langMatch
+          ? `Welcome back. Last session (${_apDate}): ${_apLast.summary}. <span style="color:var(--accent-dim)">Pick up from there or open something new.</span>`
+          : `Welcome back. Ready to continue when you are. <span style="color:var(--accent-dim)">What's on your mind today?</span>`)
+        : (langMatch
+          ? `ברוכ/ה השב/ה. בפגישה האחרונה (${_apDate}): ${_apLast.summary}. <span style="color:var(--accent-dim)">אפשר להמשיך משם או לפתוח כיוון חדש.</span>`
+          : `ברוכ/ה השב/ה. המרחב מוכן כשאת/ה מוכן/ה. <span style="color:var(--accent-dim)">מה עולה היום?</span>`);
     }
   }
 }
@@ -3789,6 +4065,11 @@ function selectLang(code, flag, name) {
   const ll = document.getElementById('lang-label'); if (ll) ll.textContent = name;
   const menu = document.getElementById('lang-menu'); if (menu) menu.style.display = 'none';
   applyUITranslation(code);
+  // Re-render flow buttons and analyst badge in new language (welcome screen only)
+  if (document.getElementById('welcome') && conversationHistory.length === 0) {
+    renderFlowButtons();
+    renderAnalystBadge();
+  }
 }
 
 // Close lang menu on outside click
@@ -3824,6 +4105,67 @@ async function trackEvent(eventName) {
     }).catch(() => {});
   } catch {}
 }
+
+// Entry point opening texts — Lia-approved (hybrid approach: displayed as fixed assistant message)
+// Keys: after_session | before_session | something_else
+// Theorists covered: freud | klein | winnicott | ogden
+// Others fall back to API-generated opening via startFlow
+const ENTRY_OPENING = {
+  after_session: {
+    freud: {
+      he: 'מה בדיוק נשאר — מילה, תמונה, תחושה גופנית? מה שאינו עוזב לרוב אינו מקרי.',
+      en: "What exactly stayed — a word, an image, a bodily sensation? What doesn't leave us is rarely by chance."
+    },
+    klein: {
+      he: 'מה הפגישה השאירה בך — משהו שמחזיק, או משהו שמכרסם?',
+      en: 'What did the session leave inside you — something that holds, or something that corrodes?'
+    },
+    winnicott: {
+      he: 'מה ממשיך לחיות בך? אין צורך לדעת מה לעשות איתו — רק לשים לב למה שעדיין נוכח.',
+      en: "What is still living in you? There's no need to know what to do with it — just notice what's still there."
+    },
+    ogden: {
+      he: 'מה ממשיך לעבוד בך גם אחרי שהשיחה נגמרה? לפעמים מה שנשאר הוא מה שרק עכשיו מתחיל.',
+      en: 'What keeps working in you even after the session ended? Sometimes what remains is only just beginning.'
+    }
+  },
+  before_session: {
+    freud: {
+      he: 'מה אתה יודע שאתה רוצה להביא — ומה אולי עדיין לא ברור, אפילו לעצמך?',
+      en: 'What do you know you want to bring — and what might still be unclear, even to yourself?'
+    },
+    klein: {
+      he: 'עם מה אתה מגיע לפגישה — מה מושך אותך להביא דווקא את זה?',
+      en: 'What are you coming with — what draws you to bring this, specifically?'
+    },
+    winnicott: {
+      he: 'מה אתה רוצה שהמטפל ידע — ומה עוד קשה לך להגיד בקול?',
+      en: "What do you want the therapist to know — and what's still hard to say aloud?"
+    },
+    ogden: {
+      he: 'מה כבר זז בך רק מהידיעה שהפגישה מתקרבת?',
+      en: "What's already stirring in you just from knowing the session is getting closer?"
+    }
+  },
+  something_else: {
+    freud: {
+      he: 'יש משהו שהביא אותך. מה הוא?',
+      en: 'Something brought you here. What is it?'
+    },
+    klein: {
+      he: 'מה הביא אותך — ובאיזו מצב רוח אתה מגיע?',
+      en: 'What brought you here — and what state of mind are you arriving in?'
+    },
+    winnicott: {
+      he: 'אתה כאן, ויש משהו. זה מספיק. מה נוכח בשבילך עכשיו?',
+      en: "You're here, and there's something. That's enough. What's present for you right now?"
+    },
+    ogden: {
+      he: 'מה נוכח בך, לפני שיש לו שם?',
+      en: "What's there, before it has a name?"
+    }
+  }
+};
 
 const THEORIST_OPENING = {
   freud: {
@@ -4385,16 +4727,7 @@ async function sendMessage() {
       : { freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', kohut:'קוהוט', heimann:'היימן' };
     let attribution = null;
     if (!window.clinicalMode && activeTheorists.length === 1) {
-      // Single theorist mode: always attribute to the active theorist
       attribution = _shortNames[activeTheorists[0]] || null;
-    } else if (!window.clinicalMode) {
-      // Multi-theorist mode: scan reply for theorist name mentions (Hebrew or English)
-      const theoristMentions = _isEn
-        ? { 'Freud':'Freud', 'Klein':'Klein', 'Winnicott':'Winnicott', 'Ogden':'Ogden', 'Loewald':'Loewald', 'Bion':'Bion', 'Lacan':'Lacan', 'Kohut':'Kohut' }
-        : { 'פרויד':'פרויד', 'קליין':'קליין', 'ויניקוט':'ויניקוט', 'אוגדן':'אוגדן', 'לוואלד':'לוואלד', 'ביון':'ביון', 'לאקאן':'לאקאן', 'קוהוט':'קוהוט' };
-      for (const [name] of Object.entries(theoristMentions)) {
-        if (reply.includes(name)) { attribution = name; break; }
-      }
     }
 
     conversationHistory.push({ role: 'assistant', content: reply });
@@ -4506,6 +4839,21 @@ function clearMemory() {
     conversationHistory = [];
     updateMemoryCount();
     closeMemory();
+  }
+}
+
+function clearInterpretiveMemory() {
+  const isEn = (window._lang === 'en');
+  const confirmMsg = isEn
+    ? 'Delete all interpretive memory? This cannot be undone.'
+    : 'למחוק את כל הזיכרון הפרשני? לא ניתן לשחזר.';
+  if (confirm(confirmMsg)) {
+    localStorage.removeItem(INTERPRET_MEMORY_KEY);
+    // Refresh count in settings
+    const interpretCountEl = document.getElementById('st-interpret-count');
+    if (interpretCountEl) {
+      interpretCountEl.textContent = isEn ? 'No sessions analyzed yet' : 'אין שיחות שנותחו עדיין';
+    }
   }
 }
 
@@ -4718,6 +5066,10 @@ function performNewChat() {
   stopSessionTimer();
   clearTimeout(silenceTimer);
   silenceResponseSent = false;
+  // Generate interpretive memory before clearing — fire-and-forget
+  if (activeTheorists.length === 1 && conversationHistory.length >= 6) {
+    generateInterpretiveMemory(activeTheorists[0], conversationHistory);
+  }
   conversationHistory = [];
   sessionMemorySaved = false;
   const _sbNew = document.getElementById('suggestion-bubbles');
@@ -4726,15 +5078,18 @@ function performNewChat() {
   const titleEl = document.getElementById('session-title');
   if (titleEl) titleEl.textContent = '';
   const chat = document.getElementById('chat');
+  const _pncT = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
   chat.innerHTML = `
     <div class="welcome" id="welcome">
-      <div class="ornament">ψ</div>
-      <h2>ברוכ/ה הבא/ה</h2>
-      <p>שאל/י כל שאלה בנושאי פסיכואנליזה — על תיאוריה, קליניקה, מושגים, או דרכי חשיבה של אנליטיקאים שונים.</p>
+      
+      <h2>${_pncT.welcomeHeading || 'מה עולה לך היום?'}</h2>
     </div>`;
-  // Reset theorist selections
-  activeTheorists = [];
-  document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
+  renderApiNote();
+  renderFlowButtons();
+  renderAnalystBadge();
+  window.activeFlow = null;
+  // Reset theorist selections — Winnicott is the default voice
+  selectWinnicottDefault();
   if (clinicalMode) toggleClinicalMode();
   document.getElementById('user-input').value = '';
   setTimeout(checkIntakeStatus, 50);
@@ -4930,6 +5285,17 @@ function openSettings() {
           <button id="st-intake-reset" onclick="resetIntake()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:11px;cursor:pointer;">אפס</button>
         </div>` : ''}
 
+        <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;">
+            <div style="flex:1;">
+              <div style="font-size:13px;color:var(--text);font-weight:400;margin-bottom:2px;">זיכרון פרשני</div>
+              <div id="st-interpret-count" style="font-size:11px;color:var(--muted);"></div>
+            </div>
+            <button onclick="clearInterpretiveMemory()" id="st-interpret-clear" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">מחק</button>
+          </div>
+          <p style="font-size:11px;color:var(--muted);line-height:1.7;margin:0;">אחרי כל שיחה, Between מנתח בשקט דפוסים, הגנות ונושאים שעלו — ומשתמש בהם כהקשר עמוק בשיחה הבאה. המידע נשמר בדפדפן שלך בלבד ואינו נשלח אלינו.</p>
+        </div>
+
       <div style="display:flex;justify-content:space-between;margin-top:24px;">
         <button onclick="saveSettings()" style="background:var(--accent);border:none;color:#fff;padding:10px 24px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;" id="st-save">שמור</button>
         <button onclick="document.getElementById('settings-modal').style.display='none'" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;" id="st-close">סגור</button>
@@ -4980,6 +5346,19 @@ function loadSettingsForm() {
   }
   const warningInput = document.getElementById('pref-timer-warning');
   if (warningInput && prefs.timerWarningMinutes) warningInput.value = prefs.timerWarningMinutes;
+  // Update interpretive memory count
+  const interpretCountEl = document.getElementById('st-interpret-count');
+  if (interpretCountEl) {
+    const interpretMemories = loadInterpretiveMemories();
+    const isEn = (window._lang === 'en');
+    if (interpretMemories.length === 0) {
+      interpretCountEl.textContent = isEn ? 'No sessions analyzed yet' : 'אין שיחות שנותחו עדיין';
+    } else {
+      interpretCountEl.textContent = isEn
+        ? `${interpretMemories.length} session${interpretMemories.length !== 1 ? 's' : ''} analyzed`
+        : `${interpretMemories.length} שיחות נותחו`;
+    }
+  }
 }
 
 function saveSettings() {
@@ -5066,11 +5445,26 @@ window.resetPassword = resetPassword;
     const _rwLang = window._lang || 'he';
     const _rwIsEn = _rwLang === 'en';
     const date = new Date(last.ts).toLocaleDateString(_rwIsEn ? 'en-US' : 'he-IL');
-    const welcomeP = document.querySelector('.welcome p');
-    if (welcomeP) {
-      welcomeP.innerHTML = _rwIsEn
-        ? `Welcome back. In our last session (${date}) we explored: ${last.summary}. <span style="color:var(--accent-dim)">You can pick up from there or open a new direction.</span>`
-        : `ברוכ/ה השב/ה. בפגישה האחרונה (${date}) עסקנו ב: ${last.summary}. <span style="color:var(--accent-dim)">אפשר להמשיך משם או לפתוח כיוון חדש.</span>`;
+    const welcome = document.getElementById('welcome');
+    const flowBtns = document.getElementById('flow-buttons');
+    if (welcome) {
+      const p = document.createElement('p');
+      p.style.cssText = 'font-size:13px;color:var(--muted);line-height:1.7;max-width:360px;margin:12px auto 0;text-align:center;';
+      // Memory snippet: show only if language matches, otherwise show generic return greeting
+      const summaryLang = /[֐-׿]/.test(last.summary) ? 'he' : 'en';
+      const langMatch = summaryLang === _rwLang;
+      if (_rwIsEn) {
+        p.innerHTML = langMatch
+          ? `Welcome back. Last session (${date}): ${last.summary}. <span style="color:var(--accent-dim)">Pick up from there or open something new.</span>`
+          : `Welcome back. Ready to continue when you are. <span style="color:var(--accent-dim)">What's on your mind today?</span>`;
+      } else {
+        p.innerHTML = langMatch
+          ? `ברוכ/ה השב/ה. בפגישה האחרונה (${date}): ${last.summary}. <span style="color:var(--accent-dim)">אפשר להמשיך משם או לפתוח כיוון חדש.</span>`
+          : `ברוכ/ה השב/ה. המרחב מוכן כשאת/ה מוכן/ה. <span style="color:var(--accent-dim)">מה עולה היום?</span>`;
+      }
+      // Insert before flow buttons if they exist, otherwise append
+      if (flowBtns) welcome.insertBefore(p, flowBtns);
+      else welcome.appendChild(p);
     }
   }
 })();

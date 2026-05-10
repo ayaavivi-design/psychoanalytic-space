@@ -112,14 +112,14 @@ export default function Home() {
     ru: { title: 'Режим клинической сессии', text: 'Выбранный теоретик отвечает как аналитик — не как лектор. Подходит для клинического материала, сновидений или личных ситуаций.' },
     it: { title: 'Modalità sessione clinica', text: 'Il teorico selezionato risponde come analista — non come docente. Adatto per materiale clinico, sogni o situazioni personali.' },
   };
-  const WELCOME_I18N: Record<string, { apiText: string; privacyLink: string }> = {
-    he: { apiText: 'השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.', privacyLink: 'מדיניות פרטיות' },
-    en: { apiText: "Conversations are processed through Anthropic's API and are not stored by us or used for model training.", privacyLink: 'Privacy Policy' },
-    de: { apiText: 'Gespräche werden über die API von Anthropic verarbeitet und weder von uns gespeichert noch für das Modelltraining verwendet.', privacyLink: 'Datenschutzrichtlinie' },
-    es: { apiText: 'Las conversaciones se procesan a través de la API de Anthropic y no son almacenadas por nosotros ni usadas para el entrenamiento de modelos.', privacyLink: 'Política de privacidad' },
-    fr: { apiText: "Les conversations sont traitées via l'API d'Anthropic et ne sont pas stockées par nous ni utilisées pour entraîner des modèles.", privacyLink: 'Politique de confidentialité' },
-    ru: { apiText: 'Разговоры обрабатываются через API Anthropic, не хранятся нами и не используются для обучения моделей.', privacyLink: 'Политика конфиденциальности' },
-    it: { apiText: "Le conversazioni vengono elaborate tramite l'API di Anthropic e non sono conservate da noi né utilizzate per addestrare i modelli.", privacyLink: 'Informativa sulla privacy' },
+  const WELCOME_I18N: Record<string, { heading: string; apiText: string; privacyLink: string }> = {
+    he: { heading: 'מה עולה לך היום?', apiText: 'השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.', privacyLink: 'מדיניות פרטיות' },
+    en: { heading: "What's on your mind?", apiText: "Conversations are processed through Anthropic's API and are not stored by us or used for model training.", privacyLink: 'Privacy Policy' },
+    de: { heading: 'Willkommen', apiText: 'Gespräche werden über die API von Anthropic verarbeitet und weder von uns gespeichert noch für das Modelltraining verwendet.', privacyLink: 'Datenschutzrichtlinie' },
+    es: { heading: 'Bienvenido/a', apiText: 'Las conversaciones se procesan a través de la API de Anthropic y no son almacenadas por nosotros ni usadas para el entrenamiento de modelos.', privacyLink: 'Política de privacidad' },
+    fr: { heading: 'Bienvenue', apiText: "Les conversations sont traitées via l'API d'Anthropic et ne sont pas stockées par nous ni utilisées pour entraîner des modèles.", privacyLink: 'Politique de confidentialité' },
+    ru: { heading: 'Добро пожаловать', apiText: 'Разговоры обрабатываются через API Anthropic, не хранятся нами и не используются для обучения моделей.', privacyLink: 'Политика конфиденциальности' },
+    it: { heading: 'Benvenuto/a', apiText: "Le conversazioni vengono elaborate tramite l'API di Anthropic e non sono conservate da noi né utilizzate per addestrare i modelli.", privacyLink: 'Informativa sulla privacy' },
   };
   const PRIVACY_I18N: Record<string, { title: string; paragraphs: { label: string; text: string }[]; btnOk: string }> = {
     he: {
@@ -211,21 +211,20 @@ export default function Home() {
   }, []);
 
   const isProd = process.env.NODE_ENV === 'production';
-  const THEORIST_LIST: [string, string, string][] = isProd ? [
-    ['freud','פרויד','מה שלא נאמר'],
-    ['klein','קליין','מה שקשה לגעת בו'],
-    ['winnicott','ויניקוט','המרחב להיות'],
-    ['ogden','אוגדן','מה שנוצר בין שנינו'],
-  ] : [
-    ['freud','פרויד','מה שלא נאמר'],
-    ['klein','קליין','מה שקשה לגעת בו'],
-    ['winnicott','ויניקוט','המרחב להיות'],
-    ['ogden','אוגדן','מה שנוצר בין שנינו'],
-    ['loewald','לוואלד','הקשר עצמו כגורם המרפא'],
-    ['bion','ביון','מה שעדיין לא ניתן לומר'],
-    ['kohut','קוהוט','להרגיש מובן'],
-    ['heimann','היימן','מה שהמפגש מעורר בי'],
-  ];
+  const isHe = currentLang === 'he';
+  const THEORIST_LABELS: Record<string, [string, string]> = {
+    freud:    [isHe ? 'פרויד'   : 'Freud',    isHe ? 'מה שלא נאמר'               : 'What is left unsaid'],
+    klein:    [isHe ? 'קליין'   : 'Klein',    isHe ? 'מה שקשה לגעת בו'          : 'What is hard to touch'],
+    winnicott:[isHe ? 'ויניקוט' : 'Winnicott',isHe ? 'המרחב להיות'              : 'The space to be'],
+    ogden:    [isHe ? 'אוגדן'   : 'Ogden',    isHe ? 'מה שנוצר בין שנינו'       : 'What is created between us'],
+    loewald:  [isHe ? 'לוואלד'  : 'Loewald',  isHe ? 'הקשר עצמו כגורם המרפא'   : 'The relationship as cure'],
+    bion:     [isHe ? 'ביון'    : 'Bion',     isHe ? 'מה שעדיין לא ניתן לומר'   : 'What cannot yet be said'],
+    kohut:    [isHe ? 'קוהוט'   : 'Kohut',    isHe ? 'להרגיש מובן'              : 'To feel understood'],
+    heimann:  [isHe ? 'היימן'   : 'Heimann',  isHe ? 'מה שהמפגש מעורר בי'       : 'What the encounter stirs'],
+  };
+  const THEORIST_LIST: [string, string, string][] = isProd
+    ? (['freud','klein','winnicott','ogden'] as const).map(k => [k, THEORIST_LABELS[k][0], THEORIST_LABELS[k][1]])
+    : (['freud','klein','winnicott','ogden','loewald','bion','kohut','heimann'] as const).map(k => [k, THEORIST_LABELS[k][0], THEORIST_LABELS[k][1]]);
 
   return (
     <>
@@ -352,14 +351,18 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <span className="sb-icon"><Download size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-pdf-label">הורד PDF</span>
             </div>
-            <div className="sb-item admin-only" onClick={() => (window as any).openSupervision()}>
-              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⚲</span>
-              <span className="sb-label" id="sb-supervision-label">פיקוח קליני</span>
-            </div>
             <div className="sb-item admin-only" onClick={() => (window as any).openSessionSummary()}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
               <span className="sb-label" id="sb-summary-label">סיכום סשן</span>
             </div>
+            {/* פיקוח קליני — גלוי רק ב-localhost */}
+            {isLocalhost && (
+              <div className="sb-item admin-only" onClick={() => (window as any).openSupervision()}>
+                <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⚲</span>
+                <span className="sb-label" id="sb-supervision-label">פיקוח קליני</span>
+                <span style={{ fontSize: 9, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(בטא)' : '(Beta)'}</span>
+              </div>
+            )}
             <div id="patient-reflection-btn" className="sb-item admin-only" onClick={() => (window as any).openPatientReflection()} style={{ display: 'none' }}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◉</span>
               <span className="sb-label" id="sb-reflection-label">מה לקחתי מהשיחה</span>
@@ -369,12 +372,14 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <div className="sb-item admin-only" onClick={() => (window as any).openAnonymizer()}>
                 <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◌</span>
                 <span className="sb-label" id="sb-anon-label">אנונימיזציה</span>
+                <span style={{ fontSize: 9, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(בטא)' : '(Beta)'}</span>
               </div>
             )}
             {isLocalhost && (
               <div className="sb-item admin-only" onClick={() => (window as any).openUserFeedback()}>
                 <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◈</span>
                 <span className="sb-label" id="sb-feedback-label">פידבק משתמש</span>
+                <span style={{ fontSize: 9, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(בטא)' : '(Beta)'}</span>
               </div>
             )}
             {/* חדר הבורד — גלוי רק ב-localhost */}
@@ -382,6 +387,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <div className="sb-item admin-only" onClick={() => (window as any).openBoardRoom()}>
                 <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⬡</span>
                 <span className="sb-label" id="sb-board-label">חדר הבורד</span>
+                <span style={{ fontSize: 9, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(בטא)' : '(Beta)'}</span>
               </div>
             )}
           </div>
@@ -508,18 +514,19 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
 
 
         <div id="chat">
-          <div className="welcome" id="welcome">
-            <div className="ornament">ψ</div>
-            <h2>ברוכ/ה הבא/ה</h2>
-            <p>יש לך משהו מהפגישה האחרונה שעדיין מהדהד?</p>
-            <p id="welcome-api-text" suppressHydrationWarning style={{ fontSize: 11, color: 'var(--muted)', marginTop: 16, lineHeight: 1.6 }}>
-              {(WELCOME_I18N[currentLang] || WELCOME_I18N['he']).apiText}{' '}
-              <span id="privacy-link" suppressHydrationWarning onClick={() => { const m = document.getElementById('privacy-modal'); if(m) m.style.display='flex'; }}
-                style={{ color: 'var(--accent)', cursor: 'pointer', textDecoration: 'underline' }}>
-                {(WELCOME_I18N[currentLang] || WELCOME_I18N['he']).privacyLink}
-              </span>
-            </p>
-          </div>
+          {mounted && (
+            <div className="welcome" id="welcome">
+              <h2>{(WELCOME_I18N[currentLang] || WELCOME_I18N['he']).heading || 'ברוכ/ה הבא/ה'}</h2>
+              {/* flow buttons injected here by renderFlowButtons() */}
+              <p id="welcome-api-text" style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.6, margin: 0, marginTop: 'auto', paddingTop: 52 }}>
+                {(WELCOME_I18N[currentLang] || WELCOME_I18N['he']).apiText}{' '}
+                <span id="privacy-link" onClick={() => { const m = document.getElementById('privacy-modal'); if(m) m.style.display='flex'; }}
+                  style={{ color: 'var(--accent)', cursor: 'pointer', textDecoration: 'underline' }}>
+                  {(WELCOME_I18N[currentLang] || WELCOME_I18N['he']).privacyLink}
+                </span>
+              </p>
+            </div>
+          )}
         </div>
 
         <div id="memory-panel">
@@ -606,19 +613,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                 </svg>
               </button>
             </div>
-            <div id="suggestion-bubbles">
-              {(currentLang === 'en' ? [
-                'Still processing my last session',
-                'I have a session coming up',
-                "Something I can't shake"
-              ] : [
-                'הפגישה השאירה משהו',
-                'יש לי פגישה בקרוב',
-                'משהו שלא עוזב אותי'
-              ]).map(txt => (
-                <button key={txt} className="suggestion-btn" onClick={() => (window as any).fillSuggestion(txt)}>{txt}</button>
-              ))}
-            </div>
+            <div id="suggestion-bubbles" suppressHydrationWarning></div>
             <div className="hint" id="input-hint">Enter לשליחה · Shift+Enter לשורה חדשה</div>
             <div id="input-disclaimer" style={{ fontSize: 10, color: 'var(--muted)', opacity: 0.55, textAlign: 'center', paddingTop: 6, lineHeight: 1.5 }}>
               כלי לימודי ומחקרי בלבד · אינו מהווה תחליף לטיפול פסיכולוגי מקצועי
