@@ -655,6 +655,12 @@ function renderFlowButtons() {
 
 async function startFlow(flowKey) {
   if (isThinking) return;
+  // Detect state mismatch that happens after Fast Refresh in dev:
+  // React resets the UI to the welcome screen but conversationHistory still
+  // holds the previous session's messages. Sync the state before proceeding.
+  if (document.getElementById('welcome') && !document.querySelector('#chat .message') && conversationHistory.length > 0) {
+    conversationHistory = [];
+  }
   window.activeFlow = flowKey;
   document.getElementById('flow-buttons')?.remove();
 
