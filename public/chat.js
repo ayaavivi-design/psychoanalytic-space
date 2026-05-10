@@ -36,6 +36,8 @@ function showAuthScreen() {
 function hideAuthScreen() {
   const el = document.getElementById('auth-screen');
   if (el) el.style.display = 'none';
+  // Sync React state so HMR re-renders don't reset auth-screen back to visible
+  if (window.__setAuthVisible) window.__setAuthVisible(false);
   // משתמשים שכבר השלימו intake — עוברים אוטומטית את השער
   if (!localStorage.getItem('therapy_gate_passed') && localStorage.getItem('intake_completed')) {
     localStorage.setItem('therapy_gate_passed', 'yes');
