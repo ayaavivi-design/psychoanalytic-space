@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Alice</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; }
+.app { max-width: 780px; margin: 0 auto; padding: 28px 20px; }
+h1 { font-size: 1.6rem; font-weight: 700; background: linear-gradient(135deg, #a78bfa, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.subtitle { font-size: 0.82rem; color: #666; margin-bottom: 24px; }
+.card { background: #13131a; border: 1px solid #1e1e2e; border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+.card-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 12px; }
+label { display: block; font-size: 0.83rem; color: #aaa; margin-bottom: 6px; margin-top: 10px; }
+input[type=password], textarea, select { width: 100%; background: #0d0d14; border: 1px solid #252535; border-radius: 9px; color: #e0e0e0; padding: 10px 14px; font-size: 0.88rem; outline: none; }
+textarea { resize: vertical; min-height: 80px; font-family: inherit; }
+.key-row { display: flex; gap: 10px; align-items: center; }
+.key-row input { flex: 1; }
+.key-status { font-size: 0.75rem; margin-top: 6px; }
+.key-status.ok { color: #4ade80; } .key-status.err { color: #f87171; }
+.upload-area { border: 2px dashed #252535; border-radius: 12px; padding: 28px; text-align: center; cursor: pointer; position: relative; }
+.upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-icon { font-size: 2rem; margin-bottom: 8px; }
+.upload-text { font-size: 0.85rem; color: #777; }
+.preview-img { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 12px; display: none; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.model-card { border: 1px solid #1e1e2e; border-radius: 10px; padding: 12px; cursor: pointer; background: #0d0d14; }
+.model-card.selected { border-color: #7c3aed; background: #1a1228; }
+.model-name { font-size: 0.85rem; font-weight: 600; color: #c4b5fd; }
+.model-desc { font-size: 0.72rem; color: #666; margin-top: 3px; }
+.model-provider { font-size: 0.68rem; color: #4ade80; margin-top: 4px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 24px; border-radius: 10px; border: none; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+.btn-primary { background: linear-gradient(135deg, #7c3aed, #2563eb); color: white; width: 100%; justify-content: center; }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-sm { padding: 7px 14px; font-size: 0.78rem; border-radius: 7px; background: #1e1e2e; color: #aaa; border: 1px solid #252535; cursor: pointer; }
+.progress-bar { height: 4px; background: #1e1e2e; border-radius: 2px; overflow: hidden; margin: 12px 0; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #2563eb); border-radius: 2px; transition: width 0.5s; }
+.status-box { background: #0d0d14; border: 1px solid #1e1e2e; border-radius: 10px; padding: 14px; font-size: 0.82rem; color: #888; display: none; margin-top: 16px; }
+.status-box.show { display: block; }
+.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+.dot-waiting { background: #f59e0b; animation: blink 1s infinite; }
+.dot-done { background: #4ade80; } .dot-error { background: #f87171; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.result-box { display: none; margin-top: 16px; }
+.result-box.show { display: block; }
+video { width: 100%; border-radius: 12px; background: #000; margin-bottom: 12px; }
+.result-actions { display: flex; gap: 10px; }
+.params-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.param-group { flex: 1; min-width: 120px; }
+.tab-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.tab { padding: 7px 16px; border-radius: 7px; border: 1px solid #252535; background: transparent; color: #666; font-size: 0.8rem; cursor: pointer; }
+.tab.active { background: #1e1e2e; color: #e0e0e0; border-color: #7c3aed; }
+.hidden { display: none; }
+.err-msg { color: #f87171; font-size: 0.78rem; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>✦ Alice</h1>
+  <p class="subtitle">Powered by Higgsfield AI</p>
+  <div class="card">
+    <div class="card-title">🔑 API Key</div>
+    <label>API Key</label>
+    <div class="key-row">
+      <input type="password" id="apiKey" placeholder="API Key (e.g. ac6dcc1c-...)" />
+      <button class="btn btn-sm" onclick="saveKey()">Save</button>
+    </div>
+    <label>API Secret</label>
+    <input type="password" id="apiSecret" placeholder="API Secret" />
+    <div class="key-status" id="keyStatus"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📥 Input</div>
+    <div class="tab-row">
+      <button class="tab active" onclick="switchTab('image')">🖼 Image + Prompt</button>
+      <button class="tab" onclick="switchTab('text')">✍️ Text Only</button>
+    </div>
+    <div id="tab-image">
+      <div class="upload-area" id="uploadArea">
+        <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this)" />
+        <div class="upload-icon">🎞</div>
+        <div class="upload-text" id="uploadText">Click or drag and drop an image</div>
+        <img id="previewImg" class="preview-img" />
+      </div>
+      <div style="margin-top:12px">
+        <label>Prompt (optional)</label>
+        <textarea id="promptImage" placeholder="e.g. The baby slowly waves and smiles..."></textarea>
+      </div>
+    </div>
+    <div id="tab-text" class="hidden">
+      <label>Describe your video</label>
+      <textarea id="promptText" placeholder="e.g. A cinematic shot of a city at night..." style="min-height:110px"></textarea>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">🎬 Model</div>
+    <div class="grid3" id="modelGrid"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">⚙️ Settings</div>
+    <div class="params-row">
+      <div class="param-group">
+        <label>Aspect Ratio</label>
+        <select id="aspectRatio">
+          <option value="16:9">16:9 Landscape</option>
+          <option value="9:16">9:16 Portrait</option>
+          <option value="1:1">1:1 Square</option>
+        </select>
+      </div>
+      <div class="param-group">
+        <label>Duration</label>
+        <select id="duration">
+          <option value="5">5s</option>
+          <option value="8" selected>8s</option>
+          <option value="10">10s</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-primary" id="generateBtn" onclick="generate()">✦ Generate Video</button>
+  <div class="err-msg hidden" id="errMsg"></div>
+  <div class="status-box" id="statusBox">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <span class="status-dot dot-waiting" id="statusDot"></span>
+    <span id="statusText">Starting...</span>
+  </div>
+  <div class="result-box card" id="resultBox">
+    <div class="card-title">🎉 Your Video</div>
+    <video id="resultVideo" controls></video>
+    <div class="result-actions">
+      <a id="downloadLink" class="btn btn-sm" download="video.mp4">⬇ Download</a>
+      <button class="btn btn-sm" onclick="resetResult()">+ New Video</button>
+    </div>
+  </div>
+</div>
+<script>
+const BASE = 'http://localhost:3001';
+const MODELS = [
+  { id: 'bytedance/seedance/v2/standard/image-to-video', name: 'Seedance 2.0', provider: 'Bytedance', desc: 'Best for image-to-video' },
+  { id: 'kling-video/v2.1/pro/image-to-video', name: 'Kling 2.1 Pro', provider: 'Kling', desc: 'Cinematic quality' },
+  { id: 'higgsfield-ai/dop/standard', name: 'DoP Standard', provider: 'Higgsfield', desc: 'High-quality animation' },
+  { id: 'bytedance/seedance/v1/pro/image-to-video', name: 'Seedance 1.0 Pro', provider: 'Bytedance', desc: 'Professional grade' },
+  { id: 'kling-video/v1.6/pro/image-to-video', name: 'Kling 1.6 Pro', provider: 'Kling', desc: 'Advanced animations' },
+  { id: 'higgsfield-ai/dop/preview', name: 'DoP Preview', provider: 'Higgsfield', desc: 'Fast preview mode' },
+];
+let selectedModel = MODELS[0].id;
+let currentTab = 'image';
+let imageDataUrl = null;
+let apiKey = localStorage.getItem('hf_api_key') || '';
+let apiSecret = localStorage.getItem('hf_api_secret') || '';
+
+window.onload = () => {
+  if (apiKey) { document.getElementById('apiKey').value = apiKey; }
+  if (apiSecret) { document.getElementById('apiSecret').value = apiSecret; }
+  if (apiKey && apiSecret) setKeyStatus('Keys loaded', 'ok');
+  renderModels();
+};
+
+function renderModels() {
+  document.getElementById('modelGrid').innerHTML = MODELS.map(m =>
+    '<div class="model-card ' + (m.id===selectedModel?'selected':'') + '" onclick="selectModel(\'' + m.id + '\')">' +
+    '<div class="model-name">' + m.name + '</div>' +
+    '<div class="model-desc">' + m.desc + '</div>' +
+    '<div class="model-provider">' + m.provider + '</div></div>').join('');
+}
+function selectModel(id) { selectedModel = id; renderModels(); }
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active',(i===0&&tab==='image')||(i===1&&tab==='text')));
+  document.getElementById('tab-image').classList.toggle('hidden', tab!=='image');
+  document.getElementById('tab-text').classList.toggle('hidden', tab!=='text');
+}
+
+function saveKey() {
+  const k = document.getElementById('apiKey').value.trim();
+  const s = document.getElementById('apiSecret').value.trim();
+  if (!k || !s) { setKeyStatus('Please enter both Key and Secret','err'); return; }
+  apiKey = k; apiSecret = s;
+  localStorage.setItem('hf_api_key', k);
+  localStorage.setItem('hf_api_secret', s);
+  setKeyStatus('Keys saved!','ok');
+}
+function setKeyStatus(msg,type) { const el=document.getElementById('keyStatus'); el.textContent=msg; el.className='key-status '+type; }
+
+function handleFile(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    imageDataUrl = e.target.result;
+    const img = document.getElementById('previewImg');
+    img.src = imageDataUrl; img.style.display = 'block';
+    document.getElementById('uploadText').textContent = file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
+function showError(msg) { const el=document.getElementById('errMsg'); el.textContent=msg; el.classList.remove('hidden'); }
+function hideError() { document.getElementById('errMsg').classList.add('hidden'); }
+
+function setStatus(show,type,progress,text) {
+  document.getElementById('statusBox').classList.toggle('show',show);
+  document.getElementById('progressFill').style.width=progress+'%';
+  document.getElementById('statusText').textContent=text;
+  document.getElementById('statusDot').className='status-dot '+(type==='waiting'?'dot-waiting':type==='done'?'dot-done':'dot-error');
+}
+
+async function generate() {
+  hideError();
+  if (!apiKey || !apiSecret) { showError('Please enter and save your API Key and Secret first.'); return; }
+  const prompt = currentTab==='image'
+    ? document.getElementById('promptImage').value.trim()
+    : document.getElementById('promptText').value.trim();
+  if (!prompt) { showError('Please write a prompt.'); return; }
+  if (currentTab==='image' && !imageDataUrl) { showError('Please upload an image.'); return; }
+
+  document.getElementById('generateBtn').disabled = true;
+  document.getElementById('resultBox').classList.remove('show');
+  setStatus(true,'waiting',15,'Submitting to Higgsfield...');
+
+  try {
+    const payload = {
+      apiKey, apiSecret,
+      model: selectedModel,
+      prompt,
+      aspect_ratio: document.getElementById('aspectRatio').value,
+      duration: parseInt(document.getElementById('duration').value),
+    };
+    if (imageDataUrl) payload.image_url = imageDataUrl;
+
+    const r = await fetch(BASE+'/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.message || data.error || JSON.stringify(data));
+    const jobId = data.request_id || data.id;
+    if (!jobId) throw new Error('No job ID: ' + JSON.stringify(data));
+
+    setStatus(true,'waiting',40,'Video is generating... 1-3 minutes ☕');
+    let videoUrl = null; let progress = 40;
+    for (let i=0; i<120; i++) {
+      await new Promise(r=>setTimeout(r,4000));
+      progress = Math.min(90, progress+0.8);
+      document.getElementById('progressFill').style.width = progress+'%';
+      const sr = await fetch(BASE+'/api/status/'+jobId+'?k='+encodeURIComponent(apiKey)+'&s='+encodeURIComponent(apiSecret));
+      const sd = await sr.json();
+      const status = (sd.status||'').toLowerCase();
+      if (status==='completed') { videoUrl = sd.video?.url || sd.images?.[0]?.url; break; }
+      if (['failed','error','cancelled','nsfw'].includes(status)) throw new Error(sd.message||'Generation '+status);
+    }
+    if (!videoUrl) throw new Error('Timed out - please try again');
+
+    setStatus(true,'done',100,'Done! 🎉');
+    setTimeout(()=>setStatus(false,'done',100,''),2000);
+    document.getElementById('resultVideo').src = videoUrl;
+    document.getElementById('downloadLink').href = videoUrl;
+    document.getElementById('resultBox').classList.add('show');
+
+  } catch(err) {
+    setStatus(true,'error',100,'Error: '+err.message);
+    showError(err.message);
+  } finally {
+    document.getElementById('generateBtn').disabled = false;
+  }
+}
+
+function resetResult() {
+  document.getElementById('resultBox').classList.remove('show');
+  document.getElementById('resultVideo').src='';
+  document.getElementById('promptImage').value='';
+  document.getElementById('promptText').value='';
+  document.getElementById('previewImg').style.display='none';
+  document.getElementById('uploadText').textContent='Click or drag and drop an image';
+  document.getElementById('fileInput').value='';
+  imageDataUrl = null;
+}
+
+const ua=document.getElementById('uploadArea');
+ua.addEventListener('dragover',e=>{e.preventDefault();});
+ua.addEventListener('drop',e=>{
+  e.preventDefault();
+  const f=e.dataTransfer.files[0];
+  if(f&&f.type.startsWith('image/')){document.getElementById('fileInput').files=e.dataTransfer.files;handleFile(document.getElementById('fileInput'));}
+});
+</script>
+</body>
+</html>
