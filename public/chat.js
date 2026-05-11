@@ -5163,6 +5163,7 @@ function restoreConversation(memIndex) {
                          { role: 'assistant', content: mem.summary }];
   chat.scrollTop = chat.scrollHeight;
   updateReflectionBtn();
+  updateSessionTitle(true);
 }
 
 function sbLangToggle() {
