@@ -13,7 +13,7 @@ export const maxDuration = 60;
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const THEORISTS = ['freud', 'klein', 'winnicott', 'ogden', 'loewald', 'bion', 'kohut', 'heimann'];
+const THEORISTS = ['freud', 'klein', 'winnicott', 'ogden'];
 const THEORIST_NAMES: Record<string, string> = {
   freud: 'פרויד', klein: 'קליין', winnicott: 'ויניקוט', ogden: 'אוגדן',
   loewald: 'לוואלד', bion: 'ביון', kohut: 'קוהוט', heimann: 'היימן',
@@ -159,10 +159,7 @@ export async function GET(req: NextRequest) {
 
   const start = Date.now();
 
-  // מריץ בשתי קבוצות של 4 כדי לא להציף את ה-API
-  const batch1 = await Promise.all(THEORISTS.slice(0, 4).map(runTheorist));
-  const batch2 = await Promise.all(THEORISTS.slice(4).map(runTheorist));
-  const results = [...batch1, ...batch2];
+  const results = await Promise.all(THEORISTS.map(runTheorist));
 
   const passed = results.filter(r => r.ok).length;
   const allOk = passed === results.length;
