@@ -604,13 +604,13 @@ function renderFlowButtons() {
   const buttons = isEn
     ? [
         { key: 'after_session',  label: 'Still with my last session' },
-        { key: 'before_session', label: 'Session coming up' },
-        { key: 'something_else', label: 'Something else' },
+        { key: 'before_session', label: 'Something I want to bring' },
+        { key: 'something_else', label: "Something won't leave me" },
       ]
     : [
         { key: 'after_session',  label: 'הפגישה עוד כאן' },
-        { key: 'before_session', label: 'יש לי פגישה בקרוב' },
-        { key: 'something_else', label: 'משהו אחר' },
+        { key: 'before_session', label: 'יש לי משהו להביא' },
+        { key: 'something_else', label: 'משהו לא עוזב אותי' },
       ];
   const isMobile = window.innerWidth < 600;
   const container = document.createElement('div');
@@ -4131,16 +4131,16 @@ const ENTRY_OPENING = {
   },
   before_session: {
     freud: {
-      he: 'מה אתה יודע שאתה רוצה להביא — ומה אולי עדיין לא ברור, אפילו לעצמך?',
+      he: 'מה ברור שרוצים להביא — ומה עדיין לא ברור, אפילו לעצמך?',
       en: 'What do you know you want to bring — and what might still be unclear, even to yourself?'
     },
     klein: {
-      he: 'עם מה אתה מגיע לפגישה — מה מושך אותך להביא דווקא את זה?',
+      he: 'עם מה מגיעים לפגישה — מה מושך להביא דווקא את זה?',
       en: 'What are you coming with — what draws you to bring this, specifically?'
     },
     winnicott: {
-      he: 'מה אתה רוצה שהמטפל ידע — ומה עוד קשה לך להגיד בקול?',
-      en: "What do you want the therapist to know — and what's still hard to say aloud?"
+      he: 'מה רוצים שהמטפל ידע — ומה עוד מחפש את הדרך להיאמר?',
+      en: "What do you want the therapist to know — and what's still finding its way into words?"
     },
     ogden: {
       he: 'מה כבר זז בך רק מהידיעה שהפגישה מתקרבת?',
@@ -4153,11 +4153,11 @@ const ENTRY_OPENING = {
       en: 'Something brought you here. What is it?'
     },
     klein: {
-      he: 'מה הביא אותך — ובאיזו מצב רוח אתה מגיע?',
+      he: 'מה הביא לכאן — ובאיזו מצב רוח מגיעים?',
       en: 'What brought you here — and what state of mind are you arriving in?'
     },
     winnicott: {
-      he: 'אתה כאן, ויש משהו. זה מספיק. מה נוכח בשבילך עכשיו?',
+      he: 'כאן, ויש משהו. זה מספיק. מה נוכח עכשיו?',
       en: "You're here, and there's something. That's enough. What's present for you right now?"
     },
     ogden: {
