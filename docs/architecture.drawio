@@ -1,0 +1,227 @@
+<mxfile host="app.diagrams.net" modified="2026-05-09" agent="Between Architecture" version="21.0.0">
+  <diagram name="Between — Technical Architecture" id="arch-between">
+    <mxGraphModel dx="1422" dy="762" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1900" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TITLE -->
+        <mxCell id="title" value="&lt;b style=&quot;font-size:22px;color:#1A2980;&quot;&gt;Between — Technical Architecture&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="1000" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Psychoanalytic Space  ·  May 2026" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontColor=#5D6D7E;" vertex="1" parent="1">
+          <mxGeometry x="20" y="44" width="600" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- LAYER 1: FRONTEND -->
+        <!-- ══════════════════════════════════════ -->
+        <mxCell id="l1_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="76" width="1760" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="l1_hdr" value="&lt;b&gt;LAYER 1 — FRONTEND&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=#1A5276;align=left;verticalAlign=middle;whiteSpace=wrap;fontColor=#FFFFFF;fontSize=13;fontStyle=1;rounded=1;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="76" width="1760" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="l1_b1" value="&lt;b&gt;Next.js 16&lt;/b&gt;&lt;br/&gt;App Router" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;fontColor=#1A5276;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="30" y="118" width="565" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="l1_b2" value="&lt;b&gt;React 19&lt;/b&gt;&lt;br/&gt;Component UI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;fontColor=#1A5276;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="605" y="118" width="565" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="l1_b3" value="&lt;b&gt;chat.js&lt;/b&gt;&lt;br/&gt;vanilla JS · ~5000 lines" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;fontColor=#1A5276;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="118" width="590" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="l1_sub" value="Components:  Theorist selector  ·  Flow buttons  ·  Sidebar tools  ·  Memory display  ·  Language switcher" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontColor=#1A5276;fontSize=11;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="30" y="168" width="1750" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow 1→2 -->
+        <mxCell id="arr12" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#AAAAAA;strokeWidth=2;endArrow=open;endFill=0;startArrow=none;" edge="1" source="l1_bg" target="l2_bg" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- LAYER 2: API ROUTES -->
+        <!-- ══════════════════════════════════════ -->
+        <mxCell id="l2_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="265" width="1760" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="l2_hdr" value="&lt;b&gt;LAYER 2 — API ROUTES  (Vercel Edge Functions)&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=#6C3483;align=left;verticalAlign=middle;whiteSpace=wrap;fontColor=#FFFFFF;fontSize=13;fontStyle=1;rounded=1;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="265" width="1760" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="l2_a1" value="/api/chat" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673a6;fontColor=#6C3483;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="308" width="415" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="l2_a2" value="/api/interpret-session" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673a6;fontColor=#6C3483;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="455" y="308" width="415" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="l2_a3" value="/api/rag-search" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673a6;fontColor=#6C3483;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="308" width="415" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="l2_a4" value="/api/web-search" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673a6;fontColor=#6C3483;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1305" y="308" width="465" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="l2_a5" value="/api/qa-quick" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673a6;fontColor=#6C3483;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="352" width="415" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="l2_a6" value="/api/judge-report" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673a6;fontColor=#6C3483;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="455" y="352" width="415" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="l2_a7" value="/api/karen-ux" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673a6;fontColor=#6C3483;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="352" width="415" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="l2_a8" value="/api/ceo-report" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673a6;fontColor=#6C3483;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1305" y="352" width="465" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow 2→3 -->
+        <mxCell id="arr23" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#AAAAAA;strokeWidth=2;endArrow=open;endFill=0;startArrow=none;" edge="1" source="l2_bg" target="l3_bg" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- LAYER 3: AI CORE -->
+        <!-- ══════════════════════════════════════ -->
+        <mxCell id="l3_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="430" width="1760" height="185" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_hdr" value="&lt;b&gt;LAYER 3 — AI CORE&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=#1A7A4A;align=left;verticalAlign=middle;whiteSpace=wrap;fontColor=#FFFFFF;fontSize=13;fontStyle=1;rounded=1;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="430" width="1760" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- Divider line between Claude and RAG -->
+        <mxCell id="l3_div" value="" style="line;strokeColor=#82b366;strokeWidth=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="895" y="470" width="0" height="135" as="geometry" />
+        </mxCell>
+
+        <!-- Claude section -->
+        <mxCell id="l3_claude_lbl" value="&lt;b&gt;Anthropic Claude API&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontColor=#1A7A4A;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="470" width="850" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_opus" value="&lt;b&gt;claude-opus-4-6&lt;/b&gt;  →  8 Theorist Agents" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="496" width="855" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_t1" value="Freud" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eaf7ea;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="30" y="534" width="202" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_t2" value="Klein" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eaf7ea;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="240" y="534" width="202" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_t3" value="Winnicott" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eaf7ea;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="450" y="534" width="202" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_t4" value="Ogden" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eaf7ea;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="660" y="534" width="202" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_t5" value="Loewald" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eaf7ea;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="30" y="568" width="202" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_t6" value="Bion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eaf7ea;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="240" y="568" width="202" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_t7" value="Kohut" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eaf7ea;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="450" y="568" width="202" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_t8" value="Heimann" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eaf7ea;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="660" y="568" width="202" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- RAG section -->
+        <mxCell id="l3_rag_lbl" value="&lt;b&gt;RAG Engine&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontColor=#1A7A4A;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="910" y="470" width="855" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_hf" value="&lt;b&gt;HuggingFace&lt;/b&gt; MiniLM-L12-v2  ·  384d embeddings" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="910" y="496" width="420" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_bm25" value="Hybrid Search: 70% vector + 30% BM25" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="496" width="430" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_haiku" value="&lt;b&gt;claude-haiku-4-5&lt;/b&gt;  →  QA · Judge · Session interpretation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="910" y="534" width="420" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_val" value="Output Validation Loop  (single question enforcement)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="534" width="430" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="l3_pgv" value="Supabase pgvector  →  knowledge_chunks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#27AE60;fontColor=#1A7A4A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="910" y="568" width="860" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow 3→4 -->
+        <mxCell id="arr34" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#AAAAAA;strokeWidth=2;endArrow=open;endFill=0;startArrow=none;" edge="1" source="l3_bg" target="l4_bg" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- LAYER 4: DATA -->
+        <!-- ══════════════════════════════════════ -->
+        <mxCell id="l4_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="652" width="1760" height="98" as="geometry" />
+        </mxCell>
+        <mxCell id="l4_hdr" value="&lt;b&gt;LAYER 4 — DATA&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=#BA4A00;align=left;verticalAlign=middle;whiteSpace=wrap;fontColor=#FFFFFF;fontSize=13;fontStyle=1;rounded=1;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="652" width="1760" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="l4_kc" value="&lt;b&gt;Supabase&lt;/b&gt;  ·  knowledge_chunks  (RAG corpus per theorist)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E67E22;fontColor=#BA4A00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="30" y="696" width="860" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="l4_uc" value="&lt;b&gt;Supabase&lt;/b&gt;  ·  user_conversations  (usage tracking)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E67E22;fontColor=#BA4A00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="910" y="696" width="860" height="44" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow 4→5 -->
+        <mxCell id="arr45" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#AAAAAA;strokeWidth=2;endArrow=open;endFill=0;startArrow=none;" edge="1" source="l4_bg" target="l5_bg" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- LAYER 5: AUTOMATION -->
+        <!-- ══════════════════════════════════════ -->
+        <mxCell id="l5_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#888888;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="786" width="1760" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="l5_hdr" value="&lt;b&gt;LAYER 5 — AUTOMATION  (Vercel Native Crons)&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=#4D5656;align=left;verticalAlign=middle;whiteSpace=wrap;fontColor=#FFFFFF;fontSize=13;fontStyle=1;rounded=1;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="786" width="1760" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="l5_c1" value="&lt;b&gt;Karen UX&lt;/b&gt;&lt;br/&gt;daily · 08:00" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontColor=#4D5656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="30" y="830" width="330" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="l5_c2" value="&lt;b&gt;Eitan QA&lt;/b&gt;&lt;br/&gt;daily · 10:00" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontColor=#4D5656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="370" y="830" width="330" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="l5_c3" value="&lt;b&gt;Lia Judge&lt;/b&gt;&lt;br/&gt;every 3 days · 07:00" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontColor=#4D5656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="710" y="830" width="330" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="l5_c4" value="&lt;b&gt;Adam CEO&lt;/b&gt;&lt;br/&gt;weekly memo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontColor=#4D5656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="830" width="330" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="l5_c5" value="&lt;b&gt;Naval Board&lt;/b&gt;&lt;br/&gt;weekly note" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontColor=#4D5656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1390" y="830" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow 5→6 -->
+        <mxCell id="arr56" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#AAAAAA;strokeWidth=2;endArrow=open;endFill=0;startArrow=none;" edge="1" source="l5_bg" target="l6_bg" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- LAYER 6: INFRASTRUCTURE -->
+        <!-- ══════════════════════════════════════ -->
+        <mxCell id="l6_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#1A2980;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="934" width="1760" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="l6_hdr" value="&lt;b&gt;LAYER 6 — INFRASTRUCTURE&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=#1A2980;align=left;verticalAlign=middle;whiteSpace=wrap;fontColor=#FFFFFF;fontSize=13;fontStyle=1;rounded=1;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="934" width="1760" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="l6_v" value="&lt;b&gt;Vercel&lt;/b&gt;&lt;br/&gt;Deployment · Edge functions · Native crons" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A2980;fontColor=#1A2980;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="30" y="978" width="565" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="l6_g" value="&lt;b&gt;GitHub&lt;/b&gt;&lt;br/&gt;Source repo · ux-reports/ · ceo-reports/ · board-notes/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A2980;fontColor=#1A2980;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="615" y="978" width="565" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="l6_r" value="&lt;b&gt;Resend&lt;/b&gt;&lt;br/&gt;Transactional email · QA reports · Judge reports" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A2980;fontColor=#1A2980;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="978" width="570" height="46" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
