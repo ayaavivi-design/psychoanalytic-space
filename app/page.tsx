@@ -7,7 +7,7 @@ export default function Home() {
   const [isLocalhost, setIsLocalhost] = useState(false);
   const [theoristsOpen, setTheoristsOpen] = useState(false);
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
-  const [sessionTip, setSessionTip] = useState<{ top: number; left?: number; right?: number } | null>(null);
+  const [sessionTip, setSessionTip] = useState<{ top: number; left?: number; right?: number; mode?: string } | null>(null);
   const [currentLang, setCurrentLang] = useState('en');
 
   const THEORIST_CARDS: Record<string, Record<string, { approach: string; concepts: string; forWhom: string }>> = {
@@ -104,13 +104,22 @@ export default function Home() {
     heimann:  { he: 'היימן',  en: 'Heimann',  de: 'Heimann',  es: 'Heimann',  fr: 'Heimann',  ru: 'Хайманн',it: 'Heimann'  },
   };
   const SESSION_TIP_I18N: Record<string, { title: string; text: string }> = {
-    he: { title: 'מצב סשן קליני', text: 'התיאורטיקן הנבחר יגיב כאנליטיקאי בשיחה — לא כמרצה. מתאים להבאת חומר קליני, חלומות, או מצבים אישיים.' },
+    he: { title: 'סשן', text: 'התיאורטיקן הנבחר יגיב כאנליטיקאי בשיחה — לא כמרצה. מתאים להבאת חומר קליני, חלומות, או מצבים אישיים.' },
     en: { title: 'Clinical Session Mode', text: 'The selected theorist responds as an analyst in conversation — not as a lecturer. Suitable for clinical material, dreams, or personal situations.' },
     de: { title: 'Klinischer Sitzungsmodus', text: 'Der ausgewählte Theoretiker antwortet als Analytiker — nicht als Dozent. Geeignet für klinisches Material, Träume oder persönliche Situationen.' },
     es: { title: 'Modo de sesión clínica', text: 'El teórico seleccionado responde como analista — no como conferenciante. Adecuado para material clínico, sueños o situaciones personales.' },
     fr: { title: 'Mode session clinique', text: 'Le théoricien sélectionné répond comme analyste — pas comme conférencier. Adapté au matériel clinique, aux rêves ou aux situations personnelles.' },
     ru: { title: 'Режим клинической сессии', text: 'Выбранный теоретик отвечает как аналитик — не как лектор. Подходит для клинического материала, сновидений или личных ситуаций.' },
     it: { title: 'Modalità sessione clinica', text: 'Il teorico selezionato risponde come analista — non come docente. Adatto per materiale clinico, sogni o situazioni personali.' },
+  };
+  const EXPLORE_TIP_I18N: Record<string, { title: string; text: string }> = {
+    he: { title: 'חיפוש', text: 'להבין גישה תיאורטית, לשאול על מושג — ללא עיבוד חומר אישי.' },
+    en: { title: 'Explore', text: 'Understand a theoretical approach, ask about a concept — no personal material needed.' },
+    de: { title: 'Erkunden', text: 'Einen theoretischen Ansatz verstehen, ein Konzept erfragen — ohne persönliches Material.' },
+    es: { title: 'Explorar', text: 'Entender un enfoque teórico, preguntar sobre un concepto — sin material personal.' },
+    fr: { title: 'Explorer', text: 'Comprendre une approche théorique, poser une question conceptuelle — sans matériel personnel.' },
+    ru: { title: 'Изучить', text: 'Понять теоретический подход, задать концептуальный вопрос — без личного материала.' },
+    it: { title: 'Esplora', text: 'Capire un approccio teorico, fare una domanda concettuale — senza materiale personale.' },
   };
   const WELCOME_I18N: Record<string, { heading: string; apiText: string; privacyLink: string }> = {
     he: { heading: 'מה עולה לך היום?', apiText: 'השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.', privacyLink: 'מדיניות פרטיות' },
@@ -200,6 +209,13 @@ export default function Home() {
     setIsLocalhost(window.location.hostname === 'localhost');
     const code = (window as any).selectedLang?.code || 'he';
     setTimeout(() => (window as any).applyUITranslation?.(code), 0);
+    // Expose tooltip controls so chat.js can trigger the rich theorist card
+    // from entry-screen chips (same tooltip used in sidebar)
+    (window as any).setTheoristTooltip = (key: string, top: number, left: number, flip: boolean) => {
+      setCurrentLang((window as any).selectedLang?.code || 'he');
+      setTooltip({ text: key, top, left, flip });
+    };
+    (window as any).clearTheoristTooltip = () => setTooltip(null);
   }, []);
   useEffect(() => {
     const handleLangChange = (e: Event) => {
@@ -404,26 +420,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                 {THEORIST_LIST.map(([key, label, tooltipText]) => (
                   <div key={key} className="theorist-tag sb-item" data-key={key}
                     style={{ paddingRight: 10, fontSize: 13 }}
-                    onClick={(e) => (window as any).toggleTheorist(e.currentTarget, key)}
-                    onMouseEnter={(e) => {
-                      const r = e.currentTarget.getBoundingClientRect();
-                      const cardHeight = 310;
-                      const cardWidth = 240;
-                      const vh = window.innerHeight;
-                      const flip = r.top + cardHeight > vh - 16;
-                      const rawTop = flip ? r.bottom - cardHeight : r.top;
-                      const top = Math.min(Math.max(rawTop, 8), vh - cardHeight - 8);
-                      const lang = (window as any).selectedLang?.code || 'he';
-                      // Hebrew: sidebar on right side → card opens LEFT of sidebar (pink area)
-                      // LTR: sidebar on right side → card opens LEFT of button
-                      const isHe = lang === 'he';
-                      const left = isHe
-                        ? r.right + 8                                    // Hebrew: to the right of sidebar
-                        : Math.max(8, r.left - cardWidth - 8);           // LTR: to the left of button
-                      setCurrentLang(lang);
-                      setTooltip({ text: key, top, left, flip });
-                    }}
-                    onMouseLeave={() => setTooltip(null)}>
+                    onClick={(e) => (window as any).toggleTheorist(e.currentTarget, key)}>
                     {label}
                   </div>
                 ))}
@@ -506,7 +503,6 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                 }}
                 onMouseLeave={() => setSessionTip(null)}>
                 <Sofa size={18} strokeWidth={1.75} />
-                <span id="clinical-label">סשן</span>
               </div>
             </div>
           </div>
@@ -516,7 +512,72 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
         <div id="chat">
           {mounted && (
             <div className="welcome" id="welcome">
-              <h2>{(WELCOME_I18N[currentLang] || WELCOME_I18N['he']).heading || 'ברוכ/ה הבא/ה'}</h2>
+              {/* BW-41: back button — top-left corner of content area */}
+              <span id="bw-back-btn" onClick={() => (window as any).goBackToChat()} style={{ position: 'absolute', top: 20, left: 24, fontSize: 12, color: 'var(--muted)', cursor: 'pointer', opacity: 0.7, display: 'none' }}>← חזרה</span>
+              {/* BW-41: mode selection — shown to new users */}
+              <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
+                <p className="bw-entry-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0 }}>מה עולה לך היום?</p>
+                <div id="bw-mode-cards">
+                  <div className="bw-mode-card bw-mode-primary"
+                    onClick={() => (window as any).onModeSelected('session')}
+                    onMouseEnter={(e) => {
+                      const r = e.currentTarget.getBoundingClientRect();
+                      const lang = (window as any).selectedLang?.code || 'he';
+                      setCurrentLang(lang);
+                      const isRtl = lang === 'he';
+                      const tipWidth = 240;
+                      const top = r.top + (r.height / 2) - 42;
+                      // RTL: "סשן" is on the right → try tooltip to the right, fallback left
+                      // LTR: "Session" is on the left → tooltip to the left
+                      let left: number;
+                      if (isRtl) {
+                        const rightPos = r.right + 12;
+                        left = (rightPos + tipWidth <= window.innerWidth - 8)
+                          ? rightPos
+                          : Math.max(8, r.left - tipWidth - 12);
+                      } else {
+                        left = Math.max(8, r.left - tipWidth - 12);
+                      }
+                      setSessionTip({ top, left, mode: 'session' });
+                    }}
+                    onMouseLeave={() => setSessionTip(null)}>
+                    <span id="bw-label-session">סשן</span>
+                  </div>
+                  <div className="bw-mode-card bw-mode-secondary"
+                    onClick={() => (window as any).onModeSelected('explore')}
+                    onMouseEnter={(e) => {
+                      const r = e.currentTarget.getBoundingClientRect();
+                      const lang = (window as any).selectedLang?.code || 'he';
+                      setCurrentLang(lang);
+                      const isRtl = lang === 'he';
+                      const tipWidth = 240;
+                      const top = r.top + (r.height / 2) - 42;
+                      // RTL: "חיפוש" is on the left → try tooltip to the left, fallback right
+                      // LTR: "Explore" is on the right → tooltip to the right
+                      let left: number;
+                      if (isRtl) {
+                        const leftPos = r.left - tipWidth - 12;
+                        left = (leftPos >= 8)
+                          ? leftPos
+                          : Math.min(r.right + 12, window.innerWidth - tipWidth - 8);
+                      } else {
+                        left = Math.min(r.right + 12, window.innerWidth - tipWidth - 8);
+                      }
+                      setSessionTip({ top, left, mode: 'explore' });
+                    }}
+                    onMouseLeave={() => setSessionTip(null)}>
+                    <span id="bw-label-explore">חיפוש</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* BW-41: theorist selection — slides in after mode pick */}
+              <div id="bw-theorist-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 20, width: '100%' }}>
+                <p id="bw-theorist-prompt" className="bw-entry-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0 }}>עם מי תרצה לדבר?</p>
+                <div id="bw-theorist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 128px)', gap: '10px 14px', width: 'fit-content', margin: '0 auto' }}></div>
+                <button id="bw-theorist-confirm" onClick={() => (window as any).confirmTheoristEntry()} className="bw-confirm-btn" style={{ display: 'none' }}>המשך</button>
+              </div>
+
               {/* flow buttons injected here by renderFlowButtons() */}
               <p id="welcome-api-text" style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.6, margin: 0, marginTop: 'auto', paddingTop: 52 }}>
                 {(WELCOME_I18N[currentLang] || WELCOME_I18N['he']).apiText}{' '}
@@ -616,7 +677,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
             <div id="suggestion-bubbles" suppressHydrationWarning></div>
             <div className="hint" id="input-hint">Enter לשליחה · Shift+Enter לשורה חדשה</div>
             <div id="input-disclaimer" style={{ fontSize: 10, color: 'var(--muted)', opacity: 0.55, textAlign: 'center', paddingTop: 6, lineHeight: 1.5 }}>
-              כלי לימודי ומחקרי בלבד · אינו מהווה תחליף לטיפול פסיכולוגי מקצועי
+              For educational use only · Not a substitute for professional psychological treatment
             </div>
           </div>
         </div>
@@ -693,7 +754,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
         );
       })()}
 
-      {/* Session tooltip — fixed position, avoids overflow:hidden clipping */}
+      {/* Mode tooltip — fixed position, avoids overflow:hidden clipping. Shared by corner button, Session card, and Explore card */}
       {mounted && sessionTip && (
         <div style={{
           position: 'fixed', top: sessionTip.top,
@@ -707,9 +768,15 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
           textAlign: currentLang === 'he' ? 'right' : 'left',
         }}>
           <strong style={{ display: 'block', marginBottom: 4, color: 'var(--accent)' }}>
-            {(SESSION_TIP_I18N[currentLang] || SESSION_TIP_I18N['he']).title}
+            {sessionTip.mode === 'explore'
+              ? (EXPLORE_TIP_I18N[currentLang] || EXPLORE_TIP_I18N['en']).title
+              : (SESSION_TIP_I18N[currentLang] || SESSION_TIP_I18N['he']).title}
           </strong>
-          <span>{(SESSION_TIP_I18N[currentLang] || SESSION_TIP_I18N['he']).text}</span>
+          <span>
+            {sessionTip.mode === 'explore'
+              ? (EXPLORE_TIP_I18N[currentLang] || EXPLORE_TIP_I18N['en']).text
+              : (SESSION_TIP_I18N[currentLang] || SESSION_TIP_I18N['he']).text}
+          </span>
         </div>
       )}
     </>

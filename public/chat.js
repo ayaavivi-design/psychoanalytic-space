@@ -48,13 +48,11 @@ function hideAuthScreen() {
 }
 
 function proceedToApp() {
+  applyUITranslation(selectedLang?.code || 'en');
   setTimeout(checkIntakeStatus, 100);
-  // Select Winnicott + render flow buttons on load
-  setTimeout(() => {
-    if (activeTheorists.length === 0) selectWinnicottDefault();
-    renderFlowButtons();
-    renderAnalystBadge();
-  }, 350);
+  // BW-41 unified screen: always show full entry (mode + theorist together).
+  // showModeSelect() pre-selects the saved pill from localStorage.
+  setTimeout(() => { showModeSelect(); }, 350);
   setTimeout(() => { initSidebarTips(); startOnboardingTour(); }, 800);
 }
 
@@ -478,8 +476,16 @@ async function signOut() {
   await supabaseClient.auth.signOut();
   conversationHistory = [];
   const chat = document.getElementById('chat');
-  const _soT = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['en'];
-  if (chat) chat.innerHTML = `<div class="welcome" id="welcome"><h2>${_soT.welcome || 'Welcome'}</h2><p>${_soT.welcomeText || 'Ask any question about psychoanalysis.'}</p></div>`;
+  if (chat) {
+    // Preserve #welcome and its BW-41 children — clear only conversation messages
+    // (replacing chat.innerHTML destroys #bw-mode-select / #bw-theorist-select,
+    //  so showModeSelect() fails silently on the next login)
+    Array.from(chat.children).forEach(child => {
+      if (child.id !== 'welcome') child.remove();
+    });
+  }
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.style.display = '';
   activeTheorists = [];
   document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
 }
@@ -596,35 +602,37 @@ function renderAnalystBadge() {
 }
 
 function renderFlowButtons() {
-  const welcome = document.getElementById('welcome');
-  if (!welcome) return;
+  if (localStorage.getItem('bw_mode') === 'explore') return;
   const existing = document.getElementById('flow-buttons');
   if (existing) existing.remove();
+  // After BW-41 entry, welcome is hidden — append to chat instead
+  const welcome = document.getElementById('welcome');
+  const welcomeVisible = welcome && welcome.style.display !== 'none';
+  const appendTarget = welcomeVisible ? welcome : document.getElementById('chat');
+  if (!appendTarget) return;
   const isEn = (window.selectedLang?.code === 'en');
   const buttons = isEn
     ? [
-        { key: 'after_session',  label: 'Still with my last session' },
-        { key: 'before_session', label: 'Something I want to bring' },
+        { key: 'after_session',  label: 'Still inside my last session' },
+        { key: 'before_session', label: "Something I'm carrying" },
         { key: 'something_else', label: "Something won't leave me" },
       ]
     : [
         { key: 'after_session',  label: 'הפגישה עוד כאן' },
-        { key: 'before_session', label: 'יש לי משהו להביא' },
+        { key: 'before_session', label: 'משהו שמלווה אותי' },
         { key: 'something_else', label: 'משהו לא עוזב אותי' },
       ];
-  const isMobile = window.innerWidth < 600;
   const container = document.createElement('div');
   container.id = 'flow-buttons';
-  container.style.cssText = `display:flex;flex-direction:${isMobile ? 'column' : 'row'};gap:10px;width:100%;max-width:${isMobile ? '340px' : '560px'};margin:0 auto;direction:${isEn ? 'ltr' : 'rtl'};justify-content:center;`;
+  container.style.cssText = `display:flex;flex-direction:column;gap:8px;width:100%;max-width:360px;margin:0 auto;direction:${isEn ? 'ltr' : 'rtl'};align-items:center;`;
   container.innerHTML = buttons.map(b =>
-    `<button onclick="startFlow('${b.key}')"
-      style="background:var(--surface-alt,#faf7f6);color:var(--text);border:1px solid var(--border,#e8ddd9);padding:20px 22px;border-radius:12px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;transition:background 0.15s,border-color 0.15s;text-align:center;flex:1;min-width:0;font-weight:400;line-height:1.4;"
-      onmouseover="this.style.background='var(--accent-light,#f8eff2)';this.style.borderColor='var(--accent,#c4607a)'"
-      onmouseout="this.style.background='var(--surface-alt,#faf7f6)';this.style.borderColor='var(--border,#e8ddd9)'">${b.label}</button>`
+    `<button class="flow-btn" onclick="startFlow('${b.key}')"
+      onmouseover="this.classList.add('flow-btn-hover')"
+      onmouseout="this.classList.remove('flow-btn-hover')">${b.label}</button>`
   ).join('');
   const apiNote = document.getElementById('welcome-api-text');
-  if (apiNote) welcome.insertBefore(container, apiNote);
-  else welcome.appendChild(container);
+  if (apiNote && welcomeVisible) appendTarget.insertBefore(container, apiNote);
+  else appendTarget.appendChild(container);
 }
 
 async function startFlow(flowKey) {
@@ -702,6 +710,253 @@ function selectWinnicottDefault() {
   activeTheorists = ['winnicott'];
   const wEl = document.querySelector('[data-key="winnicott"]');
   if (wEl) wEl.classList.add('active');
+}
+
+// ── BW-41: Two-mode entry flow ────────────────────────────────
+
+function goBackToChat() {
+  // Return to active conversation from entry screen
+  const chatEl = document.getElementById('chat');
+  const hasMessages = chatEl && chatEl.querySelector('.message');
+  if (!hasMessages) return;
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.style.display = 'none';
+  document.body.classList.remove('bw-selecting');
+}
+
+function showModeSelect() {
+  const modeDiv = document.getElementById('bw-mode-select');
+  const theoristDiv = document.getElementById('bw-theorist-select');
+  const apiNote = document.getElementById('welcome-api-text');
+  // Unified screen: show both sections together
+  if (modeDiv) modeDiv.style.display = 'flex';
+  if (theoristDiv) {
+    theoristDiv.style.display = 'flex';
+    theoristDiv.classList.remove('bw-slide-in');
+  }
+  // Show back button only if there's an active conversation to return to
+  const backBtn = document.getElementById('bw-back-btn');
+  if (backBtn) {
+    const hasMessages = document.getElementById('chat')?.querySelector('.message');
+    backBtn.style.display = hasMessages ? 'block' : 'none';
+  }
+  if (apiNote) apiNote.style.display = 'none';
+  // Hide input while user is still choosing
+  document.body.classList.add('bw-selecting');
+  // Remove any stale injected welcome messages
+  document.querySelectorAll('#welcome > p:not(#welcome-api-text):not(.bw-entry-heading)').forEach(el => el.remove());
+  // Default mode: session
+  if (!localStorage.getItem('bw_mode')) localStorage.setItem('bw_mode', 'session');
+  // Mark correct pill as selected
+  const savedMode = localStorage.getItem('bw_mode') || 'session';
+  document.querySelector('.bw-mode-primary')?.classList.toggle('bw-mode-selected', savedMode === 'session');
+  document.querySelector('.bw-mode-secondary')?.classList.toggle('bw-mode-selected', savedMode === 'explore');
+  // Populate theorist grid if empty
+  const grid = document.getElementById('bw-theorist-grid');
+  if (grid && !grid.hasChildNodes()) {
+    const isEn = (window.selectedLang?.code === 'en');
+    const NAMES = {
+      freud:    { he: 'פרויד',   en: 'Freud',     sub_he: 'דחפים וקונפליקט',  sub_en: 'Drive & Conflict' },
+      klein:    { he: 'קליין',   en: 'Klein',     sub_he: 'יחסי אובייקט',      sub_en: 'Object Relations' },
+      winnicott:{ he: 'ויניקוט', en: 'Winnicott', sub_he: 'עצמי ומרחב מחזיק',  sub_en: 'Self & Holding'   },
+      ogden:    { he: 'אוגדן',   en: 'Ogden',     sub_he: 'הניסיון האנליטי',    sub_en: 'Analytic Third'   },
+    };
+    grid.innerHTML = ['freud','klein','winnicott','ogden'].map(key =>
+      `<div class="bw-theorist-card${key === 'winnicott' ? ' bw-theorist-selected' : ''}"
+        data-theorist="${key}"
+        onclick="selectTheoristEntry('${key}')">
+        <span class="bw-t-name">${isEn ? NAMES[key].en : NAMES[key].he}</span>
+        <span class="bw-t-sub">${isEn ? NAMES[key].sub_en : NAMES[key].sub_he}</span>
+      </div>`
+    ).join('');
+    window._bwPendingTheorist = 'winnicott';
+    // Attach rich tooltips
+    document.querySelectorAll('.bw-theorist-card[data-theorist]').forEach(card => {
+      const key = card.getAttribute('data-theorist');
+      card.addEventListener('mouseenter', e => {
+        if (typeof window.setTheoristTooltip !== 'function') return;
+        const r = e.currentTarget.getBoundingClientRect();
+        const cardH = 310, cardW = 240, vh = window.innerHeight, vw = window.innerWidth;
+        const sidebarW = document.getElementById('sidebar')?.getBoundingClientRect().width || 220;
+        const contentCenter = sidebarW + (vw - sidebarW) / 2;
+        const flip = r.top + cardH > vh - 16;
+        const rawTop = flip ? r.bottom - cardH : r.top;
+        const top = Math.min(Math.max(rawTop, 8), vh - cardH - 8);
+        const isRightColumn = r.left > contentCenter;
+        const left = isRightColumn
+          ? Math.min(r.right + 12, vw - cardW - 8)
+          : Math.max(sidebarW + 8, r.left - cardW - 12);
+        window.setTheoristTooltip(key, top, left, flip);
+      });
+      card.addEventListener('mouseleave', () => window.clearTheoristTooltip?.());
+    });
+  }
+  // Show confirm button — Winnicott is pre-selected
+  const btn = document.getElementById('bw-theorist-confirm');
+  if (btn) btn.style.display = 'block';
+  // Set labels
+  bwUpdateModeLabels();
+}
+
+function bwUpdateModeLabels() {
+  const isEn = (window.selectedLang?.code === 'en');
+  const heading = document.querySelector('#bw-mode-select .bw-entry-heading');
+  if (heading) heading.textContent = isEn ? 'How are you coming in today?' : 'מה עולה לך היום?';
+  const sessionLabel = document.getElementById('bw-label-session');
+  if (sessionLabel) sessionLabel.textContent = isEn ? 'Session' : 'סשן';
+  const exploreLabel = document.getElementById('bw-label-explore');
+  if (exploreLabel) exploreLabel.textContent = isEn ? 'Explore' : 'חיפוש';
+  const theoristPrompt = document.querySelector('#bw-theorist-select .bw-entry-heading');
+  if (theoristPrompt) theoristPrompt.textContent = isEn ? 'Who would you like to speak with?' : 'עם מי תרצה לדבר?';
+  const confirmBtn = document.getElementById('bw-theorist-confirm');
+  if (confirmBtn) confirmBtn.textContent = isEn ? 'Continue' : 'המשך';
+  // Update theorist card names in-place (without re-rendering, to preserve selection + listeners)
+  const TNAMES = {
+    freud:     { he: 'פרויד',   en: 'Freud',      sub_he: 'דחפים וקונפליקט',   sub_en: 'Drive & Conflict'  },
+    klein:     { he: 'קליין',   en: 'Klein',      sub_he: 'יחסי אובייקט',       sub_en: 'Object Relations'  },
+    winnicott: { he: 'ויניקוט', en: 'Winnicott',  sub_he: 'עצמי ומרחב מחזיק',   sub_en: 'Self & Holding'    },
+    ogden:     { he: 'אוגדן',   en: 'Ogden',      sub_he: 'הניסיון האנליטי',     sub_en: 'Analytic Third'    },
+  };
+  document.querySelectorAll('.bw-theorist-card[data-theorist]').forEach(card => {
+    const key = card.getAttribute('data-theorist');
+    if (!TNAMES[key]) return;
+    const nameEl = card.querySelector('.bw-t-name');
+    const subEl  = card.querySelector('.bw-t-sub');
+    if (nameEl) nameEl.textContent = isEn ? TNAMES[key].en : TNAMES[key].he;
+    if (subEl)  subEl.textContent  = isEn ? TNAMES[key].sub_en : TNAMES[key].sub_he;
+  });
+}
+
+function onModeSelected(mode) {
+  localStorage.setItem('bw_mode', mode);
+  // Unified screen: just toggle pill visual, don't navigate away
+  document.querySelector('.bw-mode-primary')?.classList.toggle('bw-mode-selected', mode === 'session');
+  document.querySelector('.bw-mode-secondary')?.classList.toggle('bw-mode-selected', mode === 'explore');
+}
+
+function showTheoristEntry(mode) {
+  const modeDiv = document.getElementById('bw-mode-select');
+  const theoristDiv = document.getElementById('bw-theorist-select');
+  const apiNote = document.getElementById('welcome-api-text');
+  if (modeDiv) modeDiv.style.display = 'none';
+  // Keep input hidden during theorist selection too
+  document.body.classList.add('bw-selecting');
+  if (theoristDiv) {
+    theoristDiv.style.display = 'flex';
+    theoristDiv.classList.remove('bw-slide-in');
+    void theoristDiv.offsetWidth; // reflow to retrigger animation
+    theoristDiv.classList.add('bw-slide-in');
+  }
+  if (apiNote) apiNote.style.display = 'none';
+  bwUpdateModeLabels();
+
+  // Update back button language
+  const backBtn = document.getElementById('bw-back-btn');
+  const isEnBack = (window.selectedLang?.code === 'en');
+  if (backBtn) backBtn.textContent = isEnBack ? '← Back' : '← חזרה';
+
+  const grid = document.getElementById('bw-theorist-grid');
+  if (!grid) return;
+  const isEn = (window.selectedLang?.code === 'en');
+  const NAMES = {
+    freud:    { he: 'פרויד',   en: 'Freud',     sub_he: 'דחפים וקונפליקט',      sub_en: 'Drive & Conflict'   },
+    klein:    { he: 'קליין',   en: 'Klein',     sub_he: 'יחסי אובייקט',          sub_en: 'Object Relations'   },
+    winnicott:{ he: 'ויניקוט', en: 'Winnicott', sub_he: 'עצמי ומרחב מחזיק',      sub_en: 'Self & Holding'     },
+    ogden:    { he: 'אוגדן',   en: 'Ogden',     sub_he: 'הניסיון האנליטי',        sub_en: 'Analytic Third'     },
+  };
+  grid.innerHTML = ['freud','klein','winnicott','ogden'].map(key =>
+    `<div class="bw-theorist-card${key === 'winnicott' ? ' bw-theorist-selected' : ''}"
+      data-theorist="${key}"
+      onclick="selectTheoristEntry('${key}')">
+      <span class="bw-t-name">${isEn ? NAMES[key].en : NAMES[key].he}</span>
+      <span class="bw-t-sub">${isEn ? NAMES[key].sub_en : NAMES[key].sub_he}</span>
+    </div>`
+  ).join('');
+
+  window._bwPendingTheorist = 'winnicott';
+
+  // Attach rich tooltip to entry-screen chips (same card used in sidebar)
+  // Tooltip opens LEFT for left-column chips, RIGHT for right-column chips
+  // — never covers other chips
+  document.querySelectorAll('.bw-theorist-card[data-theorist]').forEach(card => {
+    const key = card.getAttribute('data-theorist');
+    card.addEventListener('mouseenter', e => {
+      if (typeof window.setTheoristTooltip !== 'function') return;
+      const r = e.currentTarget.getBoundingClientRect();
+      const cardH = 310, cardW = 240, vh = window.innerHeight, vw = window.innerWidth;
+      const sidebarW = document.getElementById('sidebar')?.getBoundingClientRect().width || 220;
+      const contentCenter = sidebarW + (vw - sidebarW) / 2;
+      // Vertical: align top with chip, clamp to viewport
+      const flip = r.top + cardH > vh - 16;
+      const rawTop = flip ? r.bottom - cardH : r.top;
+      const top = Math.min(Math.max(rawTop, 8), vh - cardH - 8);
+      // Horizontal: outer side — left col → tooltip left of chip, right col → right of chip
+      const isRightColumn = r.left > contentCenter;
+      const left = isRightColumn
+        ? Math.min(r.right + 12, vw - cardW - 8)          // right of chip
+        : Math.max(sidebarW + 8, r.left - cardW - 12);    // left of chip, clear of sidebar
+      window.setTheoristTooltip(key, top, left, flip);
+    });
+    card.addEventListener('mouseleave', () => window.clearTheoristTooltip?.());
+  });
+
+  const btn = document.getElementById('bw-theorist-confirm');
+  if (btn) btn.style.display = 'block';
+}
+
+function selectTheoristEntry(key) {
+  window._bwPendingTheorist = key;
+  document.querySelectorAll('.bw-theorist-card').forEach(el => el.classList.remove('bw-theorist-selected'));
+  const sel = document.querySelector(`.bw-theorist-card[data-theorist="${key}"]`);
+  if (sel) sel.classList.add('bw-theorist-selected');
+}
+
+function confirmTheoristEntry() {
+  const key = window._bwPendingTheorist || 'winnicott';
+  const mode = localStorage.getItem('bw_mode') || 'session';
+
+  const theoristDiv = document.getElementById('bw-theorist-select');
+  if (theoristDiv) theoristDiv.style.display = 'none';
+
+  // sync sidebar theorist tags
+  document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
+  activeTheorists = [key];
+  const sidebarTag = document.querySelector(`[data-key="${key}"]`);
+  if (sidebarTag) sidebarTag.classList.add('active');
+  updateSessionTitle(true);
+
+  // set placeholder
+  const input = document.getElementById('user-input');
+  if (input) {
+    const isEn = (window.selectedLang?.code === 'en');
+    if (mode === 'session') {
+      input.placeholder = isEn ? "What's coming up right now?" : 'מה עולה עכשיו?';
+    } else {
+      input.placeholder = isEn ? 'What did you want to understand about your therapy?' : 'מה רצית להבין מהטיפול שלך?';
+    }
+  }
+
+  renderAnalystBadge();
+
+  // Clear chat — preserve #welcome in DOM (hidden), remove only conversation nodes
+  conversationHistory = [];
+  saveConversation();
+  const chatEl = document.getElementById('chat');
+  if (chatEl) {
+    Array.from(chatEl.children).forEach(child => {
+      if (child.id !== 'welcome') child.remove();
+    });
+  }
+  const _welcomeEl = document.getElementById('welcome');
+  if (_welcomeEl) _welcomeEl.style.display = 'none';
+  // Reveal input now that mode + theorist are confirmed and chat is starting
+  document.body.classList.remove('bw-selecting');
+  showTheoristOpening(key, false);
+
+  // Flow buttons go into #chat after the opening (welcome is already gone)
+  if (mode === 'session') {
+    renderFlowButtons();
+  }
 }
 let uploadedFileContent = null;
 let uploadedFileName = null;
@@ -880,13 +1135,15 @@ function showTheoristSwitchModal(el, name) {
     conversationHistory = [];
     saveConversation();
     const _tsmChatEl = document.getElementById('chat');
-    const _tsmT = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['en'];
     if (_tsmChatEl) {
-      _tsmChatEl.innerHTML = `<div class="welcome" id="welcome"><h2>${_tsmT.welcomeHeading || 'מה עולה לך היום?'}</h2></div>`;
-      renderApiNote();
-      renderFlowButtons();
-      renderAnalystBadge();
+      // Preserve #welcome and its BW-41 children — clear only conversation messages
+      Array.from(_tsmChatEl.children).forEach(child => {
+        if (child.id !== 'welcome') child.remove();
+      });
+      const _tsmWelcome = document.getElementById('welcome');
+      if (_tsmWelcome) _tsmWelcome.style.display = '';
       window.activeFlow = null;
+      showModeSelect();
     }
     performTheoristSwitch(el, name);
   });
@@ -929,7 +1186,15 @@ function performTheoristSwitch(el, name) {
     const titleEl = document.getElementById('session-title');
     if (titleEl) titleEl.textContent = '';
     const chatEl = document.getElementById('chat');
-    if (chatEl) chatEl.innerHTML = `<div class="welcome" id="welcome"><h2>${t2.welcome || 'Welcome'}</h2><p>${t2.welcomeText || 'Ask any question about psychoanalysis.'}</p></div>`;
+    if (chatEl) {
+      // Preserve #welcome and its BW-41 children — clear only conversation messages
+      Array.from(chatEl.children).forEach(child => {
+        if (child.id !== 'welcome') child.remove();
+      });
+      const _pfWelcome = document.getElementById('welcome');
+      if (_pfWelcome) _pfWelcome.style.display = '';
+      showModeSelect();
+    }
   }
 }
 
@@ -3858,7 +4123,7 @@ function applyUITranslation(code) {
   // Title & subtitle
   const h1 = document.querySelector('header h1');
   if (h1) h1.textContent = t.title;
-  const sub = document.querySelector('header span');
+  const sub = document.getElementById('header-subtitle');
   if (sub) sub.textContent = t.subtitle;
   // Placeholder
   const input = document.getElementById('user-input');
@@ -3902,8 +4167,7 @@ function applyUITranslation(code) {
   if (sbNewChat) sbNewChat.textContent = t.newChat || 'New chat';
   const sbRecentLabel = document.querySelector('.sb-recent-text');
   if (sbRecentLabel) sbRecentLabel.textContent = t.recentChats || 'Recent';
-  const clinicalLabel = document.getElementById('clinical-label');
-  if (clinicalLabel) clinicalLabel.textContent = (window.clinicalMode ? (t.session || 'Session') + ' ✓' : (t.session || 'Session'));
+  // clinical-label removed from header (BW-41: label clash resolved)
   const sbUserName = document.getElementById('sb-user-name');
   if (sbUserName && sbUserName.textContent === 'משתמש' || sbUserName && sbUserName.textContent === 'User') sbUserName.textContent = t.sbUser || 'User';
   // Flip user row direction: RTL langs (he, ar) = avatar right, LTR = avatar left
@@ -4038,7 +4302,7 @@ function applyUITranslation(code) {
     if (persona) applyPersona(persona);
   } catch(e) {}
   // Re-render memory-aware welcome text in correct language (targets dedicated element, not api-note)
-  const _apMemoryEl = document.querySelector('.welcome p:not(#welcome-api-text)');
+  const _apMemoryEl = document.querySelector('.welcome p:not(#welcome-api-text):not(.bw-entry-heading)');
   if (_apMemoryEl && conversationHistory.length === 0) {
     const _apMemories = loadMemory();
     if (_apMemories.length > 0) {
@@ -4070,6 +4334,8 @@ function selectLang(code, flag, name) {
     renderFlowButtons();
     renderAnalystBadge();
   }
+  // Update entry screen headings and toggle labels
+  bwUpdateModeLabels();
 }
 
 // Close lang menu on outside click
@@ -4202,7 +4468,7 @@ const THEORIST_OPENING = {
   }
 };
 
-function showTheoristOpening(theoristKey) {
+function showTheoristOpening(theoristKey, showContext = true) {
   const openingObj = THEORIST_OPENING[theoristKey];
   if (!openingObj) return;
   const lang = (selectedLang && selectedLang.code) || 'he';
@@ -4224,15 +4490,17 @@ function showTheoristOpening(theoristKey) {
 
   const chat = document.getElementById('chat');
   const welcome = document.getElementById('welcome');
-  if (welcome) welcome.remove();
+  if (welcome) welcome.style.display = 'none';
 
-  // context notice
-  const contextDiv = document.createElement('div');
-  contextDiv.style.cssText = 'text-align:center;padding:12px 20px;margin:16px auto;max-width:380px;';
-  contextDiv.innerHTML = `<span style="font-size:11px;color:var(--muted);background:var(--surface-alt,#f8f4f2);border:1px solid var(--border);border-radius:20px;padding:5px 14px;display:inline-block;line-height:1.5;">
-    ${contextMsg}
-  </span>`;
-  chat.appendChild(contextDiv);
+  // context notice (only in clinical mode, not BW-41 entry flow)
+  if (showContext) {
+    const contextDiv = document.createElement('div');
+    contextDiv.style.cssText = 'text-align:center;padding:12px 20px;margin:16px auto;max-width:380px;';
+    contextDiv.innerHTML = `<span style="font-size:11px;color:var(--muted);background:var(--surface-alt,#f8f4f2);border:1px solid var(--border);border-radius:20px;padding:5px 14px;display:inline-block;line-height:1.5;">
+      ${contextMsg}
+    </span>`;
+    chat.appendChild(contextDiv);
+  }
 
   // opening message
   const div = document.createElement('div');
@@ -4379,12 +4647,10 @@ function showWinnicottDefaultTooltip(anchorEl) {
 function activateClinicalModeUI(on) {
   window.clinicalMode = on;
   const btn = document.getElementById('clinical-btn');
-  const label = document.getElementById('clinical-label');
   const input = document.getElementById('user-input');
   if (on) {
-    btn.classList.add('clinical-active');
+    if (btn) btn.classList.add('clinical-active');
     const t2 = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
-    label.textContent = (t2.session || 'Session') + ' ✓';
     input.placeholder = t2.placeholderClinical || 'Describe the situation — what do you feel? what is happening?';
     // Default to Winnicott if no theorist is active
     if (activeTheorists.length === 0) {
@@ -4402,9 +4668,8 @@ function activateClinicalModeUI(on) {
       showTheoristOpening(activeTheorists[0]);
     }
   } else {
-    btn.classList.remove('clinical-active');
+    if (btn) btn.classList.remove('clinical-active');
     const _td = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
-    label.textContent = _td.session || 'Session';
     input.placeholder = _td.placeholderGeneral || 'Ask a psychoanalytic question...';
   }
 }
@@ -5104,19 +5369,27 @@ function performNewChat() {
   saveConversation();
   const titleEl = document.getElementById('session-title');
   if (titleEl) titleEl.textContent = '';
+  // BW-41: restore #welcome — clear only conversation messages, not the welcome div itself
   const chat = document.getElementById('chat');
-  const _pncT = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
-  chat.innerHTML = `
-    <div class="welcome" id="welcome">
-      
-      <h2>${_pncT.welcomeHeading || 'מה עולה לך היום?'}</h2>
-    </div>`;
-  renderApiNote();
-  renderFlowButtons();
+  if (chat) {
+    Array.from(chat.children).forEach(child => {
+      if (child.id !== 'welcome') child.remove();
+    });
+  }
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.style.display = '';
+  // Reset BW-41 sub-divs, then show the right entry screen
+  const _ncModeDiv = document.getElementById('bw-mode-select');
+  const _ncTheoristDiv = document.getElementById('bw-theorist-select');
+  const _ncApiNote = document.getElementById('welcome-api-text');
+  if (_ncModeDiv) _ncModeDiv.style.display = 'none';
+  if (_ncTheoristDiv) _ncTheoristDiv.style.display = 'none';
+  if (_ncApiNote) _ncApiNote.style.display = 'none';
+  // BW-41 unified screen: always return to full entry screen.
+  // showModeSelect() reads bw_mode from localStorage and pre-selects the pill.
+  showModeSelect();
   renderAnalystBadge();
   window.activeFlow = null;
-  // Reset theorist selections — Winnicott is the default voice
-  selectWinnicottDefault();
   if (clinicalMode) toggleClinicalMode();
   document.getElementById('user-input').value = '';
   setTimeout(checkIntakeStatus, 50);
@@ -5164,6 +5437,8 @@ function restoreConversation(memIndex) {
   chat.scrollTop = chat.scrollHeight;
   updateReflectionBtn();
   updateSessionTitle(true);
+  // Ensure input is visible after restoring a conversation
+  document.body.classList.remove('bw-selecting');
 }
 
 function sbLangToggle() {
@@ -5465,10 +5740,10 @@ window.resetPassword = resetPassword;
   }
 })();
 
-// Show memory-aware welcome if returning user
+// Show memory-aware welcome if returning user (suppressed during BW-41 entry flow)
 (function() {
   const memories = loadMemory();
-  if (memories.length > 0 && conversationHistory.length === 0) {
+  if (memories.length > 0 && conversationHistory.length === 0 && !localStorage.getItem('bw_mode')) {
     const last = memories[memories.length - 1];
     const _rwLang = window._lang || 'he';
     const _rwIsEn = _rwLang === 'en';

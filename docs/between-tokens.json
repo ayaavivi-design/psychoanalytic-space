@@ -1,0 +1,212 @@
+{
+  "global": {
+    "color": {
+      "bg": {
+        "value": "#fdf8f6",
+        "type": "color",
+        "description": "רקע כללי — לבן-שמנת"
+      },
+      "surface": {
+        "value": "#ffffff",
+        "type": "color",
+        "description": "כרטיסים, panels"
+      },
+      "border": {
+        "value": "#ede4e0",
+        "type": "color",
+        "description": "גבולות עדינים"
+      },
+      "text": {
+        "value": "#2d2420",
+        "type": "color",
+        "description": "טקסט ראשי — כמעט שחור, חמים"
+      },
+      "muted": {
+        "value": "#a8948e",
+        "type": "color",
+        "description": "טקסט משני — placeholder, labels"
+      },
+      "accent": {
+        "value": "#c4607a",
+        "type": "color",
+        "description": "צבע ראשי — ורוד-אדום"
+      },
+      "accentDim": {
+        "value": "#d4899a",
+        "type": "color",
+        "description": "accent בהיר — hover, גבולות"
+      },
+      "accentSoft": {
+        "value": "rgba(196, 96, 122, 0.08)",
+        "type": "color",
+        "description": "accent שקוף — selected background"
+      },
+      "thinking": {
+        "value": "#fdf0f3",
+        "type": "color",
+        "description": "רקע מחשבה של AI"
+      }
+    },
+    "borderRadius": {
+      "xs": {
+        "value": "4px",
+        "type": "borderRadius",
+        "description": "inline, פינת message bubble"
+      },
+      "sm": {
+        "value": "8px",
+        "type": "borderRadius",
+        "description": "sidebar items, modals, dropdowns"
+      },
+      "md": {
+        "value": "12px",
+        "type": "borderRadius",
+        "description": "כרטיסי תיאורטיקן, panels קטנים"
+      },
+      "lg": {
+        "value": "16px",
+        "type": "borderRadius",
+        "description": "input, mode cards, message bubbles"
+      },
+      "xl": {
+        "value": "22px",
+        "type": "borderRadius",
+        "description": "כפתורים ראשיים (pill)"
+      },
+      "circle": {
+        "value": "50%",
+        "type": "borderRadius",
+        "description": "avatars, נקודות עגולות"
+      }
+    },
+    "spacing": {
+      "xs": {
+        "value": "4px",
+        "type": "spacing",
+        "description": "gap פנימי בתוך כרטיס"
+      },
+      "sm": {
+        "value": "8px",
+        "type": "spacing",
+        "description": "gap בין אלמנטים קטנים"
+      },
+      "md": {
+        "value": "12px",
+        "type": "spacing",
+        "description": "gap בין כרטיסים, padding buttons"
+      },
+      "lg": {
+        "value": "20px",
+        "type": "spacing",
+        "description": "gap בין blocks ראשיים"
+      },
+      "xl": {
+        "value": "32px",
+        "type": "spacing",
+        "description": "padding מסך, welcome container"
+      }
+    },
+    "fontFamilies": {
+      "cormorant": {
+        "value": "Cormorant Garamond",
+        "type": "fontFamilies",
+        "description": "כותרות, שמות תיאורטיקנים, quotes — הקול הספרותי"
+      },
+      "rubik": {
+        "value": "Rubik",
+        "type": "fontFamilies",
+        "description": "ממשק, כפתורים, גוף — פונקציונלי וקריא"
+      },
+      "david": {
+        "value": "David Libre",
+        "type": "fontFamilies",
+        "description": "כותרת welcome בלבד"
+      }
+    },
+    "fontSizes": {
+      "display": {
+        "value": "48px",
+        "type": "fontSizes",
+        "description": "Cormorant — אלמנט דקורטיבי"
+      },
+      "headingXl": {
+        "value": "26px",
+        "type": "fontSizes",
+        "description": "Cormorant — שם המוצר בheader"
+      },
+      "headingLg": {
+        "value": "22px",
+        "type": "fontSizes",
+        "description": "David — כותרת welcome"
+      },
+      "headingMd": {
+        "value": "20px",
+        "type": "fontSizes",
+        "description": "Cormorant — כותרת session פעילה"
+      },
+      "headingSm": {
+        "value": "19px",
+        "type": "fontSizes",
+        "description": "Cormorant — prompt בתוך flow"
+      },
+      "headingCard": {
+        "value": "18px",
+        "type": "fontSizes",
+        "description": "Cormorant — שמות תיאורטיקנים, mode cards"
+      },
+      "bodyLg": {
+        "value": "15px",
+        "type": "fontSizes",
+        "description": "Rubik — הודעות שיחה, שדה קלט"
+      },
+      "bodyMd": {
+        "value": "13px",
+        "type": "fontSizes",
+        "description": "Rubik — UI כללי: sidebar, buttons"
+      },
+      "bodySm": {
+        "value": "12px",
+        "type": "fontSizes",
+        "description": "Rubik — כפתורי flow, metadata"
+      },
+      "caption": {
+        "value": "11px",
+        "type": "fontSizes",
+        "description": "Rubik — labels, disclaimer, timestamps"
+      },
+      "micro": {
+        "value": "9px",
+        "type": "fontSizes",
+        "description": "Rubik — subtitles בתוך כרטיסים (uppercase)"
+      }
+    },
+    "fontWeights": {
+      "light": {
+        "value": "300",
+        "type": "fontWeights"
+      },
+      "regular": {
+        "value": "400",
+        "type": "fontWeights"
+      },
+      "medium": {
+        "value": "500",
+        "type": "fontWeights"
+      }
+    },
+    "lineHeights": {
+      "tight": {
+        "value": "1.3",
+        "type": "lineHeights"
+      },
+      "normal": {
+        "value": "1.6",
+        "type": "lineHeights"
+      },
+      "relaxed": {
+        "value": "1.8",
+        "type": "lineHeights"
+      }
+    }
+  }
+}

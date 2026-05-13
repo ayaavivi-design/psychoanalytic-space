@@ -1,14 +1,30 @@
 
 :root {
-  --bg: #fdf8f6;
-  --surface: #fff;
-  --border: #ede4e0;
-  --text: #2d2420;
-  --muted: #a8948e;
-  --accent: #c4607a;
-  --accent-dim: #d4899a;
+  /* Color tokens */
+  --bg:          #fdf8f6;
+  --surface:     #fff;
+  --border:      #ede4e0;
+  --text:        #2d2420;
+  --muted:       #a8948e;
+  --accent:      #c4607a;
+  --accent-dim:  #d4899a;
   --accent-soft: rgba(196,96,122,0.08);
-  --thinking: #fdf0f3;
+  --thinking:    #fdf0f3;
+
+  /* Border radius */
+  --radius-xs:     4px;   /* inline, message bubble corner  */
+  --radius-sm:     8px;   /* sidebar items, modals, dropdowns */
+  --radius-md:     12px;  /* cards (theorist), small panels */
+  --radius-lg:     16px;  /* input wrap, mode cards, message bubbles */
+  --radius-xl:     22px;  /* all pill buttons */
+  --radius-circle: 50%;   /* avatars, dots */
+
+  /* Spacing */
+  --space-xs:    4px;
+  --space-sm:    8px;
+  --space-md:    12px;
+  --space-lg:    20px;
+  --space-xl:    32px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -61,8 +77,8 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 7px 14px;
-  border-radius: 8px;
+  padding: 7px 14px; /* TODO: 7px/14px not in spacing tokens */
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 13px;
   color: var(--text);
@@ -124,16 +140,16 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 14px;
+  padding: 8px 14px; /* TODO: 14px not in spacing tokens */
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 .sb-user-row:hover { background: rgba(196,96,122,0.06); }
 .sb-avatar {
   width: 30px;
   height: 30px;
   min-width: 30px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--accent);
   display: flex;
   align-items: center;
@@ -157,12 +173,12 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-md);
   position: relative;
 }
 .header-psi {
   font-family: var(--font-cormorant), serif;
-  font-size: 64px;
+  font-size: 64px; /* decorative only — not in type scale */
   color: var(--accent);
   opacity: 0.07;
   line-height: 1;
@@ -180,7 +196,7 @@ header {
   justify-content: space-between;
   background: transparent;
   border-top: 1px solid var(--border);
-  gap: 8px;
+  gap: var(--space-sm);
 }
 .session-name {
   font-size: 12px;
@@ -193,7 +209,7 @@ header {
 }
 .session-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-sm);
   align-items: center;
 }
 header h1 {
@@ -225,7 +241,7 @@ header span {
   cursor: pointer;
   padding: 7px 18px;
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: var(--radius-xl);
   transition: all 0.2s;
 }
 .memory-indicator:hover { border-color: var(--accent-dim); color: var(--accent); }
@@ -236,7 +252,7 @@ header span {
 }
 .memory-dot {
   width: 6px; height: 6px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--accent-dim);
   animation: pulse 3s infinite;
 }
@@ -247,9 +263,9 @@ header span {
 .theorist-tag {
   font-size: 12px;
   letter-spacing: 0.03em;
-  padding: 4px 12px;
+  padding: var(--space-xs) var(--space-md);
   border: 1.5px solid var(--border);
-  border-radius: 24px;
+  border-radius: var(--radius-xl);
   color: var(--muted);
   cursor: pointer;
   transition: all 0.18s;
@@ -269,7 +285,7 @@ header span {
   color: #fff;
   background: var(--accent);
   box-shadow: 0 2px 10px rgba(196,96,122,0.35);
-  font-weight: 600;
+  font-weight: 500;
 }
 .theorist-tag.active::after {
   content: ' ✓';
@@ -280,7 +296,7 @@ header span {
 #chat {
   flex: 1;
   overflow-y: auto;
-  padding: 32px;
+  padding: var(--space-xl);
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -322,7 +338,7 @@ header span {
   display: inline-block;
   background: var(--accent-soft);
   border: 1px solid rgba(196,96,122,0.12);
-  border-radius: 16px 4px 16px 16px;
+  border-radius: var(--radius-lg) var(--radius-xs) var(--radius-lg) var(--radius-lg);
   padding: 10px 16px;
   font-family: var(--font-rubik), sans-serif;
   font-size: 15px;
@@ -334,7 +350,7 @@ header span {
   font-weight: 300;
   background: rgba(253,248,246,0.7);
   border: 1px solid var(--border);
-  border-radius: 4px 16px 16px 16px;
+  border-radius: var(--radius-xs) var(--radius-lg) var(--radius-lg) var(--radius-lg);
   padding: 14px 18px;
   box-shadow: 0 1px 4px rgba(45,36,32,0.04);
 }
@@ -355,7 +371,7 @@ header span {
 }
 .thinking-dot {
   width: 4px; height: 4px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--accent-dim);
   animation: blink 1.4s infinite both;
 }
@@ -385,7 +401,7 @@ header span {
 .memory-box {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   width: 560px;
   max-height: 70vh;
   overflow-y: auto;
@@ -397,7 +413,7 @@ header span {
   font-weight: 300;
   font-style: italic;
   color: var(--accent);
-  margin-bottom: 20px;
+  margin-bottom: var(--space-lg);
 }
 .memory-entry {
   padding: 12px 0;
@@ -409,11 +425,11 @@ header span {
 .memory-entry .mem-q {
   color: var(--muted);
   font-size: 11px;
-  margin-bottom: 4px;
+  margin-bottom: var(--space-xs);
   font-style: italic;
 }
 .memory-close {
-  margin-top: 20px;
+  margin-top: var(--space-lg);
   font-size: 12px;
   color: var(--muted);
   cursor: pointer;
@@ -441,7 +457,7 @@ header span {
 #supervision-box {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   width: 640px;
   max-height: 82vh;
   overflow-y: auto;
@@ -450,7 +466,7 @@ header span {
 }
 .sup-tab {
   padding: 5px 14px;
-  border-radius: 20px;
+  border-radius: var(--radius-xl);
   border: 1px solid var(--border);
   background: none;
   cursor: pointer;
@@ -472,7 +488,7 @@ header span {
   color: #c0a0a0;
   cursor: pointer;
   letter-spacing: 0.06em;
-  margin-top: 20px;
+  margin-top: var(--space-lg);
   padding: 6px 0;
   transition: color 0.2s;
 }
@@ -492,7 +508,7 @@ header span {
   gap: 10px;
   background: var(--surface);
   border: 1.5px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   padding: 10px 10px 10px 16px;
   transition: border-color 0.2s, box-shadow 0.2s;
   box-shadow: 0 2px 8px rgba(45,36,32,0.06);
@@ -526,7 +542,7 @@ header span {
   width: 40px;
   height: 40px;
   min-width: 40px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -537,10 +553,34 @@ header span {
 #send-btn:hover { background: #b0506a; transform: scale(1.04); }
 #send-btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
 
+/* Flow buttons (session mode entry) */
+#flow-buttons { align-items: center; }
+.flow-btn {
+  width: 100%;
+  max-width: 340px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 11px 28px;
+  font-family: var(--font-rubik), sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s;
+  line-height: 1.4;
+}
+.flow-btn.flow-btn-hover,
+.flow-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
 /* Suggestion bubbles */
 #suggestion-bubbles {
   display: flex;
-  gap: 8px;
+  gap: var(--space-sm);
   margin-top: 10px;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -549,8 +589,8 @@ header span {
 .suggestion-btn {
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 6px 14px;
+  border-radius: var(--radius-xl);
+  padding: 6px 14px; /* TODO: 6px/14px not in spacing tokens */
   font-size: 13px;
   font-weight: 300;
   font-family: var(--font-rubik), sans-serif;
@@ -590,13 +630,15 @@ header span {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
-  padding: 32px 40px;
+  padding: 8px 40px;
   max-width: 560px;
   margin: 0 auto;
   width: 100%;
+  gap: 28px;
+  position: relative;
   animation: fadeUp 0.6s ease both;
 }
 .welcome .ornament {
@@ -604,14 +646,14 @@ header span {
   font-size: 48px;
   color: var(--accent);
   opacity: 0.25;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-lg);
 }
 .welcome h2 {
   font-family: var(--font-david), serif;
   font-size: 22px;
   font-weight: 400;
   color: var(--accent);
-  margin-bottom: 12px;
+  margin-bottom: var(--space-md);
 }
 .welcome p {
   font-size: 14px;
@@ -621,11 +663,11 @@ header span {
 
 #chat::-webkit-scrollbar { width: 4px; }
 #chat::-webkit-scrollbar-track { background: transparent; }
-#chat::-webkit-scrollbar-thumb { background: var(--accent-dim); opacity: 0.3; border-radius: 24px; }
+#chat::-webkit-scrollbar-thumb { background: var(--accent-dim); opacity: 0.3; border-radius: var(--radius-xl); }
 
 .lang-option {
-  padding: 7px 12px;
-  border-radius: 8px;
+  padding: 7px 12px; /* TODO: 7px not in spacing tokens */
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 13px;
   color: var(--text);
@@ -652,3 +694,138 @@ header span {
 [dir="ltr"] .message-content { direction: ltr; text-align: left; }
 [dir="ltr"] .message-body { direction: ltr; text-align: left; }
 [dir="ltr"] .message.user .message-body { text-align: left; }
+
+/* ── BW-41: entry headings — Hebrew RTL uses David Libre (has Hebrew glyphs).
+   Cormorant has no Hebrew support — using it causes mixed-font rendering
+   and misaligned ? character. This override activates automatically in RTL mode. */
+[dir="rtl"] .bw-entry-heading {
+  font-family: var(--font-david), serif !important;
+}
+
+/* ── BW-41: Two-mode entry ── */
+
+/* Default hidden — JS controls display via style.display.
+   NOT in JSX style prop to prevent React re-render override. */
+#bw-mode-select,
+#bw-theorist-select {
+  display: none;
+}
+
+/* Hide input field while user is selecting mode or theorist */
+body.bw-selecting .input-area {
+  display: none !important;
+}
+
+/* Hide session-only tools during entry flow */
+body.bw-selecting #clinical-btn,
+body.bw-selecting #analyst-badge,
+body.bw-selecting #flow-buttons {
+  display: none !important;
+}
+
+/* pill toggle track */
+#bw-mode-cards {
+  display: flex;
+  background: var(--border);
+  border-radius: var(--radius-xl);
+  padding: 3px;
+  width: fit-content;
+}
+
+/* pill option — unselected */
+.bw-mode-card {
+  padding: 9px 22px;
+  border-radius: var(--radius-xl);
+  font-family: var(--font-cormorant), serif;
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s, color 0.2s;
+  border: none;
+  background: none;
+  white-space: nowrap;
+}
+
+/* pill option — selected */
+.bw-mode-card.bw-mode-selected {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.bw-theorist-card {
+  padding: 14px 12px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+/* Entry screen chips — pill shape, equal 128px width, no sub */
+#bw-theorist-grid .bw-theorist-card {
+  border-radius: var(--radius-xl);
+  padding: 10px 0;
+  width: 100%;
+  justify-content: center;
+}
+#bw-theorist-grid .bw-t-sub {
+  display: none;
+}
+.bw-theorist-card:hover { border-color: var(--accent-dim); }
+.bw-theorist-card.bw-theorist-selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.bw-t-name {
+  font-family: var(--font-cormorant), serif;
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--text);
+}
+.bw-theorist-card.bw-theorist-selected .bw-t-name { color: var(--accent); }
+.bw-t-sub {
+  font-family: var(--font-rubik), sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  color: var(--muted);
+  opacity: 0.65;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.bw-theorist-card.bw-theorist-selected .bw-t-sub { color: var(--accent); opacity: 0.7; }
+
+.bw-confirm-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-xl);
+  padding: 11px 36px;
+  font-family: var(--font-rubik), sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  min-width: 160px;
+  max-width: 220px;
+  align-self: center;
+  display: block;
+}
+.bw-confirm-btn:hover { opacity: 0.87; }
+
+@keyframes bwSlideIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.bw-slide-in { animation: bwSlideIn 0.28s ease-out; }
+
+@media (max-width: 600px) {
+  .bw-mode-card { font-size: 16px; padding: 8px 18px; }
+  #bw-theorist-grid { grid-template-columns: repeat(2, 112px) !important; }
+}

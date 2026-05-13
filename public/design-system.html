@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Between — Design System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Rubik:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:          #fdf8f6;
+      --surface:     #fff;
+      --border:      #ede4e0;
+      --text:        #2d2420;
+      --muted:       #a8948e;
+      --accent:      #c4607a;
+      --accent-dim:  #d4899a;
+      --accent-soft: rgba(196,96,122,0.08);
+      --thinking:    #fdf0f3;
+      --font-cormorant: 'Cormorant Garamond';
+      --font-rubik: 'Rubik';
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-rubik), sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      padding: 48px 40px;
+      background-image:
+        radial-gradient(circle at 80% 10%, rgba(196,96,122,0.05) 0%, transparent 50%),
+        radial-gradient(circle at 10% 90%, rgba(196,96,122,0.03) 0%, transparent 40%);
+    }
+
+    .ds-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 32px;
+      margin-bottom: 56px;
+    }
+    .ds-header h1 {
+      font-family: var(--font-cormorant), serif;
+      font-size: 40px;
+      font-weight: 300;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .ds-header p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .ds-section {
+      margin-bottom: 64px;
+    }
+    .ds-section-title {
+      font-family: var(--font-rubik), sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 28px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ds-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .ds-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ds-label {
+      font-size: 10px;
+      color: var(--muted);
+      font-family: var(--font-rubik), sans-serif;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── COLORS ── */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 16px;
+    }
+    .color-swatch {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .color-block {
+      height: 64px;
+    }
+    .color-info {
+      background: var(--surface);
+      padding: 10px 12px;
+    }
+    .color-name {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text);
+    }
+    .color-value {
+      font-size: 10px;
+      color: var(--muted);
+      font-family: monospace;
+    }
+
+    /* ── TYPOGRAPHY ── */
+    .type-row {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .type-meta {
+      width: 180px;
+      flex-shrink: 0;
+    }
+    .type-meta .type-token {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+      font-family: monospace;
+    }
+    .type-meta .type-desc {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .type-sample {
+      flex: 1;
+      color: var(--text);
+    }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 22px;
+      padding: 11px 36px;
+      font-family: var(--font-rubik), sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.87; }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: 22px;
+      padding: 10px 28px;
+      font-family: var(--font-rubik), sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .btn-secondary:hover { border-color: var(--accent-dim); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: none;
+      font-family: var(--font-rubik), sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: color 0.15s;
+      padding: 4px 0;
+    }
+    .btn-ghost:hover { color: var(--accent); }
+
+    .btn-pill {
+      border-radius: 20px;
+      padding: 7px 16px;
+      font-family: var(--font-rubik), sans-serif;
+      font-size: 12px;
+      font-weight: 300;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      transition: border-color 0.15s;
+    }
+    .btn-pill:hover { border-color: var(--accent-dim); }
+
+    .btn-flow {
+      width: 100%;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-family: var(--font-rubik), sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      text-align: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn-flow:hover { background: var(--accent-soft); border-color: var(--accent-dim); }
+
+    .mode-card {
+      flex: 1;
+      max-width: 160px;
+      padding: 14px 20px;
+      border-radius: 16px;
+      font-family: var(--font-cormorant), serif;
+      font-size: 18px;
+      font-weight: 300;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: box-shadow 0.18s, border-color 0.18s;
+      user-select: none;
+    }
+    .mode-card-primary {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1.5px solid var(--accent);
+    }
+    .mode-card-primary:hover { box-shadow: 0 2px 12px rgba(196,96,122,0.18); }
+    .mode-card-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .mode-card-secondary:hover { border-color: var(--accent-dim); }
+    .mode-icon { opacity: 0.7; margin-bottom: 2px; }
+
+    .theorist-card {
+      padding: 14px 12px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      min-width: 120px;
+      transition: border-color 0.15s;
+    }
+    .theorist-card:hover { border-color: var(--accent-dim); }
+    .theorist-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .t-name {
+      font-family: var(--font-cormorant), serif;
+      font-size: 17px;
+      font-weight: 300;
+      color: var(--text);
+    }
+    .theorist-card.selected .t-name { color: var(--accent); }
+    .t-sub {
+      font-family: var(--font-rubik), sans-serif;
+      font-size: 9px;
+      font-weight: 400;
+      color: var(--muted);
+      opacity: 0.65;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .theorist-card.selected .t-sub { color: var(--accent); opacity: 0.7; }
+
+    /* ── SIZES ── */
+    .size-grid {
+      display: grid;
+      grid-template-columns: 80px 1fr 140px 120px;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .size-grid-header {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .size-grid-cell {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+    }
+    .size-grid-cell:last-child, .size-grid-cell:nth-last-child(-n+4) {
+      border-bottom: none;
+    }
+    .size-tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 500;
+      font-family: monospace;
+    }
+
+    /* ── SPACING ── */
+    .spacing-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .spacing-block {
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-dim);
+      border-radius: 4px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+    .spacing-info {
+      display: flex;
+      gap: 32px;
+      align-items: baseline;
+    }
+
+    /* ── RADIUS ── */
+    .radius-grid {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .radius-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .radius-box {
+      width: 72px;
+      height: 72px;
+      background: var(--surface);
+      border: 1.5px solid var(--accent-dim);
+    }
+
+    /* ── STATES ── */
+    .state-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .input-demo {
+      flex: 1;
+      min-width: 200px;
+      max-width: 360px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      padding: 10px 18px;
+      font-family: var(--font-rubik), sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--muted);
+    }
+
+    .message-bubble-user {
+      background: var(--accent);
+      color: #fff;
+      border-radius: 16px 4px 16px 16px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 300;
+      max-width: 360px;
+    }
+    .message-bubble-ai {
+      background: var(--surface);
+      border-radius: 4px 16px 16px 16px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text);
+      border: 1px solid var(--border);
+      max-width: 360px;
+      font-family: var(--font-cormorant), serif;
+    }
+
+    .disclaimer-text {
+      font-size: 10px;
+      color: var(--muted);
+      opacity: 0.55;
+      text-align: center;
+    }
+
+    /* ── ICONS ── */
+    .icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .icon-glyph {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      color: var(--muted);
+    }
+    .icon-unicode {
+      font-size: 14px;
+      line-height: 1;
+    }
+    .icon-label-he {
+      font-size: 12px;
+      color: var(--text);
+      font-family: var(--font-rubik), sans-serif;
+      font-weight: 400;
+    }
+    .icon-label-en {
+      font-size: 10px;
+      color: var(--muted);
+      font-family: var(--font-rubik), sans-serif;
+      font-weight: 300;
+    }
+    .icon-item-unicode { border-style: dashed; }
+
+    /* ── MISC ── */
+    .chip {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 400;
+      font-family: monospace;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+    @media (max-width: 700px) {
+      body { padding: 24px 20px; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .type-meta { width: 140px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ds-header">
+    <h1>Between</h1>
+    <p>Design System · v1.0 · מאי 2026 · מאיה</p>
+  </div>
+
+  <!-- COLORS -->
+  <div class="ds-section">
+    <div class="ds-section-title">צבעים — Color Tokens</div>
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="color-block" style="background:#fdf8f6; border-bottom:1px solid #ede4e0;"></div>
+        <div class="color-info"><div class="color-name">--bg</div><div class="color-value">#fdf8f6</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-block" style="background:#fff; border-bottom:1px solid #ede4e0;"></div>
+        <div class="color-info"><div class="color-name">--surface</div><div class="color-value">#ffffff</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-block" style="background:#ede4e0;"></div>
+        <div class="color-info"><div class="color-name">--border</div><div class="color-value">#ede4e0</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-block" style="background:#2d2420;"></div>
+        <div class="color-info"><div class="color-name">--text</div><div class="color-value">#2d2420</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-block" style="background:#a8948e;"></div>
+        <div class="color-info"><div class="color-name">--muted</div><div class="color-value">#a8948e</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-block" style="background:#c4607a;"></div>
+        <div class="color-info"><div class="color-name">--accent</div><div class="color-value">#c4607a</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-block" style="background:#d4899a;"></div>
+        <div class="color-info"><div class="color-name">--accent-dim</div><div class="color-value">#d4899a</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-block" style="background:rgba(196,96,122,0.08);"></div>
+        <div class="color-info"><div class="color-name">--accent-soft</div><div class="color-value">rgba(196,96,122,.08)</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-block" style="background:#fdf0f3;"></div>
+        <div class="color-info"><div class="color-name">--thinking</div><div class="color-value">#fdf0f3</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TYPOGRAPHY -->
+  <div class="ds-section">
+    <div class="ds-section-title">טיפוגרפיה — Type Scale</div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-token">display</div>
+        <div class="type-desc">Cormorant · 48px · 300</div>
+      </div>
+      <div class="type-sample" style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;color:var(--accent);opacity:0.3;">✦</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-token">heading-xl</div>
+        <div class="type-desc">Cormorant · 26px · 300</div>
+      </div>
+      <div class="type-sample" style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;">Between</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-token">heading-lg</div>
+        <div class="type-desc">Rubik · 22px · 400</div>
+      </div>
+      <div class="type-sample" style="font-size:22px;font-weight:400;">מה עולה לך היום?</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-token">heading-md</div>
+        <div class="type-desc">Cormorant · 20px · 300</div>
+      </div>
+      <div class="type-sample" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;">שיחה עם ויניקוט</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-token">heading-sm</div>
+        <div class="type-desc">Cormorant · 19px · 300 · muted</div>
+      </div>
+      <div class="type-sample" style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:300;color:var(--muted);">Who would you like to speak with?</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-token">heading-card</div>
+        <div class="type-desc">Cormorant · 17–18px · 300</div>
+      </div>
+      <div class="type-sample" style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;">סשן · Winnicott</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-token">body-lg</div>
+        <div class="type-desc">Rubik · 15px · 300</div>
+      </div>
+      <div class="type-sample" style="font-size:15px;font-weight:300;">מה עולה עכשיו? ספר לי מה קרה בפגישה האחרונה.</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-token">body-md</div>
+        <div class="type-desc">Rubik · 13px · 400</div>
+      </div>
+      <div class="type-sample" style="font-size:13px;font-weight:400;">שיחות אחרונות · הגדרות · שיחה חדשה</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-token">body-sm</div>
+        <div class="type-desc">Rubik · 12px · 400</div>
+      </div>
+      <div class="type-sample" style="font-size:12px;font-weight:400;color:var(--muted);">הפגישה עוד כאן · יש לי משהו להביא</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-token">caption</div>
+        <div class="type-desc">Rubik · 10–11px · 400</div>
+      </div>
+      <div class="type-sample" style="font-size:10px;font-weight:400;color:var(--muted);">For educational use only · Not a substitute for professional psychological treatment</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-token">micro</div>
+        <div class="type-desc">Rubik · 9px · 400 · uppercase</div>
+      </div>
+      <div class="type-sample" style="font-size:9px;font-weight:400;color:var(--muted);letter-spacing:0.04em;text-transform:uppercase;">Self & Holding · Object Relations</div>
+    </div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="ds-section">
+    <div class="ds-section-title">כפתורים — Button Variants</div>
+
+    <div class="grid-2">
+      <div>
+        <div class="ds-col" style="gap:24px;">
+
+          <div class="ds-col">
+            <div class="ds-label">Primary — כפתור ראשי</div>
+            <div><button class="btn-primary">המשך / Continue</button></div>
+            <div style="font-size:10px;color:var(--muted);">accent bg · Rubik 14px · radius 22px · padding 11px 36px</div>
+          </div>
+
+          <div class="ds-col">
+            <div class="ds-label">Secondary — כפתור משני</div>
+            <div><button class="btn-secondary">Intro conversation</button></div>
+            <div style="font-size:10px;color:var(--muted);">surface bg · border · Rubik 13px · radius 22px · padding 10px 28px</div>
+          </div>
+
+          <div class="ds-col">
+            <div class="ds-label">Ghost — כפתור רדוד</div>
+            <div><button class="btn-ghost">← Back · ← חזרה</button></div>
+            <div style="font-size:10px;color:var(--muted);">no bg · no border · muted color · Rubik 12px</div>
+          </div>
+
+          <div class="ds-col">
+            <div class="ds-label">Flow buttons — session mode</div>
+
+            <!-- Hebrew (RTL) -->
+            <div style="font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">עברית — he</div>
+            <div style="display:flex;flex-direction:column;gap:8px;width:220px;align-items:stretch;direction:rtl;">
+              <button class="btn-flow">הפגישה עוד כאן</button>
+              <button class="btn-flow">יש לי משהו להביא</button>
+              <button class="btn-flow">משהו לא עוזב אותי</button>
+            </div>
+
+            <!-- English (LTR) -->
+            <div style="font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;margin-top:12px;">English — en</div>
+            <div style="display:flex;flex-direction:column;gap:8px;width:220px;align-items:stretch;direction:ltr;">
+              <button class="btn-flow">Still inside my last session</button>
+              <button class="btn-flow">Something won't leave me</button>
+              <button class="btn-flow">I have a session coming up</button>
+            </div>
+
+            <div style="font-size:10px;color:var(--muted);margin-top:4px;">border · radius 12px · Rubik 14px · padding 14px 20px · width 100%</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div>
+        <div class="ds-col" style="gap:24px;">
+
+          <div class="ds-col">
+            <div class="ds-label">Mode Cards — בחירת מצב</div>
+
+            <!-- Hebrew (RTL) -->
+            <div style="font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">עברית — he</div>
+            <div style="display:flex;gap:12px;direction:rtl;">
+              <div class="mode-card mode-card-primary">
+                <div class="mode-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1Z"/><path d="M4 18v2"/><path d="M20 18v2"/><path d="M12 4v9"/></svg>
+                </div>
+                <span>סשן</span>
+              </div>
+              <div class="mode-card mode-card-secondary">
+                <div class="mode-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </div>
+                <span>לחקור</span>
+              </div>
+            </div>
+
+            <!-- English (LTR) -->
+            <div style="font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;margin-top:12px;">English — en</div>
+            <div style="display:flex;gap:12px;direction:ltr;">
+              <div class="mode-card mode-card-primary">
+                <div class="mode-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1Z"/><path d="M4 18v2"/><path d="M20 18v2"/><path d="M12 4v9"/></svg>
+                </div>
+                <span>Session</span>
+              </div>
+              <div class="mode-card mode-card-secondary">
+                <div class="mode-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </div>
+                <span>Explore</span>
+              </div>
+            </div>
+
+            <div style="font-size:10px;color:var(--muted);margin-top:8px;">Cormorant 18px · radius 16px · padding 14px 20px</div>
+          </div>
+
+          <div class="ds-col">
+            <div class="ds-label">Theorist Cards — בחירת תיאורטיקן</div>
+
+            <!-- Hebrew (RTL) -->
+            <div style="font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">עברית — he</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:260px;direction:rtl;">
+              <div class="theorist-card">
+                <span class="t-name">פרויד</span>
+                <span class="t-sub">דחפים וקונפליקט</span>
+              </div>
+              <div class="theorist-card">
+                <span class="t-name">קליין</span>
+                <span class="t-sub">יחסי אובייקט</span>
+              </div>
+              <div class="theorist-card selected">
+                <span class="t-name">ויניקוט</span>
+                <span class="t-sub">עצמי והחזקה</span>
+              </div>
+              <div class="theorist-card">
+                <span class="t-name">אוגדן</span>
+                <span class="t-sub">השלישי האנליטי</span>
+              </div>
+            </div>
+
+            <!-- English (LTR) -->
+            <div style="font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;margin-top:12px;">English — en</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:260px;direction:ltr;">
+              <div class="theorist-card">
+                <span class="t-name">Freud</span>
+                <span class="t-sub">Drive & Conflict</span>
+              </div>
+              <div class="theorist-card">
+                <span class="t-name">Klein</span>
+                <span class="t-sub">Object Relations</span>
+              </div>
+              <div class="theorist-card selected">
+                <span class="t-name">Winnicott</span>
+                <span class="t-sub">Self & Holding</span>
+              </div>
+              <div class="theorist-card">
+                <span class="t-name">Ogden</span>
+                <span class="t-sub">Analytic Third</span>
+              </div>
+            </div>
+
+            <div style="font-size:10px;color:var(--muted);margin-top:8px;">Cormorant 17px · radius 12px · padding 14px 12px</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUTTON SIZES -->
+  <div class="ds-section">
+    <div class="ds-section-title">גדלי כפתורים — Button Sizes</div>
+    <div class="size-grid">
+      <div class="size-grid-header">גודל</div>
+      <div class="size-grid-header">padding</div>
+      <div class="size-grid-header">font-size</div>
+      <div class="size-grid-header">border-radius</div>
+
+      <div class="size-grid-cell"><span class="size-tag">XL</span></div>
+      <div class="size-grid-cell" style="color:var(--muted);font-size:12px;">24px 20px</div>
+      <div class="size-grid-cell" style="font-size:12px;">Cormorant 20px</div>
+      <div class="size-grid-cell" style="font-size:12px;">14px</div>
+
+      <div class="size-grid-cell"><span class="size-tag">LG</span></div>
+      <div class="size-grid-cell" style="color:var(--muted);font-size:12px;">11px 36px</div>
+      <div class="size-grid-cell" style="font-size:12px;">Rubik 14px</div>
+      <div class="size-grid-cell" style="font-size:12px;">22px</div>
+
+      <div class="size-grid-cell"><span class="size-tag">MD</span></div>
+      <div class="size-grid-cell" style="color:var(--muted);font-size:12px;">10px 28px</div>
+      <div class="size-grid-cell" style="font-size:12px;">Rubik 13px</div>
+      <div class="size-grid-cell" style="font-size:12px;">22px</div>
+
+      <div class="size-grid-cell"><span class="size-tag">SM</span></div>
+      <div class="size-grid-cell" style="color:var(--muted);font-size:12px;">7px 16px</div>
+      <div class="size-grid-cell" style="font-size:12px;">Rubik 12px</div>
+      <div class="size-grid-cell" style="font-size:12px;">20px</div>
+
+      <div class="size-grid-cell"><span class="size-tag">XS</span></div>
+      <div class="size-grid-cell" style="color:var(--muted);font-size:12px;">5px 10px</div>
+      <div class="size-grid-cell" style="font-size:12px;">Rubik 11px</div>
+      <div class="size-grid-cell" style="font-size:12px;">8px</div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR ICONS -->
+  <div class="ds-section">
+    <div class="ds-section-title">אייקוני סייד-בר — Sidebar Icons</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;">
+
+      <!-- Lucide icons -->
+      <div class="icon-item">
+        <span class="icon-glyph">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 19.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/><path d="m15 5 3 3"/></svg>
+        </span>
+        <span class="icon-label-he">שיחה חדשה</span>
+        <span class="icon-label-en">New Chat</span>
+      </div>
+
+      <div class="icon-item">
+        <span class="icon-glyph">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        </span>
+        <span class="icon-label-he">חיפוש רשת</span>
+        <span class="icon-label-en">Web Search</span>
+      </div>
+
+      <div class="icon-item">
+        <span class="icon-glyph">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M3.477 10.896a4 4 0 0 1 .585-.396"/><path d="M19.938 10.5a4 4 0 0 1 .585.396"/><path d="M6 18a4 4 0 0 1-1.967-.516"/><path d="M19.967 17.484A4 4 0 0 1 18 18"/></svg>
+        </span>
+        <span class="icon-label-he">זיכרונות</span>
+        <span class="icon-label-en">Memories</span>
+      </div>
+
+      <div class="icon-item">
+        <span class="icon-glyph">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        </span>
+        <span class="icon-label-he">הורד PDF</span>
+        <span class="icon-label-en">Download PDF</span>
+      </div>
+
+      <div class="icon-item">
+        <span class="icon-glyph">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </span>
+        <span class="icon-label-he">גישה תיאורטית</span>
+        <span class="icon-label-en">Theoretical Approach</span>
+      </div>
+
+      <div class="icon-item">
+        <span class="icon-glyph">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1Z"/><path d="M4 18v2"/><path d="M20 18v2"/><path d="M12 4v9"/></svg>
+        </span>
+        <span class="icon-label-he">מצב סשן</span>
+        <span class="icon-label-en">Session Mode</span>
+      </div>
+
+      <div class="icon-item">
+        <span class="icon-glyph">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>
+        <span class="icon-label-he">הגדרות</span>
+        <span class="icon-label-en">Settings</span>
+      </div>
+
+      <div class="icon-item">
+        <span class="icon-glyph">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        </span>
+        <span class="icon-label-he">התנתק</span>
+        <span class="icon-label-en">Log Out</span>
+      </div>
+
+      <div class="icon-item">
+        <span class="icon-glyph">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+        </span>
+        <span class="icon-label-he">שפה</span>
+        <span class="icon-label-en">Language</span>
+      </div>
+
+      <!-- Unicode / text icons -->
+      <div class="icon-item icon-item-unicode">
+        <span class="icon-glyph icon-unicode">◎</span>
+        <span class="icon-label-he">סיכום סשן</span>
+        <span class="icon-label-en">Session Summary</span>
+      </div>
+
+      <div class="icon-item icon-item-unicode">
+        <span class="icon-glyph icon-unicode">◉</span>
+        <span class="icon-label-he">מה לקחתי מהשיחה</span>
+        <span class="icon-label-en">What I Took</span>
+      </div>
+
+      <div class="icon-item icon-item-unicode">
+        <span class="icon-glyph icon-unicode">⚲</span>
+        <span class="icon-label-he">פיקוח קליני</span>
+        <span class="icon-label-en">Clinical Supervision</span>
+      </div>
+
+      <div class="icon-item icon-item-unicode">
+        <span class="icon-glyph icon-unicode">◌</span>
+        <span class="icon-label-he">אנונימיזציה</span>
+        <span class="icon-label-en">Anonymization</span>
+      </div>
+
+      <div class="icon-item icon-item-unicode">
+        <span class="icon-glyph icon-unicode">◈</span>
+        <span class="icon-label-he">פידבק משתמש</span>
+        <span class="icon-label-en">User Feedback</span>
+      </div>
+
+      <div class="icon-item icon-item-unicode">
+        <span class="icon-glyph icon-unicode">⬡</span>
+        <span class="icon-label-he">חדר הבורד</span>
+        <span class="icon-label-en">Board Room</span>
+      </div>
+
+    </div>
+    <div style="font-size:10px;color:var(--muted);margin-top:16px;">Lucide icons · size 15px · strokeWidth 1.75 · color var(--muted) · Unicode symbols at 14px</div>
+  </div>
+
+  <!-- SPACING -->
+  <div class="ds-section">
+    <div class="ds-section-title">ריווח — Spacing Scale</div>
+    <div>
+      <div class="spacing-row">
+        <div class="spacing-block" style="width:4px;"></div>
+        <div class="spacing-info">
+          <span class="chip">space-xs · 4px</span>
+          <span style="font-size:12px;color:var(--muted);">gap פנימי בתוך כרטיס (שם + subtitle)</span>
+        </div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-block" style="width:8px;"></div>
+        <div class="spacing-info">
+          <span class="chip">space-sm · 8px</span>
+          <span style="font-size:12px;color:var(--muted);">gap בין אלמנטים קטנים</span>
+        </div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-block" style="width:12px;"></div>
+        <div class="spacing-info">
+          <span class="chip">space-md · 12–14px</span>
+          <span style="font-size:12px;color:var(--muted);">gap בין כרטיסים, padding buttons MD</span>
+        </div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-block" style="width:20px;"></div>
+        <div class="spacing-info">
+          <span class="chip">space-lg · 20–24px</span>
+          <span style="font-size:12px;color:var(--muted);">gap בין blocks ראשיים, padding cards XL</span>
+        </div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-block" style="width:32px;"></div>
+        <div class="spacing-info">
+          <span class="chip">space-xl · 32px</span>
+          <span style="font-size:12px;color:var(--muted);">padding מסך / welcome container</span>
+        </div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-block" style="width:52px;"></div>
+        <div class="spacing-info">
+          <span class="chip">space-2xl · 52px</span>
+          <span style="font-size:12px;color:var(--muted);">הפרדה בין אזורי content גדולים</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BORDER RADIUS -->
+  <div class="ds-section">
+    <div class="ds-section-title">עגלגלות — Border Radius</div>
+    <div class="radius-grid">
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:4px;"></div>
+        <div class="ds-label" style="text-align:center;"><code>--radius-xs</code><br>4px · inline</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:8px;"></div>
+        <div class="ds-label" style="text-align:center;"><code>--radius-sm</code><br>8px · sidebar · dropdowns</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:12px;"></div>
+        <div class="ds-label" style="text-align:center;"><code>--radius-md</code><br>12px · theorist cards</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:16px;"></div>
+        <div class="ds-label" style="text-align:center;"><code>--radius-lg</code><br>16px · mode cards · input</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:22px;"></div>
+        <div class="ds-label" style="text-align:center;"><code>--radius-xl</code><br>22px · all pill buttons</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:50%;"></div>
+        <div class="ds-label" style="text-align:center;"><code>--radius-circle</code><br>50% · avatars · dots</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPONENTS IN CONTEXT -->
+  <div class="ds-section">
+    <div class="ds-section-title">קומפוננטות בהקשר — Components in Context</div>
+    <div class="grid-2">
+
+      <div class="ds-col" style="gap:16px;">
+        <div class="ds-label">שדה קלט</div>
+        <div class="input-demo">
+          <span style="color:var(--muted);font-size:18px;">⌀</span>
+          <span>מה עולה עכשיו?</span>
+        </div>
+
+        <div class="ds-label" style="margin-top:8px;">הודעת משתמש</div>
+        <div class="message-bubble-user">יש משהו שמטריד אותי מאז הפגישה האחרונה</div>
+
+        <div class="ds-label" style="margin-top:8px;">תגובת AI (Winnicott)</div>
+        <div class="message-bubble-ai">מה זה "מטריד" — יש לו גוון של חרדה, או של משהו שלא מצא את מקומו עדיין?</div>
+      </div>
+
+      <div class="ds-col" style="gap:16px;">
+        <div class="ds-label">disclaimer</div>
+        <div class="disclaimer-text">For educational use only · Not a substitute for professional psychological treatment</div>
+
+        <div class="ds-label" style="margin-top:8px;">flow buttons — session mode</div>
+
+        <!-- Hebrew (RTL) -->
+        <div style="font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">עברית — he</div>
+        <div style="display:flex;flex-direction:column;gap:8px;width:220px;align-items:stretch;direction:rtl;">
+          <button class="btn-flow">הפגישה עוד כאן</button>
+          <button class="btn-flow">יש לי משהו להביא</button>
+          <button class="btn-flow">משהו לא עוזב אותי</button>
+        </div>
+
+        <!-- English (LTR) -->
+        <div style="font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;margin-top:12px;">English — en</div>
+        <div style="display:flex;flex-direction:column;gap:8px;width:220px;align-items:stretch;direction:ltr;">
+          <button class="btn-flow">Still inside my last session</button>
+          <button class="btn-flow">Something won't leave me</button>
+          <button class="btn-flow">I have a session coming up</button>
+        </div>
+
+        <div class="ds-label" style="margin-top:8px;">back navigation</div>
+        <button class="btn-ghost">← חזרה / ← Back</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="border-top:1px solid var(--border);padding-top:24px;margin-top:8px;font-size:10px;color:var(--muted);display:flex;justify-content:space-between;">
+    <span>Between Design System · v1.0</span>
+    <span>מאיה · מאי 2026</span>
+  </div>
+
+</body>
+</html>

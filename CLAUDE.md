@@ -3,3 +3,4 @@
 @MEMORY.md
 @OPEN_DECISIONS.md
 @AGENTS.md
+@UX-RULES.md
