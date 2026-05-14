@@ -126,6 +126,7 @@ async function enforceVariedOpening(
   const fixResponse = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 1200,
+    temperature: 0.6,
     system,
     messages: [
       ...messages,
@@ -159,6 +160,7 @@ async function enforceOneQuestion(
   const fixResponse = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 1200,
+    temperature: 0.6,
     system,
     messages: [
       ...messages,
@@ -236,6 +238,7 @@ export async function POST(req: NextRequest) {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1200,
+      temperature: 0.6, // קול התיאורטיקן נשאר עקבי — 1.0 (ברירת מחדל) גרם לשונות גבוהה מדי
       system: enrichedSystem,
       messages,
       ...(tools.length > 0 && { tools }),
