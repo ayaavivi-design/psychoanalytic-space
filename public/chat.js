@@ -72,7 +72,14 @@ function proceedToApp() {
   // showModeSelect() pre-selects the saved pill from localStorage.
   // Guard: Supabase fires onAuthStateChange on token refresh → proceedToApp() runs again
   // mid-conversation → bw-selecting gets re-added → input area disappears.
-  setTimeout(() => { if (conversationHistory.length === 0) showModeSelect(); }, 350);
+  // NOTE: conversationHistory.length is NOT a safe guard — loadConversation() populates it
+  // synchronously at init (line ~5755), so on a fresh page-load with saved history,
+  // length > 0 even though nothing is rendered. Instead we check the DOM directly.
+  setTimeout(() => {
+    const _chatEl = document.getElementById('chat');
+    const _hasRendered = _chatEl && Array.from(_chatEl.children).some(c => c.id !== 'welcome');
+    if (!_hasRendered) showModeSelect();
+  }, 350);
   setTimeout(() => { initSidebarTips(); startOnboardingTour(); }, 800);
 }
 
