@@ -15,6 +15,15 @@ CREATE POLICY "Users can view own rows"
   ON user_conversations FOR SELECT
   USING (auth.uid() = user_id);
 
+-- הרשאות מפורשות: anon — אין גישה כלל
+--                 authenticated — SELECT בלבד (מוגן ע"י RLS policy למעלה)
+--                 INSERT/UPDATE/DELETE — דרך service role בלבד (מה-API routes)
+-- הכנה לשינוי Supabase שנכנס לתוקף אוקטובר 2026 (GRANT מפורש נדרש לחשיפת Data API)
+REVOKE ALL ON TABLE user_conversations FROM anon;
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER
+  ON TABLE user_conversations FROM authenticated;
+GRANT SELECT ON TABLE user_conversations TO authenticated;
+
 -- 2. הגדרת אדמין — ללא הגבלת שיחות
 UPDATE auth.users
 SET raw_user_meta_data = raw_user_meta_data || '{"is_admin": true}'

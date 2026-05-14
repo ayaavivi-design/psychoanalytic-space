@@ -63,6 +63,14 @@ _קובץ זה הוא append-only — לא מוחקים, מוסיפים.
 **הפתרון:** updateReflectionBtn() נקרא ב-4 מקומות: אחרי כל תגובת AI, אחרי restoreConversation, ובinit
 תאריך: אפריל 2026
 
+### Supabase הרשאות DB — תיקון מאי 2026
+**מה גילינו:** שתי הטבלאות (`knowledge_chunks`, `user_conversations`) קיבלו את ברירת המחדל של Supabase — INSERT/SELECT/UPDATE/DELETE/TRUNCATE לגם `anon` וגם `authenticated`. הטבלאות היו מוגנות ע"י RLS בפועל, אבל הגישה ברמת הטבלה הייתה רחבה מדי.
+**מה תיקנו:**
+- `knowledge_chunks` — `REVOKE ALL FROM anon, authenticated` (גישה לservice_role בלבד)
+- `user_conversations` — `REVOKE ALL FROM anon`, `REVOKE` כל פעולה מלבד SELECT מ-`authenticated`, `GRANT SELECT TO authenticated`
+**כלל לעתיד:** כל טבלה חדשה שאוליבר יוצר חייבת לכלול `REVOKE`/`GRANT` מפורשים — **לא** לסמוך על ברירת המחדל. Supabase משנה את ברירת המחדל מאוקטובר 2026 כך שטבלאות חדשות לא ייחשפו אוטומטית ל-Data API ללא GRANT מפורש.
+תאריך: מאי 2026
+
 ---
 
 ## החלטות פתוחות

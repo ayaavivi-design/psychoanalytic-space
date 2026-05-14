@@ -77,8 +77,10 @@ $$;
 -- 3. הרשאות — service role בלבד
 -- ════════════════════════════════════════
 
--- הפונקציה נקראת תמיד דרך service role (מ-lib/rag.ts ומה-Edge Function)
--- אין סיבה לחשוף אותה ל-anon או authenticated
+-- הטבלה והפונקציות נגישות דרך service role בלבד (מ-lib/rag.ts ומה-Edge Function)
+-- אין סיבה לחשוף ל-anon או authenticated
+REVOKE ALL ON TABLE knowledge_chunks FROM anon, authenticated;
+
 REVOKE ALL ON FUNCTION match_knowledge_chunks(vector, text, int) FROM anon, authenticated;
 GRANT  EXECUTE ON FUNCTION match_knowledge_chunks(vector, text, int) TO service_role;
 
