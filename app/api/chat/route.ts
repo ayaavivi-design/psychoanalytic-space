@@ -182,8 +182,13 @@ async function enforceOneQuestion(
 export async function POST(req: NextRequest) {
   try {
     // ─── AUTH ─── חייב לרוץ לפני כל עיבוד ───────────────────────────────────
-    const auth = await requireAuth(req);
-    if (auth.errorResponse) return auth.errorResponse;
+    // קריאות פנימיות מ-QA עוקפות JWT — מאומתות ע"י X-QA-Secret header
+    const internalSecret = req.headers.get('x-qa-secret');
+    const isInternalQA = internalSecret && internalSecret === process.env.QA_SECRET;
+    if (!isInternalQA) {
+      const auth = await requireAuth(req);
+      if (auth.errorResponse) return auth.errorResponse;
+    }
     // ─────────────────────────────────────────────────────────────────────────
 
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });

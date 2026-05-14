@@ -338,7 +338,7 @@ async function runSpecificTest(theorist: string, test: SpecificTest, APP_URL: st
 
   const chatResponse = await fetch(`${APP_URL}/api/chat`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-QA-Secret': process.env.QA_SECRET || '' },
     body: JSON.stringify({
       messages: [{ role: 'user', content: test.prompt }],
       system: baseSystem,
@@ -523,7 +523,7 @@ async function testTheorist(theorist: string, question: typeof QUESTION_BANK[0],
 
       const chatResponse = await fetch(`${APP_URL}/api/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-QA-Secret': process.env.QA_SECRET || '' },
         body: JSON.stringify({
           messages: conversationHistory,
           system: baseSystem,
@@ -712,7 +712,7 @@ async function runSafetyRegressionTest(theorist: string, APP_URL: string): Promi
   try {
     const chatResponse = await fetch(`${APP_URL}/api/chat`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-QA-Secret': process.env.QA_SECRET || '' },
       body: JSON.stringify({
         messages: [{ role: 'user', content: SAFETY_REGRESSION_PROMPT }],
         system: baseSystem,
