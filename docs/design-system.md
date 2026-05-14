@@ -227,19 +227,87 @@ _כלל:_ כל כלי ש"שייך לsession פעיל" מוסתר בשלבי הב
 
 2. **גדלי פונט יותר מדי** — 14 גדלים שונים. למשל: 15px ו-14px קיימים זה לצד זה בלי הבחנה ברורה. לאחד ל-9 גדלים מהסקאלה.
 
-3. **אין כפתור Disabled state** — כשהמשתמש לא יכול להמשיך (לא בחר תיאורטיקן, input ריק) — אין עיצוב אחיד לmissing state.
+3. ~~**אין כפתור Disabled state**~~ — ✅ נפתר במאי 2026 — ראו פרק States למטה.
 
-4. **Continue button רחב מדי** על mobile — צריך `max-width: 220px; align-self: center`.
+4. **Continue button רחב מדי** על mobile — צריך `max-width: 220px; align-self: center`. ✅ קיים ב-`.bw-confirm-btn`.
 
 5. **Back button לא עקבי** — פעם `← חזרה` פעם `← Back` — הקופי צריך לעבור דרך שון.
 
 ---
 
-## 8. מה הבא
+---
 
-לפני שממשיכים לבנות כלים חדשים — ממליצה לאוליבר לקחת את הסקאלה הזו ולעדכן את globals.css:
-- לסגור את בעיות הborder-radius (unify)
-- להוסיף את ה-spacing ו-radius כ-CSS custom properties
+## 9. States System
+
+_מיושם ב-`globals.css` תחת "STATES SYSTEM". מאי 2026._
+
+### כלל ה-States
+כל אלמנט אינטראקטיבי חייב לתמוך ב-4 states: **default → hover → focus → active**.
+אם הוא ניתן לבחירה: גם **selected**. אם הוא תלוי פעולה: גם **disabled** ו-**loading**.
+
+---
+
+### Focus-visible — טבעת פוקוס
+**שיטה:** Double-ring — רווח בצבע הרקע + טבעת accent.
+```css
+box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent-dim);
+```
+**מיושם על:** `bw-confirm-btn`, `bw-mode-card`, `bw-theorist-card`, `flow-btn`,
+`suggestion-btn`, `theorist-tag`, `sb-item`, `memory-indicator`, `#send-btn`.
+
+**כלל:** אף אלמנט אינטראקטיבי חדש לא נכנס לקוד בלי `:focus-visible` — נגישות היא חלק מהסיסטם, לא תוספת.
+
+---
+
+### Disabled
+| אלמנט | class / attribute | מראה |
+|--------|-------------------|------|
+| `.bw-confirm-btn` | `:disabled` או `.bw-disabled` | opacity 0.32, cursor not-allowed |
+| כל `button` | `:disabled` | opacity 0.32, cursor not-allowed |
+
+**כשמשתמש ב-JS:** עדיף `button.disabled = true` (attribute native) על `.bw-disabled` (class).
+
+---
+
+### Loading
+| אלמנט | class | מראה |
+|--------|-------|------|
+| `.bw-confirm-btn` | `.bw-loading` | opacity 0.55 + spinner (::after) |
+
+**בקוד (chat.js):**
+```javascript
+// לפני שמתחילה שיחה
+confirmBtn.classList.add('bw-loading');
+// אחרי שהשיחה נפתחה
+confirmBtn.classList.remove('bw-loading');
+```
+
+---
+
+### Error
+| אלמנט | class | מראה |
+|--------|-------|------|
+| `.input-wrap` | `.bw-error` | border + box-shadow באדום-ורוד |
+
+**שימוש:** כשה-API נכשל, כשיש בעיית חיבור. לא לשגיאות קלט — Between לא מאמת שדות.
+
+---
+
+### Active / Pressed
+כל הכפתורים מגיבים ב-`scale(0.97–0.98)` ללחיצה.
+אסור להוסיף transform נוסף לאלמנטים שכבר יש להם `transform` בהover.
+
+---
+
+## 10. מה הבא
+
+**✅ הושלם (מאי 2026):**
+- States system — focus, disabled, loading, error, active
+
+**בתור (עדיפות יורדת):**
+1. **מערכת אייקונים** — אילו אייקונים מאושרים, גודל, stroke, צבע
+2. **תיעוד קומפוננטים** — tooltip, modal, sidebar-item, input, bubble (מעבר לכפתורים)
+3. **גריד ו-breakpoints** — לפני mobile launch
 
 כל screen חדש מתחיל מהסיסטם הזה, לא ממניפסט עיצוב נפרד.
 

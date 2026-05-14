@@ -828,3 +828,88 @@ body.bw-selecting #flow-buttons {
   .bw-mode-card { font-size: 16px; padding: 8px 18px; }
   #bw-theorist-grid { grid-template-columns: repeat(2, 112px) !important; }
 }
+
+/* ═══════════════════════════════════════
+   STATES SYSTEM
+   מקור אמת: docs/design-system.md § States
+   ═══════════════════════════════════════ */
+
+/* ── 1. Focus-visible — keyboard navigation & accessibility ── */
+/* Remove browser default outline from everything */
+* { outline: none; }
+
+/* Double-ring technique: white gap (--bg) + accent ring */
+/* Applied to all interactive elements — follows border-radius */
+.bw-confirm-btn:focus-visible,
+.bw-mode-card:focus-visible,
+.bw-theorist-card:focus-visible,
+.flow-btn:focus-visible,
+.suggestion-btn:focus-visible,
+.theorist-tag:focus-visible,
+.sb-item:focus-visible,
+.memory-indicator:focus-visible,
+#send-btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent-dim);
+}
+
+/* ── 2. Active / pressed state ── */
+/* Subtle scale-down for tactile feedback — not on elements that already transform */
+.bw-confirm-btn:active:not(:disabled) { transform: scale(0.97); }
+.bw-mode-card:active                  { transform: scale(0.97); }
+.bw-theorist-card:active              { transform: scale(0.98); }
+.flow-btn:active                      { transform: scale(0.98); }
+.suggestion-btn:active                { transform: scale(0.97); }
+
+/* ── 3. Disabled state ── */
+/* .bw-confirm-btn — Continue button before theorist is selected */
+.bw-confirm-btn:disabled,
+.bw-confirm-btn.bw-disabled {
+  opacity: 0.32;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+}
+
+/* Generic disabled for any button element */
+button:disabled:not(#send-btn) {
+  opacity: 0.32;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── 4. Loading state ── */
+/* .bw-confirm-btn — after clicking Continue, while conversation initializes */
+.bw-confirm-btn.bw-loading {
+  opacity: 0.55;
+  cursor: wait;
+  pointer-events: none;
+  transform: none;
+  position: relative;
+}
+/* Spinning dot inside button */
+.bw-confirm-btn.bw-loading::after {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: var(--radius-circle);
+  animation: bwSpin 0.7s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+@keyframes bwSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── 5. Error state ── */
+/* .input-wrap — when input has a validation error or API failure */
+.input-wrap.bw-error {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(196,96,122,0.15);
+}
+.input-wrap.bw-error:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(196,96,122,0.2);
+}
