@@ -305,23 +305,23 @@ export default function Home() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
             <input id="auth-email" type="email" placeholder="כתובת מייל" dir="ltr"
-              style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--border)', borderRadius: 4, fontFamily: 'var(--font-rubik), sans-serif', fontSize: 14, color: 'var(--text)', background: 'var(--surface)', outline: 'none', textAlign: 'left' }}
+              style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', fontFamily: 'var(--font-rubik), sans-serif', fontSize: 'var(--fs-body-md)', color: 'var(--text)', background: 'var(--surface)', outline: 'none', textAlign: 'left' }}
               onKeyDown={undefined}
             />
             <input id="auth-password" type="password" placeholder="סיסמה" dir="ltr"
-              style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--border)', borderRadius: 4, fontFamily: 'var(--font-rubik), sans-serif', fontSize: 14, color: 'var(--text)', background: 'var(--surface)', outline: 'none', textAlign: 'left' }}
+              style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', fontFamily: 'var(--font-rubik), sans-serif', fontSize: 'var(--fs-body-md)', color: 'var(--text)', background: 'var(--surface)', outline: 'none', textAlign: 'left' }}
             />
           </div>
 
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
             <button id="signin-btn"
               onClick={() => (window as any).signIn?.()}
-              style={{ flex: 1, background: 'var(--accent)', border: 'none', color: '#fff', padding: '10px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', borderRadius: 4, cursor: 'pointer' }}>
+              style={{ flex: 1, background: 'var(--accent)', border: 'none', color: '#fff', padding: '10px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', borderRadius: 'var(--radius-xl)', cursor: 'pointer' }}>
               כניסה
             </button>
             <button id="signup-btn"
               onClick={() => (window as any).signUp?.()}
-              style={{ flex: 1, background: 'none', border: '1px solid var(--border)', color: 'var(--text)', padding: '10px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', borderRadius: 4, cursor: 'pointer' }}>
+              style={{ flex: 1, background: 'none', border: '1px solid var(--border)', color: 'var(--text)', padding: '10px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', borderRadius: 'var(--radius-xl)', cursor: 'pointer' }}>
               הרשמה
             </button>
           </div>

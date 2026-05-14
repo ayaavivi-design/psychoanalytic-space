@@ -323,7 +323,7 @@ header span {
   padding: var(--space-xl);
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: var(--space-xl); /* היה: 28px — לא בסקאלה, xl=32px */
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
   align-items: center;
@@ -372,7 +372,7 @@ header span {
 }
 .message.assistant .message-body {
   font-weight: 300;
-  background: rgba(253,248,246,0.7);
+  background: var(--surface); /* היה: rgba(253,248,246,0.7) — לא טוקן */
   border: 1px solid var(--border);
   border-radius: var(--radius-xs) var(--radius-lg) var(--radius-lg) var(--radius-lg);
   padding: 14px 18px;
@@ -657,7 +657,7 @@ header span {
   justify-content: flex-start;
   align-items: center;
   text-align: center;
-  padding: 8px 40px;
+  padding: var(--space-xl) 40px; /* היה: 8px — נשימה נכונה לפי טוקן xl=32px */
   max-width: 560px;
   margin: 0 auto;
   width: 100%;
