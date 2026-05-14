@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { PenLine, Globe, Brain, Settings, LogOut, Languages, Download, ChevronDown, BookOpen } from 'lucide-react';
+import { PenLine, Globe, Brain, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa } from 'lucide-react';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -507,22 +507,21 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                       setCurrentLang(lang);
                       const isRtl = lang === 'he';
                       const tipWidth = 240;
-                      const top = r.top + (r.height / 2) - 42;
-                      // RTL: "סשן" is on the right → try tooltip to the right, fallback left
-                      // LTR: "Session" is on the left → tooltip to the left
+                      const top = r.top + (r.height / 2) - 90;
                       let left: number;
                       if (isRtl) {
-                        const rightPos = r.right + 12;
+                        const rightPos = r.right + 20;
                         left = (rightPos + tipWidth <= window.innerWidth - 8)
                           ? rightPos
-                          : Math.max(8, r.left - tipWidth - 12);
+                          : Math.max(8, r.left - tipWidth - 20);
                       } else {
-                        left = Math.max(8, r.left - tipWidth - 12);
+                        left = Math.max(8, r.left - tipWidth - 20);
                       }
                       setSessionTip({ top, left, mode: 'session' });
                     }}
                     onMouseLeave={() => setSessionTip(null)}>
                     <span id="bw-label-session">סשן</span>
+                    <Sofa size={15} strokeWidth={1.5} />
                   </div>
                   <div className="bw-mode-card bw-mode-secondary"
                     onClick={() => (window as any).onModeSelected('explore')}
@@ -532,22 +531,21 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                       setCurrentLang(lang);
                       const isRtl = lang === 'he';
                       const tipWidth = 240;
-                      const top = r.top + (r.height / 2) - 42;
-                      // RTL: "חיפוש" is on the left → try tooltip to the left, fallback right
-                      // LTR: "Explore" is on the right → tooltip to the right
+                      const top = r.top + (r.height / 2) - 90;
                       let left: number;
                       if (isRtl) {
-                        const leftPos = r.left - tipWidth - 12;
+                        const leftPos = r.left - tipWidth - 20;
                         left = (leftPos >= 8)
                           ? leftPos
-                          : Math.min(r.right + 12, window.innerWidth - tipWidth - 8);
+                          : Math.min(r.right + 20, window.innerWidth - tipWidth - 8);
                       } else {
-                        left = Math.min(r.right + 12, window.innerWidth - tipWidth - 8);
+                        left = Math.min(r.right + 20, window.innerWidth - tipWidth - 8);
                       }
                       setSessionTip({ top, left, mode: 'explore' });
                     }}
                     onMouseLeave={() => setSessionTip(null)}>
-                    <span id="bw-label-explore">חיפוש</span>
+                    <span id="bw-label-explore">לחקור</span>
+                    <BookOpen size={15} strokeWidth={1.5} />
                   </div>
                 </div>
               </div>
@@ -555,7 +553,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               {/* BW-41: theorist selection — slides in after mode pick */}
               <div id="bw-theorist-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 20, width: '100%' }}>
                 <p id="bw-theorist-prompt" className="bw-entry-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0 }}>עם מי תרצה לדבר?</p>
-                <div id="bw-theorist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 128px)', gap: '10px 14px', width: 'fit-content', margin: '0 auto' }}></div>
+                <div id="bw-theorist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 128px)', gap: '12px 14px', width: 'fit-content', margin: '0 auto' }}></div>
                 <button id="bw-theorist-confirm" onClick={() => (window as any).confirmTheoristEntry()} className="bw-confirm-btn" style={{ display: 'none' }}>המשך</button>
               </div>
 

@@ -66,6 +66,7 @@ function hideAuthScreen() {
 
 function proceedToApp() {
   applyUITranslation(selectedLang?.code || 'en');
+  bwUpdateModeLabels(); // immediate — prevents Hebrew flash for English users
   setTimeout(checkIntakeStatus, 100);
   // BW-41 unified screen: always show full entry (mode + theorist together).
   // showModeSelect() pre-selects the saved pill from localStorage.
@@ -242,7 +243,11 @@ function startIntake() {
   const prefs = JSON.parse(localStorage.getItem('user_prefs') || '{}');
   intakeData = { persona: prefs.persona || 'patient' };
   const chat = document.getElementById('chat');
-  chat.innerHTML = '';
+  // Preserve #welcome in DOM — clear only other nodes
+  Array.from(chat.children).forEach(child => { if (child.id !== 'welcome') child.remove(); });
+  const _intakeWelcome = document.getElementById('welcome');
+  if (_intakeWelcome) _intakeWelcome.style.display = 'none';
+  document.body.classList.remove('bw-selecting');
   const inputEl = document.getElementById('user-input');
   if (inputEl) { const _t = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he']; inputEl.placeholder = _t.intakePlaceholder || 'כתוב/י כאן...'; }
   showIntakeQuestion();
@@ -822,7 +827,7 @@ function bwUpdateModeLabels() {
   const sessionLabel = document.getElementById('bw-label-session');
   if (sessionLabel) sessionLabel.textContent = isEn ? 'Session' : 'סשן';
   const exploreLabel = document.getElementById('bw-label-explore');
-  if (exploreLabel) exploreLabel.textContent = isEn ? 'Explore' : 'חיפוש';
+  if (exploreLabel) exploreLabel.textContent = isEn ? 'Explore' : 'לחקור';
   const theoristPrompt = document.querySelector('#bw-theorist-select .bw-entry-heading');
   if (theoristPrompt) theoristPrompt.textContent = isEn ? 'Who would you like to speak with?' : 'עם מי תרצה לדבר?';
   const confirmBtn = document.getElementById('bw-theorist-confirm');
@@ -2522,6 +2527,7 @@ Chapter X — "Notes on the Theory of the Life and Death Instincts":
 function buildSystemPrompt() {
   const _bsLang = window._lang || 'he';
   const _isEnPrompt = _bsLang === 'en';
+  const currentMode = localStorage.getItem('bw_mode') || 'session';
 
   const memories = loadMemory();
   // Filter memories by active theorist — each theorist remembers only their own sessions
@@ -3741,7 +3747,7 @@ These are not openers from kindness. They are openers from precision — from wh
   };
 
   let clinicalInstruction = '';
-  if (window.clinicalMode) {
+  if (window.clinicalMode || currentMode === 'session') {
     if (activeTheorists.length === 1) {
       const t = activeTheorists[0];
       const voice = THEORIST_VOICE[t] || '';
@@ -3835,7 +3841,12 @@ At the end ask: "Which approach would you like to explore further?"` : `
     genderInstruction = '\n\nGENDER — CONFIRMED FROM INTAKE: The user prefers gender-neutral address. Use את/ה and avoid gendered verb endings wherever possible. Do not assume gender from the first message.';
   }
 
-  const promptOpener = _isEnPrompt
+  // In session mode with a single theorist, THEORIST_VOICE (injected via clinicalInstruction)
+  // provides the complete persona. The explore-style opener (three-part + follow-up questions)
+  // contradicts the clinical session format and must not be used in session mode.
+  const promptOpener = (currentMode === 'session' && activeTheorists.length === 1)
+    ? '' // THEORIST_VOICE handles everything
+    : _isEnPrompt
     ? `You are a precise and deeply knowledgeable psychoanalytic advisor. You understand questions in any language.
 
 Writing style — critical: Write in flowing, continuous paragraphs. Do not use markdown — no asterisks, no hashtags, no headers, no bulleted lists with dashes. The text should feel like deliberate, considered analytic writing.
@@ -4311,7 +4322,12 @@ function applyUITranslation(code) {
   if (activeTheorists.length > 0) updateInputSuggestion();
   if (intakeMode) {
     const chat = document.getElementById('chat');
-    if (chat) { chat.innerHTML = ''; showIntakeQuestion(); }
+    if (chat) {
+      Array.from(chat.children).forEach(child => { if (child.id !== 'welcome') child.remove(); });
+      const _lcWelcome = document.getElementById('welcome');
+      if (_lcWelcome) _lcWelcome.style.display = 'none';
+      showIntakeQuestion();
+    }
   }
   // Re-apply persona-specific placeholder after language change
   try {
@@ -5418,10 +5434,13 @@ function restoreConversation(memIndex) {
   if (!mem) return;
   closeMemory();
 
-  // Clear current chat — start fresh
+  // Clear current chat — preserve #welcome in DOM (same pattern as performNewChat/signOut)
   conversationHistory = [];
   const chat = document.getElementById('chat');
-  chat.innerHTML = '';
+  Array.from(chat.children).forEach(child => { if (child.id !== 'welcome') child.remove(); });
+  const _rcWelcome = document.getElementById('welcome');
+  if (_rcWelcome) _rcWelcome.style.display = 'none';
+  document.body.classList.remove('bw-selecting');
 
   // Show memory summary card
   const div = document.createElement('div');

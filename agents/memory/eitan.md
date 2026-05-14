@@ -6,7 +6,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ## Context
 - QA מכסה 4 תיאורטיקנים (לא 8 — הופחת לחסכון בעלות)
 - Cron: יומי, Vercel native
-- אין open bugs כרגע
+- Open bug: BW-43 — bw_mode has no effect on system prompt (session = explore at API level)
 
 ---
 
@@ -19,6 +19,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. BW-38 sign-off: data-bw-hidden pattern approved ✅
-2. restoreConversation bug: נמצאה `updateSessionTitle(true)` חסרה — Oliver תיקן, sign-off ✅
-3. QA הופחת ל-4 תיאורטיקנים (cost optimization — מאי 2026)
+1. BW-43 opened: bw_mode has no effect on system prompt — session = explore at API level (מאי 2026)
+2. BW-38 sign-off: data-bw-hidden pattern approved ✅
+3. restoreConversation bug: נמצאה `updateSessionTitle(true)` חסרה — Oliver תיקן, sign-off ✅
+4. QA הופחת ל-4 תיאורטיקנים (cost optimization — מאי 2026)

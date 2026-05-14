@@ -10,6 +10,13 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - icon-system.md: Lucide (size=15, strokeWidth=1.75) + רשימת Unicode מאושרת
 - UX-RULES.md: 9 כללים פעילים
 - between-tokens.json: source of truth לכל מדידה
+- **מסך בחירה (BW-41) — ממצאי מאי 2026:**
+  - Mode toggle: שני האפשרויות `--muted` בטעינה — אין selected state ברירת מחדל. צריך: "סשן" נבחר כברירת מחדל.
+  - welcome padding-top: 8px בפועל — צריך 32px (space-xl).
+  - שתי כותרות זהות 19px — צריך היררכיה: ראשית 20px italic, שנייה 19px.
+  - theorist grid: `margin: 0 195px` ידני — צריך `width:fit-content; margin:0 auto`.
+- **Domain:** psychoanalytic-space.vercel.app ו-chat.getbetween.app = אותו deployment. הראשון לפיתוח/QA, השני לשיווק/משתמשים.
+- design-system.md: עודכן עם לינקי live בראש הקובץ.
 
 ---
 
@@ -26,8 +33,9 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. design-system.html v1.1: full token sync, bubble spec fix, States demo + Grid/Breakpoints sections
-2. components.md: 7 קומפוננטים מתועדים עם CSS spec + forbidden patterns לכל אחד
-3. icon-system.md: Lucide + Unicode two-language system, approved lists, size specs
-4. font-size tokenization: globals.css — 37 ערכי hardcoded → 10 tokens (--fs-*)
-5. border-radius fix: תיקון תיעוד design-system.md (radius-lg היה מתועד כ-14px, נכון 16px)
+1. ניתוח מסך הבחירה (BW-41): 4 ממצאים — mode toggle ללא selected state, padding-top נמוך, כותרות זהות, grid margin ידני. עדכון design-system.md עם לינקי live.
+2. design-system.html v1.1: full token sync, bubble spec fix, States demo + Grid/Breakpoints sections
+3. components.md: 7 קומפוננטים מתועדים עם CSS spec + forbidden patterns לכל אחד
+4. icon-system.md: Lucide + Unicode two-language system, approved lists, size specs
+5. font-size tokenization: globals.css — 37 ערכי hardcoded → 10 tokens (--fs-*)
+6. border-radius fix: תיקון תיעוד design-system.md (radius-lg היה מתועד כ-14px, נכון 16px)
