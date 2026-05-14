@@ -26,6 +26,18 @@
   --space-lg:    20px;
   --space-xl:    32px;
 
+  /* Layout — dimensions & breakpoints */
+  --layout-sidebar:           220px;  /* sidebar expanded */
+  --layout-sidebar-collapsed:  52px;  /* sidebar collapsed */
+  --layout-chat-max:          740px;  /* max-width of chat messages */
+  --layout-input-max:         800px;  /* max-width of input area */
+  --layout-content-max:       900px;  /* max-width of general content */
+
+  /* Breakpoints (use in @media — not as var() since CSS doesn't support that) */
+  /* --bp-mobile:  600px  — phone portrait */
+  /* --bp-tablet:  900px  — tablet / narrow desktop */
+  /* --bp-desktop: 1200px — full desktop */
+
   /* Font sizes — type scale (10 values, no others permitted) */
   --fs-micro:        9px;   /* Rubik — subtitles בתוך כרטיסים, uppercase */
   --fs-caption:      11px;  /* Rubik — labels, timestamps, disclaimers */

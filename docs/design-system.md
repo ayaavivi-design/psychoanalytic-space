@@ -309,10 +309,75 @@ confirmBtn.classList.remove('bw-loading');
 - font-size — 10 טוקני `--fs-*` ב-`:root`, כל hardcoded הוחלפו, סקאלה נוקתה
 
 **בתור (עדיפות יורדת):**
-1. **תיעוד קומפוננטים** — tooltip, modal, sidebar-item, input, bubble (מעבר לכפתורים)
-2. **גריד ו-breakpoints** — לפני mobile launch
+1. ~~**תיעוד קומפוננטים**~~ — ✅ נפתר במאי 2026 — ראו `docs/components.md`
+2. ~~**גריד ו-breakpoints**~~ — ✅ ראו § 11 למטה (tokens + breakpoint system)
 
 כל screen חדש מתחיל מהסיסטם הזה, לא ממניפסט עיצוב נפרד.
 
 ---
-_גרסה 1.0 · מאיה · מאי 2026_
+
+## 11. גריד ו-Breakpoints
+
+### 11.1 Layout Tokens
+
+מוגדרים ב-`:root` ב-`globals.css`:
+
+```css
+--layout-sidebar:            220px   /* sidebar expanded */
+--layout-sidebar-collapsed:   52px   /* sidebar collapsed (icons only) */
+--layout-chat-max:            740px   /* max-width chat messages */
+--layout-input-max:           800px   /* max-width input area */
+--layout-content-max:         900px   /* max-width general content */
+```
+
+**כלל:** כל שינוי ב-sidebar width עובר דרך הטוקנים האלה — לא hardcoded.
+
+---
+
+### 11.2 Breakpoint System
+
+שלושה breakpoints. **לא ניתן להשתמש ב-`var()`** בתוך `@media` ב-CSS — הערכים מוגדרים כ-comment בלבד ב-`:root`, ומשתמשים בפיקסלים ישירות.
+
+| שם | ערך | מה משתנה |
+|----|-----|----------|
+| `--bp-mobile` | **600px** | sidebar נסגר, theorist grid → 2 עמודות 112px, mode card → `--fs-body-lg` |
+| `--bp-tablet` | **900px** | sidebar collapse אוטומטי (לא מוגדר עדיין), content שורות צרות |
+| `--bp-desktop` | **1200px** | full layout (ברירת מחדל) |
+
+**מה קיים היום:**
+```css
+@media (max-width: 600px) {
+  .bw-mode-card { font-size: var(--fs-body-lg); padding: 8px 18px; }
+  #bw-theorist-grid { grid-template-columns: repeat(2, 112px) !important; }
+}
+```
+
+**מה חסר לפני mobile launch:**
+- `@media (max-width: 600px)`: sidebar → `width: 0` + overlay mode
+- `@media (max-width: 600px)`: input area padding מצומצם
+- `@media (max-width: 900px)`: sidebar starts collapsed
+
+---
+
+### 11.3 Layout Structure
+
+```
+╔══════════════════════════════════════════╗
+║  #sidebar (220px)  │  #main-content      ║
+║                    │  ┌───────────────┐  ║
+║  .sb-item          │  │ header        │  ║
+║  .sb-section-label │  ├───────────────┤  ║
+║                    │  │ #chat         │  ║
+║  220px / 52px      │  │ max-w: 740px  │  ║
+║  transition: 0.2s  │  ├───────────────┤  ║
+║                    │  │ .input-area   │  ║
+║                    │  │ max-w: 800px  │  ║
+║                    │  └───────────────┘  ║
+╚══════════════════════════════════════════╝
+```
+
+**direction:** הכל `rtl` — sidebar בצד ימין, chat column בצד שמאל.
+
+---
+
+_גרסה 1.1 · מאיה · מאי 2026_
