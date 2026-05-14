@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { SUPERVISION_SYSTEM_PROMPT, SUPERVISION_USER_TEMPLATE } from '@/lib/supervise-prompt';
+import { requireAuth } from '@/lib/auth';
 
 // POST /api/supervise
 // body: { transcript: string, theorist: string }
@@ -16,6 +17,9 @@ function truncateTranscript(transcript: string, maxExchanges: number): string {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth.errorResponse) return auth.errorResponse;
+
   const body = await req.json();
   const { transcript, theorist } = body;
 

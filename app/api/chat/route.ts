@@ -1,6 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { searchKnowledgeHybrid, formatChunksForPrompt } from '@/lib/rag';
+import { requireAuth } from '@/lib/auth';
+
+const MAX_USER_MESSAGE_CHARS = 4000;
 
 const THEORISTS_WITH_RAG = new Set(['freud', 'klein', 'winnicott', 'ogden', 'loewald', 'bion', 'kohut', 'heimann']);
 
@@ -176,12 +179,26 @@ async function enforceOneQuestion(
 
 export async function POST(req: NextRequest) {
   try {
+    // ─── AUTH ─── חייב לרוץ לפני כל עיבוד ───────────────────────────────────
+    const auth = await requireAuth(req);
+    if (auth.errorResponse) return auth.errorResponse;
+    // ─────────────────────────────────────────────────────────────────────────
+
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const body = await req.json();
     const { messages, system, webSearch, theorist } = body;
 
-    // ─── SAFETY INTERCEPTOR ─── חייב לרוץ ראשון, לפני RAG ולפני כל עיבוד ───
+    // ─── INPUT LENGTH LIMIT ───────────────────────────────────────────────────
     const userText = extractLastUserText(messages || []);
+    if (userText.length > MAX_USER_MESSAGE_CHARS) {
+      return NextResponse.json(
+        { error: { type: 'input_too_long', message: `ההודעה ארוכה מדי (${userText.length} תווים). המקסימום המותר הוא ${MAX_USER_MESSAGE_CHARS} תווים.` } },
+        { status: 400 }
+      );
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // ─── SAFETY INTERCEPTOR ─── חייב לרוץ ראשון, לפני RAG ולפני כל עיבוד ───
     if (detectCrisis(userText)) {
       console.log(`[SAFETY] זוהה תוכן אובדני — interceptor פעל, חוזר תגובת חירום`);
       return NextResponse.json({

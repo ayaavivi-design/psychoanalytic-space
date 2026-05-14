@@ -8,6 +8,23 @@ function tryInitSupabase() {
   else { setTimeout(tryInitSupabase, 50); }
 }
 
+// ─── Auth Headers Helper ───────────────────────────────────────────────────
+// מחזיר Authorization header עם ה-JWT של המשתמש המחובר.
+// משמש בכל קריאות ה-API המוגנות.
+async function getAuthHeaders() {
+  try {
+    if (!supabaseClient) return {};
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session?.access_token) {
+      return { 'Authorization': `Bearer ${session.access_token}` };
+    }
+  } catch (e) {
+    console.warn('[auth] getSession failed:', e);
+  }
+  return {};
+}
+// ─────────────────────────────────────────────────────────────────────────
+
 function initSupabase() {
   supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   supabaseClient.auth.getSession().then(({ data: { session } }) => {
@@ -674,7 +691,7 @@ async function startFlow(flowKey) {
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
       body: JSON.stringify({
         messages: [{ role: 'user', content: '__FLOW_OPEN__' }],
         system: buildSystemPrompt(),
@@ -985,12 +1002,12 @@ function saveInterpretiveMemory(theorist, summary) {
 }
 
 // Fire-and-forget: called before history is cleared. Never blocks UX.
-function generateInterpretiveMemory(theorist, history) {
+async function generateInterpretiveMemory(theorist, history) {
   if (!theorist || !history || history.length < 6) return;
   const snapshot = history.slice(-20); // truncate before sending
   fetch('/api/interpret-session', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
     body: JSON.stringify({ messages: snapshot, theorist }),
   })
     .then(r => r.json())
@@ -4759,7 +4776,7 @@ async function translateMessage(btn, langCode, langName) {
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
       body: JSON.stringify({
         messages: [{
           role: 'user',
@@ -4929,7 +4946,7 @@ async function sendMessage() {
 
     const response = await fetch('/api/chat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
       body: JSON.stringify({
         messages,
         system: buildSystemPrompt(),
@@ -5166,7 +5183,7 @@ async function exportPDF() {
       .join('\n');
     const res = await fetch('/api/chat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
       body: JSON.stringify({
         messages: [{ role: 'user', content: `בהתבסס על קטע השיחה הבא, כתוב נושא קצר של 3-5 מילים בעברית שמתאר את מה שהמטופלת מביאה. ללא פיסוק, ללא מירכאות. רק הנושא.\n\n${sample}` }],
         system: 'אתה עוזר שמחלץ נושאי שיחה קצרים.',
@@ -5989,7 +6006,7 @@ async function handleSilence() {
 
     const response = await fetch('/api/chat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
       body: JSON.stringify({ messages, system: buildSystemPrompt(), webSearch: false })
     });
 
@@ -6221,7 +6238,7 @@ async function runSupervisionPanel() {
   try {
     const res    = await fetch('/api/supervise', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
       body: JSON.stringify({ transcript, theorist }),
     });
     const report = await res.json();
@@ -6433,7 +6450,7 @@ function buildSessionSummaryTranscript() {
 function openSessionSummary() {
   requireTherapistConsent(() => _openSessionSummary());
 }
-function _openSessionSummary() {
+async function _openSessionSummary() {
   const transcript = buildSessionSummaryTranscript();
   if (!transcript) {
     const _ssT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
@@ -6475,7 +6492,7 @@ function _openSessionSummary() {
   // Fetch summary
   fetch('/api/session-summary', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
     body: JSON.stringify({ transcript, theorist, gender: (JSON.parse(localStorage.getItem('intake_completed') || '{}').gender) || '' })
   })
     .then(r => r.json())
@@ -6662,7 +6679,7 @@ function openSendToTherapistForm(container, htmlContent, subject) {
     try {
       const res  = await fetch('/api/send-to-therapist', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
         body: JSON.stringify({ email, subject, html: htmlContent }),
       });
       const data = await res.json();
@@ -6755,7 +6772,7 @@ async function runAnonymizer(overlay) {
   results.innerHTML = `<div style="text-align:center;color:#888;font-size:13px;padding:16px;">${_anonT.anonIdentifying || 'Identifying personal details...'}</div>`;
 
   try {
-    const res  = await fetch('/api/anonymize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+    const res  = await fetch('/api/anonymize', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) }, body: JSON.stringify({ text }) });
     const data = await res.json();
 
     results.innerHTML = '';
@@ -7000,7 +7017,7 @@ async function openPatientReflection() {
 
   fetch('/api/patient-reflection', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
     body: JSON.stringify({ transcript })
   })
     .then(r => r.json())
@@ -7206,7 +7223,7 @@ async function openUserFeedback() {
     try {
       const res  = await fetch('/api/user-feedback', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
         body: JSON.stringify({ personaId, theorist }),
       });
       const data = await res.json();

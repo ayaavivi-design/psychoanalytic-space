@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { THEORIST_VOICE, SAFETY_PROTOCOL } from '@/lib/theorist-voices';
+import { requireAuth } from '@/lib/auth';
 
 // POST /api/compare-theorists
 // body: { patient_message: string, theorists: string[] }
@@ -39,6 +40,9 @@ async function getTheoristResponse(
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth.errorResponse) return auth.errorResponse;
+
   const body = await req.json();
   const { patient_message, theorists } = body;
 

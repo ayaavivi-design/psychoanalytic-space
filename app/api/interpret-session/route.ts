@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/auth';
 
 const THEORIST_NAMES: Record<string, string> = {
   freud: 'פרויד',
@@ -27,6 +28,9 @@ function extractText(content: unknown): string {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await requireAuth(req);
+    if (auth.errorResponse) return auth.errorResponse;
+
     const { messages, theorist } = await req.json();
 
     // Only generate if meaningful conversation — at least 3 exchanges

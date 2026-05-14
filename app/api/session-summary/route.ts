@@ -1,12 +1,16 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { SUMMARY_SYSTEM_PROMPT, SUMMARY_USER_TEMPLATE } from '@/lib/summary-prompt';
+import { requireAuth } from '@/lib/auth';
 
 // POST /api/session-summary
 // body: { transcript: string, theorist: string }
 // מחזיר סיכום קליני מובנה של הסשן
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth.errorResponse) return auth.errorResponse;
+
   const body = await req.json();
   const { transcript, theorist, gender } = body;
 

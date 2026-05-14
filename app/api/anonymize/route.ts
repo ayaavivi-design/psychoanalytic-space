@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/auth';
 
 // POST /api/anonymize
 // body: { text: string }
@@ -35,6 +36,9 @@ Return ONLY valid JSON, no prose outside it:
 If there is nothing to anonymize, return the original text unchanged with an empty changes array.`;
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth.errorResponse) return auth.errorResponse;
+
   const body = await req.json();
   const { text } = body;
 

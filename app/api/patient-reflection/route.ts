@@ -1,12 +1,16 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { PATIENT_REFLECTION_SYSTEM_PROMPT, PATIENT_REFLECTION_USER_TEMPLATE } from '@/lib/patient-reflection-prompt';
+import { requireAuth } from '@/lib/auth';
 
 // POST /api/patient-reflection
 // body: { transcript: string }
 // מחזיר רפלקציה אישית בגוף ראשון למטופל
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth.errorResponse) return auth.errorResponse;
+
   const body = await req.json();
   const { transcript } = body;
 
