@@ -417,24 +417,21 @@ function completeIntake() {
 }
 
 function enterMainSpace() {
-  const t = getIntakeTranslation();
-  const name = intakeData.name || '';
-  const h2Text = name && t.postWelcomeH2 ? t.postWelcomeH2(name) : (t.welcomeHeading || t.welcome || 'מה עולה לך היום?');
-  const pText = t.postWelcomeP || '';
   const chat = document.getElementById('chat');
   if (!chat) return;
   chat.style.transition = 'opacity 0.5s ease';
   chat.style.opacity = '0';
   setTimeout(() => {
-    chat.innerHTML = `
-      <div class="welcome" id="welcome">
-        
-        <h2>${h2Text}</h2>
-        ${pText ? `<p>${pText}</p>` : ''}
-      </div>`;
+    // Preserve React-rendered #welcome (which contains #bw-mode-select and #bw-theorist-select).
+    // Replacing chat.innerHTML destroys those BW-41 sub-divs → showModeSelect() gets null → blank screen.
+    Array.from(chat.children).forEach(child => {
+      if (child.id !== 'welcome') child.remove();
+    });
+    const welcomeEl = document.getElementById('welcome');
+    if (welcomeEl) welcomeEl.style.display = '';
     chat.style.opacity = '1';
     renderApiNote();
-    renderFlowButtons();
+    showModeSelect(); // shows mode + theorist selection UI
     renderAnalystBadge();
     // Auto-select Winnicott as default voice after intake
     if (activeTheorists.length === 0) {
@@ -5271,15 +5268,17 @@ function newChat() {
 function showConversationEndModal() {
   const existing = document.getElementById('end-conv-modal');
   if (existing) existing.remove();
+  const isEn = (window.selectedLang?.code === 'en');
+  const dir = isEn ? 'ltr' : 'rtl';
   const modal = document.createElement('div');
   modal.id = 'end-conv-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
   modal.innerHTML = `
-    <div style="background:var(--bg);border-radius:16px;padding:36px 32px;max-width:340px;width:90%;text-align:center;direction:rtl;box-shadow:0 16px 48px rgba(196,96,122,0.15);">
-      <p style="font-size:16px;color:var(--text);font-family:Rubik,sans-serif;margin:0 0 28px;line-height:1.6;">סיימת את השיחה?</p>
+    <div style="background:var(--bg);border-radius:16px;padding:36px 32px;max-width:340px;width:90%;text-align:center;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <p style="font-size:16px;color:var(--text);font-family:Rubik,sans-serif;margin:0 0 28px;line-height:1.6;">${isEn ? 'End this conversation?' : 'סיימת את השיחה?'}</p>
       <div style="display:flex;gap:12px;justify-content:center;">
-        <button onclick="confirmEndConversation()" style="background:var(--accent);color:#fff;border:none;padding:10px 28px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">כן</button>
-        <button onclick="document.getElementById('end-conv-modal').remove()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 28px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">לא, חזור</button>
+        <button onclick="confirmEndConversation()" style="background:var(--accent);color:#fff;border:none;padding:10px 28px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">${isEn ? 'Yes' : 'כן'}</button>
+        <button onclick="document.getElementById('end-conv-modal').remove()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 28px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">${isEn ? 'Go back' : 'לא, חזור'}</button>
       </div>
     </div>`;
   document.body.appendChild(modal);
@@ -5300,10 +5299,12 @@ function showFeedbackModal() {
   const modal = document.createElement('div');
   modal.id = 'feedback-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
+  const _isFbEn = (window.selectedLang?.code === 'en');
+  const _fbDir = _isFbEn ? 'ltr' : 'rtl';
   modal.innerHTML = `
-    <div style="background:var(--bg);border-radius:16px;padding:36px 32px;max-width:400px;width:90%;text-align:center;direction:rtl;box-shadow:0 16px 48px rgba(196,96,122,0.15);">
-      <p style="font-size:15px;color:var(--text);font-family:Rubik,sans-serif;margin:0 0 6px;">רגע לפני שממשיכים —</p>
-      <p style="font-size:13px;color:var(--muted);font-family:Rubik,sans-serif;margin:0 0 22px;">איך היתה השיחה?</p>
+    <div style="background:var(--bg);border-radius:16px;padding:36px 32px;max-width:400px;width:90%;text-align:center;direction:${_fbDir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <p style="font-size:15px;color:var(--text);font-family:Rubik,sans-serif;margin:0 0 6px;">${_isFbEn ? 'Before you go —' : 'רגע לפני שממשיכים —'}</p>
+      <p style="font-size:13px;color:var(--muted);font-family:Rubik,sans-serif;margin:0 0 22px;">${_isFbEn ? 'How was the conversation?' : 'איך היתה השיחה?'}</p>
       <div id="emoji-row" style="display:flex;gap:16px;justify-content:center;font-size:28px;margin-bottom:20px;">
         <span onclick="selectFeedbackRating(this,'😕')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="😕">😕</span>
         <span onclick="selectFeedbackRating(this,'😐')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="😐">😐</span>
@@ -5311,10 +5312,10 @@ function showFeedbackModal() {
         <span onclick="selectFeedbackRating(this,'😊')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="😊">😊</span>
         <span onclick="selectFeedbackRating(this,'✨')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="✨">✨</span>
       </div>
-      <textarea id="feedback-text" placeholder="משהו שתרצי לשתף? (לא חובה)" style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:Rubik,sans-serif;font-size:13px;background:var(--bg);color:var(--text);resize:none;height:68px;margin-bottom:18px;direction:rtl;" dir="rtl"></textarea>
+      <textarea id="feedback-text" placeholder="${_isFbEn ? 'Anything you\'d like to share? (optional)' : 'משהו שתרצי לשתף? (לא חובה)'}" style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:Rubik,sans-serif;font-size:13px;background:var(--bg);color:var(--text);resize:none;height:68px;margin-bottom:18px;direction:${_fbDir};" dir="${_fbDir}"></textarea>
       <div style="display:flex;gap:12px;justify-content:center;">
-        <button onclick="submitFeedback('${theorist}')" id="feedback-submit-btn" style="background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;opacity:0.35;pointer-events:none;">שלח</button>
-        <button onclick="skipFeedback()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">דלג</button>
+        <button onclick="submitFeedback('${theorist}')" id="feedback-submit-btn" style="background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;opacity:0.35;pointer-events:none;">${_isFbEn ? 'Send' : 'שלח'}</button>
+        <button onclick="skipFeedback()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">${_isFbEn ? 'Skip' : 'דלג'}</button>
       </div>
     </div>`;
   document.body.appendChild(modal);
