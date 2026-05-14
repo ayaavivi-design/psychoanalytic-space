@@ -70,7 +70,9 @@ function proceedToApp() {
   setTimeout(checkIntakeStatus, 100);
   // BW-41 unified screen: always show full entry (mode + theorist together).
   // showModeSelect() pre-selects the saved pill from localStorage.
-  setTimeout(() => { showModeSelect(); }, 350);
+  // Guard: Supabase fires onAuthStateChange on token refresh → proceedToApp() runs again
+  // mid-conversation → bw-selecting gets re-added → input area disappears.
+  setTimeout(() => { if (conversationHistory.length === 0) showModeSelect(); }, 350);
   setTimeout(() => { initSidebarTips(); startOnboardingTour(); }, 800);
 }
 
