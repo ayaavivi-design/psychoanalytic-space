@@ -25,6 +25,18 @@
   --space-md:    12px;
   --space-lg:    20px;
   --space-xl:    32px;
+
+  /* Font sizes — type scale (10 values, no others permitted) */
+  --fs-micro:        9px;   /* Rubik — subtitles בתוך כרטיסים, uppercase */
+  --fs-caption:      11px;  /* Rubik — labels, timestamps, disclaimers */
+  --fs-body-sm:      12px;  /* Rubik — כפתורי flow, metadata */
+  --fs-body-md:      13px;  /* Rubik — UI כללי: sidebar, buttons */
+  --fs-body-lg:      15px;  /* Rubik — הודעות שיחה, שדה קלט */
+  --fs-heading-card: 18px;  /* Cormorant — שמות תיאורטיקנים, mode cards */
+  --fs-heading-md:   20px;  /* Cormorant — כותרת session פעילה */
+  --fs-heading-lg:   22px;  /* David Libre — כותרת welcome */
+  --fs-heading-xl:   26px;  /* Cormorant — שם המוצר בheader */
+  --fs-display:      48px;  /* Cormorant — אלמנט דקורטיבי */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -80,7 +92,7 @@ body {
   padding: 7px 14px; /* TODO: 7px/14px not in spacing tokens */
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--fs-body-md);
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
@@ -110,7 +122,7 @@ body {
 #sidebar.collapsed .theorist-tag { display: none !important; }
 #sidebar.collapsed .theorist-chevron { display: none; }
 #sidebar .theorist-tag {
-  font-size: 13px;
+  font-size: var(--fs-body-md);
   color: var(--text);
   letter-spacing: 0;
   font-weight: 400;
@@ -120,7 +132,7 @@ body {
   color: #fff;
 }
 #intake-start-btn {
-  font-size: 13px !important;
+  font-size: var(--fs-body-md) !important;
   letter-spacing: 0 !important;
   font-weight: 400 !important;
   font-family: var(--font-rubik), sans-serif !important;
@@ -129,7 +141,7 @@ body {
 #sidebar.collapsed #sb-user-row { justify-content: center !important; flex-direction: row !important; }
 .sb-section-label {
   display: flex;
-  font-size: 10px;
+  font-size: var(--fs-caption);
   color: var(--muted);
   padding: 8px 14px 2px;
   letter-spacing: 0.07em;
@@ -154,14 +166,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: 500;
   color: #fff;
   flex-shrink: 0;
 }
 .sb-user-info { overflow: hidden; }
-.sb-user-name { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sb-user-sub { font-size: 10px; color: var(--muted); }
+.sb-user-name { font-size: var(--fs-body-sm); font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-user-sub { font-size: var(--fs-caption); color: var(--muted); }
 
 header {
   flex-shrink: 0;
@@ -199,7 +211,7 @@ header {
   gap: var(--space-sm);
 }
 .session-name {
-  font-size: 12px;
+  font-size: var(--fs-body-sm);
   color: var(--muted);
   font-family: var(--font-rubik), sans-serif;
   max-width: 400px;
@@ -214,7 +226,7 @@ header {
 }
 header h1 {
   font-family: var(--font-cormorant), serif;
-  font-size: 26px;
+  font-size: var(--fs-heading-xl);
   font-weight: 300;
   font-style: italic;
   color: var(--accent);
@@ -227,13 +239,13 @@ header h1 {
   white-space: nowrap;
 }
 header span {
-  font-size: 12px;
+  font-size: var(--fs-body-sm);
   color: var(--muted);
   letter-spacing: 0.1em;
 }
 .memory-indicator {
   margin-right: auto;
-  font-size: 14px;
+  font-size: var(--fs-body-md);
   color: var(--muted);
   display: flex;
   align-items: center;
@@ -261,7 +273,7 @@ header span {
 }
 
 .theorist-tag {
-  font-size: 12px;
+  font-size: var(--fs-body-sm);
   letter-spacing: 0.03em;
   padding: var(--space-xs) var(--space-md);
   border: 1.5px solid var(--border);
@@ -289,7 +301,7 @@ header span {
 }
 .theorist-tag.active::after {
   content: ' ✓';
-  font-size: 10px;
+  font-size: var(--fs-micro);
   opacity: 0.85;
 }
 
@@ -320,7 +332,7 @@ header span {
 .message.user { text-align: right; }
 
 .message-role {
-  font-size: 10px;
+  font-size: var(--fs-caption);
   letter-spacing: 0.12em;
   color: var(--muted);
   margin-bottom: 6px;
@@ -330,7 +342,7 @@ header span {
 .message.user .message-role { text-align: right; }
 
 .message-body {
-  font-size: 15px;
+  font-size: var(--fs-body-lg);
   line-height: 1.85;
   color: var(--text);
 }
@@ -341,7 +353,7 @@ header span {
   border-radius: var(--radius-lg) var(--radius-xs) var(--radius-lg) var(--radius-lg);
   padding: 10px 16px;
   font-family: var(--font-rubik), sans-serif;
-  font-size: 15px;
+  font-size: var(--fs-body-lg);
   font-weight: 300;
   color: var(--text);
   text-align: right;
@@ -357,7 +369,7 @@ header span {
 
 .attribution {
   margin-top: 10px;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   color: var(--accent-dim);
   font-style: italic;
   letter-spacing: 0.05em;
@@ -409,7 +421,7 @@ header span {
 }
 .memory-box h2 {
   font-family: var(--font-cormorant), serif;
-  font-size: 20px;
+  font-size: var(--fs-heading-md);
   font-weight: 300;
   font-style: italic;
   color: var(--accent);
@@ -418,19 +430,19 @@ header span {
 .memory-entry {
   padding: 12px 0;
   border-bottom: 1px solid var(--border);
-  font-size: 13px;
+  font-size: var(--fs-body-md);
   line-height: 1.7;
 }
 .memory-entry:last-child { border-bottom: none; }
 .memory-entry .mem-q {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--fs-caption);
   margin-bottom: var(--space-xs);
   font-style: italic;
 }
 .memory-close {
   margin-top: var(--space-lg);
-  font-size: 12px;
+  font-size: var(--fs-body-sm);
   color: var(--muted);
   cursor: pointer;
   letter-spacing: 0.08em;
@@ -470,7 +482,7 @@ header span {
   border: 1px solid var(--border);
   background: none;
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--fs-body-sm);
   color: var(--muted);
   transition: all 0.15s;
   font-family: var(--font-rubik), sans-serif;
@@ -484,7 +496,7 @@ header span {
 
 .clear-memory {
   float: left;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   color: #c0a0a0;
   cursor: pointer;
   letter-spacing: 0.06em;
@@ -523,7 +535,7 @@ header span {
   border: none;
   outline: none;
   font-family: var(--font-rubik), sans-serif;
-  font-size: 15px;
+  font-size: var(--fs-body-lg);
   font-weight: 300;
   font-style: normal;
   color: var(--text);
@@ -564,7 +576,7 @@ header span {
   border-radius: var(--radius-xl);
   padding: 11px 28px;
   font-family: var(--font-rubik), sans-serif;
-  font-size: 13px;
+  font-size: var(--fs-body-md);
   font-weight: 300;
   cursor: pointer;
   text-align: center;
@@ -591,7 +603,7 @@ header span {
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   padding: 6px 14px; /* TODO: 6px/14px not in spacing tokens */
-  font-size: 13px;
+  font-size: var(--fs-body-md);
   font-weight: 300;
   font-family: var(--font-rubik), sans-serif;
   color: var(--muted);
@@ -606,7 +618,7 @@ header span {
   color: var(--text);
 }
 #suggestion-bubbles.subtle .suggestion-btn {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   padding: 4px 10px;
   opacity: 0.6;
 }
@@ -620,7 +632,7 @@ header span {
 .hint {
   display: none;
   margin-top: 10px;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   color: var(--muted);
   text-align: center;
   letter-spacing: 0.06em;
@@ -643,20 +655,20 @@ header span {
 }
 .welcome .ornament {
   font-family: var(--font-cormorant), serif;
-  font-size: 48px;
+  font-size: var(--fs-display);
   color: var(--accent);
   opacity: 0.25;
   margin-bottom: var(--space-lg);
 }
 .welcome h2 {
   font-family: var(--font-david), serif;
-  font-size: 22px;
+  font-size: var(--fs-heading-lg);
   font-weight: 400;
   color: var(--accent);
   margin-bottom: var(--space-md);
 }
 .welcome p {
-  font-size: 14px;
+  font-size: var(--fs-body-md);
   line-height: 1.9;
   color: var(--muted);
 }
@@ -669,7 +681,7 @@ header span {
   padding: 7px 12px; /* TODO: 7px not in spacing tokens */
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--fs-body-md);
   color: var(--text);
   transition: background 0.15s;
   white-space: nowrap;
@@ -736,7 +748,7 @@ body.bw-selecting #flow-buttons {
   padding: 9px 22px;
   border-radius: var(--radius-xl);
   font-family: var(--font-cormorant), serif;
-  font-size: 18px;
+  font-size: var(--fs-heading-card);
   font-weight: 300;
   color: var(--muted);
   cursor: pointer;
@@ -785,14 +797,14 @@ body.bw-selecting #flow-buttons {
 }
 .bw-t-name {
   font-family: var(--font-cormorant), serif;
-  font-size: 17px;
+  font-size: var(--fs-heading-card);
   font-weight: 300;
   color: var(--text);
 }
 .bw-theorist-card.bw-theorist-selected .bw-t-name { color: var(--accent); }
 .bw-t-sub {
   font-family: var(--font-rubik), sans-serif;
-  font-size: 9px;
+  font-size: var(--fs-micro);
   font-weight: 400;
   color: var(--muted);
   opacity: 0.65;
@@ -808,7 +820,7 @@ body.bw-selecting #flow-buttons {
   border-radius: var(--radius-xl);
   padding: 11px 36px;
   font-family: var(--font-rubik), sans-serif;
-  font-size: 14px;
+  font-size: var(--fs-body-md);
   cursor: pointer;
   transition: opacity 0.15s;
   min-width: 160px;
@@ -825,7 +837,7 @@ body.bw-selecting #flow-buttons {
 .bw-slide-in { animation: bwSlideIn 0.28s ease-out; }
 
 @media (max-width: 600px) {
-  .bw-mode-card { font-size: 16px; padding: 8px 18px; }
+  .bw-mode-card { font-size: var(--fs-body-lg); padding: 8px 18px; }
   #bw-theorist-grid { grid-template-columns: repeat(2, 112px) !important; }
 }
 

@@ -80,7 +80,7 @@ color: #fff
 border: none
 border-radius: 22px
 padding: 11px 36px
-font: Rubik 14px / weight 400
+font: Rubik 13px / weight 400  (`--fs-body-md`)
 hover: opacity 0.87
 ```
 _שימוש:_ Continue, שלח שיחה, כל CTA ראשי.
@@ -159,7 +159,7 @@ _שימוש:_ Flow buttons ("הפגישה עוד כאן"), Language switch.
 | גודל | padding | font-size | border-radius | שימוש |
 |------|---------|-----------|---------------|-------|
 | **XL** | 9px 20px | Cormorant 18px | 22px | Mode toggle options |
-| **LG** | 11px 36px | Rubik 14px | 22px | Primary CTA (Continue) |
+| **LG** | 11px 36px | Rubik 13px (`--fs-body-md`) | 22px | Primary CTA (Continue) |
 | **MD** | 10px 28px | Rubik 13px | 22px | Secondary actions |
 | **SM** | 7px 14px | Rubik 12px | 20px | Pills, flow buttons |
 | **XS** | 5px 10px | Rubik 11px | 8px | Sidebar items, tags |
@@ -181,13 +181,14 @@ _שימוש:_ Flow buttons ("הפגישה עוד כאן"), Language switch.
 
 ## 6. Border Radius — עגלגלות
 
-| token | ערך | שימוש |
-|-------|-----|-------|
+| token | ערך CSS | שימוש |
+|-------|---------|-------|
+| `radius-xs` | 4px | bubble corner, inline elements |
 | `radius-sm` | 8px | sidebar items, tooltips, dropdowns |
-| `radius-md` | 12px | theorist cards, message bubbles |
-| `radius-lg` | 14px | mode cards |
-| `radius-pill` | 20–22px | buttons ראשיים, flow buttons, input |
-| `radius-circle` | 50% | avatars, circular action buttons |
+| `radius-md` | 12px | theorist cards, small panels |
+| `radius-lg` | 16px | input wrap, mode cards, message bubbles |
+| `radius-xl` | 22px | כל כפתורי pill |
+| `radius-circle` | 50% | avatars |
 
 ### כלל: לא יותר מ-2 ערכי radius על אותו מסך.
 
@@ -223,9 +224,9 @@ _כלל:_ כל כלי ש"שייך לsession פעיל" מוסתר בשלבי הב
 
 ## 8. בעיות שמצאתי — Open Issues
 
-1. **border-radius בלתי עקבי** — 8, 12, 14, 16, 20, 22, 24px בשימוש בו-זמנית. צריך לאחד ל-5 ערכים בלבד (ראו טבלה למעלה).
+1. ~~**border-radius בלתי עקבי**~~ — ✅ נפתר במאי 2026. כל ערכים עברו לטוקנים (`--radius-xs/sm/md/lg/xl/circle`). טבלת § 6 עודכנה: radius-lg=16px (לא 14px כפי שנרשם בטעות).
 
-2. **גדלי פונט יותר מדי** — 14 גדלים שונים. למשל: 15px ו-14px קיימים זה לצד זה בלי הבחנה ברורה. לאחד ל-9 גדלים מהסקאלה.
+2. ~~**גדלי פונט יותר מדי**~~ — ✅ נפתר במאי 2026. 10 טוקנים הוגדרו ב-`:root` (`--fs-micro` עד `--fs-display`). כל hardcoded `font-size` ב-`globals.css` הוחלפו. ממצאי הגאת הנרמול: 10px→11px (caption), 14px→13px (body-md), 17px→18px (heading-card). יוצא מן הכלל: 64px דקורטיבי — נשאר hardcoded עם comment.
 
 3. ~~**אין כפתור Disabled state**~~ — ✅ נפתר במאי 2026 — ראו פרק States למטה.
 
@@ -303,11 +304,13 @@ confirmBtn.classList.remove('bw-loading');
 
 **✅ הושלם (מאי 2026):**
 - States system — focus, disabled, loading, error, active
+- מערכת אייקונים — `docs/icon-system.md` (Lucide + Unicode, specs, רשימות מאושרות)
+- border-radius — כל ערכים בטוקנים, טבלה עודכנה (6 ערכים: xs/sm/md/lg/xl/circle)
+- font-size — 10 טוקני `--fs-*` ב-`:root`, כל hardcoded הוחלפו, סקאלה נוקתה
 
 **בתור (עדיפות יורדת):**
-1. **מערכת אייקונים** — אילו אייקונים מאושרים, גודל, stroke, צבע
-2. **תיעוד קומפוננטים** — tooltip, modal, sidebar-item, input, bubble (מעבר לכפתורים)
-3. **גריד ו-breakpoints** — לפני mobile launch
+1. **תיעוד קומפוננטים** — tooltip, modal, sidebar-item, input, bubble (מעבר לכפתורים)
+2. **גריד ו-breakpoints** — לפני mobile launch
 
 כל screen חדש מתחיל מהסיסטם הזה, לא ממניפסט עיצוב נפרד.
 
