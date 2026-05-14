@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { PenLine, Globe, Brain, Settings, LogOut, Languages, Sofa, Download, ChevronDown, BookOpen } from 'lucide-react';
+import { PenLine, Globe, Brain, Settings, LogOut, Languages, Download, ChevronDown, BookOpen } from 'lucide-react';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -484,26 +484,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'none'; }}>
                 שיחת היכרות
               </div>
-              <div id="clinical-btn" className="memory-indicator" onClick={() => (window as any).toggleClinicalMode()}
-                style={{ cursor: 'pointer' }} suppressHydrationWarning
-                onMouseEnter={(e) => {
-                  const r = e.currentTarget.getBoundingClientRect();
-                  const lang = (window as any).selectedLang?.code || 'he';
-                  setCurrentLang(lang);
-                  const tipWidth = 240;
-                  if (lang === 'he') {
-                    // Hebrew: button is on LEFT side (RTL layout) → tooltip opens RIGHT, into the pink area
-                    const left = Math.min(r.right + 8, window.innerWidth - tipWidth - 8);
-                    setSessionTip({ top: r.bottom + 10, left });
-                  } else {
-                    // LTR: button is on RIGHT side → tooltip opens LEFT
-                    const left = Math.max(8, r.left - tipWidth - 8);
-                    setSessionTip({ top: r.bottom + 10, left });
-                  }
-                }}
-                onMouseLeave={() => setSessionTip(null)}>
-                <Sofa size={18} strokeWidth={1.75} />
-              </div>
+              {/* clinical-btn removed from header — toggleClinicalMode accessible via sidebar only */}
             </div>
           </div>
         </header>

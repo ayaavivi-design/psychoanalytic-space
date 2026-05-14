@@ -717,7 +717,6 @@ body.bw-selecting .input-area {
 }
 
 /* Hide session-only tools during entry flow */
-body.bw-selecting #clinical-btn,
 body.bw-selecting #analyst-badge,
 body.bw-selecting #flow-buttons {
   display: none !important;
