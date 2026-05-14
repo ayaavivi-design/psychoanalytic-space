@@ -749,6 +749,9 @@ function showModeSelect() {
   const modeDiv = document.getElementById('bw-mode-select');
   const theoristDiv = document.getElementById('bw-theorist-select');
   const apiNote = document.getElementById('welcome-api-text');
+  // Guard: ensure #welcome is visible (may have been hidden by confirmTheoristEntry or signOut)
+  const welcomeEl = document.getElementById('welcome');
+  if (welcomeEl && welcomeEl.style.display === 'none') welcomeEl.style.display = '';
   // Unified screen: show both sections together
   if (modeDiv) modeDiv.style.display = 'flex';
   if (theoristDiv) {
@@ -5411,16 +5414,10 @@ function performNewChat() {
     Array.from(chat.children).forEach(child => {
       if (child.id !== 'welcome') child.remove();
     });
+    chat.scrollTop = 0; // reset scroll — stale scrollTop from conversation causes blank screen
   }
   const welcome = document.getElementById('welcome');
   if (welcome) welcome.style.display = '';
-  // Reset BW-41 sub-divs, then show the right entry screen
-  const _ncModeDiv = document.getElementById('bw-mode-select');
-  const _ncTheoristDiv = document.getElementById('bw-theorist-select');
-  const _ncApiNote = document.getElementById('welcome-api-text');
-  if (_ncModeDiv) _ncModeDiv.style.display = 'none';
-  if (_ncTheoristDiv) _ncTheoristDiv.style.display = 'none';
-  if (_ncApiNote) _ncApiNote.style.display = 'none';
   // BW-41 unified screen: always return to full entry screen.
   // showModeSelect() reads bw_mode from localStorage and pre-selects the pill.
   showModeSelect();
