@@ -1269,7 +1269,9 @@ function updateSessionTitle(forceNew = false) {
 
 function appendMessage(role, content, attribution = '', sourceHTML = '') {
   const welcome = document.getElementById('welcome');
-  if (welcome) welcome.remove();
+  // Hide (do NOT remove) — removal permanently destroys React-managed #welcome,
+  // breaking performNewChat() which relies on re-showing it.
+  if (welcome) welcome.style.display = 'none';
 
   const chat = document.getElementById('chat');
   const div = document.createElement('div');
@@ -1294,7 +1296,8 @@ function appendMessage(role, content, attribution = '', sourceHTML = '') {
 function showThinking() {
   const chat = document.getElementById('chat');
   const welcome = document.getElementById('welcome');
-  if (welcome) welcome.remove();
+  // Hide (do NOT remove) — see note in appendMessage().
+  if (welcome) welcome.style.display = 'none';
 
   const div = document.createElement('div');
   div.id = 'thinking';
