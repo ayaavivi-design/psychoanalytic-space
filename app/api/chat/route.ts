@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { searchKnowledgeHybrid, formatChunksForPrompt } from '@/lib/rag';
 import { requireAuth } from '@/lib/auth';
+import { THEORIST_VOICE } from '@/lib/theorist-voices';
 
 const MAX_USER_MESSAGE_CHARS = 4000;
 
@@ -193,7 +194,16 @@ export async function POST(req: NextRequest) {
 
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const body = await req.json();
-    const { messages, system, webSearch, theorist } = body;
+    // ⚠ SECURITY: body.system is intentionally ignored.
+    // System prompt is built server-side from THEORIST_VOICE to prevent client override.
+    const { messages, webSearch, theorist } = body;
+
+    // ─── BUILD SYSTEM PROMPT SERVER-SIDE ─────────────────────────────────────
+    const baseSystem = (theorist && THEORIST_VOICE[theorist]) ? THEORIST_VOICE[theorist] : '';
+    if (!baseSystem) {
+      console.warn(`[SECURITY] theorist "${theorist}" not found in THEORIST_VOICE — empty base system`);
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     // ─── INPUT LENGTH LIMIT ───────────────────────────────────────────────────
     const userText = extractLastUserText(messages || []);
@@ -221,7 +231,7 @@ export async function POST(req: NextRequest) {
     // ─────────────────────────────────────────────────────────────────────────
 
     // RAG
-    let enrichedSystem = system + UNIVERSAL_SCOPE_INSTRUCTION;
+    let enrichedSystem = baseSystem + UNIVERSAL_SCOPE_INSTRUCTION;
     if (theorist && THEORISTS_WITH_RAG.has(theorist) && messages?.length > 0) {
       const lastUserMessage = [...messages].reverse().find((m: { role: string }) => m.role === 'user');
       const query = typeof lastUserMessage?.content === 'string'
@@ -232,7 +242,7 @@ export async function POST(req: NextRequest) {
         const chunks = await searchKnowledgeHybrid(query, theorist, 4);
         console.log(`[RAG] ${theorist} — נמצאו ${chunks.length} קטעים:`, chunks.map(c => `${c.source_title} (${c.source_year}) — דמיון: ${c.similarity?.toFixed(2)}`));
         const ragContext = formatChunksForPrompt(chunks);
-        if (ragContext) enrichedSystem = system + ragContext;
+        if (ragContext) enrichedSystem = baseSystem + ragContext;
       }
     }
 
