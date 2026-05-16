@@ -4,10 +4,10 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## Context
-- Deployment אחרון: מאי 2026 (13+ commits כולל BW-38, BW-41, security, restoreConversation fix)
+- Deployment אחרון: 16 מאי 2026 — BW-51 + Winnicott rules + BW-46 security + team-agents.html (11 commits)
 - Branch: main · remote: ayaavivi-design/psychoanalytic-space
 - Vercel crons מוסיפים commits אוטומטית (QA reports) — remote יכול להיות קדים ל-local
-- Release בהמתנה (16.05): 9 commits בתור (team-agents.html + BW-46) + BW-51/Winnicott/temperature unstaged — ממתין לcommit של אוליבר + אישור אדם
+- ממתין: QA פרודקשן של איתן
 
 ---
 
@@ -21,5 +21,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Deployment מאי 2026: BW-38 + BW-41 + security + restoreConversation fix (13 commits)
-2. Pre-push issue: remote היה קדום ב-1 commit (Vercel QA cron) — pull + push
+1. Hotfix 16.05.2026 (20:40): /api/daily-summary endpoint — push הצליח ✅ (דחוף לפני 9:00 מחר)
+2. Deployment 16.05.2026: BW-51 + Winnicott 4 rules + enforceVariedOpening + BW-46 security + team-agents.html (11 commits) — push הצליח ✅
+2. Deployment מאי 2026: BW-38 + BW-41 + security + restoreConversation fix (13 commits)
+3. Pre-push issue: remote היה קדום (Vercel QA cron) — pull --rebase + push

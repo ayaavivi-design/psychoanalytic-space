@@ -26,7 +26,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. feat(BW-51): flow selection indicator — DOM element + PDF export (startFlow + exportPDF בלבד)
+1. feat: /api/daily-summary — CCR email bridge endpoint (Resend, x-internal-token auth). ממתין ל-INTERNAL_API_TOKEN ב-Vercel + עדכון CCR routine
+2. feat(BW-51): flow selection indicator — DOM element + PDF export (startFlow + exportPDF בלבד)
 2. fix(restore): `updateSessionTitle(true)` אחרי `restoreConversation` — active-theorist-bar לא התרענן
 2. feat: הסתרת `.input-area` בשלבי הבחירה (showModeSelect + showTheoristEntry)
 3. feat(BW-41): זרימת כניסה מאוחדת — מסך מצב + תיאורטיקן, תרגום עברית, fix logout/login, design tokens

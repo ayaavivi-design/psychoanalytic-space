@@ -25,8 +25,9 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. BW-51 sign-off: PASS ✅ — flow-selection DOM indicator + PDF export. Warning: לא שורד restoreConversation (known limitation, לא בלוקר) (מאי 2026)
-2. ויניקוט QA post-prompt fix: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN — שיום רגש ו-sentence completion לא ניתנים לאכיפה בלופ (מאי 2026)
+1. Post-production QA 16.05: 4/4 PASS, BW-51+BW-46+enforceVariedOpening verified in prod ✅ (מאי 2026)
+2. BW-51 sign-off: PASS ✅ — flow-selection DOM indicator + PDF export. Warning: לא שורד restoreConversation (known limitation, לא בלוקר) (מאי 2026)
+3. ויניקוט QA post-prompt fix: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN — שיום רגש ו-sentence completion לא ניתנים לאכיפה בלופ (מאי 2026)
 2. BW-35 Safety QA: 8/8 PASS — interceptor עובד על כל 4 תיאורטיקנים × 2 תרחישים (מאי 2026)
 2. BW-36 Q-3 re-run: ✅ LIKELY RESOLVED ברמת פרומפט. ⚠️ WARNING: אין cross-turn validation (מאי 2026)
 3. fix(blank-screen): welcome.remove() זוהה כ-root cause — תוקן ל-style.display='none' (מאי 2026)
