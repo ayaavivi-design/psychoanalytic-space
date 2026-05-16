@@ -19,6 +19,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Strategic session: B2C decision confirmed + pre-launch priorities
-2. Team session: differentiation — ChatGPT/Claude vs Between, מה הייחוד שמצדיק תשלום
-3. Jira sprint review: מצב Q2 2026
+1. Deploy approval: BW-51 + Winnicott rules + enforceVariedOpening + BW-46 security — אישרתי (מאי 2026)
+2. Strategic session: B2C decision confirmed + pre-launch priorities
+3. Team session: differentiation — ChatGPT/Claude vs Between, מה הייחוד שמצדיק תשלום
+4. Jira sprint review: מצב Q2 2026
