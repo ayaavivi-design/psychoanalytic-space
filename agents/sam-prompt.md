@@ -82,6 +82,7 @@ STEP 4 — Pre-flight checks:
 Before pushing, run:
 - git log --oneline origin/main..HEAD (confirm what will be pushed)
 - git diff --stat origin/main..HEAD (summary of changes)
+- cat release/eitan-approval.md | grep -i "date\|תאריך" — ודא שה-approval מהיום או מאתמול. approval ישן יותר מ-48 שעות = לא תקף לגרסה הנוכחית.
 Report the results. Ask for final confirmation before pushing.
 
 STEP 5 — Push:
