@@ -6058,13 +6058,13 @@ async function handleSilence() {
   showThinking();
 
   try {
-    const recentHistory = conversationHistory.slice(-16);
-    const messages = [
-      ...recentHistory.map(m => ({ role: m.role, content: m.content })),
-      { role: 'user', content: window._lang === 'en'
-          ? '[Silence — the patient is present but not speaking]'
-          : '[שתיקה — המטופל נמצא אך לא מדבר כרגע]' }
-    ];
+    // Bug A fix: push silence user message to conversationHistory BEFORE API call
+    // so history never has two consecutive assistant messages
+    const silenceContent = window._lang === 'en'
+      ? '[Silence — the patient is present but not speaking]'
+      : '[שתיקה — המטופל נמצא אך לא מדבר כרגע]';
+    conversationHistory.push({ role: 'user', content: silenceContent });
+    const messages = conversationHistory.slice(-17).map(m => ({ role: m.role, content: m.content }));
 
     const response = await fetch('/api/chat', {
       method: 'POST',
@@ -6081,7 +6081,7 @@ async function handleSilence() {
         if (block.type === 'text') reply += block.text;
       }
     }
-    if (!reply) return;
+    if (!reply) { removeThinking(); return; }
 
     reply = reply.replace(/\[MEMORY[^\]]*\][^\n]*/g, '').trim();
     conversationHistory.push({ role: 'assistant', content: reply });
@@ -6094,6 +6094,7 @@ async function handleSilence() {
     updateReflectionBtn();
   } catch (e) {
     removeThinking();
+    silenceResponseSent = false; // Bug C fix: reset so silence detection works after failure
     console.warn('Silence response failed:', e.message);
   } finally {
     isThinking = false;
