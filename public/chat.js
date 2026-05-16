@@ -642,12 +642,12 @@ function renderFlowButtons() {
   const buttons = isEn
     ? [
         { key: 'after_session',  label: 'Still inside my last session' },
-        { key: 'before_session', label: "Something I'm carrying" },
+        { key: 'before_session', label: "Session coming up" },
         { key: 'something_else', label: "Something won't leave me" },
       ]
     : [
-        { key: 'after_session',  label: 'הפגישה עוד כאן' },
-        { key: 'before_session', label: 'משהו שמלווה אותי' },
+        { key: 'after_session',  label: 'עדיין בתוך הפגישה האחרונה' },
+        { key: 'before_session', label: 'יש לי פגישה בקרוב' },
         { key: 'something_else', label: 'משהו לא עוזב אותי' },
       ];
   const container = document.createElement('div');
@@ -672,8 +672,8 @@ async function startFlow(flowKey) {
   (function() {
     const _isEn = (window.selectedLang?.code === 'en');
     const _flowLabels = _isEn
-      ? { after_session: 'Still inside my last session', before_session: "Something I'm carrying", something_else: "Something won't leave me" }
-      : { after_session: 'הפגישה עוד כאן', before_session: 'משהו שמלווה אותי', something_else: 'משהו לא עוזב אותי' };
+      ? { after_session: 'Still inside my last session', before_session: "Session coming up", something_else: "Something won't leave me" }
+      : { after_session: 'עדיין בתוך הפגישה האחרונה', before_session: 'יש לי פגישה בקרוב', something_else: 'משהו לא עוזב אותי' };
     const _allKeys = ['after_session', 'before_session', 'something_else'];
     const _selected = _flowLabels[flowKey] || flowKey;
     const _allLabels = _allKeys.map(k => _flowLabels[k]);
