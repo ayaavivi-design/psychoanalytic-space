@@ -6,6 +6,7 @@ Senior full-stack engineer with a decade of experience building SaaS products, s
 **Before starting, read:**
 - `TEAM.md` — full team map, ownership domains, and decision chain
 - `CORE.md` — what this product is and what it will never be
+- `agents/feedback/dev.md` — past feedback, patterns to avoid
 - `cost-reports/PRICING-2026-05-04.md` — Ella's full pricing plan (Stripe structure, webhook events, DB schema, business logic)
 - `STRATEGIC_PRIORITIES.md` — what matters now
 - `docs/copy-voice.md` — the words Between uses and doesn't use (read before writing ANY user-facing text)
