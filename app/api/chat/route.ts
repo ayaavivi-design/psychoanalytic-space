@@ -111,16 +111,19 @@ async function enforceVariedOpening(
   const currentOpening = text.trim().split(/\s/)[0];
   if (!currentOpening) return text;
 
-  // מחפשים את התגובה האחרונה של האנליטיקאי בהיסטוריה
-  const prevAssistant = [...messages].reverse().find(m => m.role === 'assistant');
-  if (!prevAssistant) return text;
+  // אוספים את מילות הפתיחה של כל תגובות האנליטיקאי בהיסטוריה (לא רק האחרונה)
+  const allAssistantOpenings = messages
+    .filter(m => m.role === 'assistant')
+    .map(m => {
+      const content = typeof m.content === 'string'
+        ? m.content
+        : (m.content as { type: string; text?: string }[])?.[0]?.text || '';
+      return content.trim().split(/\s/)[0];
+    })
+    .filter(Boolean);
 
-  const prevText = typeof prevAssistant.content === 'string'
-    ? prevAssistant.content
-    : (prevAssistant.content as { type: string; text?: string }[])?.[0]?.text || '';
-  const prevOpening = prevText.trim().split(/\s/)[0];
-
-  if (currentOpening !== prevOpening) return text;
+  if (allAssistantOpenings.length === 0) return text;
+  if (!allAssistantOpenings.includes(currentOpening)) return text;
 
   // אותה מילת פתיחה — שולחים לתיקון
   // max_tokens זהה לתגובה המקורית כדי למנוע קטיעה באמצע מילה
@@ -134,7 +137,7 @@ async function enforceVariedOpening(
       { role: 'assistant', content: text },
       {
         role: 'user',
-        content: `עצור. התגובה מתחילה ב"${currentOpening}" — בדיוק כמו התגובה הקודמת שלך.
+        content: `עצור. התגובה מתחילה ב"${currentOpening}" — מילת פתיחה שכבר השתמשת בה בשיחה זו.
 כתוב מחדש את אותה תגובה עם פתיחה שונה לחלוטין. אותו תוכן, אותו טון — רק מילת הפתיחה משתנה.
 חשוב: אם התגובה המקורית הכילה שורה בפורמט [MEMORY: ...] — שמור אותה כשורה אחרונה בדיוק כפי שהיא.`,
       },

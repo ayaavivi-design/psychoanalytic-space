@@ -33,9 +33,40 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. ניתוח מסך הבחירה (BW-41): 4 ממצאים — mode toggle ללא selected state, padding-top נמוך, כותרות זהות, grid margin ידני. עדכון design-system.md עם לינקי live.
-2. design-system.html v1.1: full token sync, bubble spec fix, States demo + Grid/Breakpoints sections
-3. components.md: 7 קומפוננטים מתועדים עם CSS spec + forbidden patterns לכל אחד
-4. icon-system.md: Lucide + Unicode two-language system, approved lists, size specs
-5. font-size tokenization: globals.css — 37 ערכי hardcoded → 10 tokens (--fs-*)
-6. border-radius fix: תיקון תיעוד design-system.md (radius-lg היה מתועד כ-14px, נכון 16px)
+1. מפרט עיצוב מצגת ולידציה — שמור ב-bizdev/presentation-design-spec-2026-05.md (מאי 2026)
+2. סקירת UI מלאה — מאי 2026: 5 ממצאים קונקרטיים (ראה למטה)
+2. ניתוח מסך הבחירה (BW-41): 4 ממצאים — mode toggle ללא selected state, padding-top נמוך, כותרות זהות, grid margin ידני. עדכון design-system.md עם לינקי live.
+3. design-system.html v1.1: full token sync, bubble spec fix, States demo + Grid/Breakpoints sections
+4. components.md: 7 קומפוננטים מתועדים עם CSS spec + forbidden patterns לכל אחד
+5. icon-system.md: Lucide + Unicode two-language system, approved lists, size specs
+6. font-size tokenization: globals.css — 37 ערכי hardcoded → 10 tokens (--fs-*)
+7. border-radius fix: תיקון תיעוד design-system.md (radius-lg היה מתועד כ-14px, נכון 16px)
+
+## ממצאי סקירת UI — מאי 2026
+
+### ממצא 1 — welcome padding-top: 8px (קיים), צריך 32px
+- **קובץ:** `app/globals.css`, selector `.welcome`
+- **ממצא:** `padding: 8px 40px` — ה-8px בראש גורם לתוכן לצוף גבוה מדי ומאבד את תחושת המרכוז האנכי
+- **תיקון:** `padding: var(--space-xl) 40px` = 32px בראש
+- **למה:** ה-`justify-content: flex-start` מתנהג נכון רק אם יש padding מספיק מהראש. בלעדיו, הכותרת נוחתת ישירות מתחת ל-header ונראית כאילו נשמטה.
+
+### ממצא 2 — `שיחת היכרות` chip — מיקום תלוי, בולט מדי בצד שמאל
+- **קובץ:** `app/globals.css`, `app/page.tsx` — `.header-session`
+- **ממצא:** ה-chip `שיחת היכרות` מופיע כ-`position: absolute` (ריצה לראש לפי screenshot) ומרוחק מהאלמנטים שהוא מתאר. הוא צף בחלל ריק מתחת לשם `Between` בלי הקשר ויזואלי ברור.
+- **תיקון:** להעביר אותו להיות חלק מה-`header-session` row, עם `margin-inline-end: auto` כדי לשבת בצד הנכון. `padding: 4px var(--space-md)`.
+
+### ממצא 3 — בועת AI: background לא-טוקן + gap בין הודעות: 28px hardcoded
+- **קובץ:** `app/globals.css`, selectors `.message.assistant .message-body` ו-`#chat`
+- **ממצא א:** `background: rgba(253,248,246,0.7)` — ערך שאינו טוקן. הצבע הוא וריאציה של `--bg` ב-70% אטימות. צריך: `background: var(--bg)` או `var(--surface)`.
+- **ממצא ב:** `gap: 28px` ב-`#chat` — לא בטוקנים (הסקאלה: 4/8/12/20/32). הכי קרוב הוא `--space-xl` = 32px.
+- **תיקון:** `.message.assistant .message-body { background: var(--surface); }` ו-`#chat { gap: var(--space-xl); }`
+
+### ממצא 4 — כפתורי auth screen: border-radius 4px hardcoded, font-size 14px hardcoded
+- **קובץ:** `app/page.tsx` — inline styles של `#auth-email`, `#auth-password`, `#signin-btn`, `#signup-btn`
+- **ממצא:** `borderRadius: 4` (= `--radius-xs`) על שדות קלט — אבל לפי המערכת, input צריך `--radius-lg` = 16px (כמו `.input-wrap`). כפתורים עם `borderRadius: 4` — צריך `--radius-xl` = 22px (pill). `fontSize: 14` — לא בטוקנים (הסקאלה: 9/11/12/13/15/18/20/22/26/48).
+- **תיקון:** `borderRadius: 'var(--radius-lg)'` על inputs, `borderRadius: 'var(--radius-xl)'` על כפתורים, `fontSize: 'var(--fs-body-md)'` = 13px.
+
+### ממצא 5 — copy: "כלי" בדיסקליימר — מילה שאסורה לפי copy-voice.md
+- **קובץ:** `app/page.tsx` — `#auth-disclaimer`
+- **ממצא:** הטקסט כולל "Between הוא **כלי** לחשיבה" — "כלי" נמצא ברשימת "מילים שלא" ב-`docs/copy-voice.md`. הסיבה: Between היא לא כלי — היא נוכחות.
+- **תיקון מוצע (לעבור דרך שון):** "Between נועד לחשיבה ולהבנה עצמית" — ללא המילה "כלי". לסמן לשון לאישור שון לפני עדכון.

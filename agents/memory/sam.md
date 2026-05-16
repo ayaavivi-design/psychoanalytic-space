@@ -7,6 +7,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - Deployment אחרון: מאי 2026 (13+ commits כולל BW-38, BW-41, security, restoreConversation fix)
 - Branch: main · remote: ayaavivi-design/psychoanalytic-space
 - Vercel crons מוסיפים commits אוטומטית (QA reports) — remote יכול להיות קדים ל-local
+- Release בהמתנה (16.05): 9 commits בתור (team-agents.html + BW-46) + BW-51/Winnicott/temperature unstaged — ממתין לcommit של אוליבר + אישור אדם
 
 ---
 

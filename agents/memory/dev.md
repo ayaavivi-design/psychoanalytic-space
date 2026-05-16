@@ -26,7 +26,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. fix(restore): `updateSessionTitle(true)` אחרי `restoreConversation` — active-theorist-bar לא התרענן
+1. feat(BW-51): flow selection indicator — DOM element + PDF export (startFlow + exportPDF בלבד)
+2. fix(restore): `updateSessionTitle(true)` אחרי `restoreConversation` — active-theorist-bar לא התרענן
 2. feat: הסתרת `.input-area` בשלבי הבחירה (showModeSelect + showTheoristEntry)
 3. feat(BW-41): זרימת כניסה מאוחדת — מסך מצב + תיאורטיקן, תרגום עברית, fix logout/login, design tokens
 4. fix(BW-38): data-bw-hidden pattern לניהול auth-screen visibility

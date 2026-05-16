@@ -21,6 +21,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Flow button copy review + sharpening: גרסאות עברית + אנגלית — כיוון ישיר יותר
-2. Hebrew translation review: UI elements חדשים מ-BW-41
-3. Positioning session: מה מבדיל את Between מ-ChatGPT/Claude לשימוש קליני
+1. ייעוץ שם מותג: "Between" vs "In Between" — המלצה: להישאר עם Between. הטיעון הלשוני חכם אבל שגוי לצרכי brand (מאי 2026)
+2. מצגת ולידציה — 10 שקפים: מטפלים + משקיעים, שמור ב-bizdev/presentation-structure-2026-05.md (מאי 2026)
+2. Flow button copy review + sharpening: גרסאות עברית + אנגלית — כיוון ישיר יותר
+3. Hebrew translation review: UI elements חדשים מ-BW-41
+4. Positioning session: מה מבדיל את Between מ-ChatGPT/Claude לשימוש קליני

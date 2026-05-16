@@ -652,7 +652,7 @@ function renderFlowButtons() {
       ];
   const container = document.createElement('div');
   container.id = 'flow-buttons';
-  container.style.cssText = `display:flex;flex-direction:column;gap:8px;width:100%;max-width:360px;margin:0 auto;direction:${isEn ? 'ltr' : 'rtl'};align-items:center;`;
+  container.style.cssText = `display:flex;flex-direction:column;gap:8px;width:fit-content;margin:0 auto;direction:${isEn ? 'ltr' : 'rtl'};`;
   container.innerHTML = buttons.map(b =>
     `<button class="flow-btn" onclick="startFlow('${b.key}')"
       onmouseover="this.classList.add('flow-btn-hover')"
@@ -667,6 +667,24 @@ async function startFlow(flowKey) {
   if (isThinking) return;
   window.activeFlow = flowKey;
   document.getElementById('flow-buttons')?.remove();
+
+  // BW-51: Record flow selection as DOM indicator for PDF export
+  (function() {
+    const _isEn = (window.selectedLang?.code === 'en');
+    const _flowLabels = _isEn
+      ? { after_session: 'Still inside my last session', before_session: "Something I'm carrying", something_else: "Something won't leave me" }
+      : { after_session: 'הפגישה עוד כאן', before_session: 'משהו שמלווה אותי', something_else: 'משהו לא עוזב אותי' };
+    const _allKeys = ['after_session', 'before_session', 'something_else'];
+    const _selected = _flowLabels[flowKey] || flowKey;
+    const _allLabels = _allKeys.map(k => _flowLabels[k]);
+    const _chat = document.getElementById('chat');
+    if (!_chat) return;
+    const _ind = document.createElement('div');
+    _ind.className = 'message flow-selection';
+    _ind.dataset.selected = _selected;
+    _ind.dataset.options = JSON.stringify(_allLabels);
+    _chat.appendChild(_ind);
+  })();
 
   const theoristKey = activeTheorists.length === 1 ? activeTheorists[0] : null;
   const lang = (window.selectedLang?.code) || 'en';
@@ -5249,6 +5267,21 @@ async function exportPDF() {
     <hr>`;
 
   messages.forEach(msg => {
+    // BW-51: Render flow selection entry point in PDF
+    if (msg.classList.contains('flow-selection')) {
+      const sel = msg.dataset.selected;
+      const opts = JSON.parse(msg.dataset.options || '[]');
+      if (sel && opts.length) {
+        const isEn = selectedLang?.code === 'en';
+        html += `<div class="role user">${isEn ? 'Entry point' : 'נקודת כניסה'}</div>`;
+        html += `<div class="body">`;
+        opts.forEach(opt => {
+          html += `${opt === sel ? '● ' : '○ '}${opt}${opt === sel ? ' ←' : ''}<br>`;
+        });
+        html += `</div><hr>`;
+      }
+      return;
+    }
     const isUser = msg.classList.contains('user');
     const bodyEl = msg.querySelector('.message-body');
     if (!bodyEl) return;

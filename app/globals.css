@@ -581,7 +581,7 @@ header span {
 #flow-buttons { align-items: center; }
 .flow-btn {
   width: 100%;
-  max-width: 340px;
+  white-space: nowrap;
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);

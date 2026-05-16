@@ -14,8 +14,11 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - **ויניקוט כברירת מחדל**: נכון קלינית (holding, accessible, not intimidating), אבל המשתמש חייב ללחוץ אקטיבית — לא מספיק שהוא מסומן.
 - **גבול קליני**: אם אדם לא בטיפול — המרחב אומר זאת ישירות ולא ממשיך. לא לפשר על זה.
 - **שאלה אחת בלבד**: output validation loop נכון קלינית — 3 שאלות בתגובה אחת הורסות את המרחב.
+- **המצאת חוויות = validation loop לא יתפוס**: בעיית "השלמת משפט המטופל" היא תמיד בעיית פרומפט. Loop בודק פורמט, לא נאמנות סמנטית.
+- **4 כללים חדשים לויניקוט (מאי 2026)**: ONE IMAGE IF ANY + NO REASSURANCE ANYWHERE + NEVER COMPLETE THE PATIENT'S SENTENCE + DO NOT NAME THE PATIENT'S EMOTION FOR THEM.
 
 ---
 
 ## History (last 10)
-1. בדיקת זרימה חדשה מאי 2026: mode select + theorist select — שאלת ויניקוט כברירת מחדל (כן, אבל active click)
+1. תיקון פרומפט ויניקוט: 4 כללים חדשים — המצאת חוויות, ריבוי מטפורות, הרגעה, שיום רגש (מאי 2026)
+2. בדיקת זרימה חדשה מאי 2026: mode select + theorist select — שאלת ויניקוט כברירת מחדל (כן, אבל active click)

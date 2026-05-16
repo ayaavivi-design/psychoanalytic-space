@@ -1225,8 +1225,232 @@
     </div>
   </div>
 
-  <div style="border-top:1px solid var(--border);padding-top:24px;margin-top:8px;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;">
-    <span>Between Design System · v1.2</span>
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ENTRY POINT CARDS — BW-20 proposal                        -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div style="margin-top:48px;border-top:2px solid var(--border);padding-top:40px;">
+    <div style="font-size:var(--fs-heading-md);font-family:var(--font-cormorant);font-weight:400;margin-bottom:4px;">Entry Point Cards</div>
+    <div style="font-size:var(--fs-body-sm);color:var(--muted);margin-bottom:32px;">BW-20 — הצעת מאיה: selection cards + post-click transition</div>
+
+    <style>
+      /* ── Entry card base ── */
+      .ds-entry-card {
+        width: 380px;
+        min-height: 72px;
+        border-radius: var(--radius-lg);
+        border: 1.5px solid var(--border);
+        background: var(--surface);
+        padding: 16px 24px;
+        text-align: left;
+        font-size: var(--fs-body-lg);
+        font-family: var(--font-rubik);
+        font-weight: 400;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        cursor: pointer;
+        transition: border-color 0.18s, box-shadow 0.18s, opacity 0.3s, transform 0.18s;
+        box-shadow: 0 1px 3px rgba(45,36,32,0.06);
+        line-height: 1.4;
+        position: relative;
+      }
+      .ds-entry-card::before {
+        content: '';
+        width: 4px;
+        min-width: 4px;
+        height: 32px;
+        border-radius: 2px;
+        background: var(--border);
+        transition: background 0.18s;
+        flex-shrink: 0;
+      }
+      /* Hover */
+      .ds-entry-card:hover {
+        border-color: var(--accent);
+        box-shadow: 0 2px 10px rgba(196,96,122,0.12);
+      }
+      .ds-entry-card:hover::before { background: var(--accent); }
+      /* Selected */
+      .ds-entry-card.is-selected {
+        border-color: var(--accent);
+        background: rgba(196,96,122,0.04);
+        box-shadow: 0 2px 12px rgba(196,96,122,0.15);
+        transform: scale(1.01);
+      }
+      .ds-entry-card.is-selected::before { background: var(--accent); }
+      /* Faded (other cards during transition) */
+      .ds-entry-card.is-faded {
+        opacity: 0.12;
+        pointer-events: none;
+        transform: scale(0.99);
+      }
+
+      /* ── Transition indicator ── */
+      .ds-entry-transition {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        opacity: 0;
+        transition: opacity 0.35s;
+        pointer-events: none;
+        height: 0;
+        overflow: hidden;
+      }
+      .ds-entry-transition.is-visible {
+        opacity: 1;
+        height: auto;
+        margin-top: 12px;
+      }
+      .ds-breath-dots {
+        display: flex;
+        gap: 7px;
+        align-items: center;
+      }
+      .ds-breath-dots span {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        opacity: 0.35;
+        animation: ds-breathe 1.5s ease-in-out infinite;
+      }
+      .ds-breath-dots span:nth-child(2) { animation-delay: 0.22s; }
+      .ds-breath-dots span:nth-child(3) { animation-delay: 0.44s; }
+      @keyframes ds-breathe {
+        0%, 100% { opacity: 0.2; transform: scale(0.75); }
+        50%       { opacity: 0.85; transform: scale(1.25); }
+      }
+      .ds-breath-label {
+        font-size: var(--fs-caption);
+        font-family: var(--font-rubik);
+        color: var(--muted);
+        letter-spacing: 0.05em;
+      }
+    </style>
+
+    <!-- 3 states side by side -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;align-items:start;">
+
+      <!-- State 1 — Default -->
+      <div>
+        <div style="font-size:var(--fs-body-sm);color:var(--muted);margin-bottom:16px;font-weight:500;">1 · Default</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <button class="ds-entry-card">Still inside my last session</button>
+          <button class="ds-entry-card">Something I'm carrying</button>
+          <button class="ds-entry-card">Something won't leave me</button>
+        </div>
+        <div style="margin-top:14px;font-size:var(--fs-caption);color:var(--muted);">hover → גבול ורוד + פס ורוד</div>
+      </div>
+
+      <!-- State 2 — Selected -->
+      <div>
+        <div style="font-size:var(--fs-body-sm);color:var(--muted);margin-bottom:16px;font-weight:500;">2 · After selection</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <button class="ds-entry-card is-selected">Still inside my last session</button>
+          <button class="ds-entry-card is-faded">Something I'm carrying</button>
+          <button class="ds-entry-card is-faded">Something won't leave me</button>
+        </div>
+        <div style="margin-top:14px;font-size:var(--fs-caption);color:var(--muted);">הכרטיס הנבחר — accent. האחרים נמוגים.</div>
+      </div>
+
+      <!-- State 3 — Transition -->
+      <div>
+        <div style="font-size:var(--fs-body-sm);color:var(--muted);margin-bottom:16px;font-weight:500;">3 · Transition (~1.5s)</div>
+        <div style="display:flex;flex-direction:column;gap:12px;opacity:0.08;">
+          <button class="ds-entry-card is-selected">Still inside my last session</button>
+          <button class="ds-entry-card is-faded">Something I'm carrying</button>
+          <button class="ds-entry-card is-faded">Something won't leave me</button>
+        </div>
+        <div class="ds-entry-transition is-visible" style="margin-top:-80px;">
+          <div class="ds-breath-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="ds-breath-label">entering the space</div>
+        </div>
+        <div style="margin-top:72px;font-size:var(--fs-caption);color:var(--muted);">כרטיסים נעלמים. נקודות פועמות. תיאורטיקן מגיע.</div>
+      </div>
+    </div>
+
+    <!-- Interactive demo -->
+    <div style="margin-top:40px;padding:32px;background:var(--bg);border-radius:var(--radius-md);border:1px solid var(--border);">
+      <div style="font-size:var(--fs-body-sm);color:var(--muted);margin-bottom:20px;font-weight:500;">▶ Demo — לחצי על כרטיס</div>
+      <div id="ds-demo-cards" style="display:flex;flex-direction:column;gap:12px;align-items:flex-start;position:relative;min-height:240px;">
+        <button class="ds-entry-card ds-demo-btn">Still inside my last session</button>
+        <button class="ds-entry-card ds-demo-btn">Something I'm carrying</button>
+        <button class="ds-entry-card ds-demo-btn">Something won't leave me</button>
+        <div id="ds-demo-transition" class="ds-entry-transition" style="position:absolute;top:50%;left:190px;transform:translate(-50%,-50%);">
+          <div class="ds-breath-dots"><span></span><span></span><span></span></div>
+          <div class="ds-breath-label">entering the space</div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function() {
+        const demoBtns = document.querySelectorAll('.ds-demo-btn');
+        const transition = document.getElementById('ds-demo-transition');
+        let timer1, timer2;
+
+        demoBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            clearTimeout(timer1); clearTimeout(timer2);
+            // Reset
+            demoBtns.forEach(b => b.classList.remove('is-selected','is-faded'));
+            transition.classList.remove('is-visible');
+
+            // Select
+            btn.classList.add('is-selected');
+            demoBtns.forEach(b => { if (b !== btn) b.classList.add('is-faded'); });
+
+            // Transition
+            timer1 = setTimeout(() => {
+              demoBtns.forEach(b => b.style.opacity = '0');
+              transition.classList.add('is-visible');
+            }, 550);
+
+            // Reset
+            timer2 = setTimeout(() => {
+              demoBtns.forEach(b => {
+                b.classList.remove('is-selected','is-faded');
+                b.style.opacity = '';
+              });
+              transition.classList.remove('is-visible');
+            }, 2600);
+          });
+        });
+      })();
+    </script>
+
+    <!-- Spec -->
+    <div style="margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;">
+        <div style="font-size:var(--fs-body-sm);font-weight:500;margin-bottom:14px;">Card spec</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:var(--fs-body-sm);">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">width</span><span style="font-family:monospace;font-size:12px;">380px</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">min-height</span><span style="font-family:monospace;font-size:12px;">72px</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">border-radius</span><span style="font-family:monospace;font-size:12px;">var(--radius-lg) = 16px</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">padding</span><span style="font-family:monospace;font-size:12px;">16px 24px</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">font-size</span><span style="font-family:monospace;font-size:12px;">var(--fs-body-lg) = 15px</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">border</span><span style="font-family:monospace;font-size:12px;">1.5px solid var(--border)</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">indicator bar</span><span style="font-family:monospace;font-size:12px;">4×32px, radius 2px</span></div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;">
+        <div style="font-size:var(--fs-body-sm);font-weight:500;margin-bottom:14px;">Transition timing</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:var(--fs-body-sm);">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">click → selected state</span><span style="font-family:monospace;font-size:12px;">0ms</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">cards fade → indicator</span><span style="font-family:monospace;font-size:12px;">~550ms</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">indicator → theorist</span><span style="font-family:monospace;font-size:12px;">~1,500ms</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted)">total pause</span><span style="font-family:monospace;font-size:12px;">~2,000ms</span></div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:var(--fs-caption);color:var(--muted);">הטקסט "entering the space" — טנטטיבי. שון יאשר.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="border-top:1px solid var(--border);padding-top:24px;margin-top:48px;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;">
+    <span>Between Design System · v1.3</span>
     <span>מאיה · מאי 2026</span>
   </div>
 
