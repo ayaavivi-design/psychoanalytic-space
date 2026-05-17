@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Between — Presentation May 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Rubik:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #fdf8f6;
+      --text: #2d2420;
+      --muted: #a8948e;
+      --accent: #c4607a;
+      --border: #ede4e0;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Rubik', system-ui, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* ─── Wordmark ─── */
+    #wordmark {
+      position: fixed;
+      top: 32px;
+      left: 48px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      z-index: 100;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* ─── Slide counter ─── */
+    #counter {
+      position: fixed;
+      bottom: 32px;
+      right: 48px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      z-index: 100;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* ─── Navigation arrows ─── */
+    .nav-btn {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, background 0.2s;
+      color: var(--muted);
+    }
+
+    .nav-btn:hover {
+      border-color: var(--muted);
+      background: #f7efeb;
+      color: var(--text);
+    }
+
+    .nav-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #btn-prev { left: 24px; }
+    #btn-next { right: 24px; }
+
+    /* ─── Slides container ─── */
+    #slides {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    /* ─── Individual slide ─── */
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      padding: 0 80px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ─── Layout helpers ─── */
+    .slide--center {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .slide--top {
+      padding-top: 120px;
+      justify-content: flex-start;
+    }
+
+    /* ─── Typography ─── */
+    .display-title {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 64px;
+      line-height: 1.15;
+      color: var(--text);
+    }
+
+    .display-sub {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--muted);
+      margin-top: 28px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 32px;
+      line-height: 1.25;
+      color: var(--text);
+      margin-bottom: 36px;
+    }
+
+    .body-text {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.85;
+      color: var(--text);
+    }
+
+    .body-text.muted {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .accent {
+      color: var(--accent);
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin: 40px 0;
+    }
+
+    /* ─── Slide 1 ─── */
+    #slide-1 .display-title {
+      font-size: 64px;
+    }
+
+    /* ─── Slide 3 ─── */
+    #slide-3 .brand-name {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 72px;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    #slide-3 .brand-sub {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 16px;
+      color: var(--muted);
+      margin-top: 24px;
+      line-height: 1.7;
+    }
+
+    /* ─── Slide 5 — Demo ─── */
+    #slide-5 .demo-label {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 28px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    #slide-5 .demo-box {
+      width: 70%;
+      height: 300px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #slide-5 .demo-box-inner {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 15px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    #slide-5 .demo-caption {
+      margin-top: 20px;
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ─── Slide 9 — Traction stats ─── */
+    .stat-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-width: 560px;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .stat-bullet {
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--accent);
+      line-height: 1;
+      flex-shrink: 0;
+      position: relative;
+      top: 1px;
+    }
+
+    /* ─── Slide 10 — CTA ─── */
+    #slide-10 .cta-main {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 56px;
+      color: var(--text);
+      line-height: 1.15;
+    }
+
+    #slide-10 .cta-body {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 16px;
+      color: var(--muted);
+      margin-top: 32px;
+    }
+
+    #slide-10 .cta-note {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 12px;
+      color: var(--border);
+      margin-top: 20px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── Responsive safety ─── */
+    @media (max-width: 900px) {
+      .slide { padding: 0 40px; }
+      .display-title { font-size: 44px; }
+      #slide-3 .brand-name { font-size: 54px; }
+      #slide-10 .cta-main { font-size: 40px; }
+      .section-title { font-size: 26px; }
+      #slide-5 .demo-box { width: 90%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="wordmark">Between</div>
+  <div id="counter">1 / 10</div>
+
+  <button class="nav-btn" id="btn-prev" aria-label="Previous slide">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+
+  <button class="nav-btn" id="btn-next" aria-label="Next slide">
+    <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+  </button>
+
+  <div id="slides">
+
+    <!-- ─── Slide 1 — Title ─── -->
+    <div class="slide slide--center active" id="slide-1">
+      <p class="display-title">The session ends.</p>
+      <p class="display-sub">What happens to the process between sessions?</p>
+    </div>
+
+    <!-- ─── Slide 2 — Problem ─── -->
+    <div class="slide slide--top" id="slide-2">
+      <h2 class="section-title">The space between</h2>
+      <p class="body-text" style="max-width:560px">
+        What emerged in the room — and didn't have time to mature — <span class="accent">disappears</span>. Not because the patient doesn't want to process it. Because there's nowhere to take it.
+      </p>
+    </div>
+
+    <!-- ─── Slide 3 — Product ─── -->
+    <div class="slide slide--center" id="slide-3">
+      <p class="brand-name">Between</p>
+      <p class="brand-sub">
+        A conversation space for patients between sessions —<br />
+        to process what came up, to think about what's coming.
+      </p>
+    </div>
+
+    <!-- ─── Slide 4 — Differentiation ─── -->
+    <div class="slide slide--top" id="slide-4">
+      <h2 class="section-title">Not AI that knows — <span class="accent">presences</span></h2>
+      <p class="body-text" style="max-width:580px">
+        Freud is not Kohut. Klein is not Winnicott. Each voice is built from original texts — not general knowledge about psychoanalysis, but a specific clinical presence with its own method, its own constraints, its own forbidden moves.
+      </p>
+      <div class="divider" style="max-width:580px"></div>
+      <p class="body-text muted" style="max-width:520px">
+        ChatGPT can tell you about Winnicott. Between's Winnicott won't give you more than 2–3 sentences. Won't reassure you. Won't name your emotion for you. The clinical discipline — enforced by code, not just prompted — is the product.
+      </p>
+    </div>
+
+    <!-- ─── Slide 5 — Demo ─── -->
+    <div class="slide slide--center" id="slide-5">
+      <p class="demo-label">[ demo ]</p>
+      <div class="demo-box">
+        <span class="demo-box-inner">live session</span>
+      </div>
+      <p class="demo-caption">A real conversation with Winnicott — processing material from the last session</p>
+    </div>
+
+    <!-- ─── Slide 6 — Safety / Trust ─── -->
+    <div class="slide slide--top" id="slide-6">
+      <h2 class="section-title">What protects the therapy</h2>
+      <p class="body-text" style="max-width:560px">
+        Between cannot function without a therapist. The limits aren't just legal — they're <span class="accent">architectural</span>. Crisis detection, clinical-only scope, no diagnostic claims. The system is designed to serve the therapy, not replace it.
+      </p>
+    </div>
+
+    <!-- ─── Slide 7 — Go to Market ─── -->
+    <div class="slide slide--top" id="slide-7">
+      <h2 class="section-title">The path to market</h2>
+      <p class="body-text" style="max-width:560px">
+        A therapist who believes → recommends → patient uses. Not advertising. Not the App Store. <span class="accent">Trust</span> — person to person, clinical relationship to clinical relationship.
+      </p>
+    </div>
+
+    <!-- ─── Slide 8 — Moat ─── -->
+    <div class="slide slide--top" id="slide-8">
+      <h2 class="section-title">The asset that can't be replicated</h2>
+      <p class="body-text" style="max-width:580px">
+        Every voice is built separately. Klein's interpretive urgency. Winnicott's holding silence. Bion's tolerance of not-knowing. These aren't personas — they're clinical methods with distinct rules, distinct constraints, distinct things they will never do.
+      </p>
+      <div class="divider" style="max-width:580px"></div>
+      <p class="body-text" style="max-width:580px">
+        ChatGPT is a generalist. Between is a specialist — by design, by constraint, by clinical necessity.
+      </p>
+    </div>
+
+    <!-- ─── Slide 9 — Traction ─── -->
+    <div class="slide slide--top" id="slide-9">
+      <h2 class="section-title">Where we stand</h2>
+      <ul class="stat-list">
+        <li class="stat-item">
+          <span class="stat-bullet">ψ</span>
+          <span>4 theorists live in production</span>
+        </li>
+        <li class="stat-item">
+          <span class="stat-bullet">ψ</span>
+          <span>Daily automated QA across all voices</span>
+        </li>
+        <li class="stat-item">
+          <span class="stat-bullet">ψ</span>
+          <span>Verified safety interceptor (8/8 crisis scenarios)</span>
+        </li>
+        <li class="stat-item">
+          <span class="stat-bullet">ψ</span>
+          <span>MVP serving real patients in active therapy</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ─── Slide 10 — CTA ─── -->
+    <div class="slide slide--center" id="slide-10">
+      <p class="cta-main">The next step</p>
+      <p class="cta-body">I want you to try it for a week. Tell me how it felt.</p>
+      <p class="cta-note">[investor CTA — TBD]</p>
+    </div>
+
+  </div><!-- #slides -->
+
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const counter = document.getElementById('counter');
+      const btnPrev = document.getElementById('btn-prev');
+      const btnNext = document.getElementById('btn-next');
+      const total = slides.length;
+      let current = 0;
+
+      function goTo(index) {
+        if (index < 0 || index >= total) return;
+        slides[current].classList.remove('active');
+        current = index;
+        slides[current].classList.add('active');
+        counter.textContent = (current + 1) + ' / ' + total;
+        btnPrev.style.visibility = current === 0 ? 'hidden' : 'visible';
+        btnNext.style.visibility = current === total - 1 ? 'hidden' : 'visible';
+      }
+
+      btnPrev.addEventListener('click', function () { goTo(current - 1); });
+      btnNext.addEventListener('click', function () { goTo(current + 1); });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+        if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+      });
+
+      // Initialize
+      goTo(0);
+    })();
+  </script>
+
+</body>
+</html>
