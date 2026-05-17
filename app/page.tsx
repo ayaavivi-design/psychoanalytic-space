@@ -106,7 +106,6 @@ export default function Home() {
     return () => window.removeEventListener('langchange', handleLangChange);
   }, []);
 
-  const isProd = process.env.NODE_ENV === 'production';
   const isHe = currentLang === 'he';
   const THEORIST_LABELS: Record<string, [string, string]> = {
     freud:    [isHe ? 'פרויד'   : 'Freud',    isHe ? 'מה שלא נאמר'         : 'What is left unsaid'],
