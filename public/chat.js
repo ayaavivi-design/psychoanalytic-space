@@ -1011,7 +1011,17 @@ function confirmTheoristEntry() {
   const mode = localStorage.getItem('bw_mode') || 'session';
   // In session mode: vera is default
   const defaultKey = mode === 'session' ? 'vera' : 'winnicott';
-  const key = window._bwPendingTheorist || defaultKey;
+
+  // Prefer: explicitly pending → visually selected card in grid → default for mode
+  // This guards against the case where _bwPendingTheorist was nulled by performTheoristSwitch
+  // but the user clicks "המשך" without re-clicking a card.
+  let key = window._bwPendingTheorist;
+  if (!key) {
+    const _grid = document.getElementById('bw-theorist-grid');
+    const _sel = _grid?.querySelector('[data-theorist].bw-theorist-selected');
+    if (_sel) key = _sel.getAttribute('data-theorist');
+  }
+  if (!key) key = defaultKey;
 
   // Guard: session mode requires an explicit companion selection
   if (mode === 'session' && !key) return;
@@ -4523,12 +4533,12 @@ const ENTRY_OPENING = {
       en: 'What keeps working in you even after the session ended? Sometimes what remains is only just beginning.'
     },
     vera: {
-      he: 'מה נשאר מהפגישה — מה עדיין נוכח?',
-      en: "What stayed with you from the session — what's still present?"
+      he: 'כן. אני כאן. ספר לי.',
+      en: "Yes. I'm here. Tell me."
     },
     elliot: {
-      he: 'מה נשאר מהפגישה — מה עדיין נוכח?',
-      en: "What stayed with you from the session — what's still present?"
+      he: 'כן. אני כאן. ספר לי.',
+      en: "Yes. I'm here. Tell me."
     }
   },
   before_session: {
@@ -4549,12 +4559,12 @@ const ENTRY_OPENING = {
       en: "What's already stirring in you just from knowing the session is getting closer?"
     },
     vera: {
-      he: 'מה אתה/את רוצה להביא לפגישה?',
-      en: 'What do you want to bring to the session?'
+      he: 'כן. אני כאן. ספר לי.',
+      en: "Yes. I'm here. Tell me."
     },
     elliot: {
-      he: 'מה אתה/את רוצה להביא לפגישה?',
-      en: 'What do you want to bring to the session?'
+      he: 'כן. אני כאן. ספר לי.',
+      en: "Yes. I'm here. Tell me."
     }
   },
   something_else: {
@@ -4575,12 +4585,12 @@ const ENTRY_OPENING = {
       en: "What's there, before it has a name?"
     },
     vera: {
-      he: 'משהו הביא אותך לכאן. מה הוא?',
-      en: 'Something brought you here. What is it?'
+      he: 'כן. אני כאן. ספר לי.',
+      en: "Yes. I'm here. Tell me."
     },
     elliot: {
-      he: 'משהו הביא אותך לכאן. מה הוא?',
-      en: 'Something brought you here. What is it?'
+      he: 'כן. אני כאן. ספר לי.',
+      en: "Yes. I'm here. Tell me."
     }
   }
 };
@@ -4619,11 +4629,11 @@ const THEORIST_OPENING = {
     en: `I'm here. Listening.`
   },
   vera: {
-    he: `כן. אני כאן. ספר/י לי.`,
+    he: `כן. אני כאן. ספר לי.`,
     en: `Yes. I'm here. Tell me.`
   },
   elliot: {
-    he: `כן. אני כאן. ספר/י לי.`,
+    he: `כן. אני כאן. ספר לי.`,
     en: `Yes. I'm here. Tell me.`
   }
 };
