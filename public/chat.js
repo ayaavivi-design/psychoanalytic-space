@@ -703,6 +703,10 @@ async function startFlow(flowKey) {
     appendMessage('assistant', fixedOpening);
     conversationHistory.push({ role: 'assistant', content: fixedOpening });
     updateReflectionBtn();
+    if (window.clinicalMode && !silenceResponseSent) {
+      clearTimeout(silenceTimer);
+      silenceTimer = setTimeout(handleSilence, SILENCE_THRESHOLD_MS);
+    }
     return;
   }
 
@@ -740,6 +744,10 @@ async function startFlow(flowKey) {
       appendMessage('assistant', reply);
       conversationHistory.push({ role: 'assistant', content: reply });
       updateReflectionBtn();
+      if (window.clinicalMode && !silenceResponseSent) {
+        clearTimeout(silenceTimer);
+        silenceTimer = setTimeout(handleSilence, SILENCE_THRESHOLD_MS);
+      }
     }
     window.activeFlow = null;
   } catch(e) {
@@ -5588,6 +5596,8 @@ function restoreConversation(memIndex) {
   const mem = memories[memIndex];
   if (!mem) return;
   closeMemory();
+  clearTimeout(silenceTimer);
+  silenceResponseSent = false;
 
   // Clear current chat — preserve #welcome in DOM (same pattern as performNewChat/signOut)
   conversationHistory = [];
@@ -6196,6 +6206,7 @@ async function handleSilence() {
     if (!reply) { removeThinking(); return; }
 
     reply = reply.replace(/\[MEMORY[^\]]*\][^\n]*/g, '').trim();
+    if (!reply) { return; }
     conversationHistory.push({ role: 'assistant', content: reply });
     removeThinking();
 
