@@ -161,6 +161,8 @@
     .av-support   { background: rgba(120,80,160,0.12); color: #7b5ea7; }
     .av-board     { background: rgba(30,30,30,0.08); color: #333; }
     .av-simulation{ background: rgba(220,180,100,0.15); color: #9a7020; }
+    .av-companion { background: rgba(196,96,122,0.06); color: var(--accent); border: 1px solid rgba(196,96,122,0.2); }
+    .section-companion-note { font-size: 12px; color: var(--muted); margin: -12px 0 20px 0; letter-spacing: 0.03em; }
 
     .card-meta { flex: 1; }
     .card-name {
@@ -1012,6 +1014,89 @@
       <div class="card-row">
         <div class="row-label">Note</div>
         <div class="row-value">Writes in feminine voice. Saves each step to a temp file before moving on (prevents timeout).</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ PRODUCT COMPANIONS ═══ -->
+  <div class="section-title">Product Companions</div>
+  <div class="section-companion-note">These are not team agents — they are the product. The voices a patient speaks with between sessions.</div>
+  <div class="grid">
+
+    <!-- VERA -->
+    <div class="card on-demand">
+      <div class="card-header">
+        <div class="avatar av-companion">V</div>
+        <div class="card-meta">
+          <div class="card-name">Vera</div>
+          <div class="card-title">Between Companion</div>
+          <div class="card-age">60 · Clinical Companion</div>
+        </div>
+      </div>
+      <div class="card-persona">22 years of practice. Winnicottian-Bionian, Independent British tradition. Warm — not because she performs warmth, but because she is genuinely present. Waits before she asks.</div>
+      <div class="card-row">
+        <div class="row-label" style="color:var(--accent)">What she does</div>
+        <div class="row-value">Holds what the patient carries out of the session. Not therapy — the space that lets therapy continue.</div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Approach</div>
+        <div class="row-value">Winnicottian · Bionian · Independent British Tradition</div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Opening</div>
+        <div class="row-value">"Yes. I'm here. Tell me."</div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Prompt</div>
+        <div class="row-value"><span class="tag output">agents/companion-prompt.md</span></div>
+      </div>
+      <hr class="divider">
+      <div class="card-row">
+        <div class="row-label">Cadence</div>
+        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-green"></span>On demand — session mode</span></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Default</div>
+        <div class="row-value">Yes — first companion shown in session mode</div>
+      </div>
+    </div>
+
+    <!-- ELLIOT -->
+    <div class="card on-demand">
+      <div class="card-header">
+        <div class="avatar av-companion">E</div>
+        <div class="card-meta">
+          <div class="card-name">Elliot</div>
+          <div class="card-title">Between Companion</div>
+          <div class="card-age">58 · Clinical Companion</div>
+        </div>
+      </div>
+      <div class="card-persona">22 years of practice. Kleinian-Winnicottian. Still — not cold. Says less than you might expect. What he says lands harder for it.</div>
+      <div class="card-row">
+        <div class="row-label" style="color:var(--accent)">What he does</div>
+        <div class="row-value">Present without needing to be seen. Holds the being state — does not rush to interpretation.</div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Approach</div>
+        <div class="row-value">Kleinian · Winnicottian · Being vs. Doing distinction</div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Opening</div>
+        <div class="row-value">"Yes. I'm here. Tell me."</div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Prompt</div>
+        <div class="row-value"><span class="tag output">agents/companion-elliot-prompt.md</span></div>
+      </div>
+      <hr class="divider">
+      <div class="card-row">
+        <div class="row-label">Cadence</div>
+        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-green"></span>On demand — session mode</span></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Default</div>
+        <div class="row-value">No — secondary companion, same session mode grid</div>
       </div>
     </div>
 
