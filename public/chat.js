@@ -806,8 +806,8 @@ function showModeSelect() {
   const btn = document.getElementById('bw-theorist-confirm');
   if (btn) {
     btn.style.display = 'block';
-    const needsSelection = savedMode === 'session' && !localStorage.getItem('bw_companion');
-    btn.disabled = needsSelection;
+    // vera is always the default — button is never disabled on first visit
+    btn.disabled = false;
   }
   // Set labels
   bwUpdateModeLabels();
@@ -871,7 +871,7 @@ function renderTheoristGridForMode(mode) {
 
   if (mode === 'session') {
     // ── Companion cards ──
-    const lastChoice = localStorage.getItem('bw_companion'); // null if first-time user
+    const lastChoice = localStorage.getItem('bw_companion') || 'vera';
     grid.classList.add('bw-companion-grid');
 
     const SVG_VERA = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="bw-companion-icon" aria-hidden="true">
@@ -903,8 +903,8 @@ function renderTheoristGridForMode(mode) {
       </div>`
     ).join('');
 
-    // Pre-select only if user has chosen before; otherwise keep button disabled
-    window._bwPendingTheorist = lastChoice || null;
+    // Pre-select vera by default; update if user has a stored choice
+    window._bwPendingTheorist = lastChoice;
 
   } else {
     // ── Theorist cards (explore mode) ──
@@ -976,8 +976,8 @@ function showTheoristEntry(mode) {
   const btn = document.getElementById('bw-theorist-confirm');
   if (btn) {
     btn.style.display = 'block';
-    const needsSelection = mode === 'session' && !window._bwPendingTheorist;
-    btn.disabled = needsSelection;
+    // vera is always the default — button is never disabled on first visit
+    btn.disabled = false;
   }
 }
 
@@ -999,8 +999,8 @@ function selectTheoristEntry(key) {
 
 function confirmTheoristEntry() {
   const mode = localStorage.getItem('bw_mode') || 'session';
-  // In session mode: no default — user must explicitly choose a companion
-  const defaultKey = mode === 'session' ? null : 'winnicott';
+  // In session mode: vera is default
+  const defaultKey = mode === 'session' ? 'vera' : 'winnicott';
   const key = window._bwPendingTheorist || defaultKey;
 
   // Guard: session mode requires an explicit companion selection
