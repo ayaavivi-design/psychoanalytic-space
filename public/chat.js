@@ -1047,9 +1047,14 @@ function confirmTheoristEntry() {
   if (_welcomeEl) _welcomeEl.style.display = 'none';
   // Reveal input now that mode + theorist are confirmed and chat is starting
   document.body.classList.remove('bw-selecting');
-  showTheoristOpening(key, false);
 
-  // Flow buttons go into #chat after the opening (welcome is already gone)
+  // In session mode, the opening comes from startFlow() after the user picks a flow button.
+  // Showing it here AND in startFlow causes a duplicate — so skip it for session mode.
+  if (mode !== 'session') {
+    showTheoristOpening(key, false);
+  }
+
+  // Flow buttons go into #chat (welcome is already gone)
   if (mode === 'session') {
     renderFlowButtons();
   }
@@ -4503,6 +4508,14 @@ const ENTRY_OPENING = {
     ogden: {
       he: 'מה ממשיך לעבוד בך גם אחרי שהשיחה נגמרה? לפעמים מה שנשאר הוא מה שרק עכשיו מתחיל.',
       en: 'What keeps working in you even after the session ended? Sometimes what remains is only just beginning.'
+    },
+    vera: {
+      he: 'מה נשאר מהפגישה — מה עדיין נוכח?',
+      en: "What stayed with you from the session — what's still present?"
+    },
+    elliot: {
+      he: 'מה נשאר מהפגישה — מה עדיין נוכח?',
+      en: "What stayed with you from the session — what's still present?"
     }
   },
   before_session: {
@@ -4521,6 +4534,14 @@ const ENTRY_OPENING = {
     ogden: {
       he: 'מה כבר זז בך רק מהידיעה שהפגישה מתקרבת?',
       en: "What's already stirring in you just from knowing the session is getting closer?"
+    },
+    vera: {
+      he: 'מה אתה/את רוצה להביא לפגישה?',
+      en: 'What do you want to bring to the session?'
+    },
+    elliot: {
+      he: 'מה אתה/את רוצה להביא לפגישה?',
+      en: 'What do you want to bring to the session?'
     }
   },
   something_else: {
@@ -4539,6 +4560,14 @@ const ENTRY_OPENING = {
     ogden: {
       he: 'מה נוכח בך, לפני שיש לו שם?',
       en: "What's there, before it has a name?"
+    },
+    vera: {
+      he: 'משהו הביא אותך לכאן. מה הוא?',
+      en: 'Something brought you here. What is it?'
+    },
+    elliot: {
+      he: 'משהו הביא אותך לכאן. מה הוא?',
+      en: 'Something brought you here. What is it?'
     }
   }
 };
