@@ -989,6 +989,9 @@ function selectTheoristEntry(key) {
     ? grid.querySelectorAll('.bw-theorist-card, .bw-companion-card')
     : document.querySelectorAll('.bw-theorist-card, .bw-companion-card');
   allCards.forEach(el => el.classList.remove('bw-theorist-selected'));
+  // Also clear sidebar theorist buttons — prevents two active selections showing at once
+  document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
+  activeTheorists = [];
   // Scope querySelector to the grid to avoid any collision with other DOM elements
   const sel = grid
     ? grid.querySelector(`[data-theorist="${key}"]`)
@@ -1260,6 +1263,9 @@ function showTheoristSwitchModal(el, name) {
 }
 
 function performTheoristSwitch(el, name) {
+  // Always clear companion card selection — prevents dual active state between grid and sidebar
+  document.querySelectorAll('#bw-theorist-grid .bw-companion-card, #bw-theorist-grid .bw-theorist-card').forEach(c => c.classList.remove('bw-theorist-selected'));
+  window._bwPendingTheorist = null;
   if (activeTheorists.includes(name)) {
     // Deselect current theorist
     el.classList.remove('active');
