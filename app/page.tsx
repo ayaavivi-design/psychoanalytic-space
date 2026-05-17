@@ -481,6 +481,10 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                 <option value="klein">קליין</option>
                 <option value="winnicott">ויניקוט</option>
                 <option value="ogden">אוגדן</option>
+                <option value="loewald">לוואלד</option>
+                <option value="bion">ביון</option>
+                <option value="kohut">קוהוט</option>
+                <option value="heimann">היימן</option>
               </select>
               <textarea id="sup-paste-input" placeholder="הדבק שיחה — כל פורמט מתקבל"
                 style={{ width: '100%', minHeight: 150, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 12, resize: 'vertical', direction: 'rtl', lineHeight: 1.7, boxSizing: 'border-box', fontFamily: 'var(--font-rubik), sans-serif' }}></textarea>
