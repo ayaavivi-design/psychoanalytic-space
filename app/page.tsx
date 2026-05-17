@@ -107,13 +107,21 @@ export default function Home() {
   }, []);
 
   const isHe = currentLang === 'he';
+  const isDev = process.env.NODE_ENV !== 'production';
   const THEORIST_LABELS: Record<string, [string, string]> = {
-    freud:    [isHe ? 'פרויד'   : 'Freud',    isHe ? 'מה שלא נאמר'         : 'What is left unsaid'],
-    klein:    [isHe ? 'קליין'   : 'Klein',    isHe ? 'מה שקשה לגעת בו'    : 'What is hard to touch'],
-    winnicott:[isHe ? 'ויניקוט' : 'Winnicott',isHe ? 'המרחב להיות'        : 'The space to be'],
-    ogden:    [isHe ? 'אוגדן'   : 'Ogden',    isHe ? 'מה שנוצר בין שנינו' : 'What is created between us'],
+    freud:    [isHe ? 'פרויד'   : 'Freud',    isHe ? 'מה שלא נאמר'              : 'What is left unsaid'],
+    klein:    [isHe ? 'קליין'   : 'Klein',    isHe ? 'מה שקשה לגעת בו'         : 'What is hard to touch'],
+    winnicott:[isHe ? 'ויניקוט' : 'Winnicott',isHe ? 'המרחב להיות'             : 'The space to be'],
+    ogden:    [isHe ? 'אוגדן'   : 'Ogden',    isHe ? 'מה שנוצר בין שנינו'      : 'What is created between us'],
+    loewald:  [isHe ? 'לוואלד'  : 'Loewald',  isHe ? 'הקשר עצמו כגורם המרפא'  : 'The relationship as cure'],
+    bion:     [isHe ? 'ביון'    : 'Bion',     isHe ? 'מה שעדיין לא ניתן לחשוב' : 'What cannot yet be thought'],
+    kohut:    [isHe ? 'קוהוט'   : 'Kohut',    isHe ? 'הצורך להרגיש מובן'       : 'The need to feel understood'],
+    heimann:  [isHe ? 'היימן'   : 'Heimann',  isHe ? 'מה שהמפגש מעורר בי'      : 'What the encounter stirs'],
   };
-  const THEORIST_LIST: [string, string, string][] = (['freud','klein','winnicott','ogden'] as const).map(k => [k, THEORIST_LABELS[k][0], THEORIST_LABELS[k][1]]);
+  const theoristKeys: string[] = isDev
+    ? ['freud','klein','winnicott','ogden','loewald','bion','kohut','heimann']
+    : ['freud','klein','winnicott','ogden'];
+  const THEORIST_LIST: [string, string, string][] = theoristKeys.map(k => [k, THEORIST_LABELS[k][0], THEORIST_LABELS[k][1]]);
 
   return (
     <>
