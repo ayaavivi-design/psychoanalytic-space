@@ -100,6 +100,53 @@ strokeWidth={1.75}
 
 ---
 
+## Persona Icons — ורה ואליוט
+
+אייקוני פרסונה ייחודיים לכרטיסי הבחירה **במצב סשן בלבד** — מחליפים את 4 כרטיסי הפסיכואנליטיקנים. מצב מחקר לא משתנה. אינם שייכים ל-Lucide ואינם Unicode — SVG מותאם אישית בלבד, מוטמע ב-`page.tsx` בלבד (לא ב-`chat.js`).
+
+### ספציפיקציה
+```tsx
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+strokeWidth={1.5}
+strokeLinecap="round"
+```
+צבע: `currentColor` דרך CSS — `var(--muted)` במנוחה, `var(--accent)` ב-hover/active.
+
+### Vera — ראש + קוקו גבוה
+```svg
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+     stroke-width="1.5" stroke-linecap="round">
+  <!-- bun -->
+  <circle cx="12" cy="5.5" r="2"/>
+  <!-- head -->
+  <circle cx="12" cy="11" r="3.5"/>
+  <!-- shoulders -->
+  <path d="M6 21c0-3 2.7-5 6-5s6 2 6 5"/>
+</svg>
+```
+
+### Elliot — ראש + שיער קצר
+```svg
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+     stroke-width="1.5" stroke-linecap="round">
+  <!-- short hair arc -->
+  <path d="M8.5 9.5C8.5 7 10 6 12 6s3.5 1 3.5 3.5"/>
+  <!-- head -->
+  <circle cx="12" cy="11" r="3.5"/>
+  <!-- shoulders -->
+  <path d="M6 21c0-3 2.7-5 6-5s6 2 6 5"/>
+</svg>
+```
+
+### כללים
+- שני האייקונים מוטמעים ב-`page.tsx` בלבד — לא ב-`chat.js`
+- גודל container הכרטיס לפי design tokens (כמו כרטיסי תיאורטיקן)
+- לא לשנות את ה-SVG paths ללא אישור מאיה
+
+---
+
 ## מה אסור
 
 - ❌ אייקון Lucide בגודל שונה מ-`size={15} strokeWidth={1.75}`

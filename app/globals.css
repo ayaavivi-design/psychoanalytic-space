@@ -855,9 +855,55 @@ body.bw-selecting #flow-buttons {
 }
 .bw-slide-in { animation: bwSlideIn 0.28s ease-out; }
 
+/* ── BW-53: Companion cards (Session mode — Vera / Elliot) ── */
+#bw-theorist-grid.bw-companion-grid {
+  grid-template-columns: repeat(2, 128px) !important;
+  gap: var(--space-lg) !important;
+}
+
+/* Companion card — larger than theorist pill, square-ish */
+.bw-companion-card {
+  padding: 20px 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 128px;
+}
+
+.bw-companion-icon {
+  width: 36px;
+  height: 36px;
+  color: var(--muted);
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+
+.bw-companion-card:hover {
+  border-color: var(--accent-dim);
+  background: var(--accent-soft);
+}
+.bw-companion-card:hover .bw-companion-icon { color: var(--accent); }
+
+.bw-companion-card.bw-theorist-selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.bw-companion-card.bw-theorist-selected .bw-companion-icon { color: var(--accent); }
+.bw-companion-card.bw-theorist-selected .bw-t-name { color: var(--accent); }
+
 @media (max-width: 600px) {
   .bw-mode-card { font-size: var(--fs-body-lg); padding: 8px 16px; }
   #bw-theorist-grid { grid-template-columns: repeat(2, 112px) !important; }
+  #bw-theorist-grid.bw-companion-grid { grid-template-columns: repeat(2, 112px) !important; }
+  .bw-companion-card { width: 112px; }
 }
 
 /* ═══════════════════════════════════════

@@ -800,49 +800,15 @@ function showModeSelect() {
   const savedMode = localStorage.getItem('bw_mode') || 'session';
   document.querySelector('.bw-mode-primary')?.classList.toggle('bw-mode-selected', savedMode === 'session');
   document.querySelector('.bw-mode-secondary')?.classList.toggle('bw-mode-selected', savedMode === 'explore');
-  // Populate theorist grid if empty
-  const grid = document.getElementById('bw-theorist-grid');
-  if (grid && !grid.hasChildNodes()) {
-    const isEn = (window.selectedLang?.code === 'en');
-    const NAMES = {
-      freud:    { he: 'פרויד',   en: 'Freud',     sub_he: 'דחפים וקונפליקט',  sub_en: 'Drive & Conflict' },
-      klein:    { he: 'קליין',   en: 'Klein',     sub_he: 'יחסי אובייקט',      sub_en: 'Object Relations' },
-      winnicott:{ he: 'ויניקוט', en: 'Winnicott', sub_he: 'עצמי ומרחב מחזיק',  sub_en: 'Self & Holding'   },
-      ogden:    { he: 'אוגדן',   en: 'Ogden',     sub_he: 'הניסיון האנליטי',    sub_en: 'Analytic Third'   },
-    };
-    grid.innerHTML = ['freud','klein','winnicott','ogden'].map(key =>
-      `<div class="bw-theorist-card${key === 'winnicott' ? ' bw-theorist-selected' : ''}"
-        data-theorist="${key}"
-        onclick="selectTheoristEntry('${key}')">
-        <span class="bw-t-name">${isEn ? NAMES[key].en : NAMES[key].he}</span>
-        <span class="bw-t-sub">${isEn ? NAMES[key].sub_en : NAMES[key].sub_he}</span>
-      </div>`
-    ).join('');
-    window._bwPendingTheorist = 'winnicott';
-    // Attach rich tooltips
-    document.querySelectorAll('.bw-theorist-card[data-theorist]').forEach(card => {
-      const key = card.getAttribute('data-theorist');
-      card.addEventListener('mouseenter', e => {
-        if (typeof window.setTheoristTooltip !== 'function') return;
-        const r = e.currentTarget.getBoundingClientRect();
-        const cardH = 310, cardW = 240, vh = window.innerHeight, vw = window.innerWidth;
-        const sidebarW = document.getElementById('sidebar')?.getBoundingClientRect().width || 220;
-        const contentCenter = sidebarW + (vw - sidebarW) / 2;
-        const flip = r.top + cardH > vh - 16;
-        const rawTop = flip ? r.bottom - cardH : r.top;
-        const top = Math.min(Math.max(rawTop, 8), vh - cardH - 8);
-        const isRightColumn = r.left > contentCenter;
-        const left = isRightColumn
-          ? Math.min(r.right + 12, vw - cardW - 8)
-          : Math.max(sidebarW + 8, r.left - cardW - 12);
-        window.setTheoristTooltip(key, top, left, flip);
-      });
-      card.addEventListener('mouseleave', () => window.clearTheoristTooltip?.());
-    });
-  }
-  // Show confirm button — Winnicott is pre-selected
+  // Populate theorist grid — content depends on mode (session=companions, explore=theorists)
+  renderTheoristGridForMode(savedMode);
+  // Show confirm button — disabled if session mode and no prior companion selection
   const btn = document.getElementById('bw-theorist-confirm');
-  if (btn) btn.style.display = 'block';
+  if (btn) {
+    btn.style.display = 'block';
+    const needsSelection = savedMode === 'session' && !localStorage.getItem('bw_companion');
+    btn.disabled = needsSelection;
+  }
   // Set labels
   bwUpdateModeLabels();
 }
@@ -874,6 +840,17 @@ function bwUpdateModeLabels() {
     if (nameEl) nameEl.textContent = isEn ? TNAMES[key].en : TNAMES[key].he;
     if (subEl)  subEl.textContent  = isEn ? TNAMES[key].sub_en : TNAMES[key].sub_he;
   });
+  // Update companion card names in-place (session mode)
+  const CNAMES = {
+    vera:   { he: 'ורה',   en: 'Vera'   },
+    elliot: { he: 'אליוט', en: 'Elliot' },
+  };
+  document.querySelectorAll('.bw-companion-card[data-theorist]').forEach(card => {
+    const key = card.getAttribute('data-theorist');
+    if (!CNAMES[key]) return;
+    const nameEl = card.querySelector('.bw-t-name');
+    if (nameEl) nameEl.textContent = isEn ? CNAMES[key].en : CNAMES[key].he;
+  });
 }
 
 function onModeSelected(mode) {
@@ -881,6 +858,95 @@ function onModeSelected(mode) {
   // Unified screen: just toggle pill visual, don't navigate away
   document.querySelector('.bw-mode-primary')?.classList.toggle('bw-mode-selected', mode === 'session');
   document.querySelector('.bw-mode-secondary')?.classList.toggle('bw-mode-selected', mode === 'explore');
+  // Re-render theorist grid for the newly selected mode
+  renderTheoristGridForMode(mode);
+}
+
+// ── BW-53: Renders the correct grid based on mode ──────────────────────────
+// session → 2 companion cards (Vera / Elliot) with SVG icons, localStorage pre-select
+// explore → 4 theorist cards (freud/klein/winnicott/ogden) with rich tooltips
+function renderTheoristGridForMode(mode) {
+  const grid = document.getElementById('bw-theorist-grid');
+  if (!grid) return;
+
+  if (mode === 'session') {
+    // ── Companion cards ──
+    const lastChoice = localStorage.getItem('bw_companion'); // null if first-time user
+    grid.classList.add('bw-companion-grid');
+
+    const SVG_VERA = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="bw-companion-icon" aria-hidden="true">
+      <circle cx="12" cy="5.5" r="2"/>
+      <circle cx="12" cy="11" r="3.5"/>
+      <path d="M6 21c0-3 2.7-5 6-5s6 2 6 5"/>
+    </svg>`;
+    const SVG_ELLIOT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="bw-companion-icon" aria-hidden="true">
+      <path d="M8.5 9.5C8.5 7 10 6 12 6s3.5 1 3.5 3.5"/>
+      <circle cx="12" cy="11" r="3.5"/>
+      <path d="M6 21c0-3 2.7-5 6-5s6 2 6 5"/>
+    </svg>`;
+
+    const isEn = (window.selectedLang?.code === 'en');
+    const COMPANION_NAMES = {
+      vera:   { he: 'ורה',   en: 'Vera'   },
+      elliot: { he: 'אליוט', en: 'Elliot' },
+    };
+
+    grid.innerHTML = [
+      { key: 'vera',   svg: SVG_VERA   },
+      { key: 'elliot', svg: SVG_ELLIOT },
+    ].map(({ key, svg }) =>
+      `<div class="bw-companion-card${lastChoice && key === lastChoice ? ' bw-theorist-selected' : ''}"
+        data-theorist="${key}"
+        onclick="selectTheoristEntry('${key}')">
+        ${svg}
+        <span class="bw-t-name">${isEn ? COMPANION_NAMES[key].en : COMPANION_NAMES[key].he}</span>
+      </div>`
+    ).join('');
+
+    // Pre-select only if user has chosen before; otherwise keep button disabled
+    window._bwPendingTheorist = lastChoice || null;
+
+  } else {
+    // ── Theorist cards (explore mode) ──
+    grid.classList.remove('bw-companion-grid');
+    const isEn = (window.selectedLang?.code === 'en');
+    const NAMES = {
+      freud:    { he: 'פרויד',   en: 'Freud',     sub_he: 'דחפים וקונפליקט',  sub_en: 'Drive & Conflict' },
+      klein:    { he: 'קליין',   en: 'Klein',     sub_he: 'יחסי אובייקט',      sub_en: 'Object Relations' },
+      winnicott:{ he: 'ויניקוט', en: 'Winnicott', sub_he: 'עצמי ומרחב מחזיק',  sub_en: 'Self & Holding'   },
+      ogden:    { he: 'אוגדן',   en: 'Ogden',     sub_he: 'הניסיון האנליטי',    sub_en: 'Analytic Third'   },
+    };
+    grid.innerHTML = ['freud','klein','winnicott','ogden'].map(key =>
+      `<div class="bw-theorist-card${key === 'winnicott' ? ' bw-theorist-selected' : ''}"
+        data-theorist="${key}"
+        onclick="selectTheoristEntry('${key}')">
+        <span class="bw-t-name">${isEn ? NAMES[key].en : NAMES[key].he}</span>
+        <span class="bw-t-sub">${isEn ? NAMES[key].sub_en : NAMES[key].sub_he}</span>
+      </div>`
+    ).join('');
+    window._bwPendingTheorist = 'winnicott';
+
+    // Attach rich tooltips
+    document.querySelectorAll('#bw-theorist-grid .bw-theorist-card[data-theorist]').forEach(card => {
+      const key = card.getAttribute('data-theorist');
+      card.addEventListener('mouseenter', e => {
+        if (typeof window.setTheoristTooltip !== 'function') return;
+        const r = e.currentTarget.getBoundingClientRect();
+        const cardH = 310, cardW = 240, vh = window.innerHeight, vw = window.innerWidth;
+        const sidebarW = document.getElementById('sidebar')?.getBoundingClientRect().width || 220;
+        const contentCenter = sidebarW + (vw - sidebarW) / 2;
+        const flip = r.top + cardH > vh - 16;
+        const rawTop = flip ? r.bottom - cardH : r.top;
+        const top = Math.min(Math.max(rawTop, 8), vh - cardH - 8);
+        const isRightColumn = r.left > contentCenter;
+        const left = isRightColumn
+          ? Math.min(r.right + 12, vw - cardW - 8)
+          : Math.max(sidebarW + 8, r.left - cardW - 12);
+        window.setTheoristTooltip(key, top, left, flip);
+      });
+      card.addEventListener('mouseleave', () => window.clearTheoristTooltip?.());
+    });
+  }
 }
 
 function showTheoristEntry(mode) {
@@ -904,70 +970,51 @@ function showTheoristEntry(mode) {
   const isEnBack = (window.selectedLang?.code === 'en');
   if (backBtn) backBtn.textContent = isEnBack ? '← Back' : '← חזרה';
 
-  const grid = document.getElementById('bw-theorist-grid');
-  if (!grid) return;
-  const isEn = (window.selectedLang?.code === 'en');
-  const NAMES = {
-    freud:    { he: 'פרויד',   en: 'Freud',     sub_he: 'דחפים וקונפליקט',      sub_en: 'Drive & Conflict'   },
-    klein:    { he: 'קליין',   en: 'Klein',     sub_he: 'יחסי אובייקט',          sub_en: 'Object Relations'   },
-    winnicott:{ he: 'ויניקוט', en: 'Winnicott', sub_he: 'עצמי ומרחב מחזיק',      sub_en: 'Self & Holding'     },
-    ogden:    { he: 'אוגדן',   en: 'Ogden',     sub_he: 'הניסיון האנליטי',        sub_en: 'Analytic Third'     },
-  };
-  grid.innerHTML = ['freud','klein','winnicott','ogden'].map(key =>
-    `<div class="bw-theorist-card${key === 'winnicott' ? ' bw-theorist-selected' : ''}"
-      data-theorist="${key}"
-      onclick="selectTheoristEntry('${key}')">
-      <span class="bw-t-name">${isEn ? NAMES[key].en : NAMES[key].he}</span>
-      <span class="bw-t-sub">${isEn ? NAMES[key].sub_en : NAMES[key].sub_he}</span>
-    </div>`
-  ).join('');
-
-  window._bwPendingTheorist = 'winnicott';
-
-  // Attach rich tooltip to entry-screen chips (same card used in sidebar)
-  // Tooltip opens LEFT for left-column chips, RIGHT for right-column chips
-  // — never covers other chips
-  document.querySelectorAll('.bw-theorist-card[data-theorist]').forEach(card => {
-    const key = card.getAttribute('data-theorist');
-    card.addEventListener('mouseenter', e => {
-      if (typeof window.setTheoristTooltip !== 'function') return;
-      const r = e.currentTarget.getBoundingClientRect();
-      const cardH = 310, cardW = 240, vh = window.innerHeight, vw = window.innerWidth;
-      const sidebarW = document.getElementById('sidebar')?.getBoundingClientRect().width || 220;
-      const contentCenter = sidebarW + (vw - sidebarW) / 2;
-      // Vertical: align top with chip, clamp to viewport
-      const flip = r.top + cardH > vh - 16;
-      const rawTop = flip ? r.bottom - cardH : r.top;
-      const top = Math.min(Math.max(rawTop, 8), vh - cardH - 8);
-      // Horizontal: outer side — left col → tooltip left of chip, right col → right of chip
-      const isRightColumn = r.left > contentCenter;
-      const left = isRightColumn
-        ? Math.min(r.right + 12, vw - cardW - 8)          // right of chip
-        : Math.max(sidebarW + 8, r.left - cardW - 12);    // left of chip, clear of sidebar
-      window.setTheoristTooltip(key, top, left, flip);
-    });
-    card.addEventListener('mouseleave', () => window.clearTheoristTooltip?.());
-  });
+  // Render the correct grid for this mode (session=companions, explore=theorists)
+  renderTheoristGridForMode(mode);
 
   const btn = document.getElementById('bw-theorist-confirm');
-  if (btn) btn.style.display = 'block';
+  if (btn) {
+    btn.style.display = 'block';
+    const needsSelection = mode === 'session' && !window._bwPendingTheorist;
+    btn.disabled = needsSelection;
+  }
 }
 
 function selectTheoristEntry(key) {
   window._bwPendingTheorist = key;
-  document.querySelectorAll('.bw-theorist-card').forEach(el => el.classList.remove('bw-theorist-selected'));
-  const sel = document.querySelector(`.bw-theorist-card[data-theorist="${key}"]`);
+  // Clear selection on both theorist cards and companion cards
+  document.querySelectorAll('.bw-theorist-card, .bw-companion-card').forEach(el => el.classList.remove('bw-theorist-selected'));
+  const sel = document.querySelector(`[data-theorist="${key}"]`);
   if (sel) sel.classList.add('bw-theorist-selected');
+  // Save companion choice to localStorage immediately on click (session mode)
+  const mode = localStorage.getItem('bw_mode') || 'session';
+  if (mode === 'session' && (key === 'vera' || key === 'elliot')) {
+    localStorage.setItem('bw_companion', key);
+  }
+  // Enable confirm button once user has made a selection
+  const btn = document.getElementById('bw-theorist-confirm');
+  if (btn) btn.disabled = false;
 }
 
 function confirmTheoristEntry() {
-  const key = window._bwPendingTheorist || 'winnicott';
   const mode = localStorage.getItem('bw_mode') || 'session';
+  // In session mode: no default — user must explicitly choose a companion
+  const defaultKey = mode === 'session' ? null : 'winnicott';
+  const key = window._bwPendingTheorist || defaultKey;
+
+  // Guard: session mode requires an explicit companion selection
+  if (mode === 'session' && !key) return;
+
+  // Persist companion choice for session mode
+  if (mode === 'session' && (key === 'vera' || key === 'elliot')) {
+    localStorage.setItem('bw_companion', key);
+  }
 
   const theoristDiv = document.getElementById('bw-theorist-select');
   if (theoristDiv) theoristDiv.style.display = 'none';
 
-  // sync sidebar theorist tags
+  // sync sidebar theorist tags — companion keys (vera/elliot) have no sidebar tag, that's ok
   document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
   activeTheorists = [key];
   const sidebarTag = document.querySelector(`[data-key="${key}"]`);
@@ -4528,6 +4575,14 @@ const THEORIST_OPENING = {
   heimann: {
     he: `אני כאן. קשובה.`,
     en: `I'm here. Listening.`
+  },
+  vera: {
+    he: `כן. אני כאן. ספר/י לי.`,
+    en: `Yes. I'm here. Tell me.`
+  },
+  elliot: {
+    he: `כן. אני כאן. ספר/י לי.`,
+    en: `Yes. I'm here. Tell me.`
   }
 };
 

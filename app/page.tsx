@@ -553,7 +553,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               {/* BW-41: theorist selection — slides in after mode pick */}
               <div id="bw-theorist-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 20, width: '100%' }}>
                 <p id="bw-theorist-prompt" className="bw-entry-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0 }}>עם מי תרצה לדבר?</p>
-                <div id="bw-theorist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 128px)', gap: '12px 14px', width: 'fit-content', margin: '0 auto' }}></div>
+                <div id="bw-theorist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 128px)', gap: 'var(--space-lg)', width: 'fit-content', margin: '0 auto' }}></div>
                 <button id="bw-theorist-confirm" onClick={() => (window as any).confirmTheoristEntry()} className="bw-confirm-btn" style={{ display: 'none' }}>המשך</button>
               </div>
 
