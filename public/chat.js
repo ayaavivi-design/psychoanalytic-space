@@ -906,6 +906,10 @@ function renderTheoristGridForMode(mode) {
     // Pre-select vera by default; update if user has a stored choice
     window._bwPendingTheorist = lastChoice;
 
+    // Clear sidebar theorist selection — in session mode the companion card is the only active choice
+    document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
+    activeTheorists = [];
+
   } else {
     // ── Theorist cards (explore mode) ──
     grid.classList.remove('bw-companion-grid');
