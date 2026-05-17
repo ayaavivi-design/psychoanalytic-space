@@ -2,11 +2,12 @@ import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { searchKnowledgeHybrid, formatChunksForPrompt } from '@/lib/rag';
 import { requireAuth } from '@/lib/auth';
-import { THEORIST_VOICE } from '@/lib/theorist-voices';
+import { THEORIST_VOICE, SAFETY_PROTOCOL } from '@/lib/theorist-voices';
 
 const MAX_USER_MESSAGE_CHARS = 4000;
 
 const THEORISTS_WITH_RAG = new Set(['freud', 'klein', 'winnicott', 'ogden', 'loewald', 'bion', 'kohut', 'heimann']);
+const COMPANIONS = new Set(['vera', 'elliot']);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SAFETY INTERCEPTOR — בודק תוכן אובדני/פגיעה עצמית לפני כל עיבוד אחר.
@@ -234,7 +235,9 @@ export async function POST(req: NextRequest) {
     // ─────────────────────────────────────────────────────────────────────────
 
     // RAG
-    let enrichedSystem = baseSystem + UNIVERSAL_SCOPE_INSTRUCTION;
+    // Companions get SAFETY_PROTOCOL added at the model level (theorists rely on keyword intercept + UNIVERSAL_SCOPE_INSTRUCTION)
+    const safetyAddition = (theorist && COMPANIONS.has(theorist)) ? SAFETY_PROTOCOL : '';
+    let enrichedSystem = baseSystem + safetyAddition + UNIVERSAL_SCOPE_INSTRUCTION;
     if (theorist && THEORISTS_WITH_RAG.has(theorist) && messages?.length > 0) {
       const lastUserMessage = [...messages].reverse().find((m: { role: string }) => m.role === 'user');
       const query = typeof lastUserMessage?.content === 'string'

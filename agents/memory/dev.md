@@ -26,10 +26,12 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. feat: /api/daily-summary — CCR email bridge endpoint (Resend, x-internal-token auth). ממתין ל-INTERNAL_API_TOKEN ב-Vercel + עדכון CCR routine
-2. feat(BW-51): flow selection indicator — DOM element + PDF export (startFlow + exportPDF בלבד)
-2. fix(restore): `updateSessionTitle(true)` אחרי `restoreConversation` — active-theorist-bar לא התרענן
-2. feat: הסתרת `.input-area` בשלבי הבחירה (showModeSelect + showTheoristEntry)
-3. feat(BW-41): זרימת כניסה מאוחדת — מסך מצב + תיאורטיקן, תרגום עברית, fix logout/login, design tokens
-4. fix(BW-38): data-bw-hidden pattern לניהול auth-screen visibility
-5. fix(security): REVOKE הרשאות עודפות מ-knowledge_chunks ו-user_conversations (הכנה לאוק׳ 2026)
+1. fix(BW-53): gap tokens + companion no-default — gap: var(--space-lg) in globals.css + page.tsx; first-time users see no pre-selected companion card; confirm button disabled until selection; selectTheoristEntry() enables it on click.
+2. feat(BW-53): companion cards (Vera/Elliot) — session mode shows 2 companion cards with SVG icons instead of theorist grid. explore mode unchanged. renderTheoristGridForMode() is the single source of truth. localStorage: bw_companion persists choice.
+2. feat: /api/daily-summary — CCR email bridge endpoint (Resend, x-internal-token auth). ממתין ל-INTERNAL_API_TOKEN ב-Vercel + עדכון CCR routine
+3. feat(BW-51): flow selection indicator — DOM element + PDF export (startFlow + exportPDF בלבד)
+4. fix(restore): `updateSessionTitle(true)` אחרי `restoreConversation` — active-theorist-bar לא התרענן
+5. feat: הסתרת `.input-area` בשלבי הבחירה (showModeSelect + showTheoristEntry)
+6. feat(BW-41): זרימת כניסה מאוחדת — מסך מצב + תיאורטיקן, תרגום עברית, fix logout/login, design tokens
+7. fix(BW-38): data-bw-hidden pattern לניהול auth-screen visibility
+8. fix(security): REVOKE הרשאות עודפות מ-knowledge_chunks ו-user_conversations (הכנה לאוק׳ 2026)

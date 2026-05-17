@@ -14,121 +14,51 @@ export default function Home() {
     freud: {
       he: { approach: 'ארכיאולוגיה של הנפש — מה נדחק, מה חוזר, מה מסתתר מאחורי המילים', concepts: 'דחף, עיכוב, העברה, התנגדות, חלום', forWhom: 'מי שרוצה להבין שורשים, תסמינים חוזרים, או פשר של מה שלא מובן' },
       en: { approach: 'Archaeology of the mind — what is repressed, what returns, what hides behind words', concepts: 'Drive, repression, transference, resistance, dream', forWhom: 'Those seeking to understand roots, recurring patterns, or the meaning of what is unclear' },
-      de: { approach: 'Archäologie des Geistes — was verdrängt wird, was wiederkehrt, was sich hinter Worten verbirgt', concepts: 'Trieb, Verdrängung, Übertragung, Widerstand, Traum', forWhom: 'Wer Wurzeln, wiederkehrende Muster oder Verborgenes verstehen möchte' },
-      es: { approach: 'Arqueología de la mente — lo reprimido, lo que regresa, lo que se oculta tras las palabras', concepts: 'Pulsión, represión, transferencia, resistencia, sueño', forWhom: 'Quien busca comprender raíces, patrones repetitivos o lo que permanece oscuro' },
-      fr: { approach: 'Archéologie de l\'esprit — ce qui est refoulé, ce qui revient, ce qui se cache derrière les mots', concepts: 'Pulsion, refoulement, transfert, résistance, rêve', forWhom: 'Ceux qui cherchent à comprendre les racines, les répétitions ou ce qui reste obscur' },
-      ru: { approach: 'Археология психики — вытесненное, возвращающееся, скрытое за словами', concepts: 'Влечение, вытеснение, перенос, сопротивление, сон', forWhom: 'Тем, кто хочет понять корни, повторяющиеся паттерны или смысл непонятного' },
-      it: { approach: 'Archeologia della mente — ciò che è rimosso, ciò che ritorna, ciò che si nasconde dietro le parole', concepts: 'Pulsione, rimozione, transfert, resistenza, sogno', forWhom: 'Chi vuole comprendere radici, sintomi ricorrenti o il senso di ciò che resta oscuro' },
     },
     klein: {
       he: { approach: 'עולם פנימי של אובייקטים — אהבה ושנאה, פיצול ואיחוד, מה שלא ניתן לעכל', concepts: 'קנאה, פיצול, השלכה, אובייקט טוב ורע', forWhom: 'מי שרוצה לעבוד עם רגשות עזים, קשיי קרבה, חרדות עמוקות' },
       en: { approach: 'Inner world of objects — love and hate, splitting and integration, what cannot be digested', concepts: 'Envy, splitting, projection, good and bad object', forWhom: 'Those working with intense emotions, difficulty with closeness, or deep anxieties' },
-      de: { approach: 'Innere Welt der Objekte — Liebe und Hass, Spaltung und Integration, was nicht verarbeitet werden kann', concepts: 'Neid, Spaltung, Projektion, gutes und böses Objekt', forWhom: 'Wer mit intensiven Gefühlen, Nähe-Problemen oder tiefen Ängsten arbeiten möchte' },
-      es: { approach: 'Mundo interno de objetos — amor y odio, escisión e integración, lo que no puede digerirse', concepts: 'Envidia, escisión, proyección, objeto bueno y malo', forWhom: 'Quienes trabajan con emociones intensas, dificultades con la cercanía o ansiedades profundas' },
-      fr: { approach: 'Monde intérieur d\'objets — amour et haine, clivage et intégration, ce qui ne peut être digéré', concepts: 'Envie, clivage, projection, bon et mauvais objet', forWhom: 'Ceux qui travaillent avec des émotions intenses, des difficultés de proximité ou des angoisses profondes' },
-      ru: { approach: 'Внутренний мир объектов — любовь и ненависть, расщепление и интеграция', concepts: 'Зависть, расщепление, проекция, хороший и плохой объект', forWhom: 'Тем, кто работает с интенсивными чувствами, трудностями близости или глубокими тревогами' },
-      it: { approach: 'Mondo interno degli oggetti — amore e odio, scissione e integrazione, ciò che non può essere digerito', concepts: 'Invidia, scissione, proiezione, oggetto buono e cattivo', forWhom: 'Chi vuole lavorare con emozioni intense, difficoltà di intimità o ansie profonde' },
     },
     winnicott: {
       he: { approach: 'המרחב שבין — משחק, החזקה, ה"אני" האמיתי שמחפש לצאת', concepts: 'סביבה מאפשרת, עצמי אמיתי ומזויף, אובייקט מעבר', forWhom: 'מי שמרגיש שמתפקד אבל לא ממש חי, מי שמחפש מרחב ולא פרשנות' },
       en: { approach: 'The in-between space — play, holding, the true self seeking to emerge', concepts: 'Facilitating environment, true and false self, transitional object', forWhom: 'Those who feel they function but are not really alive, seeking space rather than interpretation' },
-      de: { approach: 'Der Zwischenraum — Spiel, Halten, das wahre Selbst, das hervortreten möchte', concepts: 'Ermöglichende Umgebung, wahres und falsches Selbst, Übergangsobjekt', forWhom: 'Wer sich funktionierend aber nicht wirklich lebendig fühlt, wer Raum statt Interpretation sucht' },
-      es: { approach: 'El espacio intermedio — juego, sostén, el self verdadero que busca emerger', concepts: 'Ambiente facilitador, self verdadero y falso, objeto transicional', forWhom: 'Quienes sienten que funcionan pero no viven plenamente, quienes buscan espacio en lugar de interpretación' },
-      fr: { approach: 'L\'espace intermédiaire — jeu, contenance, le vrai self cherchant à émerger', concepts: 'Environnement facilitateur, vrai et faux self, objet transitionnel', forWhom: 'Ceux qui se sentent fonctionner mais pas vraiment vivants, cherchant un espace plutôt qu\'une interprétation' },
-      ru: { approach: 'Промежуточное пространство — игра, удержание, истинное «я», стремящееся выйти', concepts: 'Облегчающая среда, истинное и ложное «я», переходный объект', forWhom: 'Тем, кто функционирует, но не чувствует себя живым; ищущим пространство, а не интерпретацию' },
-      it: { approach: 'Lo spazio intermedio — gioco, holding, il sé autentico che cerca di emergere', concepts: 'Ambiente facilitante, sé vero e falso, oggetto transizionale', forWhom: 'Chi si sente funzionante ma non davvero vivo, chi cerca spazio anziché interpretazione' },
     },
     ogden: {
       he: { approach: 'מה שנוצר בין שני האנשים בחדר — לא בתוך האחד ולא בתוך האחר', concepts: 'שלישי אנליטי, רווריה, חלימה משותפת', forWhom: 'מי שרוצה לעבוד עם הדינמיקה בין מטפל למטופל, שפה ותהליך יצירתי' },
       en: { approach: 'What is created between the two people in the room — belonging to neither alone', concepts: 'Analytic third, reverie, co-dreaming', forWhom: 'Those interested in the therapist-patient dynamic, language, and creative process' },
-      de: { approach: 'Was zwischen den zwei Menschen im Raum entsteht — keinem allein gehörend', concepts: 'Analytisches Drittes, Reverie, gemeinsames Träumen', forWhom: 'Wer sich für die Therapeut-Patient-Dynamik, Sprache und kreative Prozesse interessiert' },
-      es: { approach: 'Lo que se crea entre las dos personas en la sala — sin pertenecer a ninguno', concepts: 'Tercero analítico, ensoñación, co-soñar', forWhom: 'Quienes se interesan por la dinámica terapeuta-paciente, el lenguaje y el proceso creativo' },
-      fr: { approach: 'Ce qui se crée entre les deux personnes dans la pièce — n\'appartenant à aucun seul', concepts: 'Tiers analytique, rêverie, co-rêverie', forWhom: 'Ceux intéressés par la dynamique thérapeute-patient, le langage et le processus créatif' },
-      ru: { approach: 'То, что создаётся между двумя людьми в комнате — не принадлежащее ни одному', concepts: 'Аналитическая третья сторона, ревери, совместное сновидение', forWhom: 'Тем, кто интересуется динамикой терапевт-пациент, языком и творческим процессом' },
-      it: { approach: 'Ciò che si crea tra le due persone nella stanza — non appartenendo a nessuna delle due', concepts: 'Terzo analitico, reverie, sognare insieme', forWhom: 'Chi è interessato alla dinamica terapeuta-paziente, al linguaggio e al processo creativo' },
     },
-    loewald: {
-      he: { approach: 'הקשר עצמו כגורם המרפא — האנליטיקאי כדמות הורית חדשה', concepts: 'הפנמה, זמן נפשי, אובייקט חדש, רצח אב כהכרח התפתחותי', forWhom: 'מי שמתעניין בממשק בין פרויד לרלציוניים, שינוי לאורך זמן' },
-      en: { approach: 'The relationship itself as the healing force — the analyst as a new parental figure', concepts: 'Internalization, psychic time, new object, parricide as developmental necessity', forWhom: 'Those interested in the bridge between Freud and relational approaches, change over time' },
-      de: { approach: 'Die Beziehung selbst als heilende Kraft — der Analytiker als neue elterliche Figur', concepts: 'Internalisierung, psychische Zeit, neues Objekt, Vatermord als Entwicklungsnotwendigkeit', forWhom: 'Wer sich für die Brücke zwischen Freud und relationalen Ansätzen interessiert' },
-      es: { approach: 'La relación misma como fuerza curativa — el analista como nueva figura parental', concepts: 'Internalización, tiempo psíquico, objeto nuevo, parricidio como necesidad del desarrollo', forWhom: 'Quienes se interesan por el puente entre Freud y los enfoques relacionales, el cambio a lo largo del tiempo' },
-      fr: { approach: 'La relation elle-même comme force guérissante — l\'analyste comme nouvelle figure parentale', concepts: 'Intériorisation, temps psychique, nouvel objet, parricide comme nécessité développementale', forWhom: 'Ceux intéressés par le pont entre Freud et les approches relationnelles, le changement dans le temps' },
-      ru: { approach: 'Сами отношения как исцеляющая сила — аналитик как новая родительская фигура', concepts: 'Интернализация, психическое время, новый объект, отцеубийство как необходимость развития', forWhom: 'Тем, кто интересуется мостом между Фрейдом и реляционными подходами, изменением во времени' },
-      it: { approach: 'La relazione stessa come forza guaritrice — l\'analista come nuova figura genitoriale', concepts: 'Internalizzazione, tempo psichico, oggetto nuovo, parricidio come necessità evolutiva', forWhom: 'Chi è interessato al ponte tra Freud e gli approcci relazionali, il cambiamento nel tempo' },
+    vera: {
+      he: { approach: 'נוכחות לפני פרשנות — להיות איתך לפני שעושים משהו עם מה שמביאים', concepts: 'הינכחות, החזקה, שהייה בחשכה, לב שומע', forWhom: 'מי שמעבד משהו מהפגישה האחרונה שעדיין לא שקע' },
+      en: { approach: 'Presence before action — staying with what you carry before making it into meaning', concepts: 'Presencing, holding, staying in the dark, listening heart', forWhom: 'Those processing something from a recent session that has not yet settled' },
     },
-    bion: {
-      he: { approach: 'מה שעדיין לא ניתן לחשוב — כיצד רגשות הופכים לניתנים לעיכול', concepts: 'אלפא ובטא, מכיל-מוכל, O, ללא זיכרון וללא רצון', forWhom: 'מי שעובד עם מצבים קשים לניסוח, חוויות כאוטיות, גבולות החשיבה' },
-      en: { approach: 'What cannot yet be thought — how emotions become thinkable', concepts: 'Alpha and beta elements, container-contained, O, without memory or desire', forWhom: 'Those working with hard-to-articulate states, chaotic experience, or the limits of thinking' },
-      de: { approach: 'Was noch nicht gedacht werden kann — wie Gefühle denkbar werden', concepts: 'Alpha- und Beta-Elemente, Container-Contained, O, ohne Gedächtnis und Wunsch', forWhom: 'Wer mit schwer artikulierbaren Zuständen, chaotischer Erfahrung oder den Grenzen des Denkens arbeitet' },
-      es: { approach: 'Lo que aún no puede pensarse — cómo las emociones se vuelven pensables', concepts: 'Elementos alfa y beta, contenedor-contenido, O, sin memoria ni deseo', forWhom: 'Quienes trabajan con estados difíciles de articular, experiencias caóticas o los límites del pensamiento' },
-      fr: { approach: 'Ce qui ne peut pas encore être pensé — comment les émotions deviennent pensables', concepts: 'Éléments alpha et bêta, contenant-contenu, O, sans mémoire ni désir', forWhom: 'Ceux travaillant avec des états difficiles à articuler, des expériences chaotiques ou les limites de la pensée' },
-      ru: { approach: 'То, что ещё не может быть помыслено — как эмоции становятся мыслимыми', concepts: 'Альфа и бета-элементы, контейнер-содержимое, O, без памяти и желания', forWhom: 'Тем, кто работает с труднопередаваемыми состояниями, хаотическим опытом или пределами мышления' },
-      it: { approach: 'Ciò che ancora non può essere pensato — come le emozioni diventano pensabili', concepts: 'Elementi alfa e beta, contenitore-contenuto, O, senza memoria né desiderio', forWhom: 'Chi lavora con stati difficili da articolare, esperienze caotiche o i limiti del pensiero' },
-    },
-    kohut: {
-      he: { approach: 'הצורך להרגיש מובן — לא לפרש, אלא לקלוט מבפנים', concepts: 'עצמי, אובייקט-עצמי, שיקוף, אידיאליזציה, חרדת פירוק', forWhom: 'מי שמרגיש שלא נראה, פגיעות נרקיסיסטית, אמפתיה כמתודה' },
-      en: { approach: 'The need to feel understood — not to interpret, but to receive from within', concepts: 'Self, selfobject, mirroring, idealization, disintegration anxiety', forWhom: 'Those who feel unseen, dealing with narcissistic vulnerability, or seeking empathy as method' },
-      de: { approach: 'Das Bedürfnis, verstanden zu werden — nicht interpretieren, sondern von innen aufnehmen', concepts: 'Selbst, Selbstobjekt, Spiegelung, Idealisierung, Desintegrationsangst', forWhom: 'Wer sich unsichtbar fühlt, mit narzisstischer Verletzlichkeit oder Empathie als Methode arbeitet' },
-      es: { approach: 'La necesidad de sentirse comprendido — no interpretar, sino recibir desde adentro', concepts: 'Self, objeto del self, reflejo, idealización, angustia de desintegración', forWhom: 'Quienes se sienten invisibles, con vulnerabilidad narcisista, o buscan la empatía como método' },
-      fr: { approach: 'Le besoin de se sentir compris — non pas interpréter, mais recevoir de l\'intérieur', concepts: 'Self, objet-self, miroir, idéalisation, angoisse de désintégration', forWhom: 'Ceux qui se sentent invisibles, avec une vulnérabilité narcissique, ou cherchant l\'empathie comme méthode' },
-      ru: { approach: 'Потребность чувствовать себя понятым — не интерпретировать, а воспринимать изнутри', concepts: 'Самость, самообъект, зеркалирование, идеализация, тревога дезинтеграции', forWhom: 'Тем, кто чувствует себя невидимым, имеет нарциссическую уязвимость или ищет эмпатию как метод' },
-      it: { approach: 'Il bisogno di sentirsi compresi — non interpretare, ma ricevere dall\'interno', concepts: 'Sé, oggetto-sé, mirroring, idealizzazione, angoscia di disintegrazione', forWhom: 'Chi si sente invisibile, con vulnerabilità narcisistica, o cerca l\'empatia come metodo' },
-    },
-    heimann: {
-      he: { approach: 'מה שהמפגש מעורר במטפל — הקאונטרטרנספרנס כמכשיר הידע המרכזי', concepts: 'קאונטרטרנספרנס, מה שמושלך לתוך המטפל', forWhom: 'מי שמתעניין בתהליכים שקורים במטפל, סופרוויזיה, עיבוד פנימי' },
-      en: { approach: 'What the encounter stirs in the therapist — countertransference as the central instrument of knowing', concepts: 'Countertransference, what is projected into the therapist', forWhom: 'Those interested in processes within the therapist, supervision, internal processing' },
-      de: { approach: 'Was die Begegnung im Therapeuten auslöst — Gegenübertragung als zentrales Erkenntnisinstrument', concepts: 'Gegenübertragung, was in den Therapeuten projiziert wird', forWhom: 'Wer sich für Prozesse im Therapeuten interessiert, Supervision, innere Verarbeitung' },
-      es: { approach: 'Lo que el encuentro despierta en el terapeuta — la contratransferencia como instrumento central de conocimiento', concepts: 'Contratransferencia, lo que se proyecta en el terapeuta', forWhom: 'Quienes se interesan por los procesos en el terapeuta, supervisión, procesamiento interno' },
-      fr: { approach: 'Ce que la rencontre éveille chez le thérapeute — le contre-transfert comme instrument central de connaissance', concepts: 'Contre-transfert, ce qui est projeté dans le thérapeute', forWhom: 'Ceux intéressés par les processus chez le thérapeute, la supervision, le traitement interne' },
-      ru: { approach: 'То, что встреча пробуждает в терапевте — контрперенос как центральный инструмент познания', concepts: 'Контрперенос, то, что проецируется в терапевта', forWhom: 'Тем, кто интересуется процессами внутри терапевта, супервизией, внутренней переработкой' },
-      it: { approach: 'Ciò che l\'incontro suscita nel terapeuta — il controtransfert come strumento centrale di conoscenza', concepts: 'Controtransfert, ciò che viene proiettato nel terapeuta', forWhom: 'Chi è interessato ai processi nel terapeuta, alla supervisione, all\'elaborazione interna' },
+    elliot: {
+      he: { approach: 'שהייה במה שאין לו עדיין מילים — ללא פרשנות, ללא הסבר', concepts: 'מצב being, מצב doing, החזקה, הימנעות כשפה', forWhom: 'מי שעדיין בתוך הפגישה ולא מוכן לעשות ממנה סיפור' },
+      en: { approach: 'Staying in what has no words yet — no interpretation, no rush toward meaning', concepts: 'Being state, doing state, holding without direction', forWhom: 'Those still inside something from the session, not ready to make it into a story' },
     },
   };
   const CARD_LABELS: Record<string, { approach: string; concepts: string; forWhom: string }> = {
     he: { approach: 'גישה', concepts: 'מושגים', forWhom: 'מתאים ל' },
     en: { approach: 'Approach', concepts: 'Concepts', forWhom: 'For whom' },
-    de: { approach: 'Ansatz', concepts: 'Konzepte', forWhom: 'Für wen' },
-    es: { approach: 'Enfoque', concepts: 'Conceptos', forWhom: 'Para quién' },
-    fr: { approach: 'Approche', concepts: 'Concepts', forWhom: 'Pour qui' },
-    ru: { approach: 'Подход', concepts: 'Понятия', forWhom: 'Для кого' },
-    it: { approach: 'Approccio', concepts: 'Concetti', forWhom: 'Per chi' },
   };
   const THEORIST_NAMES_I18N: Record<string, Record<string, string>> = {
-    freud:    { he: 'פרויד',  en: 'Freud',    de: 'Freud',    es: 'Freud',    fr: 'Freud',    ru: 'Фрейд',  it: 'Freud'    },
-    klein:    { he: 'קליין',  en: 'Klein',    de: 'Klein',    es: 'Klein',    fr: 'Klein',    ru: 'Кляйн',  it: 'Klein'    },
-    winnicott:{ he: 'ויניקוט',en: 'Winnicott',de: 'Winnicott',es: 'Winnicott',fr: 'Winnicott',ru: 'Винникотт',it: 'Winnicott'},
-    ogden:    { he: 'אוגדן',  en: 'Ogden',    de: 'Ogden',    es: 'Ogden',    fr: 'Ogden',    ru: 'Огден',  it: 'Ogden'    },
-    loewald:  { he: 'לוואלד', en: 'Loewald',  de: 'Loewald',  es: 'Loewald',  fr: 'Loewald',  ru: 'Лёвальд',it: 'Loewald'  },
-    bion:     { he: 'ביון',   en: 'Bion',     de: 'Bion',     es: 'Bion',     fr: 'Bion',     ru: 'Бион',   it: 'Bion'     },
-    kohut:    { he: 'קוהוט',  en: 'Kohut',    de: 'Kohut',    es: 'Kohut',    fr: 'Kohut',    ru: 'Кохут',  it: 'Kohut'    },
-    heimann:  { he: 'היימן',  en: 'Heimann',  de: 'Heimann',  es: 'Heimann',  fr: 'Heimann',  ru: 'Хайманн',it: 'Heimann'  },
+    freud:    { he: 'פרויד',   en: 'Freud'    },
+    klein:    { he: 'קליין',   en: 'Klein'    },
+    winnicott:{ he: 'ויניקוט', en: 'Winnicott'},
+    ogden:    { he: 'אוגדן',   en: 'Ogden'    },
+    vera:     { he: 'ורה',     en: 'Vera'     },
+    elliot:   { he: 'אליוט',   en: 'Elliot'   },
   };
   const SESSION_TIP_I18N: Record<string, { title: string; text: string }> = {
     he: { title: 'סשן', text: 'התיאורטיקן הנבחר יגיב כאנליטיקאי בשיחה — לא כמרצה. מתאים להבאת חומר קליני, חלומות, או מצבים אישיים.' },
     en: { title: 'Clinical Session Mode', text: 'The selected theorist responds as an analyst in conversation — not as a lecturer. Suitable for clinical material, dreams, or personal situations.' },
-    de: { title: 'Klinischer Sitzungsmodus', text: 'Der ausgewählte Theoretiker antwortet als Analytiker — nicht als Dozent. Geeignet für klinisches Material, Träume oder persönliche Situationen.' },
-    es: { title: 'Modo de sesión clínica', text: 'El teórico seleccionado responde como analista — no como conferenciante. Adecuado para material clínico, sueños o situaciones personales.' },
-    fr: { title: 'Mode session clinique', text: 'Le théoricien sélectionné répond comme analyste — pas comme conférencier. Adapté au matériel clinique, aux rêves ou aux situations personnelles.' },
-    ru: { title: 'Режим клинической сессии', text: 'Выбранный теоретик отвечает как аналитик — не как лектор. Подходит для клинического материала, сновидений или личных ситуаций.' },
-    it: { title: 'Modalità sessione clinica', text: 'Il teorico selezionato risponde come analista — non come docente. Adatto per materiale clinico, sogni o situazioni personali.' },
   };
   const EXPLORE_TIP_I18N: Record<string, { title: string; text: string }> = {
     he: { title: 'חיפוש', text: 'להבין גישה תיאורטית, לשאול על מושג — ללא עיבוד חומר אישי.' },
     en: { title: 'Explore', text: 'Understand a theoretical approach, ask about a concept — no personal material needed.' },
-    de: { title: 'Erkunden', text: 'Einen theoretischen Ansatz verstehen, ein Konzept erfragen — ohne persönliches Material.' },
-    es: { title: 'Explorar', text: 'Entender un enfoque teórico, preguntar sobre un concepto — sin material personal.' },
-    fr: { title: 'Explorer', text: 'Comprendre une approche théorique, poser une question conceptuelle — sans matériel personnel.' },
-    ru: { title: 'Изучить', text: 'Понять теоретический подход, задать концептуальный вопрос — без личного материала.' },
-    it: { title: 'Esplora', text: 'Capire un approccio teorico, fare una domanda concettuale — senza materiale personale.' },
   };
   const WELCOME_I18N: Record<string, { heading: string; apiText: string; privacyLink: string }> = {
     he: { heading: 'מה עולה לך היום?', apiText: 'השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.', privacyLink: 'מדיניות פרטיות' },
     en: { heading: "What's on your mind?", apiText: "Conversations are processed through Anthropic's API and are not stored by us or used for model training.", privacyLink: 'Privacy Policy' },
-    de: { heading: 'Willkommen', apiText: 'Gespräche werden über die API von Anthropic verarbeitet und weder von uns gespeichert noch für das Modelltraining verwendet.', privacyLink: 'Datenschutzrichtlinie' },
-    es: { heading: 'Bienvenido/a', apiText: 'Las conversaciones se procesan a través de la API de Anthropic y no son almacenadas por nosotros ni usadas para el entrenamiento de modelos.', privacyLink: 'Política de privacidad' },
-    fr: { heading: 'Bienvenue', apiText: "Les conversations sont traitées via l'API d'Anthropic et ne sont pas stockées par nous ni utilisées pour entraîner des modèles.", privacyLink: 'Politique de confidentialité' },
-    ru: { heading: 'Добро пожаловать', apiText: 'Разговоры обрабатываются через API Anthropic, не хранятся нами и не используются для обучения моделей.', privacyLink: 'Политика конфиденциальности' },
-    it: { heading: 'Benvenuto/a', apiText: "Le conversazioni vengono elaborate tramite l'API di Anthropic e non sono conservate da noi né utilizzate per addestrare i modelli.", privacyLink: 'Informativa sulla privacy' },
   };
   const PRIVACY_I18N: Record<string, { title: string; paragraphs: { label: string; text: string }[]; btnOk: string }> = {
     he: {
@@ -150,56 +80,6 @@ export default function Home() {
         { label: 'Identity', text: 'No storage of IP addresses, user identity, or any personally identifying information beyond what is required for account management.' },
       ],
       btnOk: 'Got it',
-    },
-    de: {
-      title: 'Datenschutzrichtlinie',
-      paragraphs: [
-        { label: 'Gespräche', text: 'Werden ausschließlich über die API von Anthropic verarbeitet. Werden nicht von uns gespeichert und nicht für Modelltraining verwendet.' },
-        { label: 'Gedächtnis', text: 'Wird nur lokal in Ihrem Browser gespeichert. Wir können es weder sehen noch speichern.' },
-        { label: 'Wissensdatenbank', text: 'Auszüge aus der psychoanalytischen Literatur werden nur als Zahlen für Suchzwecke gespeichert. Ihr Gesprächsinhalt wird dort nicht gespeichert.' },
-        { label: 'Identität', text: 'Keine Speicherung von IP-Adressen, Benutzeridentität oder persönlichen Daten über das für die Kontoverwaltung Notwendige hinaus.' },
-      ],
-      btnOk: 'Verstanden',
-    },
-    es: {
-      title: 'Política de privacidad',
-      paragraphs: [
-        { label: 'Conversaciones', text: 'Procesadas exclusivamente a través de la API de Anthropic. No las almacenamos ni las usamos para el entrenamiento de modelos.' },
-        { label: 'Memoria', text: 'Almacenada solo localmente en tu navegador. No podemos verla ni almacenarla.' },
-        { label: 'Base de conocimiento', text: 'Fragmentos de la literatura psicoanalítica almacenados solo como números para búsqueda. El contenido de tus conversaciones no se almacena allí.' },
-        { label: 'Identidad', text: 'No se almacenan direcciones IP, identidad de usuario ni información personal más allá de lo requerido para la gestión de la cuenta.' },
-      ],
-      btnOk: 'Entendido',
-    },
-    fr: {
-      title: 'Politique de confidentialité',
-      paragraphs: [
-        { label: 'Conversations', text: "Traitées exclusivement via l'API d'Anthropic. Non stockées par nous et non utilisées pour l'entraînement de modèles." },
-        { label: 'Mémoire', text: 'Stockée uniquement localement dans votre navigateur. Nous ne pouvons ni la voir ni la stocker.' },
-        { label: 'Base de connaissances', text: "Des extraits de la littérature psychanalytique sont stockés sous forme de nombres uniquement à des fins de recherche. Le contenu de vos conversations n'y est pas stocké." },
-        { label: 'Identité', text: "Aucun stockage d'adresses IP, d'identité d'utilisateur ou d'informations personnelles au-delà de ce qui est nécessaire pour la gestion du compte." },
-      ],
-      btnOk: 'Compris',
-    },
-    ru: {
-      title: 'Политика конфиденциальности',
-      paragraphs: [
-        { label: 'Беседы', text: 'Обрабатываются исключительно через API Anthropic. Не хранятся нами и не используются для обучения моделей.' },
-        { label: 'Память', text: 'Хранится только локально в вашем браузере. Мы не можем её видеть или хранить.' },
-        { label: 'База знаний', text: 'Фрагменты психоаналитической литературы хранятся только в виде чисел для поиска. Содержимое ваших разговоров там не хранится.' },
-        { label: 'Идентификация', text: 'IP-адреса, личность пользователя или личные данные не хранятся сверх необходимого для управления аккаунтом.' },
-      ],
-      btnOk: 'Понятно',
-    },
-    it: {
-      title: 'Informativa sulla privacy',
-      paragraphs: [
-        { label: 'Conversazioni', text: "Elaborate esclusivamente tramite l'API di Anthropic. Non memorizzate da noi e non utilizzate per addestrare modelli." },
-        { label: 'Memoria', text: 'Conservata solo localmente nel tuo browser. Non possiamo vederla né conservarla.' },
-        { label: 'Base di conoscenza', text: 'Estratti della letteratura psicoanalitica conservati solo come numeri a fini di ricerca. Il contenuto delle tue conversazioni non viene conservato lì.' },
-        { label: 'Identità', text: "Nessuna conservazione di indirizzi IP, identità utente o informazioni personali oltre a quanto necessario per la gestione dell'account." },
-      ],
-      btnOk: 'Capito',
     },
   };
   const [authLangOpen, setAuthLangOpen] = useState(false);
@@ -229,18 +109,12 @@ export default function Home() {
   const isProd = process.env.NODE_ENV === 'production';
   const isHe = currentLang === 'he';
   const THEORIST_LABELS: Record<string, [string, string]> = {
-    freud:    [isHe ? 'פרויד'   : 'Freud',    isHe ? 'מה שלא נאמר'               : 'What is left unsaid'],
-    klein:    [isHe ? 'קליין'   : 'Klein',    isHe ? 'מה שקשה לגעת בו'          : 'What is hard to touch'],
-    winnicott:[isHe ? 'ויניקוט' : 'Winnicott',isHe ? 'המרחב להיות'              : 'The space to be'],
-    ogden:    [isHe ? 'אוגדן'   : 'Ogden',    isHe ? 'מה שנוצר בין שנינו'       : 'What is created between us'],
-    loewald:  [isHe ? 'לוואלד'  : 'Loewald',  isHe ? 'הקשר עצמו כגורם המרפא'   : 'The relationship as cure'],
-    bion:     [isHe ? 'ביון'    : 'Bion',     isHe ? 'מה שעדיין לא ניתן לומר'   : 'What cannot yet be said'],
-    kohut:    [isHe ? 'קוהוט'   : 'Kohut',    isHe ? 'להרגיש מובן'              : 'To feel understood'],
-    heimann:  [isHe ? 'היימן'   : 'Heimann',  isHe ? 'מה שהמפגש מעורר בי'       : 'What the encounter stirs'],
+    freud:    [isHe ? 'פרויד'   : 'Freud',    isHe ? 'מה שלא נאמר'         : 'What is left unsaid'],
+    klein:    [isHe ? 'קליין'   : 'Klein',    isHe ? 'מה שקשה לגעת בו'    : 'What is hard to touch'],
+    winnicott:[isHe ? 'ויניקוט' : 'Winnicott',isHe ? 'המרחב להיות'        : 'The space to be'],
+    ogden:    [isHe ? 'אוגדן'   : 'Ogden',    isHe ? 'מה שנוצר בין שנינו' : 'What is created between us'],
   };
-  const THEORIST_LIST: [string, string, string][] = isProd
-    ? (['freud','klein','winnicott','ogden'] as const).map(k => [k, THEORIST_LABELS[k][0], THEORIST_LABELS[k][1]])
-    : (['freud','klein','winnicott','ogden','loewald','bion','kohut','heimann'] as const).map(k => [k, THEORIST_LABELS[k][0], THEORIST_LABELS[k][1]]);
+  const THEORIST_LIST: [string, string, string][] = (['freud','klein','winnicott','ogden'] as const).map(k => [k, THEORIST_LABELS[k][0], THEORIST_LABELS[k][1]]);
 
   return (
     <>
@@ -608,10 +482,6 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                 <option value="klein">קליין</option>
                 <option value="winnicott">ויניקוט</option>
                 <option value="ogden">אוגדן</option>
-                {process.env.NODE_ENV !== 'production' && <option value="loewald">לוואלד</option>}
-                {process.env.NODE_ENV !== 'production' && <option value="bion">ביון</option>}
-                {process.env.NODE_ENV !== 'production' && <option value="kohut">קוהוט</option>}
-                {process.env.NODE_ENV !== 'production' && <option value="heimann">היימן</option>}
               </select>
               <textarea id="sup-paste-input" placeholder="הדבק שיחה — כל פורמט מתקבל"
                 style={{ width: '100%', minHeight: 150, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 12, resize: 'vertical', direction: 'rtl', lineHeight: 1.7, boxSizing: 'border-box', fontFamily: 'var(--font-rubik), sans-serif' }}></textarea>

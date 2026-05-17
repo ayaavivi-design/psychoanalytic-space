@@ -4,8 +4,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## Context
-- QA מכסה 4 תיאורטיקנים (לא 8 — הופחת לחסכון בעלות)
-- Cron: יומי, Vercel native
+- QA מכסה 6 פונקציות: 4 תיאורטיקנים + vera + elliot (companions נוספו 17.05.2026)
+- Cron: יומי, Vercel native — qa-full route
 - BW-43 — סגור (bw_mode תוקן)
 - BW-35 — סגור (Safety interceptor: 8/8 PASS, שני ביטויים × 4 תיאורטיקנים)
 - BW-36 Q-3 — ליבת הבעיה נפתרה ברמת הפרומפט. ⚠️ WARNING: אין cross-turn enforcement ב-validation loop
@@ -21,11 +21,15 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - **restoreConversation**: `updateSessionTitle(true)` אחרי `updateReflectionBtn()` — bug שנמצא ותוקן. לשמור בזיכרון כ-pattern לחפש בעתיד.
 - **BLANK SCREEN ROOT CAUSE — welcome.remove() = FORBIDDEN**: `appendMessage()` ו-`showThinking()` קראו ל-`welcome.remove()` — מחקו לצמיתות את ה-`#welcome` שמנוהל ע"י React. `performNewChat()` לא מצא אותו → מסך ריק. **הכלל:** לעולם לא לקרוא ל-`welcome.remove()` — רק `welcome.style.display = 'none'`. לבדוק בכל PR שנוגע ב-`appendMessage` / `showThinking`.
 - **BW-51 flow-selection known limitation**: `div.flow-selection` הוא DOM-only, לא שורד `restoreConversation`. PDF מסשן שחזר מזיכרון לא יציג Entry Point. לא bug — מגבלת תכנון.
+- **vera/elliot אין RAG**: THEORISTS_WITH_RAG ב-route.ts כולל רק את 8 התיאורטיקנים המקוריים. companions לא מחוברים ל-knowledge_chunks. לא bug — they carry no school — אבל ה-QA יציג ragChunks=0 בכל ריצה. לא לדגל כשגיאה.
+- **ספר/י slash notation ב-vera system prompt (theorist-voices.ts שורה 1551)**: הפרומפט הקצר כולל "ספר/י לי" — slash notation שמפורשת אסורה בפרומפטים מלאים. לבדוק האם זה גורם לתגובה ממשית עם slash בפלט.
+- **companions THEORIST_SPECIFIC_TESTS ריק**: ב-qa/route.ts אין בדיקות ממוקדות לvera ו-elliot. getTodaysSpecificTest יחזיר null. לשקול הוספת בדיקות ספציפיות ל-companions בעתיד.
 
 ---
 
 ## History (last 10)
-1. Post-production QA 16.05: 4/4 PASS, BW-51+BW-46+enforceVariedOpening verified in prod ✅ (מאי 2026)
+1. Static QA — vera ו-elliot companions 17.05: ניתוח פרומפטים, 7 תרחישים × 2. תוצאות: 11 PASS, 2 WARNING, 1 FAIL (safety protocol שונה — companions לא מנחים לפנות לעזרה בצורה הנכונה כמו interceptor). הוספת vera+elliot לקרון qa-full ו-qa. (מאי 2026)
+2. Post-production QA 16.05: 4/4 PASS, BW-51+BW-46+enforceVariedOpening verified in prod ✅ (מאי 2026)
 2. BW-51 sign-off: PASS ✅ — flow-selection DOM indicator + PDF export. Warning: לא שורד restoreConversation (known limitation, לא בלוקר) (מאי 2026)
 3. ויניקוט QA post-prompt fix: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN — שיום רגש ו-sentence completion לא ניתנים לאכיפה בלופ (מאי 2026)
 2. BW-35 Safety QA: 8/8 PASS — interceptor עובד על כל 4 תיאורטיקנים × 2 תרחישים (מאי 2026)

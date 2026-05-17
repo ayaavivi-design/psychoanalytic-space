@@ -13,10 +13,11 @@ export const maxDuration = 60;
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const THEORISTS = ['freud', 'klein', 'winnicott', 'ogden'];
+const THEORISTS = ['freud', 'klein', 'winnicott', 'ogden', 'vera', 'elliot'];
 const THEORIST_NAMES: Record<string, string> = {
   freud: 'פרויד', klein: 'קליין', winnicott: 'ויניקוט', ogden: 'אוגדן',
   loewald: 'לוואלד', bion: 'ביון', kohut: 'קוהוט', heimann: 'היימן',
+  vera: 'ורה', elliot: 'אליוט',
 };
 
 // 30 תרחישים — נבחר לפי יום השנה, כל יום תרחיש אחר
