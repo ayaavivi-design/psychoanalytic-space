@@ -1012,15 +1012,16 @@ function confirmTheoristEntry() {
   // In session mode: vera is default
   const defaultKey = mode === 'session' ? 'vera' : 'winnicott';
 
-  // Prefer: explicitly pending → visually selected card in grid → default for mode
-  // This guards against the case where _bwPendingTheorist was nulled by performTheoristSwitch
-  // but the user clicks "המשך" without re-clicking a card.
+  // Priority: explicitly pending → visually selected card in grid → activeTheorists[0] → mode default
+  // Case: user clicks a sidebar theorist (performTheoristSwitch sets _bwPendingTheorist=null
+  // and clears grid selection) — activeTheorists[0] captures that choice before we fall to default.
   let key = window._bwPendingTheorist;
   if (!key) {
     const _grid = document.getElementById('bw-theorist-grid');
     const _sel = _grid?.querySelector('[data-theorist].bw-theorist-selected');
     if (_sel) key = _sel.getAttribute('data-theorist');
   }
+  if (!key && activeTheorists.length > 0) key = activeTheorists[0];
   if (!key) key = defaultKey;
 
   // Guard: session mode requires an explicit companion selection
