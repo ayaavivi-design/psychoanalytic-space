@@ -983,9 +983,16 @@ function showTheoristEntry(mode) {
 
 function selectTheoristEntry(key) {
   window._bwPendingTheorist = key;
-  // Clear selection on both theorist cards and companion cards
-  document.querySelectorAll('.bw-theorist-card, .bw-companion-card').forEach(el => el.classList.remove('bw-theorist-selected'));
-  const sel = document.querySelector(`[data-theorist="${key}"]`);
+  const grid = document.getElementById('bw-theorist-grid');
+  // Clear selection on both theorist cards and companion cards — scoped to grid
+  const allCards = grid
+    ? grid.querySelectorAll('.bw-theorist-card, .bw-companion-card')
+    : document.querySelectorAll('.bw-theorist-card, .bw-companion-card');
+  allCards.forEach(el => el.classList.remove('bw-theorist-selected'));
+  // Scope querySelector to the grid to avoid any collision with other DOM elements
+  const sel = grid
+    ? grid.querySelector(`[data-theorist="${key}"]`)
+    : document.querySelector(`[data-theorist="${key}"]`);
   if (sel) sel.classList.add('bw-theorist-selected');
   // Save companion choice to localStorage immediately on click (session mode)
   const mode = localStorage.getItem('bw_mode') || 'session';

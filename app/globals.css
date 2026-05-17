@@ -831,6 +831,12 @@ body.bw-selecting #flow-buttons {
   text-transform: uppercase;
 }
 .bw-theorist-card.bw-theorist-selected .bw-t-sub { color: var(--accent); opacity: 0.7; }
+/* Prevent child spans from intercepting clicks — onclick lives on the card div */
+.bw-theorist-card .bw-t-name,
+.bw-theorist-card .bw-t-sub,
+.bw-theorist-card span {
+  pointer-events: none;
+}
 
 .bw-confirm-btn {
   background: var(--accent);
@@ -884,6 +890,7 @@ body.bw-selecting #flow-buttons {
   color: var(--muted);
   transition: color 0.15s;
   flex-shrink: 0;
+  pointer-events: none;
 }
 
 .bw-companion-card:hover {
@@ -898,6 +905,11 @@ body.bw-selecting #flow-buttons {
 }
 .bw-companion-card.bw-theorist-selected .bw-companion-icon { color: var(--accent); }
 .bw-companion-card.bw-theorist-selected .bw-t-name { color: var(--accent); }
+/* Prevent child elements from intercepting clicks — onclick lives on the card div */
+.bw-companion-card .bw-t-name,
+.bw-companion-card span {
+  pointer-events: none;
+}
 
 @media (max-width: 600px) {
   .bw-mode-card { font-size: var(--fs-body-lg); padding: 8px 16px; }
