@@ -929,10 +929,10 @@ function renderTheoristGridForMode(mode) {
       ogden:    { he: 'אוגדן',   en: 'Ogden',     sub_he: 'הניסיון האנליטי',    sub_en: 'Analytic Third'   },
     };
     const exploreKeys = ['freud','klein','winnicott','ogden'];
-    // Sync grid with sidebar: if a valid explore theorist is already active, pre-select it
+    // Sync grid with sidebar/localStorage — priority: live activeTheorists → persisted choice → winnicott
     const activeExplore = (activeTheorists[0] && exploreKeys.includes(activeTheorists[0]))
       ? activeTheorists[0]
-      : 'winnicott';
+      : (localStorage.getItem('bw_explore_theorist') || 'winnicott');
     grid.innerHTML = exploreKeys.map(key =>
       `<div class="bw-theorist-card${key === activeExplore ? ' bw-theorist-selected' : ''}"
         data-theorist="${key}"
@@ -1014,10 +1014,13 @@ function selectTheoristEntry(key) {
     ? grid.querySelector(`[data-theorist="${key}"]`)
     : document.querySelector(`[data-theorist="${key}"]`);
   if (sel) sel.classList.add('bw-theorist-selected');
-  // Save companion choice to localStorage immediately on click (session mode)
+  // Save choice to localStorage immediately on click
   const mode = localStorage.getItem('bw_mode') || 'session';
   if (mode === 'session' && (key === 'vera' || key === 'elliot')) {
     localStorage.setItem('bw_companion', key);
+  }
+  if (mode === 'explore' && ['freud','klein','winnicott','ogden'].includes(key)) {
+    localStorage.setItem('bw_explore_theorist', key);
   }
   // Enable confirm button once user has made a selection
   const btn = document.getElementById('bw-theorist-confirm');
@@ -1304,6 +1307,19 @@ function performTheoristSwitch(el, name) {
     activeTheorists = [];
     el.classList.add('active');
     activeTheorists = [name];
+    // Persist explore theorist choice so grid stays synced after mode switches
+    const _exploreKeys = ['freud','klein','winnicott','ogden'];
+    if (_exploreKeys.includes(name)) {
+      localStorage.setItem('bw_explore_theorist', name);
+      // If the welcome grid is visible in explore mode, update it immediately
+      const _grid = document.getElementById('bw-theorist-grid');
+      const _card = _grid?.querySelector(`[data-theorist="${name}"].bw-theorist-card`);
+      if (_card) {
+        _grid.querySelectorAll('.bw-theorist-card').forEach(c => c.classList.remove('bw-theorist-selected'));
+        _card.classList.add('bw-theorist-selected');
+        window._bwPendingTheorist = name;
+      }
+    }
   }
   updateInputSuggestion();
   updateSessionTitle(true);
