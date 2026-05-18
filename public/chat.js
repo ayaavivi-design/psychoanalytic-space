@@ -928,15 +928,20 @@ function renderTheoristGridForMode(mode) {
       winnicott:{ he: 'ויניקוט', en: 'Winnicott', sub_he: 'עצמי ומרחב מחזיק',  sub_en: 'Self & Holding'   },
       ogden:    { he: 'אוגדן',   en: 'Ogden',     sub_he: 'הניסיון האנליטי',    sub_en: 'Analytic Third'   },
     };
-    grid.innerHTML = ['freud','klein','winnicott','ogden'].map(key =>
-      `<div class="bw-theorist-card${key === 'winnicott' ? ' bw-theorist-selected' : ''}"
+    const exploreKeys = ['freud','klein','winnicott','ogden'];
+    // Sync grid with sidebar: if a valid explore theorist is already active, pre-select it
+    const activeExplore = (activeTheorists[0] && exploreKeys.includes(activeTheorists[0]))
+      ? activeTheorists[0]
+      : 'winnicott';
+    grid.innerHTML = exploreKeys.map(key =>
+      `<div class="bw-theorist-card${key === activeExplore ? ' bw-theorist-selected' : ''}"
         data-theorist="${key}"
         onclick="selectTheoristEntry('${key}')">
         <span class="bw-t-name">${isEn ? NAMES[key].en : NAMES[key].he}</span>
         <span class="bw-t-sub">${isEn ? NAMES[key].sub_en : NAMES[key].sub_he}</span>
       </div>`
     ).join('');
-    window._bwPendingTheorist = 'winnicott';
+    window._bwPendingTheorist = activeExplore;
 
     // Attach rich tooltips
     document.querySelectorAll('#bw-theorist-grid .bw-theorist-card[data-theorist]').forEach(card => {
