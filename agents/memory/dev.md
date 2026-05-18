@@ -26,7 +26,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. fix(BW-53): gap tokens + companion no-default — gap: var(--space-lg) in globals.css + page.tsx; first-time users see no pre-selected companion card; confirm button disabled until selection; selectTheoristEntry() enables it on click.
+1. feat(BW-54): theoretical lens after session — maybeOfferTheoreticalLens() after feedback, picker modal (freud/klein/winnicott/ogden), POST /api/theoretical-lens, 3-block output. Support mailto link in settings (hello@getbetween.app).
+2. fix(BW-53): gap tokens + companion no-default — gap: var(--space-lg) in globals.css + page.tsx; first-time users see no pre-selected companion card; confirm button disabled until selection; selectTheoristEntry() enables it on click.
 2. feat(BW-53): companion cards (Vera/Elliot) — session mode shows 2 companion cards with SVG icons instead of theorist grid. explore mode unchanged. renderTheoristGridForMode() is the single source of truth. localStorage: bw_companion persists choice.
 2. feat: /api/daily-summary — CCR email bridge endpoint (Resend, x-internal-token auth). ממתין ל-INTERNAL_API_TOKEN ב-Vercel + עדכון CCR routine
 3. feat(BW-51): flow selection indicator — DOM element + PDF export (startFlow + exportPDF בלבד)

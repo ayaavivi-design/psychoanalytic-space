@@ -532,6 +532,7 @@ function applyAdminVisibility(email) {
 
 function loadUserProfile(user) {
   const email = user.email || '';
+  window._userEmail = email; // used by openSupportModal
   const sbName = document.getElementById('sb-user-name');
   const sbEmail = document.getElementById('sb-user-email');
   const sbAvatar = document.getElementById('sb-avatar');
@@ -703,6 +704,7 @@ async function startFlow(flowKey) {
     appendMessage('assistant', fixedOpening);
     conversationHistory.push({ role: 'assistant', content: fixedOpening });
     updateReflectionBtn();
+    updateEndSessionBtn();
     if (window.clinicalMode && !silenceResponseSent) {
       clearTimeout(silenceTimer);
       silenceTimer = setTimeout(handleSilence, SILENCE_THRESHOLD_MS);
@@ -744,6 +746,7 @@ async function startFlow(flowKey) {
       appendMessage('assistant', reply);
       conversationHistory.push({ role: 'assistant', content: reply });
       updateReflectionBtn();
+      updateEndSessionBtn();
       if (window.clinicalMode && !silenceResponseSent) {
         clearTimeout(silenceTimer);
         silenceTimer = setTimeout(handleSilence, SILENCE_THRESHOLD_MS);
@@ -5251,6 +5254,7 @@ async function sendMessage() {
     conversationHistory.push({ role: 'assistant', content: reply });
     saveConversation();
     updateReflectionBtn();
+    updateEndSessionBtn();
 
     // Build source attribution — never in clinical mode
     // IMPORTANT: match() must come BEFORE replace() — once the tag is stripped it can't be found
@@ -5565,6 +5569,9 @@ function skipFeedback() {
 // ─── BW-54: Theoretical Lens ─────────────────────────────────────────────────
 
 function maybeOfferTheoreticalLens() {
+  // BW-54: feature paused — Naval concern re: clinical logic. Revisit.
+  performNewChat();
+  return;
   const mode = localStorage.getItem('bw_mode') || 'session';
   if (mode !== 'session' || conversationHistory.length < 4) {
     performNewChat();
@@ -5786,6 +5793,7 @@ function performNewChat() {
   window.activeFlow = null;
   if (clinicalMode) toggleClinicalMode();
   document.getElementById('user-input').value = '';
+  updateEndSessionBtn();
   setTimeout(checkIntakeStatus, 50);
 }
 
@@ -5835,6 +5843,7 @@ function restoreConversation(memIndex) {
                          { role: 'assistant', content: mem.summary }];
   chat.scrollTop = chat.scrollHeight;
   updateReflectionBtn();
+  updateEndSessionBtn();
   updateSessionTitle(true);
   // Ensure input is visible after restoring a conversation
   document.body.classList.remove('bw-selecting');
@@ -6002,11 +6011,6 @@ function openSettings() {
         <button onclick="saveSettings()" style="background:var(--accent);border:none;color:#fff;padding:10px 24px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;" id="st-save">שמור</button>
         <button onclick="document.getElementById('settings-modal').style.display='none'" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;" id="st-close">סגור</button>
       </div>
-      <div style="text-align:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
-        <a id="st-contact-link" href="#" style="font-size:12px;color:var(--muted);text-decoration:none;font-family:'Rubik',sans-serif;" onclick="(function(){const _isHe=(selectedLang?.code||'he')\!=='en';const _email=document.getElementById('sb-user-email')?.textContent||'';const _sub=encodeURIComponent(_isHe?'פנייה לתמיכה — Between':'Between Support Request');const _body=encodeURIComponent(_isHe?'מייל: '+_email+'\n\n':'Email: '+_email+'\n\n');window.open('mailto:hello@getbetween.app?subject='+_sub+'&body='+_body);return false;})();return false;">
-          <span id="st-contact-label">יש שאלה? כתוב/י לנו</span> <span style="color:var(--accent);">hello@getbetween.app</span>
-        </a>
-      </div>
     </div>`;
 
   modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
@@ -6120,6 +6124,7 @@ function updateSidebarMemories() {
 conversationHistory = loadConversation();
 updateMemoryCount();
 updateReflectionBtn();
+updateEndSessionBtn();
 tryInitSupabase();
 // Apply default language (EN) on first load
 applyUITranslation(selectedLang.code);
@@ -6418,6 +6423,7 @@ async function handleSilence() {
     appendMessage('assistant', reply, attribution);
     saveConversation();
     updateReflectionBtn();
+    updateEndSessionBtn();
   } catch (e) {
     removeThinking();
     silenceResponseSent = false; // Bug C fix: reset so silence detection works after failure
@@ -7267,6 +7273,19 @@ function updateReflectionBtn() {
   btn.style.display = show ? 'flex' : 'none';
 }
 
+function updateEndSessionBtn() {
+  const btn = document.getElementById('sb-end-session-btn');
+  if (!btn) return;
+  const show = conversationHistory.length >= 2;
+  btn.style.display = show ? 'flex' : 'none';
+  // keep label in sync with current language
+  const label = document.getElementById('sb-end-session-label');
+  if (label) {
+    const isHe = (selectedLang?.code === 'he' || selectedLang?.dir === 'rtl');
+    label.textContent = isHe ? 'סיים שיחה' : 'End session';
+  }
+}
+
 function buildReflectionCard(r) {
   const wrap = document.createElement('div');
   wrap.style.cssText = 'font-size:13px;color:#333;line-height:1.9;direction:rtl;';
@@ -7430,6 +7449,10 @@ async function openPatientReflection() {
 
 window.openPatientReflection = openPatientReflection;
 window.updateReflectionBtn   = updateReflectionBtn;
+window.updateEndSessionBtn   = updateEndSessionBtn;
+window.openSupportModal      = openSupportModal;
+window.submitSupportForm     = submitSupportForm;
+window.showConversationEndModal = showConversationEndModal;
 
 // ============================================================
 // User Feedback Agent — UX מדומה: ניווט, שיחה, פידבק חווייתי
@@ -8084,5 +8107,122 @@ function fillSuggestion(text) {
   input.value = text;
   input.focus();
   if (typeof autoResize === 'function') autoResize(input);
+}
+
+// ─── Support Modal ───────────────────────────────────────────────────────────
+// Triggered by the ? button in the header.
+// Sends via POST /api/support (Resend) — no mail app, no redirect.
+
+function openSupportModal() {
+  const existing = document.getElementById('support-modal');
+  if (existing) { existing.style.display = 'flex'; return; }
+
+  const isHe = (selectedLang?.dir === 'rtl' || selectedLang?.code === 'he');
+  const dir  = isHe ? 'rtl' : 'ltr';
+  const userEmail = window._userEmail || document.getElementById('sb-user-email')?.textContent?.trim() || '';
+
+  const T = {
+    title:       isHe ? 'צרי קשר' : 'Contact Support',
+    sub:         isHe ? 'נשמח לשמוע — נחזור אלייך בהקדם' : 'We\'d love to hear from you — we\'ll get back to you soon',
+    subjectLabel:isHe ? 'נושא' : 'Subject',
+    subjectPh:   isHe ? 'תאר/י בקצרה את הבעיה' : 'Briefly describe the issue',
+    msgLabel:    isHe ? 'הודעה' : 'Message',
+    msgPh:       isHe ? 'פרט/י כאן...' : 'Tell us more...',
+    emailLabel:  isHe ? 'המייל שלך' : 'Your email',
+    send:        isHe ? 'שלח/י' : 'Send',
+    cancel:      isHe ? 'ביטול' : 'Cancel',
+    sending:     isHe ? 'שולח...' : 'Sending...',
+    success:     isHe ? '✓ הודעתך נשלחה' : '✓ Message sent',
+    error:       isHe ? 'שגיאה בשליחה — נסי שוב' : 'Failed to send — please try again',
+  };
+
+  const modal = document.createElement('div');
+  modal.id = 'support-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.45);display:flex;align-items:center;justify-content:center;';
+  modal.innerHTML = `
+    <div style="background:var(--bg);border-radius:16px;padding:32px;max-width:420px;width:90%;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);box-sizing:border-box;">
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--accent);margin:0 0 4px;">${T.title}</h2>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 24px;">${T.sub}</p>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <div>
+          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">${T.emailLabel}</label>
+          <input id="sup-email" type="email" value="${userEmail}" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;" readonly/>
+        </div>
+
+        <div>
+          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">${T.subjectLabel}</label>
+          <input id="sup-subject" type="text" placeholder="${T.subjectPh}" maxlength="120" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;"/>
+        </div>
+
+        <div>
+          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">${T.msgLabel}</label>
+          <textarea id="sup-message" placeholder="${T.msgPh}" rows="5" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none;resize:vertical;box-sizing:border-box;"></textarea>
+        </div>
+
+        <div id="sup-status" style="font-size:12px;color:var(--accent);min-height:16px;"></div>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;flex-direction:${dir === 'rtl' ? 'row-reverse' : 'row'};">
+          <button onclick="document.getElementById('support-modal').style.display='none'"
+            style="background:none;border:1px solid var(--border);color:var(--muted);padding:9px 20px;border-radius:22px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;">
+            ${T.cancel}
+          </button>
+          <button id="sup-send-btn" onclick="submitSupportForm()"
+            style="background:var(--accent);border:none;color:#fff;padding:9px 22px;border-radius:22px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;">
+            ${T.send}
+          </button>
+        </div>
+
+      </div>
+    </div>`;
+
+  document.body.appendChild(modal);
+
+  // close on backdrop click
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) modal.style.display = 'none';
+  });
+}
+
+async function submitSupportForm() {
+  const subject  = document.getElementById('sup-subject')?.value?.trim() || '';
+  const message  = document.getElementById('sup-message')?.value?.trim() || '';
+  const userEmail= document.getElementById('sup-email')?.value?.trim() || '';
+  const statusEl = document.getElementById('sup-status');
+  const sendBtn  = document.getElementById('sup-send-btn');
+  const isHe = (selectedLang?.dir === 'rtl' || selectedLang?.code === 'he');
+
+  if (!subject || !message) {
+    if (statusEl) statusEl.textContent = isHe ? 'נא למלא נושא והודעה' : 'Please fill in subject and message';
+    return;
+  }
+
+  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = isHe ? 'שולח...' : 'Sending...'; }
+  if (statusEl) statusEl.textContent = '';
+
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch('/api/support', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
+      body: JSON.stringify({ subject, message, userEmail }),
+    });
+
+    if (res.ok) {
+      if (statusEl) statusEl.textContent = isHe ? '✓ הודעתך נשלחה' : '✓ Message sent';
+      if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = isHe ? 'שלח/י' : 'Send'; }
+      // auto-close after 1.5s
+      setTimeout(() => {
+        const modal = document.getElementById('support-modal');
+        if (modal) modal.style.display = 'none';
+      }, 1500);
+    } else {
+      throw new Error('send failed');
+    }
+  } catch {
+    if (statusEl) statusEl.textContent = isHe ? 'שגיאה בשליחה — נסי שוב' : 'Failed to send — please try again';
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = isHe ? 'שלח/י' : 'Send'; }
+  }
 }
 window.fillSuggestion = fillSuggestion;

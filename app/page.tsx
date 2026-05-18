@@ -232,6 +232,10 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
       <div id="sidebar">
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: '10px 8px 6px', display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <div id="sb-end-session-btn" className="sb-item" onClick={() => (window as any).showConversationEndModal()} style={{ display: 'none' }}>
+              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◻</span>
+              <span className="sb-label" id="sb-end-session-label">סיים שיחה</span>
+            </div>
             <div className="sb-item" onClick={() => (window as any).newChat()}>
               <span className="sb-icon"><PenLine size={15} strokeWidth={1.75} /></span>
               <span className="sb-label">שיחה חדשה</span>
@@ -355,6 +359,20 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               </svg>
             </div>
             <h1 dir="ltr" style={{ direction: 'ltr' }} suppressHydrationWarning>Between</h1>
+            <a
+              id="header-support-btn"
+              href="#"
+              title="Contact support"
+              onClick={(e) => {
+                e.preventDefault();
+                (window as any).openSupportModal?.();
+              }}
+              style={{ color: 'var(--muted)', lineHeight: 1, flexShrink: 0, textDecoration: 'none', fontSize: 16, padding: '2px 4px', borderRadius: 6, transition: 'color 0.15s' }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)'; }}
+            >
+              ?
+            </a>
           </div>
           <div className="header-session">
             <div id="session-title" style={{ display: 'none' }}></div>
