@@ -4163,6 +4163,17 @@ const UI_TRANSLATIONS = {
     anonRunAgain: 'הרץ שוב',
     anonTextError: 'שגיאה בעיבוד הטקסט.',
     supDownloadBtn: '↓ הורד דוח פיקוח',
+    lensOfferTitle: 'רוצה לשמוע מה אנליטיקאי היה אומר על השיחה הזו?',
+    lensPickerTitle: 'בחר/י תיאורטיקן',
+    lensReadBtn: 'פרשן',
+    lensLoading: 'קורא...',
+    lensBlock1Label: 'מה בולט',
+    lensBlock2Label: 'מה לא נאמר',
+    lensBlock3Label: 'שאלה לטיפול',
+    lensHeaderPrefix: 'קריאה של',
+    lensSkip: 'דלג',
+    lensEndBtn: 'סיים שיחה',
+    contactUs: 'יש שאלה? כתוב/י לנו',
     dir: 'rtl'
   },
   en: {
@@ -4280,6 +4291,17 @@ const UI_TRANSLATIONS = {
     anonRunAgain: 'Run again',
     anonTextError: 'Error processing text.',
     supDownloadBtn: '↓ Download supervision report',
+    lensOfferTitle: 'Want to hear what an analyst would say about this session?',
+    lensPickerTitle: 'Choose a theorist',
+    lensReadBtn: 'Read',
+    lensLoading: 'Reading...',
+    lensBlock1Label: 'What stands out',
+    lensBlock2Label: 'What was unsaid',
+    lensBlock3Label: 'A question for therapy',
+    lensHeaderPrefix: 'Reading by',
+    lensSkip: 'Skip',
+    lensEndBtn: 'End session',
+    contactUs: 'Have a question? Write to us',
     dir: 'ltr'
   },
 };
@@ -5531,14 +5553,169 @@ async function submitFeedback(theorist) {
     });
   } catch {}
   _feedbackRating = null;
-  performNewChat();
+  maybeOfferTheoreticalLens();
 }
 
 function skipFeedback() {
   document.getElementById('feedback-modal')?.remove();
   _feedbackRating = null;
-  performNewChat();
+  maybeOfferTheoreticalLens();
 }
+
+// ─── BW-54: Theoretical Lens ─────────────────────────────────────────────────
+
+function maybeOfferTheoreticalLens() {
+  const mode = localStorage.getItem('bw_mode') || 'session';
+  if (mode !== 'session' || conversationHistory.length < 4) {
+    performNewChat();
+    return;
+  }
+  // שמור transcript לפני שinitNewChat ימחק אותו
+  window._lastSessionTranscript = [...conversationHistory];
+  showTheoreticalLensOffer();
+}
+
+function showTheoreticalLensOffer() {
+  const existing = document.getElementById('lens-offer-modal');
+  if (existing) existing.remove();
+  const isEn = (window.selectedLang?.code === 'en');
+  const dir = isEn ? 'ltr' : 'rtl';
+  const _t = UI_TRANSLATIONS[window.selectedLang?.code] || UI_TRANSLATIONS['he'];
+  const modal = document.createElement('div');
+  modal.id = 'lens-offer-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
+  modal.innerHTML = `
+    <div style="background:var(--bg);border-radius:16px;padding:36px 32px;max-width:380px;width:90%;text-align:center;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <p style="font-size:16px;color:var(--text);font-family:'Rubik',sans-serif;margin:0 0 28px;line-height:1.6;">${_t.lensOfferTitle || 'רוצה לשמוע מה אנליטיקאי היה אומר על השיחה הזו?'}</p>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button onclick="document.getElementById('lens-offer-modal').remove();openTheoreticalLensPicker();" style="background:var(--accent);color:#fff;border:none;padding:10px 28px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:14px;cursor:pointer;">${isEn ? 'Yes' : 'כן'}</button>
+        <button onclick="document.getElementById('lens-offer-modal').remove();performNewChat();" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 28px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:14px;cursor:pointer;">${_t.lensSkip || 'דלג'}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function openTheoreticalLensPicker() {
+  const existing = document.getElementById('lens-picker-modal');
+  if (existing) existing.remove();
+  const isEn = (window.selectedLang?.code === 'en');
+  const dir = isEn ? 'ltr' : 'rtl';
+  const _t = UI_TRANSLATIONS[window.selectedLang?.code] || UI_TRANSLATIONS['he'];
+  const _tNames = _t.theorists || {};
+  const pickerKeys = ['freud', 'klein', 'winnicott', 'ogden'];
+  let selectedKey = null;
+
+  const modal = document.createElement('div');
+  modal.id = 'lens-picker-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
+
+  const cardsHTML = pickerKeys.map(key => {
+    const name = _tNames[key] || key.charAt(0).toUpperCase() + key.slice(1);
+    return `<div class="bw-theorist-card" data-key="${key}" onclick="(function(el,k){document.querySelectorAll('#lens-picker-modal .bw-theorist-card').forEach(c=>c.classList.remove('bw-theorist-selected'));el.classList.add('bw-theorist-selected');document.getElementById('lens-confirm-btn').style.opacity='1';document.getElementById('lens-confirm-btn').style.pointerEvents='auto';window._lensSelectedKey=k;})(this,'${key}');"
+      style="cursor:pointer;padding:14px 12px;text-align:center;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);">${name}</div>
+    </div>`;
+  }).join('');
+
+  modal.innerHTML = `
+    <div style="background:var(--bg);border-radius:16px;padding:32px;max-width:420px;width:90%;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);margin:0 0 20px;text-align:center;">${_t.lensPickerTitle || 'בחר/י תיאורטיקן'}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">${cardsHTML}</div>
+      <div style="text-align:center;">
+        <button id="lens-confirm-btn"
+          style="background:var(--accent);color:#fff;border:none;padding:11px 32px;border-radius:22px;font-family:'Rubik',sans-serif;font-size:14px;cursor:pointer;opacity:0.35;pointer-events:none;transition:opacity 0.2s;"
+          onclick="(function(){const k=window._lensSelectedKey;if(!k)return;document.getElementById('lens-picker-modal').remove();fetchTheoreticalLens(k);})();">
+          ${_t.lensReadBtn || 'פרשן'}
+        </button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(modal);
+}
+
+async function fetchTheoreticalLens(theoristKey) {
+  const isEn = (window.selectedLang?.code === 'en');
+  const dir = isEn ? 'ltr' : 'rtl';
+  const _t = UI_TRANSLATIONS[window.selectedLang?.code] || UI_TRANSLATIONS['he'];
+  const _tNames = _t.theorists || {};
+  const theoristName = _tNames[theoristKey] || theoristKey.charAt(0).toUpperCase() + theoristKey.slice(1);
+
+  // הצג modal תוצאות עם loading
+  const existing = document.getElementById('lens-result-modal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'lens-result-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.3);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;';
+  modal.innerHTML = `
+    <div id="lens-result-box" style="background:#fff;border-radius:14px;width:560px;max-width:92vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:${dir};">
+      <div style="background:#3a2540;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:14px 14px 0 0;position:sticky;top:0;">
+        <span style="color:rgba(255,255,255,0.85);font-size:14px;">${_t.lensHeaderPrefix || 'קריאה של'} ${theoristName}</span>
+        <button id="lens-close-btn" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;line-height:1;">×</button>
+      </div>
+      <div id="lens-result-content" style="padding:24px;">
+        <div style="text-align:center;color:var(--muted);font-size:13px;padding:30px 0;">${theoristName} ${_t.lensLoading || 'קורא...'}</div>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  document.getElementById('lens-close-btn').addEventListener('click', () => {
+    modal.remove();
+    performNewChat();
+  });
+
+  // Format transcript
+  const transcript = (window._lastSessionTranscript || [])
+    .map(m => `${m.role === 'user' ? 'Patient' : 'Therapist'}: ${m.content}`)
+    .join('\n\n');
+
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch('/api/theoretical-lens', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
+      body: JSON.stringify({
+        transcript,
+        theorist_key: theoristKey,
+        lang: window.selectedLang?.code || 'he'
+      })
+    });
+    const data = await res.json();
+    const content = document.getElementById('lens-result-content');
+    if (!content) return;
+
+    if (data.error) {
+      content.innerHTML = `<div style="color:var(--accent);text-align:center;padding:20px;font-size:13px;">שגיאה בייצור הניתוח. נסי שוב.</div>`;
+      return;
+    }
+
+    const blockStyle = (bg, border, borderExtra) =>
+      `border-radius:var(--radius-md);padding:12px 14px;margin-bottom:12px;${bg};${border};${borderExtra||''}`;
+
+    content.innerHTML = `
+      <div style="${blockStyle('background:rgba(196,96,122,0.08)','border:1px solid var(--accentDim)','')}">
+        <div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:6px;">${_t.lensBlock1Label || 'מה בולט'}</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.7;">${data.block1 || ''}</div>
+      </div>
+      <div style="${blockStyle('background:var(--thinking)','border:1px solid #f0d8db','')}">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;">${_t.lensBlock2Label || 'מה לא נאמר'}</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.7;">${data.block2 || ''}</div>
+      </div>
+      <div style="${blockStyle('background:var(--surface)','border:1px solid var(--border)',isEn?'border-left:3px solid var(--accent)':'border-right:3px solid var(--accent)')}">
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:6px;">${_t.lensBlock3Label || 'שאלה לטיפול'}</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.7;">${data.block3 || ''}</div>
+      </div>
+      <div style="text-align:center;margin-top:20px;">
+        <button onclick="document.getElementById('lens-result-modal').remove();performNewChat();"
+          style="background:none;border:1px solid var(--border);color:var(--muted);padding:9px 24px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;">
+          ${_t.lensEndBtn || 'סיים שיחה'}
+        </button>
+      </div>`;
+  } catch {
+    const content = document.getElementById('lens-result-content');
+    if (content) content.innerHTML = `<div style="color:var(--accent);text-align:center;padding:20px;font-size:13px;">שגיאת רשת — נסי שוב.</div>`;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 function showBlockedScreen() {
   const chat = document.getElementById('chat');
@@ -5824,6 +6001,11 @@ function openSettings() {
       <div style="display:flex;justify-content:space-between;margin-top:24px;">
         <button onclick="saveSettings()" style="background:var(--accent);border:none;color:#fff;padding:10px 24px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;" id="st-save">שמור</button>
         <button onclick="document.getElementById('settings-modal').style.display='none'" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;" id="st-close">סגור</button>
+      </div>
+      <div style="text-align:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+        <a id="st-contact-link" href="#" style="font-size:12px;color:var(--muted);text-decoration:none;font-family:'Rubik',sans-serif;" onclick="(function(){const _isHe=(selectedLang?.code||'he')\!=='en';const _email=document.getElementById('sb-user-email')?.textContent||'';const _sub=encodeURIComponent(_isHe?'פנייה לתמיכה — Between':'Between Support Request');const _body=encodeURIComponent(_isHe?'מייל: '+_email+'\n\n':'Email: '+_email+'\n\n');window.open('mailto:hello@getbetween.app?subject='+_sub+'&body='+_body);return false;})();return false;">
+          <span id="st-contact-label">יש שאלה? כתוב/י לנו</span> <span style="color:var(--accent);">hello@getbetween.app</span>
+        </a>
       </div>
     </div>`;
 
