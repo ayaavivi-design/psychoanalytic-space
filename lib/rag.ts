@@ -4,7 +4,7 @@ const HF_ENDPOINT = 'https://router.huggingface.co/hf-inference/models/sentence-
 
 async function getEmbedding(text: string, attempt = 0): Promise<number[]> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 4000); // 4s timeout — אל תחכה ל-HF cold start
+  const timeout = setTimeout(() => controller.abort(), 25000); // 25s — מספיק ל-HF cold start
 
   let response: Response;
   try {
