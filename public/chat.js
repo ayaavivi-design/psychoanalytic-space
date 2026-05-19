@@ -948,8 +948,8 @@ function renderTheoristGridForMode(mode) {
     ).join('');
     window._bwPendingTheorist = activeExplore;
 
-    // Attach rich tooltips
-    document.querySelectorAll('#bw-theorist-grid .bw-theorist-card[data-theorist]').forEach(card => {
+    // Attach rich tooltips — both theorist cards (explore) and companion cards (session)
+    document.querySelectorAll('#bw-theorist-grid .bw-theorist-card[data-theorist], #bw-theorist-grid .bw-companion-card[data-theorist]').forEach(card => {
       const key = card.getAttribute('data-theorist');
       card.addEventListener('mouseenter', e => {
         if (typeof window.setTheoristTooltip !== 'function') return;
