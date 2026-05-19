@@ -3,14 +3,23 @@ import { createClient } from '@supabase/supabase-js';
 const HF_ENDPOINT = 'https://router.huggingface.co/hf-inference/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/pipeline/feature-extraction';
 
 async function getEmbedding(text: string, attempt = 0): Promise<number[]> {
-  const response = await fetch(HF_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ inputs: text }),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 4000); // 4s timeout — אל תחכה ל-HF cold start
+
+  let response: Response;
+  try {
+    response = await fetch(HF_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ inputs: text }),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 
   // rate limit — retry with backoff
   if (response.status === 429 && attempt < 3) {

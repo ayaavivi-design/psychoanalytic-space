@@ -245,10 +245,15 @@ export async function POST(req: NextRequest) {
         : lastUserMessage?.content?.[0]?.text || '';
 
       if (query) {
-        const chunks = await searchKnowledgeHybrid(query, theorist, 4);
-        console.log(`[RAG] ${theorist} — נמצאו ${chunks.length} קטעים:`, chunks.map(c => `${c.source_title} (${c.source_year}) — דמיון: ${c.similarity?.toFixed(2)}`));
-        const ragContext = formatChunksForPrompt(chunks);
-        if (ragContext) enrichedSystem = baseSystem + ragContext;
+        try {
+          const chunks = await searchKnowledgeHybrid(query, theorist, 4);
+          console.log(`[RAG] ${theorist} — נמצאו ${chunks.length} קטעים:`, chunks.map(c => `${c.source_title} (${c.source_year}) — דמיון: ${c.similarity?.toFixed(2)}`));
+          const ragContext = formatChunksForPrompt(chunks);
+          if (ragContext) enrichedSystem = baseSystem + ragContext;
+        } catch (ragError) {
+          // HuggingFace timeout או כשל — ממשיכים בלי RAG, לא חוסמים את השיחה
+          console.warn(`[RAG] ${theorist} — נכשל, ממשיך בלי העשרה:`, ragError instanceof Error ? ragError.message : ragError);
+        }
       }
     }
 
