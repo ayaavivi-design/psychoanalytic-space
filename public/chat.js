@@ -923,6 +923,27 @@ function renderTheoristGridForMode(mode) {
     document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
     activeTheorists = [];
 
+    // Attach rich tooltips to companion cards
+    document.querySelectorAll('#bw-theorist-grid .bw-companion-card[data-theorist]').forEach(card => {
+      const key = card.getAttribute('data-theorist');
+      card.addEventListener('mouseenter', e => {
+        if (typeof window.setTheoristTooltip !== 'function') return;
+        const r = e.currentTarget.getBoundingClientRect();
+        const cardH = 310, cardW = 240, vh = window.innerHeight, vw = window.innerWidth;
+        const sidebarW = document.getElementById('sidebar')?.getBoundingClientRect().width || 220;
+        const contentCenter = sidebarW + (vw - sidebarW) / 2;
+        const flip = r.top + cardH > vh - 16;
+        const rawTop = flip ? r.bottom - cardH : r.top;
+        const top = Math.min(Math.max(rawTop, 8), vh - cardH - 8);
+        const isRightColumn = r.left > contentCenter;
+        const left = isRightColumn
+          ? Math.min(r.right + 12, vw - cardW - 8)
+          : Math.max(sidebarW + 8, r.left - cardW - 12);
+        window.setTheoristTooltip(key, top, left, flip);
+      });
+      card.addEventListener('mouseleave', () => window.clearTheoristTooltip?.());
+    });
+
   } else {
     // ── Theorist cards (explore mode) ──
     grid.classList.remove('bw-companion-grid');
