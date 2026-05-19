@@ -5086,6 +5086,15 @@ async function sendMessage() {
     return;
   }
 
+  // בסשן מצב — אם כפתורי flow עדיין גלויים ולא נבחר flow: בחר something_else אוטומטית.
+  // מונע תגובת פתיחה כפולה: ורה/אליוט מחזירים "כן. אני כאן." מהפרומפט,
+  // ואז לחיצה על כפתור flow הייתה מוסיפה עוד אחד מ-ENTRY_OPENING.
+  const _flowBtnsEl = document.getElementById('flow-buttons');
+  if (_flowBtnsEl && localStorage.getItem('bw_mode') === 'session' && !window.activeFlow) {
+    _flowBtnsEl.remove();
+    window.activeFlow = 'something_else';
+  }
+
   // בדיקת מגבלת שיחות — רק בהודעה הראשונה בשיחה חדשה
   if (conversationHistory.length === 0) {
     const allowed = await checkConversationLimit();
