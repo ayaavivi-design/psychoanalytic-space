@@ -709,6 +709,7 @@ async function startFlow(flowKey) {
       clearTimeout(silenceTimer);
       silenceTimer = setTimeout(handleSilence, SILENCE_THRESHOLD_MS);
     }
+    resetIdleTimer();
     return;
   }
 
@@ -751,6 +752,7 @@ async function startFlow(flowKey) {
         clearTimeout(silenceTimer);
         silenceTimer = setTimeout(handleSilence, SILENCE_THRESHOLD_MS);
       }
+      resetIdleTimer();
     }
     window.activeFlow = null;
   } catch(e) {
@@ -1159,6 +1161,56 @@ let silenceTimer = null;
 let silenceResponseSent = false;
 const SILENCE_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes
 
+// ── Idle Message (all theorists, after 5 min of user inactivity) ──
+let idleTimer = null;
+let idleMessageSent = false;
+const IDLE_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes
+
+const IDLE_MESSAGES = {
+  freud:     { he: 'השתיקה גם היא אומרת משהו.', en: 'The silence speaks too.' },
+  klein:     { he: 'אני כאן עם מה שקשה להביא.', en: "I'm here with what's hard to bring." },
+  winnicott: { he: 'ממשיך להיות כאן. אין חיפזון.', en: 'Still here. No hurry.' },
+  ogden:     { he: 'גם המרווח הזה — חלק ממה שקורה.', en: 'This space between us — also part of what\'s happening.' },
+  vera:      { he: 'אני כאן.', en: "I'm here." },
+  elliot:    { he: 'אני כאן.', en: "I'm here." },
+};
+
+function handleIdleMessage() {
+  if (idleMessageSent) return;
+  if (isThinking) return;
+  if (conversationHistory.length === 0) return;
+
+  const theorist = activeTheorists.length === 1 ? activeTheorists[0] : null;
+  const mode = localStorage.getItem('bw_mode');
+  let key = theorist;
+  // In session mode without a theorist key, use companion name from bw_companion
+  if (!key && mode === 'session') {
+    key = localStorage.getItem('bw_companion') || null;
+  }
+  const msgMap = IDLE_MESSAGES[key];
+  if (!msgMap) return;
+
+  const isHe = (window._lang !== 'en');
+  const msg = isHe ? msgMap.he : msgMap.en;
+
+  idleMessageSent = true;
+  const _shortNames = { freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', kohut:'קוהוט', heimann:'היימן' };
+  const attribution = theorist ? (_shortNames[theorist] || null) : null;
+
+  appendMessage('assistant', msg, attribution);
+  // intentionally NOT added to conversationHistory — UI-only nudge
+  saveConversation();
+  updateReflectionBtn();
+  updateEndSessionBtn();
+}
+
+function resetIdleTimer() {
+  clearTimeout(idleTimer);
+  if (conversationHistory.length === 0) return;
+  if (idleMessageSent) return; // already sent once — don't restart
+  idleTimer = setTimeout(handleIdleMessage, IDLE_THRESHOLD_MS);
+}
+
 
 
 
@@ -1340,6 +1392,7 @@ function performTheoristSwitch(el, name) {
     stopSessionTimer();
     clearTimeout(silenceTimer);
     silenceResponseSent = false;
+    clearTimeout(idleTimer); idleTimer = null; idleMessageSent = false;
     conversationHistory = [];
     sessionMemorySaved = false;
     saveConversation();
@@ -5109,6 +5162,7 @@ async function sendMessage() {
   // Reset silence state — user sent a message
   clearTimeout(silenceTimer);
   silenceResponseSent = false;
+  resetIdleTimer();
 
   // Start session timer if not already running
   if (!sessionTimerInterval) {
@@ -5303,6 +5357,7 @@ async function sendMessage() {
     clearTimeout(silenceTimer);
     silenceTimer = setTimeout(handleSilence, SILENCE_THRESHOLD_MS);
   }
+  resetIdleTimer();
 }
 
 function toggleMemoryDropdown() {
@@ -5774,6 +5829,7 @@ function performNewChat() {
   stopSessionTimer();
   clearTimeout(silenceTimer);
   silenceResponseSent = false;
+  clearTimeout(idleTimer); idleTimer = null; idleMessageSent = false;
   // Generate interpretive memory before clearing — fire-and-forget
   if (activeTheorists.length === 1 && conversationHistory.length >= 6) {
     generateInterpretiveMemory(activeTheorists[0], conversationHistory);
@@ -5813,6 +5869,7 @@ function restoreConversation(memIndex) {
   closeMemory();
   clearTimeout(silenceTimer);
   silenceResponseSent = false;
+  clearTimeout(idleTimer); idleTimer = null; idleMessageSent = false;
 
   // Clear current chat — preserve #welcome in DOM (same pattern as performNewChat/signOut)
   conversationHistory = [];
@@ -6377,9 +6434,13 @@ function continueAfterEnd() {
 function initSilenceDetection() {
   document.addEventListener('input', (e) => {
     if (e.target.id !== 'user-input') return;
-    if (!window.clinicalMode) return;
-    clearTimeout(silenceTimer);
-    silenceTimer = setTimeout(handleSilence, SILENCE_THRESHOLD_MS);
+    // Clinical mode: full API silence response
+    if (window.clinicalMode && !silenceResponseSent) {
+      clearTimeout(silenceTimer);
+      silenceTimer = setTimeout(handleSilence, SILENCE_THRESHOLD_MS);
+    }
+    // All modes: lightweight idle message
+    resetIdleTimer();
   });
 }
 

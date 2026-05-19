@@ -352,27 +352,30 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
       <div id="main-content">
         <header>
           <div className="header-top" style={{ padding: '16px 24px', direction: 'ltr' }}>
-            <div onClick={() => (window as any).toggleSidebar()} style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 18, padding: '2px 6px', borderRadius: 6, lineHeight: 1, flexShrink: 0 }} id="sb-toggle-btn">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
-                <rect x="1" y="1" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                <line x1="6" y1="1" x2="6" y2="17" stroke="currentColor" strokeWidth="1.3"/>
-              </svg>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+              <div onClick={() => (window as any).toggleSidebar()} style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 18, padding: '2px 6px', borderRadius: 6, lineHeight: 1 }} id="sb-toggle-btn">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                  <rect x="1" y="1" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+                  <line x1="6" y1="1" x2="6" y2="17" stroke="currentColor" strokeWidth="1.3"/>
+                </svg>
+              </div>
+              <a
+                id="header-support-btn"
+                href="#"
+                title="Contact support"
+                onClick={(e) => {
+                  e.preventDefault();
+                  (window as any).openSupportModal?.();
+                }}
+                style={{ color: 'var(--muted)', lineHeight: 1, textDecoration: 'none', fontSize: 16, padding: '2px 4px', borderRadius: 6, transition: 'color 0.15s' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)'; }}
+              >
+                ?
+              </a>
             </div>
             <h1 dir="ltr" style={{ direction: 'ltr' }} suppressHydrationWarning>Between</h1>
-            <a
-              id="header-support-btn"
-              href="#"
-              title="Contact support"
-              onClick={(e) => {
-                e.preventDefault();
-                (window as any).openSupportModal?.();
-              }}
-              style={{ color: 'var(--muted)', lineHeight: 1, flexShrink: 0, textDecoration: 'none', fontSize: 16, padding: '2px 4px', borderRadius: 6, transition: 'color 0.15s' }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)'; }}
-            >
-              ?
-            </a>
+            <div style={{ flexShrink: 0, width: 44 }} />
           </div>
           <div className="header-session">
             <div id="session-title" style={{ display: 'none' }}></div>

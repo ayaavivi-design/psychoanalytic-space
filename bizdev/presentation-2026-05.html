@@ -283,8 +283,38 @@
       top: 1px;
     }
 
-    /* ─── Slide 10 — CTA ─── */
-    #slide-10 .cta-main {
+    /* ─── Slide 9b — What shipped ─── */
+    .shipped-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      max-width: 600px;
+    }
+
+    .shipped-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    .shipped-label {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 15px;
+      color: var(--accent);
+      flex-shrink: 0;
+      min-width: 160px;
+      padding-top: 1px;
+    }
+
+    /* ─── Slide 11 — CTA ─── */
+    #slide-11 .cta-main {
       font-family: var(--font-display);
       font-style: italic;
       font-size: 56px;
@@ -292,7 +322,7 @@
       line-height: 1.15;
     }
 
-    #slide-10 .cta-body {
+    #slide-11 .cta-body {
       font-family: var(--font-body);
       font-weight: 300;
       font-size: 16px;
@@ -300,7 +330,7 @@
       margin-top: 32px;
     }
 
-    #slide-10 .cta-note {
+    #slide-11 .cta-note {
       font-family: var(--font-body);
       font-weight: 300;
       font-size: 12px;
@@ -314,7 +344,7 @@
       .slide { padding: 0 40px; }
       .display-title { font-size: 44px; }
       #slide-3 .brand-name { font-size: 54px; }
-      #slide-10 .cta-main { font-size: 40px; }
+      #slide-11 .cta-main { font-size: 40px; }
       .section-title { font-size: 26px; }
       #slide-5 .demo-box { width: 90%; }
     }
@@ -323,7 +353,7 @@
 <body>
 
   <div id="wordmark">Between</div>
-  <div id="counter">1 / 10</div>
+  <div id="counter">1 / 11</div>
 
   <button class="nav-btn" id="btn-prev" aria-label="Previous slide">
     <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -407,8 +437,31 @@
       </p>
     </div>
 
-    <!-- ─── Slide 9 — Traction ─── -->
+    <!-- ─── Slide 9 — What shipped ─── -->
     <div class="slide slide--top" id="slide-9">
+      <h2 class="section-title">What shipped — May 2026</h2>
+      <ul class="shipped-list">
+        <li class="shipped-item">
+          <span class="shipped-label">Processing vs. Performing</span>
+          <span>All 4 voices now detect when a patient is performing insight rather than experiencing it. Freud notices affect-free understanding. Klein notices manic compliance. Winnicott holds the difference between False Self and True Self presence. Ogden reads aliveness in the exchange itself.</span>
+        </li>
+        <li class="shipped-item">
+          <span class="shipped-label">Vera &amp; Elliot</span>
+          <span>Two clinical companions with full depth: Tracking Avoidance, Aliveness/Deadness, False Self recognition — and mirroring that is one word, not a sentence echoed back.</span>
+        </li>
+        <li class="shipped-item">
+          <span class="shipped-label">Anti-sycophancy</span>
+          <span>Every agent — clinical and operational — now runs a mandatory check against its own tendency to validate. The voice holds under pressure, not just on a good day.</span>
+        </li>
+        <li class="shipped-item">
+          <span class="shipped-label">Holding silence</span>
+          <span>After 5 minutes of patient absence, the theorist holds the space in their own words. No API call — a presence, not a prompt.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ─── Slide 10 — Traction ─── -->
+    <div class="slide slide--top" id="slide-10">
       <h2 class="section-title">Where we stand</h2>
       <ul class="stat-list">
         <li class="stat-item">
@@ -430,8 +483,8 @@
       </ul>
     </div>
 
-    <!-- ─── Slide 10 — CTA ─── -->
-    <div class="slide slide--center" id="slide-10">
+    <!-- ─── Slide 11 — CTA ─── -->
+    <div class="slide slide--center" id="slide-11">
       <p class="cta-main">The next step</p>
       <p class="cta-body">I want you to try it for a week. Tell me how it felt.</p>
       <p class="cta-note">[investor CTA — TBD]</p>

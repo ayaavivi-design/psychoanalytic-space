@@ -11,6 +11,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - BW-36 Q-3 — ליבת הבעיה נפתרה ברמת הפרומפט. ⚠️ WARNING: אין cross-turn enforcement ב-validation loop
 - ויניקוט פרומפט Q-W: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN (semantic faithfulness לא נאכף בלופ)
 - BW-51 — סגור ✅ PASS (flow-selection div DOM-only, invisible, PDF-only. Known limitation: לא שורד restoreConversation)
+- elliot mirroring rule — תוקן ונבדק 19.05.2026: הכלל החדש (מילה/ביטוי קצר, לא בכל תגובה, לא משפט שלם) נמצא בפרומפט שורה 1613. PASS (קוד בלבד)
 
 ---
 
@@ -28,7 +29,9 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Static QA — vera ו-elliot companions 17.05: ניתוח פרומפטים, 7 תרחישים × 2. תוצאות: 11 PASS, 2 WARNING, 1 FAIL (safety protocol שונה — companions לא מנחים לפנות לעזרה בצורה הנכונה כמו interceptor). הוספת vera+elliot לקרון qa-full ו-qa. (מאי 2026)
+1. Vera & Elliot gap fixes QA 19.05: תרחישי QA נוצרו ל-5 סקשנים חדשים: Situation B (therapist), Gender tracking, Opener variety, Pacing, Reshape. טרם נבדקו בפרודקשן. (מאי 2026)
+2. elliot mirroring rule QA 19.05: PASS — כלל החדש (מילה/ביטוי קצר, לא משפט שלם, לא בכל תגובה) נמצא תקין בשורה 1613. שורה 1628 לא סותרת — עוסקת בשמות ממציאים ולא במיררינג. (מאי 2026)
+2. Static QA — vera ו-elliot companions 17.05: ניתוח פרומפטים, 7 תרחישים × 2. תוצאות: 11 PASS, 2 WARNING, 1 FAIL (safety protocol שונה — companions לא מנחים לפנות לעזרה בצורה הנכונה כמו interceptor). הוספת vera+elliot לקרון qa-full ו-qa. (מאי 2026)
 2. Post-production QA 16.05: 4/4 PASS, BW-51+BW-46+enforceVariedOpening verified in prod ✅ (מאי 2026)
 2. BW-51 sign-off: PASS ✅ — flow-selection DOM indicator + PDF export. Warning: לא שורד restoreConversation (known limitation, לא בלוקר) (מאי 2026)
 3. ויניקוט QA post-prompt fix: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN — שיום רגש ו-sentence completion לא ניתנים לאכיפה בלופ (מאי 2026)
