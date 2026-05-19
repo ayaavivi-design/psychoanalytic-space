@@ -5081,8 +5081,9 @@ const CRISIS_KEYWORDS = [
 ];
 
 function checkCrisis(text) {
-  const t = text.toLowerCase();
-  return CRISIS_KEYWORDS.some(k => t.includes(k.toLowerCase()));
+  // Pad with spaces and normalize punctuation so "אני מת" doesn't hit "אני מתרגשת"
+  const t = ' ' + text.toLowerCase().replace(/[.,!?;:\n\r]/g, ' ') + ' ';
+  return CRISIS_KEYWORDS.some(k => t.includes(' ' + k.toLowerCase() + ' '));
 }
 
 function showCrisisBanner() {
