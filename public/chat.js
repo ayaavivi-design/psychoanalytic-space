@@ -5175,14 +5175,9 @@ async function sendMessage() {
   const _sb = document.getElementById('suggestion-bubbles');
   if (_sb && !_sb.classList.contains('subtle')) _sb.classList.add('subtle');
 
-  // Safety interceptor — client-side. אם זוהה תוכן משברי: מציג בנר וחוזר מיד.
-  // לא שולחים ל-API ולא מוסיפים להיסטוריה — הבנר הוא התגובה.
+  // Safety interceptor — client-side. מציג בנר אבל ממשיך לשיחה — לא חוסם.
   if (checkCrisis(text)) {
     showCrisisBanner();
-    isThinking = false;
-    document.getElementById('send-btn').disabled = false;
-    input.focus();
-    return;
   }
 
   conversationHistory.push({ role: 'user', content: text });
@@ -5235,11 +5230,15 @@ async function sendMessage() {
       throw new Error(`שגיאה מהשרת: ${data.error.type} — ${data.error.message}`);
     }
 
-    // Server-side safety intercept fallback — במקרה שהשרת תפס אבל הלקוח לא.
-    // מציגים בנר ולא מרנדרים בועת צ'אט.
+    // Server-side safety intercept — מציגים בנר + מרנדרים תגובה כבועה כדי שהשיחה לא תיפסק.
     if (data.model === 'safety-intercept') {
       removeThinking();
       showCrisisBanner();
+      const safetyText = data.content?.[0]?.text || '';
+      if (safetyText) {
+        appendMessage('assistant', safetyText);
+        conversationHistory.push({ role: 'assistant', content: safetyText });
+      }
       isThinking = false;
       document.getElementById('send-btn').disabled = false;
       input.focus();
