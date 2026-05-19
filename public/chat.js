@@ -1074,7 +1074,7 @@ function confirmTheoristEntry() {
     if (mode === 'session') {
       input.placeholder = isEn ? "What's coming up right now?" : 'מה עולה עכשיו?';
     } else {
-      input.placeholder = isEn ? 'What did you want to understand about your therapy?' : 'מה רצית להבין מהטיפול שלך?';
+      input.placeholder = isEn ? 'What would you like to understand?' : 'מה תרצה/י להבין?';
     }
   }
 
@@ -5222,7 +5222,8 @@ async function sendMessage() {
         messages,
         system: buildSystemPrompt(),
         webSearch: window.webSearch && !window.clinicalMode,
-        theorist: activeTheorists.length === 1 ? activeTheorists[0] : null
+        theorist: activeTheorists.length === 1 ? activeTheorists[0] : null,
+        bw_mode: localStorage.getItem('bw_mode') || 'session'
       })
     });
 

@@ -200,10 +200,29 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     // ⚠ SECURITY: body.system is intentionally ignored.
     // System prompt is built server-side from THEORIST_VOICE to prevent client override.
-    const { messages, webSearch, theorist } = body;
+    const { messages, webSearch, theorist, bw_mode } = body;
+
+    // ─── EXPLORATION MODE PREFIX ──────────────────────────────────────────────
+    // כשהמשתמש ב"לחקור" — התיאורטיקן מלמד, לא מנהל סשן קליני.
+    // ה-prefix מבטל את זיהוי ה-SITUATION ונועל את המצב ל-SITUATION C.
+    const EXPLORE_PREFIX = bw_mode === 'explore' ? `══════════════════════════════════════
+MODE: EXPLORATION — TEACHING MODE
+The user is here to learn about psychoanalytic concepts and theory. They are NOT your patient. You are NOT conducting a session.
+
+YOUR ROLE IN THIS MODE:
+- You are a teacher and thinker speaking from your own theoretical perspective.
+- Treat every exchange as SITUATION C (theoretical question) regardless of how it is phrased.
+- Do not ask about the user's therapy, their feelings, or their personal inner world.
+- Do not conduct a session. Do not interpret the user's material.
+- Answer in first person, from your own clinical and theoretical experience: precise, direct, in your own voice.
+- If the user asks "what is X?" — explain it as you understand it, with the conviction of someone who built or shaped the concept.
+- If the user brings personal material — briefly acknowledge, then redirect: respond with the concept itself, not with a clinical question about their experience.
+══════════════════════════════════════
+
+` : '';
 
     // ─── BUILD SYSTEM PROMPT SERVER-SIDE ─────────────────────────────────────
-    const baseSystem = (theorist && THEORIST_VOICE[theorist]) ? THEORIST_VOICE[theorist] : '';
+    const baseSystem = (theorist && THEORIST_VOICE[theorist]) ? EXPLORE_PREFIX + THEORIST_VOICE[theorist] : '';
     if (!baseSystem) {
       console.warn(`[SECURITY] theorist "${theorist}" not found in THEORIST_VOICE — empty base system`);
     }
