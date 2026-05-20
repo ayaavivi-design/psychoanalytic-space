@@ -940,7 +940,7 @@ function renderTheoristGridForMode(mode) {
       en: { approach: 'Approach', concepts: 'Concepts', forWhom: 'For whom' },
     };
 
-    function _showCTip(key, top, left) {
+    const _showCTip = function(key, top, left) {
       const lang   = window.selectedLang?.code || 'he';
       const isRtl  = lang !== 'en';
       const data   = _CTIP_DATA[key]?.[lang] || _CTIP_DATA[key]?.['he'];
@@ -968,11 +968,11 @@ function renderTheoristGridForMode(mode) {
         `<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--muted,#a8948e);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.approach}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.approach}</div></div>` +
         `<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--muted,#a8948e);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.concepts}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.concepts}</div></div>` +
         `<div><div style="font-size:10px;color:var(--muted,#a8948e);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.forWhom}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.forWhom}</div></div>`;
-    }
-    function _hideCTip() {
+    };
+    const _hideCTip = function() {
       const tip = document.getElementById('bw-companion-tooltip');
       if (tip) tip.style.display = 'none';
-    }
+    };
 
     document.querySelectorAll('#bw-theorist-grid .bw-companion-card[data-theorist]').forEach(card => {
       const key = card.getAttribute('data-theorist');
@@ -995,6 +995,9 @@ function renderTheoristGridForMode(mode) {
 
   } else {
     // ── Theorist cards (explore mode) ──
+    // Clean up any stale companion tooltip that may have been left from session mode
+    const _staleTooltip = document.getElementById('bw-companion-tooltip');
+    if (_staleTooltip) _staleTooltip.remove();
     grid.classList.remove('bw-companion-grid');
     const isEn = (window.selectedLang?.code === 'en');
     const NAMES = {
@@ -4779,36 +4782,52 @@ const ENTRY_OPENING = {
 
 const THEORIST_OPENING = {
   freud: {
-    he: `יום טוב. אני כאן. ספר/י לי מה על ליבך.`,
-    en: `Good day. I am here. Tell me what is on your mind.`
+    he: `יום טוב. אני כאן. ספר לי מה על ליבך.`,
+    en: `Good day. I am here. Tell me what is on your mind.`,
+    he_explore: `שלום. מה הביא אותך לחקור כאן?`,
+    en_explore: `Good day. What has brought you here to think?`
   },
   klein: {
     he: `אני מקשיבה. ספרי לי מה שעולה.`,
-    en: `I am listening. Tell me what comes.`
+    en: `I am listening. Tell me what comes.`,
+    he_explore: `שלום. מה אתה רוצה להבין?`,
+    en_explore: `Hello. What would you like to understand?`
   },
   winnicott: {
     he: `שלום. שמח שבאת. לא צריך לדעת מה יקרה כאן. מה חי בך עכשיו?`,
-    en: `Hello. I'm glad you're here. We don't need to know what will happen. What's alive in you right now?`
+    en: `Hello. I'm glad you're here. We don't need to know what will happen. What's alive in you right now?`,
+    he_explore: `שמח שבאת. מה מסקרן אותך?`,
+    en_explore: `Glad you came. What draws your curiosity?`
   },
   ogden: {
     he: `אני כאן. סקרן לגבי מה שייוולד בין שנינו. מה אתה מביא?`,
-    en: `I'm here. Curious about what will be born between us. What are you bringing?`
+    en: `I'm here. Curious about what will be born between us. What are you bringing?`,
+    he_explore: `מה אתה מביא לחשוב עליו?`,
+    en_explore: `What are you bringing to think about?`
   },
   loewald: {
     he: `טוב להיות כאן איתך.`,
-    en: `Good to be here with you.`
+    en: `Good to be here with you.`,
+    he_explore: `טוב להיות כאן. מה על הלב?`,
+    en_explore: `Good to be here. What's on your mind?`
   },
   bion: {
     he: `... *(ביון יושב. שקט.)*`,
-    en: `... *(Bion sits. Silence.)*`
+    en: `... *(Bion sits. Silence.)*`,
+    he_explore: `מה הביא אותך?`,
+    en_explore: `What brings you?`
   },
   kohut: {
     he: `שמח שבאת. ספר לי, מי אתה ומה מביא אותך לכאן?`,
-    en: `I'm glad you're here. Tell me, who are you, and what brings you here?`
+    en: `I'm glad you're here. Tell me, who are you, and what brings you here?`,
+    he_explore: `שמח שבאת. מה תרצה להבין?`,
+    en_explore: `Glad you're here. What would you like to understand?`
   },
   heimann: {
     he: `אני כאן. קשובה.`,
-    en: `I'm here. Listening.`
+    en: `I'm here. Listening.`,
+    he_explore: `אני כאן. מה על ליבך?`,
+    en_explore: `I'm here. What's on your mind?`
   },
   vera: {
     he: `כן. אני כאן. ספר לי.`,
@@ -4825,7 +4844,11 @@ function showTheoristOpening(theoristKey, showContext = true) {
   if (!openingObj) return;
   const lang = (selectedLang && selectedLang.code) || 'he';
   const isEn = (lang === 'en');
-  const opening = openingObj[lang] || openingObj['en'] || openingObj['he'];
+  const isExplore = (localStorage.getItem('bw_mode') === 'explore');
+  const exploreKey = isEn ? 'en_explore' : 'he_explore';
+  const opening = (isExplore && openingObj[exploreKey])
+    ? openingObj[exploreKey]
+    : (openingObj[lang] || openingObj['en'] || openingObj['he']);
 
   const heShort  = {freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', kohut:'קוהוט', heimann:'היימן'};
   const enShort  = {freud:'Freud', klein:'Klein', winnicott:'Winnicott', ogden:'Ogden', loewald:'Loewald', bion:'Bion', kohut:'Kohut', heimann:'Heimann'};
