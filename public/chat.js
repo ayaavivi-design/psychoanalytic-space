@@ -923,11 +923,60 @@ function renderTheoristGridForMode(mode) {
     document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
     activeTheorists = [];
 
-    // Attach rich tooltips to companion cards
+    // Attach rich tooltips to companion cards — pure vanilla JS, no React state dependency
+    const _CTIP_DATA = {
+      vera: {
+        he: { approach: 'נוכחות לפני פרשנות — להיות איתך לפני שעושים משהו עם מה שמביאים', concepts: 'הינכחות, החזקה, שהייה בחשכה, לב שומע', forWhom: 'מי שמעבד משהו מהפגישה האחרונה שעדיין לא שקע' },
+        en: { approach: 'Presence before action — staying with what you carry before making it into meaning', concepts: 'Presencing, holding, staying in the dark, listening heart', forWhom: 'Those processing something from a recent session that has not yet settled' },
+      },
+      elliot: {
+        he: { approach: 'שהייה במה שאין לו עדיין מילים — ללא פרשנות, ללא הסבר', concepts: 'מצב being, מצב doing, החזקה, הימנעות כשפה', forWhom: 'מי שעדיין בתוך הפגישה ולא מוכן לעשות ממנה סיפור' },
+        en: { approach: 'Staying in what has no words yet — no interpretation, no rush toward meaning', concepts: 'Being state, doing state, holding without direction', forWhom: 'Those still inside something from the session, not ready to make it into a story' },
+      },
+    };
+    const _CTIP_NAMES  = { vera: { he: 'ורה', en: 'Vera' }, elliot: { he: 'אליוט', en: 'Elliot' } };
+    const _CTIP_LABELS = {
+      he: { approach: 'גישה', concepts: 'מושגים', forWhom: 'מתאים ל' },
+      en: { approach: 'Approach', concepts: 'Concepts', forWhom: 'For whom' },
+    };
+
+    function _showCTip(key, top, left) {
+      const lang   = window.selectedLang?.code || 'he';
+      const isRtl  = lang !== 'en';
+      const data   = _CTIP_DATA[key]?.[lang] || _CTIP_DATA[key]?.['he'];
+      const labels = _CTIP_LABELS[lang] || _CTIP_LABELS['he'];
+      const name   = _CTIP_NAMES[key]?.[lang] || key;
+      if (!data) return;
+      let tip = document.getElementById('bw-companion-tooltip');
+      if (!tip) {
+        tip = document.createElement('div');
+        tip.id = 'bw-companion-tooltip';
+        document.body.appendChild(tip);
+      }
+      Object.assign(tip.style, {
+        position: 'fixed', top: top + 'px', left: left + 'px',
+        pointerEvents: 'none', zIndex: '1000',
+        background: 'var(--surface,#fff)', border: '1px solid var(--border,#ede4e0)',
+        borderRadius: '12px', padding: '14px 16px', width: '240px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+        fontFamily: 'var(--font-rubik,sans-serif)',
+        direction: isRtl ? 'rtl' : 'ltr', textAlign: isRtl ? 'right' : 'left',
+        display: 'block',
+      });
+      tip.innerHTML =
+        `<div style="font-size:13px;font-weight:600;color:var(--accent,#c4607a);margin-bottom:10px;">${name}</div>` +
+        `<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--muted,#a8948e);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.approach}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.approach}</div></div>` +
+        `<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--muted,#a8948e);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.concepts}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.concepts}</div></div>` +
+        `<div><div style="font-size:10px;color:var(--muted,#a8948e);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.forWhom}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.forWhom}</div></div>`;
+    }
+    function _hideCTip() {
+      const tip = document.getElementById('bw-companion-tooltip');
+      if (tip) tip.style.display = 'none';
+    }
+
     document.querySelectorAll('#bw-theorist-grid .bw-companion-card[data-theorist]').forEach(card => {
       const key = card.getAttribute('data-theorist');
       card.addEventListener('mouseenter', e => {
-        if (typeof window.setTheoristTooltip !== 'function') return;
         const r = e.currentTarget.getBoundingClientRect();
         const cardH = 310, cardW = 240, vh = window.innerHeight, vw = window.innerWidth;
         const sidebarW = document.getElementById('sidebar')?.getBoundingClientRect().width || 220;
@@ -939,9 +988,9 @@ function renderTheoristGridForMode(mode) {
         const left = isRightColumn
           ? Math.min(r.right + 12, vw - cardW - 8)
           : Math.max(sidebarW + 8, r.left - cardW - 12);
-        window.setTheoristTooltip(key, top, left, flip);
+        _showCTip(key, top, left);
       });
-      card.addEventListener('mouseleave', () => window.clearTheoristTooltip?.());
+      card.addEventListener('mouseleave', _hideCTip);
     });
 
   } else {
