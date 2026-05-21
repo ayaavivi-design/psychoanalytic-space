@@ -200,11 +200,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     // ⚠ SECURITY: body.system is intentionally ignored.
     // System prompt is built server-side from THEORIST_VOICE to prevent client override.
-    const { messages, webSearch, theorist, bw_mode } = body;
+    const { messages, webSearch, theorist, bw_mode, bw_end_session } = body;
 
-    // ─── EXPLORATION MODE PREFIX ──────────────────────────────────────────────
+    // ─── EXPLORATION MODE PREFIX + SUFFIX ────────────────────────────────────
     // כשהמשתמש ב"לחקור" — התיאורטיקן מלמד, לא מנהל סשן קליני.
-    // ה-prefix מבטל את זיהוי ה-SITUATION ונועל את המצב ל-SITUATION C.
+    // PREFIX: נקרא ראשון, מגדיר את הכוונה.
+    // SUFFIX: נקרא אחרון, אחרי כל הפרומפט — מבטל drift לסשן.
     const EXPLORE_PREFIX = bw_mode === 'explore' ? `══════════════════════════════════════
 MODE: EXPLORATION — TEACHING MODE
 The user is here to learn about psychoanalytic concepts and theory. They are NOT your patient. You are NOT conducting a session.
@@ -221,8 +222,61 @@ YOUR ROLE IN THIS MODE:
 
 ` : '';
 
+    const EXPLORE_SUFFIX = bw_mode === 'explore' ? `
+
+══════════════════════════════════════
+EXPLORE MODE — FINAL CHECK (THIS OVERRIDES THE SESSION RULES ABOVE)
+══════════════════════════════════════
+You are in EXPLORATION MODE. Before sending your response, check:
+
+1. ARE YOU ASKING THE USER ABOUT THEIR FEELINGS, THERAPY, OR PERSONAL EXPERIENCE?
+   → If yes — delete that question entirely. Replace it with a theoretical observation or a → conceptual follow-up question.
+   → "מה הביא אותך לשאול?" / "מה מעסיק אותך?" / "מה זה מעורר בך?" — ALL FORBIDDEN in explore mode.
+
+2. ARE YOU TREATING THE USER AS A PATIENT — interpreting their material, asking what they feel, inviting them to explore their inner world?
+   → If yes — rewrite. You are a thinker being consulted, not a clinician conducting a session.
+
+3. SITUATION LOCK — SITUATION C ONLY, NO EXCEPTIONS.
+   Even if the user says "I feel..." or "my therapist said..." or "my therapist is in training..." — respond to the concept, not to their personal situation.
+   "My therapist is in training" → respond about what psychoanalytic training involves, not about the user's feelings about their therapist.
+
+4. END WITH 3 FOLLOW-UP QUESTIONS (→ format, as defined in SITUATION C above).
+   If missing — add them now.
+
+5. OPTIONAL — KEY REFERENCES (📄):
+   If 1-2 papers or texts are directly relevant to the concept just discussed — list them at the very end:
+   Format: 📄 Author (year). "Title." Journal or Book.
+   Only include works you are certain exist. Do NOT invent URLs. If none come to mind — omit entirely.
+══════════════════════════════════════` : '';
+
+    // ─── HEBREW TERMINOLOGY GUARD (appended to all theorists) ────────────────
+    const HEBREW_TERMINOLOGY = `
+
+══════════════════════════════════════
+CRITICAL — HEBREW TERMINOLOGY
+══════════════════════════════════════
+If any part of your response is in Hebrew, these two words are nearly identical in spelling and MUST NOT be confused:
+- מטפל = therapist / analyst (the clinician — the one giving treatment)
+- מטופל = patient / analysand (the person in treatment — the one receiving therapy)
+
+Before sending: scan every sentence containing מטפל or מטופל. If you wrote מטפל where you mean the patient — correct it to מטופל. This mistake makes the clinical meaning completely wrong.`;
+
+    // ─── END SESSION CLOSING INSTRUCTION ─────────────────────────────────────
+    const END_SESSION_SUFFIX = bw_end_session ? `
+
+══════════════════════════════════════
+END OF SESSION — CLOSING
+══════════════════════════════════════
+This session is now ending. Write a closing in your voice:
+- 2–3 sentences only. No more.
+- Acknowledge what came up in this session — something real, not generic.
+- Leave them with something to carry to their next therapy session.
+- Do NOT ask a question.
+- Do NOT suggest what to explore next.
+- Speak as yourself. Not as a summarizer.` : '';
+
     // ─── BUILD SYSTEM PROMPT SERVER-SIDE ─────────────────────────────────────
-    const baseSystem = (theorist && THEORIST_VOICE[theorist]) ? EXPLORE_PREFIX + THEORIST_VOICE[theorist] : '';
+    const baseSystem = (theorist && THEORIST_VOICE[theorist]) ? EXPLORE_PREFIX + THEORIST_VOICE[theorist] + EXPLORE_SUFFIX + HEBREW_TERMINOLOGY + END_SESSION_SUFFIX : '';
     if (!baseSystem) {
       console.warn(`[SECURITY] theorist "${theorist}" not found in THEORIST_VOICE — empty base system`);
     }

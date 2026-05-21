@@ -553,11 +553,14 @@ function loadUserProfile(user) {
 const STORAGE_KEY = 'psycho_agent_v2';
 
 function formatResponse(text) {
-  // Style follow-up questions
   const lines = text.split('\n');
   const formatted = lines.map(line => {
-    if (line.trim().startsWith('→')) {
-      return `<span class="followup-q" onclick="useFollowup(this)" style="display:block;cursor:pointer;color:var(--accent);font-size:14px;padding:4px 0;font-family:'Rubik',sans-serif;opacity:0.8;transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8">${line.trim()}</span>`;
+    const t = line.trim();
+    if (t.startsWith('→')) {
+      return `<span class="followup-q" onclick="useFollowup(this)" style="display:inline-block;cursor:pointer;color:var(--accent);font-size:13px;padding:5px 12px;margin:3px 0;font-family:'Rubik',sans-serif;background:var(--accent-soft);border:1px solid var(--accent-dim);border-radius:var(--radius-xl);transition:background 0.15s,border-color 0.15s;" onmouseover="this.style.background='rgba(196,96,122,0.14)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='var(--accent-soft)';this.style.borderColor='var(--accent-dim)'">${t}</span><br>`;
+    }
+    if (t.startsWith('📄')) {
+      return `<span style="display:block;font-size:11px;color:var(--muted);padding:2px 0;font-family:'Rubik',sans-serif;font-style:italic;">${t}</span>`;
     }
     return line;
   });
@@ -642,12 +645,12 @@ function renderFlowButtons() {
   const isEn = (window.selectedLang?.code === 'en');
   const buttons = isEn
     ? [
-        { key: 'after_session',  label: 'Still inside my last session' },
+        { key: 'after_session',  label: 'Still with my session' },
         { key: 'before_session', label: "Session coming up" },
         { key: 'something_else', label: "Something won't leave me" },
       ]
     : [
-        { key: 'after_session',  label: 'עדיין בתוך הפגישה האחרונה' },
+        { key: 'after_session',  label: 'עוד מהפגישה' },
         { key: 'before_session', label: 'יש לי פגישה בקרוב' },
         { key: 'something_else', label: 'משהו לא עוזב אותי' },
       ];
@@ -664,8 +667,56 @@ function renderFlowButtons() {
   else appendTarget.appendChild(container);
 }
 
+function showAfterSessionTextarea() {
+  const isEn = (window.selectedLang?.code === 'en');
+  const chat = document.getElementById('chat');
+  if (!chat) return;
+
+  const wrapper = document.createElement('div');
+  wrapper.id = 'bw-after-session-input';
+  wrapper.style.cssText = `display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px 0 20px;direction:${isEn ? 'ltr' : 'rtl'};`;
+
+  const prompt = document.createElement('p');
+  prompt.style.cssText = `font-family:'Cormorant Garamond','Cormorant',Georgia,serif;font-size:19px;color:#2d2420;text-align:center;margin:0;max-width:420px;line-height:1.5;`;
+  prompt.textContent = isEn
+    ? 'What stayed with you from your session?'
+    : 'מה נשאר שעדיין לא מצא את מקומו?';
+
+  const ta = document.createElement('textarea');
+  ta.style.cssText = `width:100%;max-width:420px;min-height:96px;padding:12px 16px;font-family:Rubik,sans-serif;font-size:15px;color:#2d2420;background:#fff;border:1.5px solid #ede4e0;border-radius:16px;resize:none;outline:none;box-sizing:border-box;line-height:1.6;`;
+  ta.placeholder = isEn ? 'Write here…' : 'כתוב/י כאן…';
+
+  const btn = document.createElement('button');
+  btn.textContent = isEn ? 'Continue' : 'המשך';
+  btn.style.cssText = `padding:8px 28px;background:#c4607a;color:#fff;border:none;border-radius:22px;font-family:Rubik,sans-serif;font-size:13px;cursor:pointer;opacity:0.5;transition:opacity 0.15s;`;
+  btn.disabled = true;
+
+  ta.addEventListener('input', () => {
+    const has = ta.value.trim().length > 0;
+    btn.disabled = !has;
+    btn.style.opacity = has ? '1' : '0.5';
+  });
+
+  btn.addEventListener('click', () => {
+    const text = ta.value.trim();
+    if (!text) return;
+    window._bwAfterSessionText = text;
+    wrapper.remove();
+    const welcomeEl = document.getElementById('welcome');
+    if (welcomeEl) welcomeEl.style.display = '';
+    showTheoristEntry('session');
+  });
+
+  wrapper.appendChild(prompt);
+  wrapper.appendChild(ta);
+  wrapper.appendChild(btn);
+  chat.appendChild(wrapper);
+  setTimeout(() => ta.focus(), 100);
+}
+
 async function startFlow(flowKey) {
   if (isThinking) return;
+
   window.activeFlow = flowKey;
   document.getElementById('flow-buttons')?.remove();
 
@@ -673,8 +724,8 @@ async function startFlow(flowKey) {
   (function() {
     const _isEn = (window.selectedLang?.code === 'en');
     const _flowLabels = _isEn
-      ? { after_session: 'Still inside my last session', before_session: "Session coming up", something_else: "Something won't leave me" }
-      : { after_session: 'עדיין בתוך הפגישה האחרונה', before_session: 'יש לי פגישה בקרוב', something_else: 'משהו לא עוזב אותי' };
+      ? { after_session: 'Still with my session', before_session: "Session coming up", something_else: "Something won't leave me" }
+      : { after_session: 'עוד מהפגישה', before_session: 'יש לי פגישה בקרוב', something_else: 'משהו לא עוזב אותי' };
     const _allKeys = ['after_session', 'before_session', 'something_else'];
     const _selected = _flowLabels[flowKey] || flowKey;
     const _allLabels = _allKeys.map(k => _flowLabels[k]);
@@ -733,6 +784,7 @@ async function startFlow(flowKey) {
         system: buildSystemPrompt(),
         webSearch: false,
         theorist: theoristKey,
+        bw_mode: localStorage.getItem('bw_mode') || 'session'
       })
     });
     const data = await response.json();
@@ -764,11 +816,282 @@ async function startFlow(flowKey) {
   }
 }
 
+async function startAfterSessionConversation(text, theoristKey) {
+  window.activeFlow = 'after_session';
+
+  // BW-51: Record flow selection
+  (function() {
+    const _isEn = (window.selectedLang?.code === 'en');
+    const _flowLabels = _isEn
+      ? { after_session: 'Still with my session', before_session: 'Session coming up', something_else: "Something won't leave me" }
+      : { after_session: 'עוד מהפגישה', before_session: 'יש לי פגישה בקרוב', something_else: 'משהו לא עוזב אותי' };
+    const _allKeys = ['after_session', 'before_session', 'something_else'];
+    const _allLabels = _allKeys.map(k => _flowLabels[k]);
+    const _chat = document.getElementById('chat');
+    if (!_chat) return;
+    const _ind = document.createElement('div');
+    _ind.className = 'message flow-selection';
+    _ind.dataset.selected = _flowLabels['after_session'];
+    _ind.dataset.options = JSON.stringify(_allLabels);
+    _chat.appendChild(_ind);
+  })();
+
+  if (conversationHistory.length === 0) {
+    const allowed = await checkConversationLimit();
+    if (!allowed) { window.activeFlow = null; renderFlowButtons(); return; }
+  }
+
+  isThinking = true;
+  document.getElementById('send-btn').disabled = true;
+  if (!sessionTimerInterval) startSessionTimer();
+  const _sb = document.getElementById('suggestion-bubbles');
+  if (_sb) _sb.classList.add('subtle');
+
+  appendMessage('user', text);
+  conversationHistory.push({ role: 'user', content: text });
+
+  showThinking();
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
+      body: JSON.stringify({
+        messages: conversationHistory,
+        system: buildSystemPrompt(),
+        webSearch: false,
+        theorist: theoristKey,
+        bw_mode: localStorage.getItem('bw_mode') || 'session'
+      })
+    });
+    const data = await response.json();
+    hideThinking();
+    isThinking = false;
+    document.getElementById('send-btn').disabled = false;
+    if (data.error) throw new Error(data.error.message);
+    const reply = Array.isArray(data.content)
+      ? data.content.filter(b => b.type === 'text').map(b => b.text).join('')
+      : (data.text || '');
+    if (reply) {
+      appendMessage('assistant', reply);
+      conversationHistory.push({ role: 'assistant', content: reply });
+      updateReflectionBtn();
+      updateEndSessionBtn();
+      if (window.clinicalMode && !silenceResponseSent) {
+        clearTimeout(silenceTimer);
+        silenceTimer = setTimeout(handleSilence, SILENCE_THRESHOLD_MS);
+      }
+      resetIdleTimer();
+      saveConversation();
+    }
+  } catch(e) {
+    hideThinking();
+    isThinking = false;
+    document.getElementById('send-btn').disabled = false;
+    window.activeFlow = null;
+    console.error('[startAfterSessionConversation] error:', e);
+  }
+}
+
 function selectWinnicottDefault() {
   document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
   activeTheorists = ['winnicott'];
   const wEl = document.querySelector('[data-key="winnicott"]');
   if (wEl) wEl.classList.add('active');
+}
+
+// ── Write mode ──────────────────────────────────────────────────────────────
+
+function showWriteInterface() {
+  const welcomeEl = document.getElementById('welcome');
+  const chatEl = document.getElementById('chat');
+  if (welcomeEl) welcomeEl.style.display = 'none';
+  if (!chatEl) return;
+
+  document.body.classList.remove('bw-selecting');
+  document.body.classList.add('bw-write-mode');
+
+  const isEn = (window.selectedLang?.code === 'en');
+  const dir = isEn ? 'ltr' : 'rtl';
+  const placeholder = isEn ? 'Something you want your therapist to know.' : 'משהו שתרצה שהמטפל שלך ידע.';
+
+  // Remove stale elements
+  document.getElementById('bw-write-area')?.remove();
+  document.getElementById('flow-buttons')?.remove();
+  document.getElementById('bw-private-bubble')?.remove();
+
+  // Inject write-mode styles once
+  if (!document.getElementById('bw-write-styles')) {
+    const s = document.createElement('style');
+    s.id = 'bw-write-styles';
+    s.textContent = `
+      #bw-write-textarea[contenteditable]:empty::before {
+        content: attr(data-placeholder);
+        color: var(--muted);
+        pointer-events: none;
+        display: block;
+      }
+      .bw-private {
+        background: rgba(196,96,122,0.08);
+        border-bottom: 1px solid #d4899a;
+        border-radius: 2px;
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+  const area = document.createElement('div');
+  area.id = 'bw-write-area';
+  area.style.cssText = `display:flex;flex-direction:column;height:100%;padding:32px 28px 24px;direction:${dir};box-sizing:border-box;`;
+  area.innerHTML = `
+    <div id="bw-write-heading" style="font-family:var(--font-cormorant),serif;font-size:20px;font-weight:300;color:var(--muted);margin-bottom:20px;">
+      ${isEn ? 'Write to your therapist' : 'כתיבה למטפל'}
+    </div>
+    <div id="bw-write-panel" style="flex:1;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;box-sizing:border-box;">
+      <div id="bw-write-textarea" contenteditable="true"
+        data-placeholder="${placeholder}"
+        style="flex:1;outline:none;font-family:var(--font-rubik),sans-serif;font-size:15px;line-height:1.85;color:var(--text);width:100%;direction:${dir};min-height:220px;word-break:break-word;white-space:pre-wrap;"></div>
+      <div id="bw-write-hint" style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px;">
+        ${isEn ? 'Use the sidebar to generate session notes when you\'re ready.' : 'השתמש ב"סיכום לפגישה" בסייד-בר כשסיימת.'}
+      </div>
+    </div>`;
+  chatEl.appendChild(area);
+
+  // Private bubble — on body to avoid clipping
+  const bubble = document.createElement('div');
+  bubble.id = 'bw-private-bubble';
+  bubble.style.cssText = 'display:none;position:fixed;z-index:400;background:#2d2420;color:#fff;border-radius:22px;padding:4px 10px;font-size:11px;font-family:Rubik,sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;box-shadow:0 1px 4px rgba(45,36,32,0.2);user-select:none;';
+  bubble.innerHTML = `${isEn ? 'Just me' : 'רק אני'}<span style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #2d2420;"></span>`;
+  bubble.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed) return;
+    const ta = document.getElementById('bw-write-textarea');
+    if (!ta || !ta.contains(sel.anchorNode)) return;
+    try {
+      const range = sel.getRangeAt(0);
+      const span = document.createElement('span');
+      span.className = 'bw-private';
+      range.surroundContents(span);
+      sel.removeAllRanges();
+    } catch (_) { sel.removeAllRanges(); }
+    bubble.style.display = 'none';
+    window._bwWriteContent = getAllWriteContent();
+  });
+  document.body.appendChild(bubble);
+
+  // Show/position bubble on selection
+  const onSelection = () => {
+    const sel = window.getSelection();
+    const ta = document.getElementById('bw-write-textarea');
+    if (!ta || !sel || sel.isCollapsed || !ta.contains(sel.anchorNode)) {
+      bubble.style.display = 'none';
+      return;
+    }
+    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    if (rect.width === 0) { bubble.style.display = 'none'; return; }
+    bubble.style.display = 'block';
+    const bw = bubble.offsetWidth || 60;
+    const left = Math.max(8, Math.min(rect.left + rect.width / 2 - bw / 2, window.innerWidth - bw - 8));
+    bubble.style.top = (rect.top - 36) + 'px';
+    bubble.style.left = left + 'px';
+  };
+  document.addEventListener('selectionchange', onSelection);
+
+  // Cleanup listener when write area is removed
+  const observer = new MutationObserver(() => {
+    if (!document.getElementById('bw-write-area')) {
+      document.removeEventListener('selectionchange', onSelection);
+      document.getElementById('bw-private-bubble')?.remove();
+      observer.disconnect();
+    }
+  });
+  observer.observe(chatEl, { childList: true });
+
+  const ta = document.getElementById('bw-write-textarea');
+  if (ta) {
+    ta.focus();
+    ta.addEventListener('input', () => { window._bwWriteContent = getAllWriteContent(); });
+  }
+
+  // Show sidebar button
+  const wBtn = document.getElementById('sb-write-summary-btn');
+  if (wBtn) wBtn.style.display = '';
+
+  updateEndSessionBtn();
+}
+
+function getAllWriteContent() {
+  return document.getElementById('bw-write-textarea')?.innerText || '';
+}
+
+function getPublicWriteContent() {
+  const ta = document.getElementById('bw-write-textarea');
+  if (!ta) return '';
+  const clone = ta.cloneNode(true);
+  clone.querySelectorAll('.bw-private').forEach(el => el.remove());
+  return clone.innerText || '';
+}
+
+async function openWriteSummary() {
+  const text = getPublicWriteContent() || window._bwWriteContent || '';
+  const isEn = (window.selectedLang?.code === 'en');
+  const dir = isEn ? 'ltr' : 'rtl';
+
+  if (!text.trim()) {
+    alert(isEn ? 'Nothing written yet.' : 'עדיין לא כתבת כלום.');
+    return;
+  }
+
+  const existing = document.getElementById('write-summary-modal');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'write-summary-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
+  overlay.innerHTML = `
+    <div style="background:var(--bg);border-radius:16px;width:520px;max-width:92vw;max-height:82vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:${dir};padding:28px 28px 24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <span style="font-family:var(--font-cormorant),serif;font-size:20px;font-weight:400;color:var(--text);">${isEn ? 'Session notes' : 'סיכום לפגישה'}</span>
+        <button onclick="document.getElementById('write-summary-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted);line-height:1;">×</button>
+      </div>
+      <div id="write-summary-results" style="font-family:var(--font-rubik),sans-serif;font-size:14px;color:var(--text);line-height:1.7;">
+        <div style="color:var(--muted);font-size:13px;">${isEn ? 'Generating…' : 'מכין…'}</div>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+  try {
+    const res = await fetch('/api/write-summary', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    const el = document.getElementById('write-summary-results');
+    if (!el) return;
+    if (data.error) {
+      el.innerHTML = `<div style="color:var(--accent);">${isEn ? 'Could not generate summary.' : 'לא הצלחנו לייצר סיכום.'}</div>`;
+      return;
+    }
+    const kpHtml = (data.key_points || []).map(p => `<li style="margin-bottom:6px;">${p}</li>`).join('');
+    el.innerHTML = `
+      <div style="margin-bottom:18px;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Main theme' : 'נושא מרכזי'}</div>
+        <div>${data.main_theme || ''}</div>
+      </div>
+      ${kpHtml ? `<div style="margin-bottom:18px;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Key points' : 'נקודות עיקריות'}</div>
+        <ul style="margin:0;padding-${isEn ? 'left' : 'right'}:18px;">${kpHtml}</ul>
+      </div>` : ''}
+      <div style="background:rgba(196,96,122,0.06);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Bring to session' : 'להביא לפגישה'}</div>
+        <div style="color:var(--text);line-height:1.75;">${data.bring_to_session || ''}</div>
+      </div>`;
+  } catch (e) {
+    const el = document.getElementById('write-summary-results');
+    if (el) el.innerHTML = `<div style="color:var(--accent);">${isEn ? 'Error generating summary.' : 'שגיאה ביצירת הסיכום.'}</div>`;
+  }
 }
 
 // ── BW-41: Two-mode entry flow ────────────────────────────────
@@ -809,10 +1132,16 @@ function showModeSelect() {
   document.querySelectorAll('#welcome > p:not(#welcome-api-text):not(.bw-entry-heading)').forEach(el => el.remove());
   // Default mode: session
   if (!localStorage.getItem('bw_mode')) localStorage.setItem('bw_mode', 'session');
+  // Exit write mode if returning to selection
+  document.body.classList.remove('bw-write-mode');
+  window._bwWriteContent = null;
+  const _wBtn = document.getElementById('sb-write-summary-btn');
+  if (_wBtn) _wBtn.style.display = 'none';
   // Mark correct pill as selected
   const savedMode = localStorage.getItem('bw_mode') || 'session';
   document.querySelector('.bw-mode-primary')?.classList.toggle('bw-mode-selected', savedMode === 'session');
   document.querySelector('.bw-mode-secondary')?.classList.toggle('bw-mode-selected', savedMode === 'explore');
+  document.querySelector('.bw-mode-tertiary')?.classList.toggle('bw-mode-selected', savedMode === 'write');
   // Populate theorist grid — content depends on mode (session=companions, explore=theorists)
   renderTheoristGridForMode(savedMode);
   // Show confirm button — disabled if session mode and no prior companion selection
@@ -834,6 +1163,22 @@ function bwUpdateModeLabels() {
   if (sessionLabel) sessionLabel.textContent = isEn ? 'Session' : 'סשן';
   const exploreLabel = document.getElementById('bw-label-explore');
   if (exploreLabel) exploreLabel.textContent = isEn ? 'Explore' : 'לחקור';
+  const writeLabel = document.getElementById('bw-label-write');
+  if (writeLabel) writeLabel.textContent = isEn ? 'Write' : 'כתיבה';
+  const writeSummaryLabel = document.getElementById('sb-write-summary-label');
+  if (writeSummaryLabel) writeSummaryLabel.textContent = isEn ? 'Session notes' : 'סיכום לפגישה';
+  // Update write area texts if currently shown
+  const _writeArea = document.getElementById('bw-write-area');
+  if (_writeArea) {
+    const _wHeading = document.getElementById('bw-write-heading');
+    if (_wHeading) _wHeading.textContent = isEn ? 'Write to your therapist' : 'כתיבה למטפל';
+    const _wTa = document.getElementById('bw-write-textarea');
+    if (_wTa) _wTa.dataset.placeholder = isEn ? 'Something you want your therapist to know.' : 'משהו שתרצה שהמטפל שלך ידע.';
+    const _wHint = document.getElementById('bw-write-hint');
+    if (_wHint) _wHint.textContent = isEn ? "Use the sidebar to generate session notes when you're ready." : 'השתמש ב"סיכום לפגישה" בסייד-בר כשסיימת.';
+    _writeArea.style.direction = isEn ? 'ltr' : 'rtl';
+    if (_wTa) _wTa.style.direction = isEn ? 'ltr' : 'rtl';
+  }
   const theoristPrompt = document.querySelector('#bw-theorist-select .bw-entry-heading');
   if (theoristPrompt) theoristPrompt.textContent = isEn ? 'Who would you like to speak with?' : 'עם מי תרצה לדבר?';
   const confirmBtn = document.getElementById('bw-theorist-confirm');
@@ -871,6 +1216,7 @@ function onModeSelected(mode) {
   // Unified screen: just toggle pill visual, don't navigate away
   document.querySelector('.bw-mode-primary')?.classList.toggle('bw-mode-selected', mode === 'session');
   document.querySelector('.bw-mode-secondary')?.classList.toggle('bw-mode-selected', mode === 'explore');
+  document.querySelector('.bw-mode-tertiary')?.classList.toggle('bw-mode-selected', mode === 'write');
   // Re-render theorist grid for the newly selected mode
   renderTheoristGridForMode(mode);
 }
@@ -882,7 +1228,30 @@ function renderTheoristGridForMode(mode) {
   const grid = document.getElementById('bw-theorist-grid');
   if (!grid) return;
 
-  if (mode === 'session') {
+  // ── Write mode: no theorist needed ──────────────────────────────────────
+  const _theoristPrompt = document.querySelector('#bw-theorist-select .bw-entry-heading');
+  if (mode === 'write') {
+    grid.innerHTML = '';
+    grid.style.display = 'none';
+    if (_theoristPrompt) _theoristPrompt.style.display = 'none';
+    const _wConfirm = document.getElementById('bw-theorist-confirm');
+    const _wIsEn = (window.selectedLang?.code === 'en');
+    if (_wConfirm) {
+      _wConfirm.textContent = _wIsEn ? 'Start writing' : 'להתחיל לכתוב';
+      _wConfirm.disabled = false;
+      _wConfirm.style.display = 'block';
+    }
+    return;
+  }
+  // Restore prompt + grid visibility when switching away from write
+  grid.style.display = 'grid';
+  if (_theoristPrompt) _theoristPrompt.style.display = '';
+  // Reset confirm button label
+  const _resetConfirm = document.getElementById('bw-theorist-confirm');
+  const _resetIsEn = (window.selectedLang?.code === 'en');
+  if (_resetConfirm) _resetConfirm.textContent = _resetIsEn ? 'Continue' : 'המשך';
+
+  if (false) { /* Vera/Elliot frozen — session mode now uses the 4 theorist cards (see else branch below). Code preserved for future use. */
     // ── Companion cards ──
     const lastChoice = localStorage.getItem('bw_companion') || 'vera';
     grid.classList.add('bw-companion-grid');
@@ -985,9 +1354,10 @@ function renderTheoristGridForMode(mode) {
         const rawTop = flip ? r.bottom - cardH : r.top;
         const top = Math.min(Math.max(rawTop, 8), vh - cardH - 8);
         const isRightColumn = r.left > contentCenter;
+        const gr = document.getElementById('bw-theorist-grid')?.getBoundingClientRect() ?? r;
         const left = isRightColumn
-          ? Math.min(r.right + 12, vw - cardW - 8)
-          : Math.max(sidebarW + 8, r.left - cardW - 12);
+          ? Math.min(gr.right + 16, vw - cardW - 8)
+          : Math.max(sidebarW + 8, gr.left - cardW - 16);
         _showCTip(key, top, left);
       });
       card.addEventListener('mouseleave', _hideCTip);
@@ -1034,9 +1404,10 @@ function renderTheoristGridForMode(mode) {
         const rawTop = flip ? r.bottom - cardH : r.top;
         const top = Math.min(Math.max(rawTop, 8), vh - cardH - 8);
         const isRightColumn = r.left > contentCenter;
+        const gr = document.getElementById('bw-theorist-grid')?.getBoundingClientRect() ?? r;
         const left = isRightColumn
-          ? Math.min(r.right + 12, vw - cardW - 8)
-          : Math.max(sidebarW + 8, r.left - cardW - 12);
+          ? Math.min(gr.right + 16, vw - cardW - 8)
+          : Math.max(sidebarW + 8, gr.left - cardW - 16);
         window.setTheoristTooltip(key, top, left, flip);
       });
       card.addEventListener('mouseleave', () => window.clearTheoristTooltip?.());
@@ -1071,7 +1442,7 @@ function showTheoristEntry(mode) {
   const btn = document.getElementById('bw-theorist-confirm');
   if (btn) {
     btn.style.display = 'block';
-    // vera is always the default — button is never disabled on first visit
+    // winnicott is the default — button is never disabled on first visit
     btn.disabled = false;
   }
 }
@@ -1107,8 +1478,13 @@ function selectTheoristEntry(key) {
 
 function confirmTheoristEntry() {
   const mode = localStorage.getItem('bw_mode') || 'session';
-  // In session mode: vera is default
-  const defaultKey = mode === 'session' ? 'vera' : 'winnicott';
+  // Write mode: skip theorist selection entirely
+  if (mode === 'write') {
+    showWriteInterface();
+    return;
+  }
+  // Default is always winnicott (Vera/Elliot frozen — session mode uses theorist cards)
+  const defaultKey = 'winnicott';
 
   // Priority: explicitly pending → visually selected card in grid → activeTheorists[0] → mode default
   // Case: user clicks a sidebar theorist (performTheoristSwitch sets _bwPendingTheorist=null
@@ -1167,15 +1543,11 @@ function confirmTheoristEntry() {
   // Reveal input now that mode + theorist are confirmed and chat is starting
   document.body.classList.remove('bw-selecting');
 
-  // In session mode, the opening comes from startFlow() after the user picks a flow button.
-  // Showing it here AND in startFlow causes a duplicate — so skip it for session mode.
-  if (mode !== 'session') {
-    showTheoristOpening(key, false);
-  }
-
-  // Flow buttons go into #chat (welcome is already gone)
+  // Explore + Write: show opening directly. Session: show flow buttons first.
   if (mode === 'session') {
     renderFlowButtons();
+  } else {
+    showTheoristOpening(key, false);
   }
 }
 let uploadedFileContent = null;
@@ -2792,6 +3164,33 @@ Chapter X — "Notes on the Theory of the Life and Death Instincts":
 `
 };
 
+// ── Explore mode research instruction ────────────────────────────────────────
+const EXPLORE_MODE_INSTRUCTION = `
+
+EXPLORE MODE — RESEARCH CONTEXT
+You are in research mode, not clinical session mode. Your role is to provide theoretical information in your own voice.
+
+DO:
+- Answer directly. Do not ask why the user is asking. Do not connect the question to their personal situation.
+- If you have a developed, genuine position on this topic within your framework — answer from that position, in your own voice. If you only touched the concept at the periphery — say so. Do not extrapolate from "the spirit of your approach."
+- If a concept spans traditions and you engaged with it — answer from your perspective, noting where you diverged from others if relevant.
+- If a concept belongs to another theorist's framework — say so, name the theorist directly, and stop. Do not explain the concept from their framework. Do not provide historical background about their work.
+- If relevant source passages appear in context — use them. Cite the source.
+- Respond in depth — stop when the answer is complete. Maximum ~1000 words.
+
+DO NOT:
+- Start explaining a concept that isn't yours and redirect only at the end. Acknowledgment comes first.
+- Soften the redirect: not "perhaps Klein would say" — but "this is Klein's."
+- Invent a version of a foreign concept in your own terms.
+- Expand on the historical background of a concept that belongs to another theorist.
+- Ask personal questions or probe the user's experience. This is information, not therapy.
+
+AT THE END OF YOUR RESPONSE — if there are 1-2 key papers or texts directly relevant to the concept discussed:
+List them as: Author (year). "Title." Journal or Book. Format with 📄 prefix.
+Only mention works you are certain exist. Do NOT invent URLs or fabricate references.
+If no directly relevant texts come to mind — omit this section entirely.
+`;
+
 function buildSystemPrompt() {
   const _bsLang = window._lang || 'he';
   const _isEnPrompt = _bsLang === 'en';
@@ -4147,7 +4546,7 @@ Skill תרגום: אם המשתמש מבקש תרגום — למשל "תרגמי
   // Flow context — injected for every message in the conversation (hybrid approach: fixed opening + persistent context)
   const flowMap = {
     after_session:
-      '\n\n[Entry context: The user is coming directly from a recent therapy session and is still carrying something from it — unprocessed, not yet put into words. They have already been shown an opening reflection. Continue the conversation from that opening with this awareness. Do not re-open with another question — respond to what the user brings next.]',
+      '\n\n[Entry context: The user is coming directly from a recent therapy session. Their first message is something they wrote before entering — unresolved, still alive, not yet spoken aloud. This is their opening. Receive it fully. Do not open with a question or a reflection of your own — respond to what they wrote. Let their words be the beginning.]',
     before_session:
       '\n\n[Entry context: The user has a therapy session coming up and wants to prepare — to clarify what they want to bring, or what they have not yet been able to say. They have already been shown an opening question. Continue from there with this awareness.]',
     something_else:
@@ -4165,7 +4564,11 @@ Skill תרגום: אם המשתמש מבקש תרגום — למשל "תרגמי
   };
   const flowContext = window.activeFlow ? (flowMap[window.activeFlow] || '') : '';
 
-  return `${promptOpener}${theoristKnowledge}${focusInstruction}${memoryContext}${interpretContext}${flowContext}${genderInstruction}${clinicalInstruction}
+  // Explore mode: inject research context between memory and flow context
+  const _isExplore = localStorage.getItem('bw_mode') === 'explore';
+  const exploreModeContext = _isExplore ? EXPLORE_MODE_INSTRUCTION : '';
+
+  return `${promptOpener}${theoristKnowledge}${focusInstruction}${memoryContext}${interpretContext}${exploreModeContext}${flowContext}${genderInstruction}${clinicalInstruction}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ABSOLUTE LANGUAGE OVERRIDE — READ THIS LAST:
@@ -4481,8 +4884,10 @@ function applyUITranslation(code) {
   // Sidebar items
   const sbMemLabel = document.getElementById('sb-memories-label');
   if (sbMemLabel) sbMemLabel.textContent = t.memories || 'זיכרונות';
-  const sbNewChat = document.querySelector('#sidebar .sb-item:first-child .sb-label');
+  const sbNewChat = document.getElementById('sb-new-chat-label');
   if (sbNewChat) sbNewChat.textContent = t.newChat || 'New chat';
+  // Re-sync End Session label (language change may have been called while session is active)
+  updateEndSessionBtn();
   const sbRecentLabel = document.querySelector('.sb-recent-text');
   if (sbRecentLabel) sbRecentLabel.textContent = t.recentChats || 'Recent';
   // clinical-label removed from header (BW-41: label clash resolved)
@@ -5945,6 +6350,10 @@ function performNewChat() {
   }
   const welcome = document.getElementById('welcome');
   if (welcome) welcome.style.display = '';
+  // Clean up write mode if active
+  document.body.classList.remove('bw-write-mode');
+  window._bwWriteContent = null;
+  document.getElementById('bw-write-area')?.remove();
   // BW-41 unified screen: always return to full entry screen.
   // showModeSelect() reads bw_mode from localStorage and pre-selects the pill.
   showModeSelect();
@@ -6563,7 +6972,7 @@ async function handleSilence() {
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-      body: JSON.stringify({ messages, system: buildSystemPrompt(), webSearch: false })
+      body: JSON.stringify({ messages, system: buildSystemPrompt(), webSearch: false, bw_mode: localStorage.getItem('bw_mode') || 'session' })
     });
 
     const data = await response.json();
@@ -7264,6 +7673,7 @@ function openSendToTherapistForm(container, htmlContent, subject) {
 }
 
 window.openSessionSummary = openSessionSummary;
+window.openWriteSummary   = openWriteSummary;
 
 // ============================================================
 // ANONYMIZER
@@ -7438,16 +7848,106 @@ function updateReflectionBtn() {
 }
 
 function updateEndSessionBtn() {
-  const btn = document.getElementById('sb-end-session-btn');
-  if (!btn) return;
-  const show = conversationHistory.length >= 2;
-  btn.style.display = show ? 'flex' : 'none';
-  // keep label in sync with current language
-  const label = document.getElementById('sb-end-session-label');
-  if (label) {
+  if (conversationHistory.length >= 4) showEndSessionButton();
+}
+
+function showEndSessionButton() {
+  if (document.getElementById('bw-end-session-cta')) return;
+  if (document.getElementById('bw-end-session-actions')) return;
+  const chat = document.getElementById('chat');
+  if (!chat) return;
+  const isHe = (selectedLang?.code === 'he' || selectedLang?.dir === 'rtl');
+  const cta = document.createElement('div');
+  cta.id = 'bw-end-session-cta';
+  cta.style.cssText = 'text-align:center;padding:20px 0 8px;';
+  cta.innerHTML = `<button onclick="triggerEndSession()" style="background:none;border:none;color:var(--muted);font-size:12px;font-family:'Rubik',sans-serif;cursor:pointer;padding:4px 12px;opacity:0.65;transition:opacity 0.15s,color 0.15s;letter-spacing:0.03em;" onmouseover="this.style.opacity='1';this.style.color='var(--accent)'" onmouseout="this.style.opacity='0.65';this.style.color='var(--muted)'">${isHe ? 'סיימתי להיום' : "I'm done for now"}</button>`;
+  chat.appendChild(cta);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+async function triggerEndSession() {
+  if (isThinking) return;
+  isThinking = true;
+
+  const cta = document.getElementById('bw-end-session-cta');
+  if (cta) cta.remove();
+
+  const chat = document.getElementById('chat');
+  if (!chat) { isThinking = false; return; }
+
+  showThinking();
+
+  try {
+    const recentHistory = conversationHistory.slice(-16);
+    const messages = recentHistory.map(m => ({ role: m.role, content: m.content }));
+
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
+      body: JSON.stringify({
+        messages,
+        system: buildSystemPrompt(),
+        theorist: activeTheorists.length === 1 ? activeTheorists[0] : null,
+        bw_mode: localStorage.getItem('bw_mode') || 'session',
+        bw_end_session: true
+      })
+    });
+
+    const data = await response.json();
+    removeThinking();
+    isThinking = false;
+
+    if (data.error) { console.error('End session error:', data.error); return; }
+
+    let reply = '';
+    if (data.content) {
+      for (const block of data.content) {
+        if (block.type === 'text') reply += block.text;
+      }
+    }
+    if (!reply) return;
+
     const isHe = (selectedLang?.code === 'he' || selectedLang?.dir === 'rtl');
-    label.textContent = isHe ? 'סיים שיחה' : 'End session';
+    const _names = isHe
+      ? { freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', kohut:'קוהוט', heimann:'היימן', vera:'ורה', elliot:'אליוט' }
+      : { freud:'Freud', klein:'Klein', winnicott:'Winnicott', ogden:'Ogden', loewald:'Loewald', bion:'Bion', kohut:'Kohut', heimann:'Heimann', vera:'Vera', elliot:'Elliot' };
+    const attribution = (activeTheorists.length === 1) ? (_names[activeTheorists[0]] || null) : null;
+
+    appendMessage('assistant', reply, attribution);
+    showEndSessionActions();
+
+  } catch (err) {
+    removeThinking();
+    isThinking = false;
+    console.error('triggerEndSession error:', err);
   }
+}
+
+function showEndSessionActions() {
+  if (document.getElementById('bw-end-session-actions')) return;
+  const chat = document.getElementById('chat');
+  if (!chat) return;
+  const isHe = (selectedLang?.code === 'he' || selectedLang?.dir === 'rtl');
+
+  const wrap = document.createElement('div');
+  wrap.id = 'bw-end-session-actions';
+  wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 0 28px;';
+
+  const primaryStyle = `background:var(--accent);border:1px solid var(--accent);border-radius:var(--radius-xl);padding:10px 22px;font-size:var(--fs-body-md);font-family:'Rubik',sans-serif;color:#fff;cursor:pointer;transition:opacity 0.15s;`;
+  const ghostStyle   = `background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:10px 22px;font-size:var(--fs-body-md);font-family:'Rubik',sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s,color 0.15s;`;
+
+  wrap.innerHTML = `
+    <button onclick="openPatientReflection()" style="${primaryStyle}" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">${isHe ? 'מה לקחתי מהשיחה' : 'What I took from this session'}</button>
+    <button onclick="openSessionSummary()" style="${ghostStyle}" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">${isHe ? 'סיכום סשן' : 'Session summary'}</button>
+  `;
+  chat.appendChild(wrap);
+  chat.scrollTop = chat.scrollHeight;
+
+  // Lock input — session has ended
+  const _input = document.getElementById('user-input');
+  const _sendBtn = document.getElementById('send-btn');
+  if (_input) { _input.disabled = true; _input.placeholder = ''; }
+  if (_sendBtn) _sendBtn.disabled = true;
 }
 
 function buildReflectionCard(r) {
@@ -7611,10 +8111,13 @@ async function openPatientReflection() {
     });
 }
 
-window.openPatientReflection = openPatientReflection;
-window.updateReflectionBtn   = updateReflectionBtn;
-window.updateEndSessionBtn   = updateEndSessionBtn;
-window.openSupportModal      = openSupportModal;
+window.openPatientReflection  = openPatientReflection;
+window.updateReflectionBtn    = updateReflectionBtn;
+window.updateEndSessionBtn    = updateEndSessionBtn;
+window.showEndSessionButton   = showEndSessionButton;
+window.triggerEndSession      = triggerEndSession;
+window.showEndSessionActions  = showEndSessionActions;
+window.openSupportModal       = openSupportModal;
 window.submitSupportForm     = submitSupportForm;
 window.showConversationEndModal = showConversationEndModal;
 

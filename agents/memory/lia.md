@@ -4,7 +4,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## Context
-- 8 תיאורטיקנים: פרויד, קליין, ויניקוט, אוגדן, לוואלד, ביון, קוהוט, היימן
+- 4 תיאורטיקנים בפרודקשן: פרויד, קליין, ויניקוט, אוגדן — היימן הוסר גם מלוקאל (מאי 2026)
+- לוואלד, ביון, קוהוט: ב-lib/theorist-voices.ts אבל לא בפרודקשן — חיזוק שמור לשבוע הבא
 - המרחב: למטופלים בטיפול בלבד — לזמן שבין הפגישות
 - זרימה נוכחית: בחירת מצב (סשן/לחקור) → בחירת תיאורטיקן → שיחה
 
@@ -25,11 +26,16 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - **פרויד — deadlock: "No" + "never repeat"**: נפתר עם bridging rule — "move to different material, let the refusal itself become the datum." Not abandon, not press. (מאי 2026)
 - **קליין — trigger condition**: נוסחת תיקון עצמי ("חזרתי לאותו מקום") רק על תלונת חזרה מפורשת — לא על הסכמה קצרה. (מאי 2026)
 - **4 תיאורטיקנים — SITUATION LABEL LEAK**: הוסף לFINAL CHECK של פרויד, ויניקוט, אוגדן (קליין כבר היה). Tier 1. (מאי 2026)
+- **WHEN TO POINT TOWARD THERAPY — כל 4 תיאורטיקנים (מאי 2026)**: הוסף סקשן חדש לפני MANDATORY FINAL CHECK לפרויד, קליין, ויניקוט, אוגדן. 3 טריגרים: (1) חומר שלא נאמר מעולם בקול, (2) שפה מקוטעת+מוצף, (3) חומר מוקדם שחוזר. 2 tracks: A=ניתוק יחסי, B=ניסוח להביא לטיפול. מגבלת 2 exchanges. Fallback למי שאין לו מטפל. כל תיאורטיקן בקולו הייחודי.
+- **ורה ואליוט — הוקפאו מממשק המשתמש (מאי 2026)**: `renderTheoristGridForMode` — session mode עבר לכרטיסי 4 תיאורטיקנים. קוד ורה/אליוט שמור לשימוש עתידי.
 
 ---
 
 ## History (last 10)
-1. תיקוני CRITICAL+HIGH ל-4 תיאורטיקנים 20.05: קליין — trigger condition לנוסחת תיקון עצמי; פרויד — bridging rule אחרי סירוב + LABEL LEAK + DO NOT LECTURE בFINAL CHECK; ויניקוט — דוגמת חמימות + LABEL LEAK; אוגדן — when patient finds right word + LABEL LEAK + DO NOT CLOSE WITH WARMTH. (מאי 2026)
+1. HOW YOU CLOSE — 8 תיאורטיקנים 22.05: כל תיאורטיקן קיבל section ייחודי ב-theorist-voices.ts לפני MANDATORY FINAL CHECK. כל אחד סוגר בקול שלו — פרויד (חוט לאנליטיקאי), קליין (מעולם האובייקטים), ויניקוט (המרחב, לא הסיכום), אוגדן (דלת פתוחה), לוואלד (הזמן שזז), ביון (1–2 משפטים, עובדה), קוהוט (העצמי שהופיע), היימן (מה שעבר דרכה). (מאי 2026)
+2. "עוד מהפגישה" flow — קליני 21.05: המשתמש כותב לפני בחירת תיאורטיקן. הטקסט הוא ההודעה הראשונה — התיאורטיקן מגיב לו ישירות, לא פותח עם שאלה גנרית. flowMap updated: "This is their opening. Receive it fully. Do not open with a question or a reflection of your own." (מאי 2026)
+2. WHEN TO POINT TOWARD THERAPY — 4 תיאורטיקנים 21.05: בניית directive מלא עם 3 טריגרים, 2 tracks, 2-exchange limit, fallback ללא מטפל. כל תיאורטיקן בקולו. ורה/אליוט הוקפאו מה-UI. (מאי 2026)
+2. תיקוני CRITICAL+HIGH ל-4 תיאורטיקנים 20.05: קליין — trigger condition לנוסחת תיקון עצמי; פרויד — bridging rule אחרי סירוב + LABEL LEAK + DO NOT LECTURE בFINAL CHECK; ויניקוט — דוגמת חמימות + LABEL LEAK; אוגדן — when patient finds right word + LABEL LEAK + DO NOT CLOSE WITH WARMTH. (מאי 2026)
 2. ניתוח שיחת ויניקוט — התנגדות לשינוי במטפלת 20.05: 3 FAIL + 2 CONCERN — "נשמע כמו" opener, כבדות→פחד, מסגרת שנדחתה + כלל DO NOT EXPLAIN TECHNIQUE כולל self-correction. 3 תיקונים Tier 1 יושמו בפרומפט. (מאי 2026)
 2. ניתוח שיחת קליין — פחד מהתקשרות עם המטפלת 19.05: 3 תיקונים יושמו — "כאילו" כפורמולה, double-bind על סירוב, נוסחת תיקון עצמי. (מאי 2026)
 3. ניתוח שיחת ורה — תגובות סומטיות בטיפול 19.05: 4 תיקונים יושמו — מאמץ הגנתי, opener check, False Self circular, כלל חוויה. (מאי 2026)

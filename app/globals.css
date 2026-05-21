@@ -740,6 +740,11 @@ body.bw-selecting .input-area {
   display: none !important;
 }
 
+/* Write mode — keep input bar hidden */
+body.bw-write-mode .input-area {
+  display: none !important;
+}
+
 /* Hide session-only tools during entry flow */
 body.bw-selecting #analyst-badge,
 body.bw-selecting #flow-buttons {
@@ -753,7 +758,7 @@ body.bw-selecting #flow-buttons {
   background: var(--border);
   border-radius: var(--radius-xl);
   padding: 4px;
-  width: fit-content;
+  width: 340px;
 }
 
 /* pill option — unselected */
@@ -763,10 +768,11 @@ body.bw-selecting #flow-buttons {
   justify-content: center;
   gap: 6px;
   flex: 1;
-  padding: 10px 28px;
+  min-width: 88px;
+  padding: 9px 16px;
   border-radius: var(--radius-xl);
   font-family: var(--font-cormorant), serif;
-  font-size: var(--fs-heading-card);
+  font-size: var(--fs-body-lg);
   font-weight: 300;
   color: var(--muted);
   cursor: pointer;
@@ -781,7 +787,7 @@ body.bw-selecting #flow-buttons {
 .bw-mode-card.bw-mode-selected {
   background: var(--surface);
   color: var(--text);
-  font-weight: 500;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
 .bw-theorist-card {
@@ -802,12 +808,16 @@ body.bw-selecting #flow-buttons {
 /* Entry screen cards — pill shape, subtitle hidden */
 #bw-theorist-grid .bw-theorist-card {
   border-radius: var(--radius-xl);
-  padding: 10px 0;
+  padding: 9px 0;
   width: 100%;
   justify-content: center;
+  font-size: var(--fs-body-lg);
 }
 #bw-theorist-grid .bw-t-sub {
   display: none;
+}
+#bw-theorist-grid .bw-theorist-card .bw-t-name {
+  font-size: var(--fs-body-lg);
 }
 .bw-theorist-card:hover { border-color: var(--accent-dim); }
 .bw-theorist-card.bw-theorist-selected {
@@ -912,8 +922,9 @@ body.bw-selecting #flow-buttons {
 }
 
 @media (max-width: 600px) {
+  #bw-mode-cards { width: min(312px, calc(100vw - 48px)); }
   .bw-mode-card { font-size: var(--fs-body-lg); padding: 8px 16px; }
-  #bw-theorist-grid { grid-template-columns: repeat(2, 112px) !important; }
+  #bw-theorist-grid { grid-template-columns: repeat(2, 130px) !important; }
   #bw-theorist-grid.bw-companion-grid { grid-template-columns: repeat(2, 112px) !important; }
   .bw-companion-card { width: 112px; }
 }

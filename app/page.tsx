@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { PenLine, Globe, Brain, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa } from 'lucide-react';
+import { PenLine, Globe, Brain, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, NotebookPen } from 'lucide-react';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -55,6 +55,10 @@ export default function Home() {
   const EXPLORE_TIP_I18N: Record<string, { title: string; text: string }> = {
     he: { title: 'חיפוש', text: 'להבין גישה תיאורטית, לשאול על מושג — ללא עיבוד חומר אישי.' },
     en: { title: 'Explore', text: 'Understand a theoretical approach, ask about a concept — no personal material needed.' },
+  };
+  const WRITE_TIP_I18N: Record<string, { title: string; text: string }> = {
+    he: { title: 'כתיבה', text: 'כתוב למטפל שלך — או רק לעצמך. מה שנשאר, מה שלא נאמר.' },
+    en: { title: 'Write', text: 'Write to your therapist — or just for yourself. What stayed, what wasn\'t said.' },
   };
   const WELCOME_I18N: Record<string, { heading: string; apiText: string; privacyLink: string }> = {
     he: { heading: 'מה עולה לך היום?', apiText: 'השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.', privacyLink: 'מדיניות פרטיות' },
@@ -232,13 +236,10 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
       <div id="sidebar">
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: '10px 8px 6px', display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <div id="sb-end-session-btn" className="sb-item" onClick={() => (window as any).showConversationEndModal()} style={{ display: 'none' }}>
-              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◻</span>
-              <span className="sb-label" id="sb-end-session-label">סיים שיחה</span>
-            </div>
+            {/* end-session moved out of sidebar — appears inline at bottom of chat */}
             <div className="sb-item" onClick={() => (window as any).newChat()}>
               <span className="sb-icon"><PenLine size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label">שיחה חדשה</span>
+              <span className="sb-label" id="sb-new-chat-label">שיחה חדשה</span>
             </div>
             <div className="sb-item" onClick={() => (window as any).toggleWebSearch()} id="sb-websearch-btn" title="חיפוש באינטרנט">
               <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
@@ -256,6 +257,10 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
               <span className="sb-label" id="sb-summary-label">סיכום סשן</span>
             </div>
+            <div id="sb-write-summary-btn" className="sb-item" onClick={() => (window as any).openWriteSummary()} style={{ display: 'none' }}>
+              <span className="sb-icon"><NotebookPen size={15} strokeWidth={1.75} /></span>
+              <span className="sb-label" id="sb-write-summary-label">סיכום לפגישה</span>
+            </div>
             {/* פיקוח קליני — גלוי רק ב-localhost */}
             {isLocalhost && (
               <div className="sb-item admin-only" onClick={() => (window as any).openSupervision()}>
@@ -269,13 +274,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <span className="sb-label" id="sb-reflection-label">מה לקחתי מהשיחה</span>
             </div>
             {/* אנונימיזציה ופידבק — גלויים רק ב-localhost */}
-            {isLocalhost && (
-              <div className="sb-item admin-only" onClick={() => (window as any).openAnonymizer()}>
-                <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◌</span>
-                <span className="sb-label" id="sb-anon-label">אנונימיזציה</span>
-                <span style={{ fontSize: 9, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(בטא)' : '(Beta)'}</span>
-              </div>
-            )}
+            {/* anonymization removed from UI */}
             {isLocalhost && (
               <div className="sb-item admin-only" onClick={() => (window as any).openUserFeedback()}>
                 <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◈</span>
@@ -409,21 +408,23 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                       setCurrentLang(lang);
                       const isRtl = lang === 'he';
                       const tipWidth = 240;
-                      const top = r.top + (r.height / 2) - 90;
+                      const top = r.top - 8;
+                      const sr = document.getElementById('bw-mode-cards')?.getBoundingClientRect() ?? r;
                       let left: number;
                       if (isRtl) {
-                        const rightPos = r.right + 20;
+                        const rightPos = sr.right + 16;
                         left = (rightPos + tipWidth <= window.innerWidth - 8)
                           ? rightPos
-                          : Math.max(8, r.left - tipWidth - 20);
+                          : Math.max(8, sr.left - tipWidth - 16);
                       } else {
-                        left = Math.max(8, r.left - tipWidth - 20);
+                        const leftPos = sr.left - tipWidth - 16;
+                        left = leftPos >= 8 ? leftPos : Math.min(sr.right + 16, window.innerWidth - tipWidth - 8);
                       }
                       setSessionTip({ top, left, mode: 'session' });
                     }}
                     onMouseLeave={() => setSessionTip(null)}>
                     <span id="bw-label-session">סשן</span>
-                    <Sofa size={15} strokeWidth={1.5} />
+                    <Sofa size={16} strokeWidth={1.4} />
                   </div>
                   <div className="bw-mode-card bw-mode-secondary"
                     onClick={() => (window as any).onModeSelected('explore')}
@@ -433,21 +434,43 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                       setCurrentLang(lang);
                       const isRtl = lang === 'he';
                       const tipWidth = 240;
-                      const top = r.top + (r.height / 2) - 90;
+                      const top = r.top - 8;
+                      const sr = document.getElementById('bw-mode-cards')?.getBoundingClientRect() ?? r;
                       let left: number;
                       if (isRtl) {
-                        const leftPos = r.left - tipWidth - 20;
-                        left = (leftPos >= 8)
-                          ? leftPos
-                          : Math.min(r.right + 20, window.innerWidth - tipWidth - 8);
+                        const leftPos = sr.left - tipWidth - 16;
+                        left = leftPos >= 8 ? leftPos : Math.min(sr.right + 16, window.innerWidth - tipWidth - 8);
                       } else {
-                        left = Math.min(r.right + 20, window.innerWidth - tipWidth - 8);
+                        left = Math.min(sr.right + 16, window.innerWidth - tipWidth - 8);
                       }
                       setSessionTip({ top, left, mode: 'explore' });
                     }}
                     onMouseLeave={() => setSessionTip(null)}>
                     <span id="bw-label-explore">לחקור</span>
-                    <BookOpen size={15} strokeWidth={1.5} />
+                    <BookOpen size={16} strokeWidth={2} />
+                  </div>
+                  <div className="bw-mode-card bw-mode-tertiary"
+                    onClick={() => (window as any).onModeSelected('write')}
+                    onMouseEnter={(e) => {
+                      const r = e.currentTarget.getBoundingClientRect();
+                      const lang = (window as any).selectedLang?.code || 'he';
+                      setCurrentLang(lang);
+                      const isRtl = lang === 'he';
+                      const tipWidth = 240;
+                      const top = r.top - 8;
+                      const sr = document.getElementById('bw-mode-cards')?.getBoundingClientRect() ?? r;
+                      let left: number;
+                      if (isRtl) {
+                        const leftPos = sr.left - tipWidth - 16;
+                        left = leftPos >= 8 ? leftPos : Math.min(sr.right + 16, window.innerWidth - tipWidth - 8);
+                      } else {
+                        left = Math.min(sr.right + 16, window.innerWidth - tipWidth - 8);
+                      }
+                      setSessionTip({ top, left, mode: 'write' });
+                    }}
+                    onMouseLeave={() => setSessionTip(null)}>
+                    <span id="bw-label-write">כתיבה</span>
+                    <NotebookPen size={16} strokeWidth={1.5} />
                   </div>
                 </div>
               </div>
@@ -455,7 +478,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               {/* BW-41: theorist selection — slides in after mode pick */}
               <div id="bw-theorist-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 20, width: '100%' }}>
                 <p id="bw-theorist-prompt" className="bw-entry-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0 }}>עם מי תרצה לדבר?</p>
-                <div id="bw-theorist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 128px)', gap: 'var(--space-lg)', width: 'fit-content', margin: '0 auto' }}></div>
+                <div id="bw-theorist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 150px)', gap: 'var(--space-lg)', width: 'fit-content', margin: '0 auto' }}></div>
                 <button id="bw-theorist-confirm" onClick={() => (window as any).confirmTheoristEntry()} className="bw-confirm-btn" style={{ display: 'none' }}>המשך</button>
               </div>
 
@@ -651,11 +674,15 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
           <strong style={{ display: 'block', marginBottom: 4, color: 'var(--accent)' }}>
             {sessionTip.mode === 'explore'
               ? (EXPLORE_TIP_I18N[currentLang] || EXPLORE_TIP_I18N['en']).title
+              : sessionTip.mode === 'write'
+              ? (WRITE_TIP_I18N[currentLang] || WRITE_TIP_I18N['en']).title
               : (SESSION_TIP_I18N[currentLang] || SESSION_TIP_I18N['he']).title}
           </strong>
           <span>
             {sessionTip.mode === 'explore'
               ? (EXPLORE_TIP_I18N[currentLang] || EXPLORE_TIP_I18N['en']).text
+              : sessionTip.mode === 'write'
+              ? (WRITE_TIP_I18N[currentLang] || WRITE_TIP_I18N['en']).text
               : (SESSION_TIP_I18N[currentLang] || SESSION_TIP_I18N['he']).text}
           </span>
         </div>
