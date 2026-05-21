@@ -1062,9 +1062,10 @@ async function openWriteSummary() {
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
 
   try {
+    const authHeaders = await getAuthHeaders();
     const res = await fetch('/api/write-summary', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
       body: JSON.stringify({ text }),
     });
     const data = await res.json();
