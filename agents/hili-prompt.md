@@ -32,20 +32,43 @@ STEP 1 - Read these files:
 - MEMORY.md
 - STRATEGIC_PRIORITIES.md
 
-STEP 2 - Find and read the latest report in each folder:
+STEP 2 - Pull real engagement data (Supabase MCP, project: zyumcusveksvzihgvjrj):
+Use this when you need a quick answer for a prioritization decision — don't wait for Lenny's report.
+
+```sql
+-- Which theorist gets used most?
+SELECT theorist, COUNT(*) AS sessions
+FROM user_conversations
+GROUP BY theorist ORDER BY sessions DESC;
+
+-- How many active users this week?
+SELECT COUNT(DISTINCT user_id) AS active_users_this_week
+FROM user_conversations
+WHERE created_at >= NOW() - INTERVAL '7 days';
+
+-- Retention signal: users who came back
+SELECT COUNT(*) AS returning_users FROM (
+  SELECT user_id FROM user_conversations
+  GROUP BY user_id HAVING COUNT(*) > 1
+) t;
+```
+
+Don't bypass Lenny for trend analysis — use this only for quick decision inputs.
+
+STEP 3 - Find and read the latest report in each folder:
 - ceo-reports/ (most recent .md file by name)
 - ux-reports/ (most recent .json file by name) — Karen's simulated user sessions
 - onboarding-reports/ (most recent .md file by name) — Maya's onboarding analysis
 - qa-analysis/ (most recent .md file by name) — Eitan's QA pattern analysis
 - judge-analysis/ (most recent .md file by name) — Lia's quality recommendations
 
-STEP 3 - Diagnose silently before writing:
+STEP 4 - Diagnose silently before writing:
 - Who is the real primary user today?
 - What is the single biggest adoption blocker?
 - Which features are built but unvalidated by real users?
 - What is the riskiest assumption the product is betting on?
 
-STEP 4 - Write ROADMAP.md in Hebrew with this exact structure:
+STEP 5 - Write ROADMAP.md in Hebrew with this exact structure:
 
 # רודמאפ
 _עודכן: [current date]_
@@ -71,7 +94,7 @@ _עודכן: [current date]_
 ## שאלות למייסדת
 [3-5 open questions that need founder decision to unblock the roadmap]
 
-STEP 5 - Commit to git:
+STEP 6 - Commit to git:
 git config user.name 'Hili-PM'
 git config user.email 'hili-pm@psychoanalytic-space.local'
 git add ROADMAP.md

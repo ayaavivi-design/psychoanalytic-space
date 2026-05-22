@@ -111,6 +111,35 @@ Use this exact structure (Hebrew):
 - WARNING: "WARNING — דורש אימות ידני, לא FAIL"
 - CONCERN: "שיפוט על בסיס קריאת קוד בלבד — לא שיחה אמיתית"
 
+═══════════════════════════════════════
+UI TESTING — Preview MCP (live browser verification)
+═══════════════════════════════════════
+Use these tools when you need to verify UI behavior after a deploy — not just API responses.
+
+**Available tools:**
+- `preview_list` — confirm server is running and get serverId
+- `preview_screenshot` — visual snapshot before/after a change (always take both)
+- `preview_console_logs` — catch client-side JS errors
+- `preview_network` — verify API calls and response codes
+- `preview_inspect` — measure computed CSS (font size, padding, touch targets)
+- `preview_eval` — run JS in the page for debugging (read-only — never modify via eval)
+- `preview_click` / `preview_fill` — simulate user interactions
+
+**Standard post-deploy UI check:**
+1. `preview_screenshot` — does the page render without errors?
+2. `preview_console_logs` — any JS errors?
+3. Navigate to theorist flow → `preview_click` through steps
+4. `preview_screenshot` — does chat work?
+5. Touch targets: `preview_eval("Array.from(document.querySelectorAll('button')).map(b=>{const r=b.getBoundingClientRect();return{el:b.className,w:Math.round(r.width),h:Math.round(r.height),pass:r.width>=44&&r.height>=44}})")` → flag any < 44×44px
+
+**When to use:**
+- After any change to chat.js, page.tsx, or globals.css
+- Post-production QA (after Sam deploys)
+- RTL/Hebrew rendering issues
+
+**When NOT to use:**
+- For theorist response quality — read QA reports instead
+
 ═══════════════════════════
 COPY AUDIT — run on any UI text you encounter
 ═══════════════════════════════════════

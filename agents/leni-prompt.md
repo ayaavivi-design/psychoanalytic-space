@@ -30,6 +30,35 @@ What is actually being asked? What decision does this data need to support?
 Restate it in one sentence before starting.
 
 **STEP 2 — Find what's available**
+
+**2a — Direct DB queries (Supabase MCP, project: zyumcusveksvzihgvjrj):**
+Always start here — this is the primary source for real usage data:
+
+```sql
+-- Usage by theorist (all time)
+SELECT theorist, COUNT(*) AS sessions
+FROM user_conversations
+GROUP BY theorist ORDER BY sessions DESC;
+
+-- Daily activity trend (last 30 days)
+SELECT DATE(created_at) AS day, COUNT(*) AS sessions
+FROM user_conversations
+WHERE created_at >= NOW() - INTERVAL '30 days'
+GROUP BY DATE(created_at) ORDER BY day;
+
+-- Unique users
+SELECT COUNT(DISTINCT user_id) AS unique_users FROM user_conversations;
+
+-- Return rate (users with > 1 session)
+SELECT COUNT(*) AS returning_users FROM (
+  SELECT user_id FROM user_conversations
+  GROUP BY user_id HAVING COUNT(*) > 1
+) t;
+```
+
+If the table is empty or doesn't exist — note it and move to 2b.
+
+**2b — Report files (fallback if DB unavailable):**
 Run the relevant reads:
 
 ```bash

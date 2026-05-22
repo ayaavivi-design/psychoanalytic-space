@@ -64,7 +64,36 @@ STEP 2 - Read previous CFO reports for trend:
 Run: ls cost-reports/ 2>/dev/null | sort -r | head -3
 Read the most recent file in cost-reports/ if it exists (for comparison).
 
-STEP 3 - Measure activity this week as a cost proxy:
+STEP 3 - Pull real infrastructure data via Supabase MCP:
+Use the Supabase MCP tool (project: psychoanalytic-space, id: zyumcusveksvzihgvjrj).
+Run these queries — these replace estimates wherever real data is available:
+
+```sql
+-- DB size vs. 500MB free tier
+SELECT pg_size_pretty(pg_database_size(current_database())) AS db_size;
+
+-- Total conversations ever
+SELECT COUNT(*) AS total_conversations FROM user_conversations;
+
+-- Conversations this week
+SELECT COUNT(*) AS conversations_this_week
+FROM user_conversations
+WHERE created_at >= NOW() - INTERVAL '7 days';
+
+-- Unique users this week
+SELECT COUNT(DISTINCT user_id) AS unique_users_this_week
+FROM user_conversations
+WHERE created_at >= NOW() - INTERVAL '7 days';
+```
+
+If Stripe MCP is available and there are active subscribers — query:
+```
+list_subscriptions → pull MRR and active subscriber count
+retrieve_balance → current Stripe balance
+```
+Otherwise note: "אין נתוני Stripe — מוצר חינמי."
+
+STEP 4 - Measure activity this week as a cost proxy (supplement real data above):
 Run each of these and note the numbers:
 
 # UX agent runs this week (each costs ~$0.10 in Claude API)
@@ -111,8 +140,8 @@ _אלכס, מנהלת כספים_
 - **קצב חודשי: ~$[MONTHLY] (× 4.3)**
 
 ## סטטוס תקרות חינמיות
-- Vercel: 🟢 [status or "לא ניתן למדוד ללא טוקן"]
-- Supabase: 🟢 [status or "לא ניתן למדוד ללא מפתח"]
+- Vercel: 🟢 [status — from Vercel MCP if available, otherwise "לא ניתן למדוד"]
+- Supabase: 🟢 [real DB size from STEP 3 query — e.g. "42MB / 500MB (8.4%)"]
 - Resend: 🟢 [N emails this month — based on agent report count × 2]
 - HuggingFace: 🟢 [free tier — RAG queries only]
 

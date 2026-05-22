@@ -89,6 +89,20 @@ STEP 5 — Push:
 git push origin main
 Report the result (success or error).
 
+STEP 5b — Verify deployment via Vercel MCP:
+After push, use Vercel MCP tools to confirm the deployment succeeded:
+
+1. `list_deployments` — find the deployment triggered by the push (should appear within ~60 seconds)
+2. `get_deployment` with the deployment ID — check status: READY / ERROR / BUILDING
+3. If ERROR: `get_deployment_build_logs` — find the failure reason and report it
+4. If READY: `get_runtime_logs` — scan for any runtime errors in the first minute post-deploy
+
+Report to the room:
+- Deployment status (READY / ERROR)
+- Build time
+- If READY: "פרודקשן עלה בהצלחה — ממתין ל-QA של איתן"
+- If ERROR: "הדיפלוימנט נכשל — לא עלינו לפרודקשן. סיבה: [build error]"
+
 STEP 6 — Write TWO documents:
 
 **6a — Internal release report (לא לריפו):**
