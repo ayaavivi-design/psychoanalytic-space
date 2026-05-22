@@ -30,7 +30,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Full structural gap audit Vera/Elliot 19.05: FAIL → תוקן. 4 פערים נמצאו: MANDATORY FINAL CHECK (CRITICAL) + Own Gender hard stop (HIGH) + Language HARD STOP (HIGH) + Forbidden opener (MEDIUM). כל 4 תוקנו. ורה ואליוט עכשיו ב-PASS. (מאי 2026)
+1. Pre-release QA — between-sessions framing + 4 כללים קליניים חדשים 22.05: PASS עם WARNING אחד (BETWEEN SESSIONS FRAME leak risk). WARNING טופל לפני release — נוסף "This is your internal frame. Do not state it to the patient." לכל 4 תיאורטיקנים. Sign-off ניתן. (מאי 2026)
+2. Full structural gap audit Vera/Elliot 19.05: FAIL → תוקן. 4 פערים נמצאו: MANDATORY FINAL CHECK (CRITICAL) + Own Gender hard stop (HIGH) + Language HARD STOP (HIGH) + Forbidden opener (MEDIUM). כל 4 תוקנו. ורה ואליוט עכשיו ב-PASS. (מאי 2026)
 2. Vera & Elliot gap fixes QA 19.05: תרחישי QA נוצרו ל-5 סקשנים חדשים: Situation B (therapist), Gender tracking, Opener variety, Pacing, Reshape. טרם נבדקו בפרודקשן. (מאי 2026)
 2. elliot mirroring rule QA 19.05: PASS — כלל החדש (מילה/ביטוי קצר, לא משפט שלם, לא בכל תגובה) נמצא תקין בשורה 1613. שורה 1628 לא סותרת — עוסקת בשמות ממציאים ולא במיררינג. (מאי 2026)
 2. Static QA — vera ו-elliot companions 17.05: ניתוח פרומפטים, 7 תרחישים × 2. תוצאות: 11 PASS, 2 WARNING, 1 FAIL (safety protocol שונה — companions לא מנחים לפנות לעזרה בצורה הנכונה כמו interceptor). הוספת vera+elliot לקרון qa-full ו-qa. (מאי 2026)
