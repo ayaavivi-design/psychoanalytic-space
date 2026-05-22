@@ -26,18 +26,13 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. feat(write-mode/private): contenteditable replaces textarea. Panel wrapper (surface bg + border + radius-md). "רק אני" bubble on selection → `.bw-private` span (accentSoft bg). `getPublicWriteContent()` strips private spans for summary. (מאי 2026)
-2. feat(end-session): `triggerEndSession()` + `showEndSessionButton()` + `showEndSessionActions()` — button after 4+ exchanges, theorist closing, two action buttons. `bw_end_session` flag in API. (מאי 2026)
-3. feat(write-mode): "Write" — 3rd mode pill. `showWriteInterface()` + `openWriteSummary()` + `/api/write-summary` (Haiku). Sidebar "Session notes" btn. `bw-write-mode` body class hides input bar. (מאי 2026)
-2. feat(after-session-flow): "עוד מהפגישה" / "Still with my session" — new 3-step flow: button → textarea → theorist grid → conversation. `showAfterSessionTextarea()` + `startAfterSessionConversation()` added. `confirmTheoristEntry()` checks `window._bwAfterSessionText`. flowMap after_session context updated to receive user text as opening.
-2. feat(explore-mode): EXPLORE_MODE_INSTRUCTION injected into buildSystemPrompt — research context, 1000-word depth, no probing, named redirect. חל על כל 4 התיאורטיקנים ב-explore mode בלבד.
-2. feat(BW-54): theoretical lens after session — maybeOfferTheoreticalLens() after feedback, picker modal (freud/klein/winnicott/ogden), POST /api/theoretical-lens, 3-block output. Support mailto link in settings (hello@getbetween.app).
-2. fix(BW-53): gap tokens + companion no-default — gap: var(--space-lg) in globals.css + page.tsx; first-time users see no pre-selected companion card; confirm button disabled until selection; selectTheoristEntry() enables it on click.
-2. feat(BW-53): companion cards (Vera/Elliot) — session mode shows 2 companion cards with SVG icons instead of theorist grid. explore mode unchanged. renderTheoristGridForMode() is the single source of truth. localStorage: bw_companion persists choice.
-2. feat: /api/daily-summary — CCR email bridge endpoint (Resend, x-internal-token auth). ממתין ל-INTERNAL_API_TOKEN ב-Vercel + עדכון CCR routine
-3. feat(BW-51): flow selection indicator — DOM element + PDF export (startFlow + exportPDF בלבד)
-4. fix(restore): `updateSessionTitle(true)` אחרי `restoreConversation` — active-theorist-bar לא התרענן
-5. feat: הסתרת `.input-area` בשלבי הבחירה (showModeSelect + showTheoristEntry)
-6. feat(BW-41): זרימת כניסה מאוחדת — מסך מצב + תיאורטיקן, תרגום עברית, fix logout/login, design tokens
-7. fix(BW-38): data-bw-hidden pattern לניהול auth-screen visibility
-8. fix(security): REVOKE הרשאות עודפות מ-knowledge_chunks ו-user_conversations (הכנה לאוק׳ 2026)
+1. feat(write→theorist): THEORIST_OPENING he_write/en_write variants. showTheoristOpening() async — API call when _bwWriteSessionContext present, fallback static. buildSystemPrompt() WRITE CONTEXT block (holds content, forbids "מה כתבתי?"). confirmTheoristEntry() bypass flow buttons when write context. Toggle + 2-button footer in openWriteSummary(). saveWriteEntry() + openWriteArchive() localStorage (bw_writes). Private bubble context-aware: detects .bw-private parent → "בטל" un-marking via window._bwPrivateSpanTarget. (מאי 2026)
+2. feat(write-mode/private): contenteditable replaces textarea. Panel wrapper (surface bg + border + radius-md). "רק אני" bubble on selection → `.bw-private` span (accentSoft bg). `getPublicWriteContent()` strips private spans for summary. (מאי 2026)
+3. feat(end-session): `triggerEndSession()` + `showEndSessionButton()` + `showEndSessionActions()` — button after 4+ exchanges, theorist closing, two action buttons. `bw_end_session` flag in API. (מאי 2026)
+4. feat(write-mode): "Write" — 3rd mode pill. `showWriteInterface()` + `openWriteSummary()` + `/api/write-summary` (Haiku). Sidebar "Session notes" btn. `bw-write-mode` body class hides input bar. (מאי 2026)
+5. feat(after-session-flow): "עוד מהפגישה" — 3-step flow: button → textarea → theorist → conversation. confirmTheoristEntry() checks _bwAfterSessionText.
+6. feat(explore-mode): EXPLORE_MODE_INSTRUCTION injected into buildSystemPrompt — research context, 1000-word depth, no probing, named redirect.
+7. feat(BW-54): theoretical lens after session — maybeOfferTheoreticalLens(), picker modal, POST /api/theoretical-lens, 3-block output.
+8. fix(BW-53): gap tokens + companion no-default — confirm button disabled until selection.
+9. feat(BW-53): companion cards (Vera/Elliot) — session mode shows 2 companion cards. renderTheoristGridForMode() single source of truth.
+10. feat: /api/daily-summary — CCR email bridge (Resend, x-internal-token auth).

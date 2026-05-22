@@ -657,7 +657,7 @@ header span {
   justify-content: flex-start;
   align-items: center;
   text-align: center;
-  padding: var(--space-xl) 40px; /* היה: 8px — נשימה נכונה לפי טוקן xl=32px */
+  padding: var(--space-sm) 40px var(--space-xl);
   max-width: 560px;
   margin: 0 auto;
   width: 100%;

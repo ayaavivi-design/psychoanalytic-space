@@ -275,8 +275,27 @@ This session is now ending. Write a closing in your voice:
 - Do NOT suggest what to explore next.
 - Speak as yourself. Not as a summarizer.` : '';
 
+    // ─── MEMORY TAG INSTRUCTION — appended to all session/write responses ────
+    // The client strips [MEMORY: ...] from display and saves it to localStorage.
+    // This instruction must come from the server because the client-side system
+    // prompt is intentionally ignored (security: BW-46).
+    // NOT added in explore mode — explore sessions are informational, not personal.
+    const MEMORY_TAG_INSTRUCTION = bw_mode !== 'explore' ? `
+
+══════════════════════════════════════
+MEMORY TAG — MANDATORY
+══════════════════════════════════════
+The very last line of EVERY response must be exactly:
+[MEMORY: one-sentence summary of the core theme or question in this exchange]
+
+Rules:
+- This tag is invisible to the user — it is stripped automatically before display.
+- Write the summary in Hebrew — always, regardless of the language of the exchange.
+- Do NOT skip this line. Do NOT add anything after it.
+- This is NOT a citation. The no-citations rule does not apply to it.` : '';
+
     // ─── BUILD SYSTEM PROMPT SERVER-SIDE ─────────────────────────────────────
-    const baseSystem = (theorist && THEORIST_VOICE[theorist]) ? EXPLORE_PREFIX + THEORIST_VOICE[theorist] + EXPLORE_SUFFIX + HEBREW_TERMINOLOGY + END_SESSION_SUFFIX : '';
+    const baseSystem = (theorist && THEORIST_VOICE[theorist]) ? EXPLORE_PREFIX + THEORIST_VOICE[theorist] + EXPLORE_SUFFIX + HEBREW_TERMINOLOGY + END_SESSION_SUFFIX + MEMORY_TAG_INSTRUCTION : '';
     if (!baseSystem) {
       console.warn(`[SECURITY] theorist "${theorist}" not found in THEORIST_VOICE — empty base system`);
     }

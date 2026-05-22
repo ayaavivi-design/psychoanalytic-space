@@ -7,7 +7,7 @@ export default function Home() {
   const [isLocalhost, setIsLocalhost] = useState(false);
   const [theoristsOpen, setTheoristsOpen] = useState(false);
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
-  const [sessionTip, setSessionTip] = useState<{ top: number; left?: number; right?: number; mode?: string } | null>(null);
+  const [hoveredMode, setHoveredMode] = useState<string>('session');
   const [currentLang, setCurrentLang] = useState('en');
 
   const THEORIST_CARDS: Record<string, Record<string, { approach: string; concepts: string; forWhom: string }>> = {
@@ -91,6 +91,8 @@ export default function Home() {
     setMounted(true);
     setTheoristsOpen(true);
     setIsLocalhost(window.location.hostname === 'localhost');
+    const savedMode = localStorage.getItem('bw_mode');
+    if (savedMode === 'explore' || savedMode === 'write') setHoveredMode(savedMode);
     const code = (window as any).selectedLang?.code || 'he';
     setTimeout(() => (window as any).applyUITranslation?.(code), 0);
     // Expose tooltip controls so chat.js can trigger the rich theorist card
@@ -397,82 +399,41 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               {/* BW-41: back button — top-left corner of content area */}
               <span id="bw-back-btn" onClick={() => (window as any).goBackToChat()} style={{ position: 'absolute', top: 20, left: 24, fontSize: 12, color: 'var(--muted)', cursor: 'pointer', opacity: 0.7, display: 'none' }}>← חזרה</span>
               {/* BW-41: mode selection — shown to new users */}
-              <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
+              <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%' }}>
                 <p className="bw-entry-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0 }}>מה עולה לך היום?</p>
                 <div id="bw-mode-cards">
                   <div className="bw-mode-card bw-mode-primary"
-                    onClick={() => (window as any).onModeSelected('session')}
-                    onMouseEnter={(e) => {
-                      const r = e.currentTarget.getBoundingClientRect();
-                      const lang = (window as any).selectedLang?.code || 'he';
-                      setCurrentLang(lang);
-                      const isRtl = lang === 'he';
-                      const tipWidth = 240;
-                      const top = r.top - 8;
-                      const sr = document.getElementById('bw-mode-cards')?.getBoundingClientRect() ?? r;
-                      let left: number;
-                      if (isRtl) {
-                        const rightPos = sr.right + 16;
-                        left = (rightPos + tipWidth <= window.innerWidth - 8)
-                          ? rightPos
-                          : Math.max(8, sr.left - tipWidth - 16);
-                      } else {
-                        const leftPos = sr.left - tipWidth - 16;
-                        left = leftPos >= 8 ? leftPos : Math.min(sr.right + 16, window.innerWidth - tipWidth - 8);
-                      }
-                      setSessionTip({ top, left, mode: 'session' });
-                    }}
-                    onMouseLeave={() => setSessionTip(null)}>
+                    onClick={() => { (window as any).onModeSelected('session'); setHoveredMode('session'); }}
+                    onMouseEnter={() => setHoveredMode('session')}>
                     <span id="bw-label-session">סשן</span>
                     <Sofa size={16} strokeWidth={1.4} />
                   </div>
                   <div className="bw-mode-card bw-mode-secondary"
-                    onClick={() => (window as any).onModeSelected('explore')}
-                    onMouseEnter={(e) => {
-                      const r = e.currentTarget.getBoundingClientRect();
-                      const lang = (window as any).selectedLang?.code || 'he';
-                      setCurrentLang(lang);
-                      const isRtl = lang === 'he';
-                      const tipWidth = 240;
-                      const top = r.top - 8;
-                      const sr = document.getElementById('bw-mode-cards')?.getBoundingClientRect() ?? r;
-                      let left: number;
-                      if (isRtl) {
-                        const leftPos = sr.left - tipWidth - 16;
-                        left = leftPos >= 8 ? leftPos : Math.min(sr.right + 16, window.innerWidth - tipWidth - 8);
-                      } else {
-                        left = Math.min(sr.right + 16, window.innerWidth - tipWidth - 8);
-                      }
-                      setSessionTip({ top, left, mode: 'explore' });
-                    }}
-                    onMouseLeave={() => setSessionTip(null)}>
+                    onClick={() => { (window as any).onModeSelected('explore'); setHoveredMode('explore'); }}
+                    onMouseEnter={() => setHoveredMode('explore')}>
                     <span id="bw-label-explore">לחקור</span>
                     <BookOpen size={16} strokeWidth={2} />
                   </div>
                   <div className="bw-mode-card bw-mode-tertiary"
-                    onClick={() => (window as any).onModeSelected('write')}
-                    onMouseEnter={(e) => {
-                      const r = e.currentTarget.getBoundingClientRect();
-                      const lang = (window as any).selectedLang?.code || 'he';
-                      setCurrentLang(lang);
-                      const isRtl = lang === 'he';
-                      const tipWidth = 240;
-                      const top = r.top - 8;
-                      const sr = document.getElementById('bw-mode-cards')?.getBoundingClientRect() ?? r;
-                      let left: number;
-                      if (isRtl) {
-                        const leftPos = sr.left - tipWidth - 16;
-                        left = leftPos >= 8 ? leftPos : Math.min(sr.right + 16, window.innerWidth - tipWidth - 8);
-                      } else {
-                        left = Math.min(sr.right + 16, window.innerWidth - tipWidth - 8);
-                      }
-                      setSessionTip({ top, left, mode: 'write' });
-                    }}
-                    onMouseLeave={() => setSessionTip(null)}>
+                    onClick={() => { (window as any).onModeSelected('write'); setHoveredMode('write'); }}
+                    onMouseEnter={() => setHoveredMode('write')}>
                     <span id="bw-label-write">כתיבה</span>
                     <NotebookPen size={16} strokeWidth={1.5} />
                   </div>
                 </div>
+                <p style={{
+                  fontSize: 13, fontFamily: "'Rubik', sans-serif", color: 'var(--muted)',
+                  lineHeight: 1.7, margin: '0 auto', maxWidth: 380, textAlign: 'center',
+                  transition: 'opacity 0.15s ease', opacity: 1,
+                  direction: currentLang === 'he' ? 'rtl' : 'ltr',
+                  minHeight: '66px', width: '100%',
+                }}>
+                  {hoveredMode === 'explore'
+                    ? (EXPLORE_TIP_I18N[currentLang] || EXPLORE_TIP_I18N['en']).text
+                    : hoveredMode === 'write'
+                    ? (WRITE_TIP_I18N[currentLang] || WRITE_TIP_I18N['he']).text
+                    : (SESSION_TIP_I18N[currentLang] || SESSION_TIP_I18N['he']).text}
+                </p>
               </div>
 
               {/* BW-41: theorist selection — slides in after mode pick */}
@@ -658,35 +619,6 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
         );
       })()}
 
-      {/* Mode tooltip — fixed position, avoids overflow:hidden clipping. Shared by corner button, Session card, and Explore card */}
-      {mounted && sessionTip && (
-        <div style={{
-          position: 'fixed', top: sessionTip.top,
-          ...(sessionTip.left !== undefined ? { left: sessionTip.left } : { right: sessionTip.right }),
-          pointerEvents: 'none', zIndex: 1000,
-          background: 'var(--surface, #fff)', border: '1px solid var(--border, #ede4e0)',
-          borderRadius: 10, padding: '10px 14px', width: 240,
-          fontSize: 12, lineHeight: 1.7, color: 'var(--text)',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-          direction: currentLang === 'he' ? 'rtl' : 'ltr',
-          textAlign: currentLang === 'he' ? 'right' : 'left',
-        }}>
-          <strong style={{ display: 'block', marginBottom: 4, color: 'var(--accent)' }}>
-            {sessionTip.mode === 'explore'
-              ? (EXPLORE_TIP_I18N[currentLang] || EXPLORE_TIP_I18N['en']).title
-              : sessionTip.mode === 'write'
-              ? (WRITE_TIP_I18N[currentLang] || WRITE_TIP_I18N['en']).title
-              : (SESSION_TIP_I18N[currentLang] || SESSION_TIP_I18N['he']).title}
-          </strong>
-          <span>
-            {sessionTip.mode === 'explore'
-              ? (EXPLORE_TIP_I18N[currentLang] || EXPLORE_TIP_I18N['en']).text
-              : sessionTip.mode === 'write'
-              ? (WRITE_TIP_I18N[currentLang] || WRITE_TIP_I18N['en']).text
-              : (SESSION_TIP_I18N[currentLang] || SESSION_TIP_I18N['he']).text}
-          </span>
-        </div>
-      )}
     </>
   );
 }

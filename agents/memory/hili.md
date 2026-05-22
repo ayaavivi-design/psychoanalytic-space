@@ -20,6 +20,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Jira update מאי 2026: BW-41 Done + BW-38 Done + security fix logged
-2. Sprint review: כל קומיטי מאי 2026 מתועדים ב-Jira
-3. BW-53 נוצר (17.05.2026): Story — Session Mode persona cards (Vera & Elliot). פרויקט BW (לא BTW). 3 AC gaps פתוחים: copy→Shaun, silhouette→Maya, memory→Hili+Aya.
+1. Jira update 22.05.2026: BW-61 Done (archive bug HE) + BW-62 Done (description centering+minHeight) + BW-63 To Do (design system audit — touch targets, spacing, hierarchy)
+2. Jira update מאי 2026: BW-41 Done + BW-38 Done + security fix logged
+3. Sprint review: כל קומיטי מאי 2026 מתועדים ב-Jira
+4. BW-53 נוצר (17.05.2026): Story — Session Mode persona cards (Vera & Elliot). פרויקט BW (לא BTW). 3 AC gaps פתוחים: copy→Shaun, silhouette→Maya, memory→Hili+Aya.

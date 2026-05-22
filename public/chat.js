@@ -77,7 +77,7 @@ function proceedToApp() {
   // length > 0 even though nothing is rendered. Instead we check the DOM directly.
   setTimeout(() => {
     const _chatEl = document.getElementById('chat');
-    const _hasRendered = _chatEl && Array.from(_chatEl.children).some(c => c.id !== 'welcome');
+    const _hasRendered = _chatEl && Array.from(_chatEl.children).some(c => c.id !== 'welcome' && c.id !== 'bw-end-session-cta');
     if (!_hasRendered) showModeSelect();
   }, 350);
   setTimeout(() => { initSidebarTips(); startOnboardingTour(); }, 800);
@@ -920,6 +920,8 @@ function showWriteInterface() {
   document.getElementById('bw-write-area')?.remove();
   document.getElementById('flow-buttons')?.remove();
   document.getElementById('bw-private-bubble')?.remove();
+  document.getElementById('bw-end-session-cta')?.remove();
+  document.getElementById('bw-end-session-actions')?.remove();
 
   // Inject write-mode styles once
   if (!document.getElementById('bw-write-styles')) {
@@ -953,8 +955,8 @@ function showWriteInterface() {
         data-placeholder="${placeholder}"
         style="flex:1;outline:none;font-family:var(--font-rubik),sans-serif;font-size:15px;line-height:1.85;color:var(--text);width:100%;direction:${dir};min-height:220px;word-break:break-word;white-space:pre-wrap;"></div>
       <div id="bw-write-hint" style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;align-items:center;">
-        <span>${isEn ? 'Use the sidebar to generate session notes when you\'re ready.' : 'השתמש ב"סיכום לפגישה" בסייד-בר כשסיימת.'}</span>
-        <span onclick="openWriteArchive()" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;margin-${isEn ? 'left' : 'right'}:12px;">${isEn ? 'Archive' : 'ארכיון'}</span>
+        <span id="bw-write-hint-text">${isEn ? 'Use the sidebar to generate session notes when you\'re ready.' : 'השתמש ב"סיכום לפגישה" בסייד-בר כשסיימת.'}</span>
+        <span id="bw-write-hint-archive" onclick="openWriteArchive()" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;margin-${isEn ? 'left' : 'right'}:12px;">${isEn ? 'Archive' : 'ארכיון'}</span>
       </div>
     </div>`;
   chatEl.appendChild(area);
@@ -1102,7 +1104,7 @@ function openWriteArchive() {
     html += `<div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--muted);padding:8px 0;">${emptyMsg}</div>`;
   } else {
     entries.forEach((entry, i) => {
-      const preview = (entry.summary?.main_theme
+      const preview = ((entry.summary?.key_points?.[0])
         || (entry.publicText || entry.fullText || '').split('\n')[0]
         || '—').slice(0, 90);
       const kpHtml = entry.summary?.key_points?.length
@@ -1116,7 +1118,6 @@ function openWriteArchive() {
             <div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0;">${entry.date || ''}</div>
           </div>
           <div class="bw-archive-body" style="display:none;margin-top:14px;">
-            ${entry.summary?.main_theme ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'Theme:' : 'נושא מרכזי:'}</div><div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--text);">${entry.summary.main_theme}</div></div>` : ''}
             ${kpHtml}${bringHtml}
             <div style="margin-top:4px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:6px;">${isEn ? 'Full text (including private):' : 'הטקסט המלא (כולל פרטי):'}</div><div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--text);line-height:1.75;white-space:pre-wrap;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;">${(entry.fullText || '').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>
           </div>
@@ -1182,10 +1183,6 @@ async function openWriteSummary() {
     }
     const kpHtml = (data.key_points || []).map(p => `<li style="margin-bottom:6px;">${p}</li>`).join('');
     el.innerHTML = `
-      <div style="margin-bottom:18px;">
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Main theme' : 'נושא מרכזי'}</div>
-        <div>${data.main_theme || ''}</div>
-      </div>
       ${kpHtml ? `<div style="margin-bottom:18px;">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Key points' : 'נקודות עיקריות'}</div>
         <ul style="margin:0;padding-${isEn ? 'left' : 'right'}:18px;">${kpHtml}</ul>
@@ -1195,9 +1192,6 @@ async function openWriteSummary() {
         <div style="color:var(--text);line-height:1.75;">${data.bring_to_session || ''}</div>
       </div>`;
 
-    // Save to archive
-    saveWriteEntry(getAllWriteContent(), text, data);
-
     // Footer actions
     const modalInner = el.parentElement;
     const btnStyle = 'flex:1;padding:10px 12px;border-radius:10px;font-family:var(--font-rubik),sans-serif;font-size:13px;cursor:pointer;transition:all 0.15s;';
@@ -1206,6 +1200,10 @@ async function openWriteSummary() {
     footer.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);';
     const toggleDir = isEn ? 'ltr' : 'rtl';
     footer.innerHTML = `
+      <label id="ws-save-toggle-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;direction:${toggleDir};font-family:var(--font-rubik),sans-serif;font-size:12px;color:var(--muted);user-select:none;">
+        <input type="checkbox" id="ws-save-journal" style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer;">
+        <span id="ws-save-label">${isEn ? 'Save to journal' : 'שמור ביומן'}</span>
+      </label>
       <label id="ws-attach-toggle-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;direction:${toggleDir};font-family:var(--font-rubik),sans-serif;font-size:12px;color:var(--muted);user-select:none;">
         <input type="checkbox" id="ws-attach-letter" style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer;">
         ${isEn ? 'Attach full letter' : 'צרף את הכתיבה המלאה'}
@@ -1220,8 +1218,20 @@ async function openWriteSummary() {
       </div>`;
     if (modalInner) modalInner.appendChild(footer);
 
+    // Save to journal toggle — opt-in, default OFF
+    let _writeEntrySaved = false;
+    document.getElementById('ws-save-journal')?.addEventListener('change', function() {
+      if (this.checked && !_writeEntrySaved) {
+        saveWriteEntry(getAllWriteContent(), text, data);
+        _writeEntrySaved = true;
+        const label = document.getElementById('ws-save-label');
+        if (label) { label.textContent = isEn ? 'Saved to journal ✓' : 'נשמר ביומן ✓'; label.style.color = 'var(--accent)'; }
+        this.disabled = true;
+      }
+    });
+
     // Send to therapist — summary only, or summary + full letter based on toggle
-    const summaryHtml = `<p><strong>${isEn ? 'Main theme' : 'נושא מרכזי'}:</strong> ${data.main_theme || ''}</p>${kpHtml ? `<p><strong>${isEn ? 'Key points' : 'נקודות עיקריות'}:</strong></p><ul>${(data.key_points||[]).map(p=>`<li>${p}</li>`).join('')}</ul>` : ''}<p><strong>${isEn ? 'What I want to bring' : 'מה אני רוצה להביא'}:</strong> ${data.bring_to_session || ''}</p>`;
+    const summaryHtml = `${kpHtml ? `<p><strong>${isEn ? 'Key points' : 'נקודות עיקריות'}:</strong></p><ul>${(data.key_points||[]).map(p=>`<li>${p}</li>`).join('')}</ul>` : ''}<p><strong>${isEn ? 'What I want to bring' : 'מה אני רוצה להביא'}:</strong> ${data.bring_to_session || ''}</p>`;
     const letterHtml = `<hr style="margin:20px 0;border:none;border-top:1px solid #eee;"><p style="font-size:12px;color:#999;margin-bottom:8px;">${isEn ? 'Full letter:' : 'הכתיבה המלאה:'}</p><p style="white-space:pre-wrap;line-height:1.7;">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
     document.getElementById('ws-send-btn')?.addEventListener('click', () => {
       const attachLetter = document.getElementById('ws-attach-letter')?.checked;
@@ -1330,8 +1340,10 @@ function bwUpdateModeLabels() {
     if (_wHeading) _wHeading.textContent = isEn ? 'Write to your therapist' : 'כתיבה למטפל';
     const _wTa = document.getElementById('bw-write-textarea');
     if (_wTa) _wTa.dataset.placeholder = isEn ? 'Something you want your therapist to know.' : 'משהו שתרצה שהמטפל שלך ידע.';
-    const _wHint = document.getElementById('bw-write-hint');
-    if (_wHint) _wHint.textContent = isEn ? "Use the sidebar to generate session notes when you're ready." : 'השתמש ב"סיכום לפגישה" בסייד-בר כשסיימת.';
+    const _wHintText = document.getElementById('bw-write-hint-text');
+    if (_wHintText) _wHintText.textContent = isEn ? "Use the sidebar to generate session notes when you're ready." : 'השתמש ב"סיכום לפגישה" בסייד-בר כשסיימת.';
+    const _wHintArchive = document.getElementById('bw-write-hint-archive');
+    if (_wHintArchive) { _wHintArchive.textContent = isEn ? 'Archive' : 'ארכיון'; _wHintArchive.style.marginLeft = isEn ? '12px' : ''; _wHintArchive.style.marginRight = isEn ? '' : '12px'; }
     _writeArea.style.direction = isEn ? 'ltr' : 'rtl';
     if (_wTa) _wTa.style.direction = isEn ? 'ltr' : 'rtl';
   }
@@ -1784,6 +1796,7 @@ function handleIdleMessage() {
 
   const theorist = activeTheorists.length === 1 ? activeTheorists[0] : null;
   const mode = localStorage.getItem('bw_mode');
+  if (mode === 'explore') return;
   let key = theorist;
   // In session mode without a theorist key, use companion name from bw_companion
   if (!key && mode === 'session') {
@@ -3341,6 +3354,8 @@ DO NOT:
 - Invent a version of a foreign concept in your own terms.
 - Expand on the historical background of a concept that belongs to another theorist.
 - Ask personal questions or probe the user's experience. This is information, not therapy.
+- Ask which direction, framework, or area interests the user. Do not ask follow-up questions to narrow scope — answer what was asked.
+- Reference the silence, the space between you, or what is happening in the conversation right now. Do not treat the exchange itself as clinical material.
 
 AT THE END OF YOUR RESPONSE — if there are 1-2 key papers or texts directly relevant to the concept discussed:
 List them as: Author (year). "Title." Journal or Book. Format with 📄 prefix.
@@ -3359,7 +3374,7 @@ function buildSystemPrompt() {
   const filteredMemories = activeT
     ? memories.filter(m => m.theorist === activeT).slice(-5)
     : memories.filter(m => !m.theorist).slice(-3);
-  const memoryContext = filteredMemories.length > 0
+  const memoryContext = currentMode === 'explore' ? '' : filteredMemories.length > 0
     ? (_isEnPrompt
       ? `\n\nQuiet user context (background only — do not explicitly reference that something "was mentioned before" or quote it back to them. Use this to understand the person, not to cite them):\n${filteredMemories.map((m,i) => {
           const date = new Date(m.ts).toLocaleDateString('en-US');
@@ -4743,7 +4758,7 @@ CRITICAL — YOUR ROLE:
 - Work the threshold: what makes it hard to bring this into the room with the therapist? That is what this conversation is for.
 - One question at a time.` : '';
 
-  return `${promptOpener}${theoristKnowledge}${focusInstruction}${memoryContext}${interpretContext}${exploreModeContext}${writeSessionContext}${flowContext}${genderInstruction}${clinicalInstruction}
+  return `${promptOpener}${theoristKnowledge}${focusInstruction}${memoryContext}${interpretContext}${writeSessionContext}${flowContext}${genderInstruction}${clinicalInstruction}${exploreModeContext}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ABSOLUTE LANGUAGE OVERRIDE — READ THIS LAST:
@@ -6016,7 +6031,8 @@ async function sendMessage() {
     console.log('stop_reason:', data.stop_reason);
 
     // Extract and save memory — supports both [MEMORY: text] and [MEMORY]: text
-    const memMatch = reply.match(/\[MEMORY: (.+?)\]/) || reply.match(/\[MEMORY\]:\s*(.+)/);
+    const memMatch = reply.match(/\[MEMORY:\s*(.+?)\]/) || reply.match(/\[MEMORY\]:\s*(.+)/i);
+    if (!memMatch) console.warn('[MEMORY] No tag found in response. First 300 chars:', reply.slice(0, 300));
     if (memMatch) {
       if (!sessionMemorySaved) {
         const memories = loadMemory();
@@ -6027,8 +6043,9 @@ async function sendMessage() {
         updateSessionTitle();
         updateSidebarMemories();
       }
-      reply = reply.replace(/\[MEMORY[^\]]*\][^\n]*/g, '').trim();
     }
+    // Always strip MEMORY tag — line-based to handle any edge case
+    reply = reply.split('\n').filter(line => !/\[MEMORY/i.test(line)).join('\n').trim();
 
     // Detect attribution — never in clinical/session mode
     const _isEn = (window.selectedLang?.code === 'en');
@@ -7277,7 +7294,7 @@ function applyPersona(type) {
   if (!type || !PERSONA_CONFIG[type]) return;
   const config = PERSONA_CONFIG[type];
   const input = document.getElementById('user-input');
-  if (input) {
+  if (input && localStorage.getItem('bw_mode') !== 'explore') {
     const isEn = (window.selectedLang?.code === 'en');
     input.placeholder = (isEn && config.placeholder_en) ? config.placeholder_en : config.placeholder;
   }

@@ -11,8 +11,7 @@ Return ONLY valid JSON. The very first character must be { and the very last mus
 
 FORMAT:
 {
-  "main_theme": "1 sentence — the central thing this writing is about",
-  "key_points": ["2–4 short phrases — the most important things said"],
+  "key_points": ["2–4 short phrases — the most important things said, in order of importance"],
   "bring_to_session": "1–2 sentences — written in first person from the patient's voice — what I want to say or explore with my therapist"
 }
 

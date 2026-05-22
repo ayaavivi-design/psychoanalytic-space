@@ -32,7 +32,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. HOW YOU CLOSE — 8 תיאורטיקנים 22.05: כל תיאורטיקן קיבל section ייחודי ב-theorist-voices.ts לפני MANDATORY FINAL CHECK. כל אחד סוגר בקול שלו — פרויד (חוט לאנליטיקאי), קליין (מעולם האובייקטים), ויניקוט (המרחב, לא הסיכום), אוגדן (דלת פתוחה), לוואלד (הזמן שזז), ביון (1–2 משפטים, עובדה), קוהוט (העצמי שהופיע), היימן (מה שעבר דרכה). (מאי 2026)
+1. Write→Theorist clinical fix 22.05: אוגדן שאל "מה כתבתי?" אחרי write→theorist flow — תוקן. trigger קוצר ל-"כתבתי." ו-WRITE CONTEXT נוסף לbuildSystemPrompt עם הנחיה מפורשת: "You have already read it. Do NOT ask what they wrote." כלל: כשמטופל מביא תכן כתוב לתיאורטיקן — התיאורטיקן מחזיק אותו ב-silence, לא שואל עליו מחדש.
+2. HOW YOU CLOSE — 8 תיאורטיקנים 22.05: כל תיאורטיקן קיבל section ייחודי ב-theorist-voices.ts לפני MANDATORY FINAL CHECK. כל אחד סוגר בקול שלו — פרויד (חוט לאנליטיקאי), קליין (מעולם האובייקטים), ויניקוט (המרחב, לא הסיכום), אוגדן (דלת פתוחה), לוואלד (הזמן שזז), ביון (1–2 משפטים, עובדה), קוהוט (העצמי שהופיע), היימן (מה שעבר דרכה). (מאי 2026)
 2. "עוד מהפגישה" flow — קליני 21.05: המשתמש כותב לפני בחירת תיאורטיקן. הטקסט הוא ההודעה הראשונה — התיאורטיקן מגיב לו ישירות, לא פותח עם שאלה גנרית. flowMap updated: "This is their opening. Receive it fully. Do not open with a question or a reflection of your own." (מאי 2026)
 2. WHEN TO POINT TOWARD THERAPY — 4 תיאורטיקנים 21.05: בניית directive מלא עם 3 טריגרים, 2 tracks, 2-exchange limit, fallback ללא מטפל. כל תיאורטיקן בקולו. ורה/אליוט הוקפאו מה-UI. (מאי 2026)
 2. תיקוני CRITICAL+HIGH ל-4 תיאורטיקנים 20.05: קליין — trigger condition לנוסחת תיקון עצמי; פרויד — bridging rule אחרי סירוב + LABEL LEAK + DO NOT LECTURE בFINAL CHECK; ויניקוט — דוגמת חמימות + LABEL LEAK; אוגדן — when patient finds right word + LABEL LEAK + DO NOT CLOSE WITH WARMTH. (מאי 2026)
