@@ -367,8 +367,10 @@ Rules:
     if (response.content[0]?.type === 'text' && !webSearch) {
       let validatedText = response.content[0].text;
 
-      // 1. אכיפת שאלה אחת
-      validatedText = await enforceOneQuestion(anthropic, validatedText, enrichedSystem, messages);
+      // 1. אכיפת שאלה אחת — לא במצב מחקר (שם אסור לשאול בכלל)
+      if (bw_mode !== 'explore') {
+        validatedText = await enforceOneQuestion(anthropic, validatedText, enrichedSystem, messages);
+      }
 
       // 2. מניעת פתיחה חוזרת
       validatedText = await enforceVariedOpening(anthropic, validatedText, enrichedSystem, messages);

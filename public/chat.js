@@ -2082,7 +2082,9 @@ function appendMessage(role, content, attribution = '', sourceHTML = '') {
   const div = document.createElement('div');
   div.className = `message ${role}`;
 
-  // Remove raw source tags from displayed text (Hebrew and English formats)
+  // Extract citation tag and render as attribution line
+  const citationMatch = content.match(/\[מקור:\s*(.+?)\]/) || content.match(/\[Source:\s*(.+?)\]/);
+  const citationText = citationMatch ? citationMatch[1].trim() : null;
   const cleanContent = content.replace(/\[מקור: .+?\]/g, '').replace(/\[Source: .+?\]/g, '').trim();
 
   const t = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
@@ -2092,6 +2094,7 @@ function appendMessage(role, content, attribution = '', sourceHTML = '') {
     <div class="message-body">${(role === 'assistant' ? formatResponse(stripMarkdown(cleanContent)) : cleanContent.replace(/\n/g, '<br>'))}</div>
     ${sourceHTML ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">${sourceHTML}</div>` : ''}
     ${attribution ? `<div class="attribution">— ${attribution}</div>` : ''}
+    ${citationText && role === 'assistant' ? `<div class="attribution" style="margin-top:6px;font-size:11px;">— מתוך: ${citationText}</div>` : ''}
   `;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
