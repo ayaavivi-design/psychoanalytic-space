@@ -4,11 +4,12 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## Context
-- Deployment אחרון: 17 מאי 2026 — BW-53: unified entry flow + persona cards (Vera & Elliot), theorist voices, icon system, design system
+- Deployment אחרון: 22 מאי 2026 — Clinical Voices v2: between-sessions framing + 4 כללים קליניים לוויניקוט, כל 4 תיאורטיקנים
 - Branch: main · remote: ayaavivi-design/psychoanalytic-space
 - Vercel crons מוסיפים commits אוטומטית (QA reports) — remote יכול להיות קדים ל-local
 - Jira MCP מחובר ועובד דרך cloudId: 03a5ff06-2b5e-41f3-ab73-14914bd6b3ca (ayaavivi.atlassian.net)
 - ממתין: BW-7–BW-15, BW-20 עדיין לא עודכנו ל-Done ב-Jira
+- ממתין: Eitan QA פוסט-פרודקשן לגרסה 22.05
 
 ---
 
@@ -22,7 +23,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Deployment 17.05.2026: BW-53 — unified entry flow, Vera & Elliot personas, theorist-voices, icon-system, design-system (6 files, 367 insertions) — push הצליח ✅ · Jira Done ✅
+1. Deployment 22.05.2026: Clinical Voices v2 — between-sessions framing + 4 כללים קליניים לוויניקוט, כל 4 תיאורטיקנים (6 commits, lib/theorist-voices.ts + memory) — push הצליח ✅ · Vercel READY ✅ · board-notes + release-notes ב-repo ✅
+2. Deployment 17.05.2026: BW-53 — unified entry flow, Vera & Elliot personas, theorist-voices, icon-system, design-system (6 files, 367 insertions) — push הצליח ✅ · Jira Done ✅
 2. Hotfix 16.05.2026 (late): Silence detection A+B+C + Klein prompt + flow buttons — push הצליח ✅
 3. Deployment 16.05.2026 (22:00): Agent Improvement Plan — 3 layers, 30 files, agents/ only — push הצליח ✅
 4. Hotfix 16.05.2026 (20:40): /api/daily-summary endpoint — push הצליח ✅ (דחוף לפני 9:00 מחר)
