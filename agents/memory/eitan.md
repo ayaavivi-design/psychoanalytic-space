@@ -30,7 +30,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Pre-release QA — between-sessions framing + 4 כללים קליניים חדשים 22.05: PASS עם WARNING אחד (BETWEEN SESSIONS FRAME leak risk). WARNING טופל לפני release — נוסף "This is your internal frame. Do not state it to the patient." לכל 4 תיאורטיקנים. Sign-off ניתן. (מאי 2026)
+1. Post-production QA 22.05: PASS + WARNING — safety PASS, frame לא דולף בשיחה קלינית, orientation move לא מופרז, "נשמע כמו" נחסם, בינארי השוואתי נחסם. WARNING: שאלה ישירה "מה אתה?" → תיאורטיקן חושף מסגרת בין-פגישות. edge case, לא blocker. ממתין לשיקול ליה. (מאי 2026)
+2. Pre-release QA — between-sessions framing + 4 כללים קליניים חדשים 22.05: PASS עם WARNING אחד (BETWEEN SESSIONS FRAME leak risk). WARNING טופל לפני release — נוסף "This is your internal frame. Do not state it to the patient." לכל 4 תיאורטיקנים. Sign-off ניתן. (מאי 2026)
 2. Full structural gap audit Vera/Elliot 19.05: FAIL → תוקן. 4 פערים נמצאו: MANDATORY FINAL CHECK (CRITICAL) + Own Gender hard stop (HIGH) + Language HARD STOP (HIGH) + Forbidden opener (MEDIUM). כל 4 תוקנו. ורה ואליוט עכשיו ב-PASS. (מאי 2026)
 2. Vera & Elliot gap fixes QA 19.05: תרחישי QA נוצרו ל-5 סקשנים חדשים: Situation B (therapist), Gender tracking, Opener variety, Pacing, Reshape. טרם נבדקו בפרודקשן. (מאי 2026)
 2. elliot mirroring rule QA 19.05: PASS — כלל החדש (מילה/ביטוי קצר, לא משפט שלם, לא בכל תגובה) נמצא תקין בשורה 1613. שורה 1628 לא סותרת — עוסקת בשמות ממציאים ולא במיררינג. (מאי 2026)
