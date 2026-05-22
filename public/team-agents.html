@@ -397,10 +397,6 @@
           </div>
         </div>
       </div>
-      <div class="card-row">
-        <div class="row-label">Boundary</div>
-        <div class="row-value">Does not write copy — that's Shaun's. Does not decide on UX — that's Maya's.</div>
-      </div>
     </div>
 
     <!-- ELLA -->
@@ -1104,7 +1100,7 @@
 
   <!-- ═══ THEORETICAL VOICES ═══ -->
   <div class="section-title">Theoretical Voices</div>
-  <div class="section-companion-note">Active in Explore mode. Each voice is built from original texts — not a summary of a school of thought, but a specific way of thinking.</div>
+  <div class="section-companion-note">Active in both Session (clinical) and Explore (teaching) modes. Each voice is built from original texts via RAG — not a summary of a school of thought, but a specific way of thinking. Prompt lives in <code>lib/theorist-voices.ts</code>. Output is validated server-side (one question only, varied opening, MEMORY tag). QA: 8 scenarios daily · Eitan. Clinical judgment: every 3 days · Lia.</div>
   <div class="grid">
 
     <!-- FREUD -->
@@ -1128,7 +1124,19 @@
       </div>
       <div class="card-row">
         <div class="row-label">Mode</div>
-        <div class="row-value"><span class="tag output">Explore mode only</span></div>
+        <div class="row-value"><span class="tag output">Session</span> <span class="tag output">Explore</span></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">RAG</div>
+        <div class="row-value">~3 chunks / exchange · <code>knowledge_chunks</code></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Prompt</div>
+        <div class="row-value"><code>lib/theorist-voices.ts → THEORIST_VOICE['freud']</code></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">QA</div>
+        <div class="row-value">8 scenarios daily · Eitan · Clinical judgment every 3 days · Lia</div>
       </div>
       <hr class="divider">
       <div class="card-row">
@@ -1158,7 +1166,19 @@
       </div>
       <div class="card-row">
         <div class="row-label">Mode</div>
-        <div class="row-value"><span class="tag output">Explore mode only</span></div>
+        <div class="row-value"><span class="tag output">Session</span> <span class="tag output">Explore</span></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">RAG</div>
+        <div class="row-value">~3 chunks / exchange · <code>knowledge_chunks</code></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Prompt</div>
+        <div class="row-value"><code>lib/theorist-voices.ts → THEORIST_VOICE['klein']</code></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">QA</div>
+        <div class="row-value">8 scenarios daily · Eitan · Clinical judgment every 3 days · Lia</div>
       </div>
       <hr class="divider">
       <div class="card-row">
@@ -1188,7 +1208,19 @@
       </div>
       <div class="card-row">
         <div class="row-label">Mode</div>
-        <div class="row-value"><span class="tag output">Explore mode only</span></div>
+        <div class="row-value"><span class="tag output">Session</span> <span class="tag output">Explore</span></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">RAG</div>
+        <div class="row-value">~3 chunks / exchange · <code>knowledge_chunks</code></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Prompt</div>
+        <div class="row-value"><code>lib/theorist-voices.ts → THEORIST_VOICE['winnicott']</code></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">QA</div>
+        <div class="row-value">8 scenarios daily · Eitan · Clinical judgment every 3 days · Lia</div>
       </div>
       <hr class="divider">
       <div class="card-row">
@@ -1218,7 +1250,19 @@
       </div>
       <div class="card-row">
         <div class="row-label">Mode</div>
-        <div class="row-value"><span class="tag output">Explore mode only</span></div>
+        <div class="row-value"><span class="tag output">Session</span> <span class="tag output">Explore</span></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">RAG</div>
+        <div class="row-value">~3 chunks / exchange · <code>knowledge_chunks</code></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Prompt</div>
+        <div class="row-value"><code>lib/theorist-voices.ts → THEORIST_VOICE['ogden']</code></div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">QA</div>
+        <div class="row-value">8 scenarios daily · Eitan · Clinical judgment every 3 days · Lia</div>
       </div>
       <hr class="divider">
       <div class="card-row">
