@@ -5,7 +5,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 
 ## Context
 - ספרינט נוכחי: פעיל (מאי 2026)
-- BW-38: Done · BW-41: Done
+- BW-38: Done · BW-41: Done · BW-64: In Progress
 - פתוח: מודל תשלום (ממתין לאלכס) · QA results לאייה (חסום על GITHUB_TOKEN ב-Vercel)
 - לינה: מסמכים משפטיים לפני launch ציבורי
 
@@ -21,7 +21,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Session 22.05.2026: fix(memory) — MEMORY_TAG_INSTRUCTION was never committed (explains 0 memories since BW-46). Write save now opt-in toggle. All pushed to production.
+1. BW-64 נוצר ועבר ל-In Progress (22.05.2026): Tier 2 — identity question treated as clinical material, all 4 theorists. מקור: ליה + איתן QA post-production. label: qa-report.
+2. Session 22.05.2026: fix(memory) — MEMORY_TAG_INSTRUCTION was never committed (explains 0 memories since BW-46). Write save now opt-in toggle. All pushed to production.
 2. Jira update 22.05.2026: BW-61 Done (archive bug HE) + BW-62 Done (description centering+minHeight) + BW-63 To Do (design system audit — touch targets, spacing, hierarchy)
 2. Jira update מאי 2026: BW-41 Done + BW-38 Done + security fix logged
 3. Sprint review: כל קומיטי מאי 2026 מתועדים ב-Jira
