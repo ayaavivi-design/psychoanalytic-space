@@ -960,29 +960,41 @@ function showWriteInterface() {
   chatEl.appendChild(area);
 
   // Private bubble — on body to avoid clipping
+  const _arrowHtml = `<span style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #2d2420;"></span>`;
   const bubble = document.createElement('div');
   bubble.id = 'bw-private-bubble';
   bubble.style.cssText = 'display:none;position:fixed;z-index:400;background:#2d2420;color:#fff;border-radius:22px;padding:4px 10px;font-size:11px;font-family:Rubik,sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;box-shadow:0 1px 4px rgba(45,36,32,0.2);user-select:none;';
-  bubble.innerHTML = `${isEn ? 'Just me' : 'רק אני'}<span style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #2d2420;"></span>`;
+  bubble.dataset.mode = 'mark';
+
   bubble.addEventListener('mousedown', (e) => {
     e.preventDefault();
-    const sel = window.getSelection();
-    if (!sel || sel.isCollapsed) return;
     const ta = document.getElementById('bw-write-textarea');
-    if (!ta || !ta.contains(sel.anchorNode)) return;
-    try {
-      const range = sel.getRangeAt(0);
-      const span = document.createElement('span');
-      span.className = 'bw-private';
-      range.surroundContents(span);
-      sel.removeAllRanges();
-    } catch (_) { sel.removeAllRanges(); }
+    if (!ta) return;
+    if (bubble.dataset.mode === 'unmark') {
+      // Unwrap stored private span — restore text content in place
+      const span = window._bwPrivateSpanTarget;
+      if (span && span.parentNode) {
+        while (span.firstChild) span.parentNode.insertBefore(span.firstChild, span);
+        span.parentNode.removeChild(span);
+      }
+      window._bwPrivateSpanTarget = null;
+    } else {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed || !ta.contains(sel.anchorNode)) return;
+      try {
+        const range = sel.getRangeAt(0);
+        const span = document.createElement('span');
+        span.className = 'bw-private';
+        range.surroundContents(span);
+        sel.removeAllRanges();
+      } catch (_) { sel.removeAllRanges(); }
+    }
     bubble.style.display = 'none';
     window._bwWriteContent = getAllWriteContent();
   });
   document.body.appendChild(bubble);
 
-  // Show/position bubble on selection
+  // Show/position bubble — context-aware: "רק אני" for new text, "בטל" for already-private
   const onSelection = () => {
     const sel = window.getSelection();
     const ta = document.getElementById('bw-write-textarea');
@@ -992,6 +1004,23 @@ function showWriteInterface() {
     }
     const rect = sel.getRangeAt(0).getBoundingClientRect();
     if (rect.width === 0) { bubble.style.display = 'none'; return; }
+
+    // Detect if selection sits inside an existing private span
+    const range = sel.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    const node = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+    const privateSpan = node?.closest?.('.bw-private');
+
+    if (privateSpan && ta.contains(privateSpan)) {
+      bubble.dataset.mode = 'unmark';
+      window._bwPrivateSpanTarget = privateSpan;
+      bubble.innerHTML = `${isEn ? 'Remove' : 'בטל'}${_arrowHtml}`;
+    } else {
+      bubble.dataset.mode = 'mark';
+      window._bwPrivateSpanTarget = null;
+      bubble.innerHTML = `${isEn ? 'Just me' : 'רק אני'}${_arrowHtml}`;
+    }
+
     bubble.style.display = 'block';
     const bw = bubble.offsetWidth || 60;
     const left = Math.max(8, Math.min(rect.left + rect.width / 2 - bw / 2, window.innerWidth - bw - 8));
@@ -4701,14 +4730,18 @@ Skill תרגום: אם המשתמש מבקש תרגום — למשל "תרגמי
   const writeSessionContext = _writeCtx ? `
 
 WRITE CONTEXT — THRESHOLD WORK
-The person wrote something they want to bring to therapy but cannot yet share with their therapist.
+The person wrote the following before this session. You have already read it. You hold it.
 
-Written content:
 ${_writeCtx.text}${_writeCtx.summary?.main_theme ? `
 
 Core theme: ${_writeCtx.summary.main_theme}` : ''}
 
-Your role: Do NOT quote or read back what was written. Do NOT treat the content as the subject of analysis. Work with the threshold — what makes it hard to bring this into the room with the therapist. One question at a time. Hold the written content silently; it is context, not material to interpret directly.` : '';
+CRITICAL — YOUR ROLE:
+- You have read what was written. Do NOT ask "what did you write" or any variation. You already know.
+- Open with one sentence that shows you have received what was written — in your own voice, without quoting it or naming it directly.
+- Do NOT analyze the content. Do NOT summarize it back. Hold it silently as background.
+- Work the threshold: what makes it hard to bring this into the room with the therapist? That is what this conversation is for.
+- One question at a time.` : '';
 
   return `${promptOpener}${theoristKnowledge}${focusInstruction}${memoryContext}${interpretContext}${exploreModeContext}${writeSessionContext}${flowContext}${genderInstruction}${clinicalInstruction}
 
@@ -5432,9 +5465,7 @@ async function showTheoristOpening(theoristKey, showContext = true) {
 
   // Write context: generate opening dynamically — theorist responds after having read the content
   if (isWrite) {
-    const triggerMsg = isEn
-      ? 'I wrote something for you to read before we talk.'
-      : 'כתבתי לך משהו לפני שנדבר.';
+    const triggerMsg = isEn ? 'I wrote.' : 'כתבתי.';
     showThinking();
     try {
       const res = await fetch('/api/chat', {
