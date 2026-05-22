@@ -516,6 +516,8 @@ async function signOut() {
   if (welcome) welcome.style.display = '';
   activeTheorists = [];
   document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
+  window._bwWriteContent = null;
+  window._bwWriteSessionContext = null;
 }
 
 const ADMIN_EMAIL = 'ayaavivi@gmail.com';
@@ -1089,6 +1091,52 @@ async function openWriteSummary() {
         <div style="font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Bring to session' : 'להביא לפגישה'}</div>
         <div style="color:var(--text);line-height:1.75;">${data.bring_to_session || ''}</div>
       </div>`;
+
+    // Footer actions
+    const modalInner = el.parentElement;
+    const btnStyle = 'flex:1;padding:10px 12px;border-radius:10px;font-family:var(--font-rubik),sans-serif;font-size:13px;cursor:pointer;transition:all 0.15s;';
+    const footer = document.createElement('div');
+    footer.id = 'write-summary-footer';
+    footer.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);';
+    const toggleDir = isEn ? 'ltr' : 'rtl';
+    footer.innerHTML = `
+      <label id="ws-attach-toggle-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;direction:${toggleDir};font-family:var(--font-rubik),sans-serif;font-size:12px;color:var(--muted);user-select:none;">
+        <input type="checkbox" id="ws-attach-letter" style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer;">
+        ${isEn ? 'Attach full letter' : 'צרף את הכתיבה המלאה'}
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button id="ws-send-btn" style="${btnStyle}background:none;border:1px solid var(--border);color:var(--muted);">
+          ✉ ${isEn ? 'Send to therapist' : 'שלח למטפל/ת'}
+        </button>
+        <button id="ws-theorist-btn" style="${btnStyle}background:var(--accent);border:none;color:#fff;font-weight:500;">
+          ${isEn ? 'Talk with a theorist' : 'שוחח עם תיאורטיקן'}
+        </button>
+      </div>`;
+    if (modalInner) modalInner.appendChild(footer);
+
+    // Send to therapist — summary only, or summary + full letter based on toggle
+    const summaryHtml = `<p><strong>${isEn ? 'Main theme' : 'נושא מרכזי'}:</strong> ${data.main_theme || ''}</p>${kpHtml ? `<p><strong>${isEn ? 'Key points' : 'נקודות עיקריות'}:</strong></p><ul>${(data.key_points||[]).map(p=>`<li>${p}</li>`).join('')}</ul>` : ''}<p><strong>${isEn ? 'What I want to bring' : 'מה אני רוצה להביא'}:</strong> ${data.bring_to_session || ''}</p>`;
+    const letterHtml = `<hr style="margin:20px 0;border:none;border-top:1px solid #eee;"><p style="font-size:12px;color:#999;margin-bottom:8px;">${isEn ? 'Full letter:' : 'הכתיבה המלאה:'}</p><p style="white-space:pre-wrap;line-height:1.7;">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
+    document.getElementById('ws-send-btn')?.addEventListener('click', () => {
+      const attachLetter = document.getElementById('ws-attach-letter')?.checked;
+      const emailHtml = attachLetter ? summaryHtml + letterHtml : summaryHtml;
+      openSendToTherapistForm(footer, emailHtml, isEn ? 'Session notes' : 'סיכום לפגישה');
+    });
+
+    // Talk with theorist
+    document.getElementById('ws-theorist-btn')?.addEventListener('click', (e) => {
+      e.currentTarget.disabled = true;
+      window._bwWriteSessionContext = { text, summary: data };
+      localStorage.setItem('bw_mode', 'session');
+      document.getElementById('write-summary-modal')?.remove();
+      document.body.classList.remove('bw-write-mode');
+      document.getElementById('bw-write-area')?.remove();
+      const wBtn = document.getElementById('sb-write-summary-btn');
+      if (wBtn) wBtn.style.display = 'none';
+      const welcomeEl = document.getElementById('welcome');
+      if (welcomeEl) welcomeEl.style.display = 'flex';
+      showTheoristEntry('session');
+    });
   } catch (e) {
     const el = document.getElementById('write-summary-results');
     if (el) el.innerHTML = `<div style="color:var(--accent);">${isEn ? 'Error generating summary.' : 'שגיאה ביצירת הסיכום.'}</div>`;
@@ -1136,6 +1184,7 @@ function showModeSelect() {
   // Exit write mode if returning to selection
   document.body.classList.remove('bw-write-mode');
   window._bwWriteContent = null;
+  window._bwWriteSessionContext = null;
   const _wBtn = document.getElementById('sb-write-summary-btn');
   if (_wBtn) _wBtn.style.display = 'none';
   // Mark correct pill as selected
@@ -1545,7 +1594,8 @@ function confirmTheoristEntry() {
   document.body.classList.remove('bw-selecting');
 
   // Explore + Write: show opening directly. Session: show flow buttons first.
-  if (mode === 'session') {
+  // Write-context bypass: skip flow buttons and go straight to opening (resistance work).
+  if (mode === 'session' && !window._bwWriteSessionContext) {
     renderFlowButtons();
   } else {
     showTheoristOpening(key, false);
@@ -4569,7 +4619,21 @@ Skill תרגום: אם המשתמש מבקש תרגום — למשל "תרגמי
   const _isExplore = localStorage.getItem('bw_mode') === 'explore';
   const exploreModeContext = _isExplore ? EXPLORE_MODE_INSTRUCTION : '';
 
-  return `${promptOpener}${theoristKnowledge}${focusInstruction}${memoryContext}${interpretContext}${exploreModeContext}${flowContext}${genderInstruction}${clinicalInstruction}
+  // Write mode: inject threshold-work context when user came from Write summary
+  const _writeCtx = window._bwWriteSessionContext;
+  const writeSessionContext = _writeCtx ? `
+
+WRITE CONTEXT — THRESHOLD WORK
+The person wrote something they want to bring to therapy but cannot yet share with their therapist.
+
+Written content:
+${_writeCtx.text}${_writeCtx.summary?.main_theme ? `
+
+Core theme: ${_writeCtx.summary.main_theme}` : ''}
+
+Your role: Do NOT quote or read back what was written. Do NOT treat the content as the subject of analysis. Work with the threshold — what makes it hard to bring this into the room with the therapist. One question at a time. Hold the written content silently; it is context, not material to interpret directly.` : '';
+
+  return `${promptOpener}${theoristKnowledge}${focusInstruction}${memoryContext}${interpretContext}${exploreModeContext}${writeSessionContext}${flowContext}${genderInstruction}${clinicalInstruction}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ABSOLUTE LANGUAGE OVERRIDE — READ THIS LAST:
@@ -5191,25 +5255,33 @@ const THEORIST_OPENING = {
     he: `יום טוב. אני כאן. ספר לי מה על ליבך.`,
     en: `Good day. I am here. Tell me what is on your mind.`,
     he_explore: `שלום. מה הביא אותך לחקור כאן?`,
-    en_explore: `Good day. What has brought you here to think?`
+    en_explore: `Good day. What has brought you here to think?`,
+    he_write: `יש משהו שכתבת — ולא יכולת להביא לחדר. מה מפריד בינך לבין המטפל/ת?`,
+    en_write: `You wrote something you could not bring into the room. What stands between you and your therapist?`
   },
   klein: {
     he: `אני מקשיבה. ספרי לי מה שעולה.`,
     en: `I am listening. Tell me what comes.`,
     he_explore: `שלום. מה אתה רוצה להבין?`,
-    en_explore: `Hello. What would you like to understand?`
+    en_explore: `Hello. What would you like to understand?`,
+    he_write: `כתבת משהו שנשאר בצד. מה קורה כשאת/ה מדמיין/ת שהמטפל/ת רואה את זה?`,
+    en_write: `You wrote something that stayed outside the room. What happens when you imagine your therapist seeing it?`
   },
   winnicott: {
     he: `שלום. שמח שבאת. לא צריך לדעת מה יקרה כאן. מה חי בך עכשיו?`,
     en: `Hello. I'm glad you're here. We don't need to know what will happen. What's alive in you right now?`,
     he_explore: `שמח שבאת. מה מסקרן אותך?`,
-    en_explore: `Glad you came. What draws your curiosity?`
+    en_explore: `Glad you came. What draws your curiosity?`,
+    he_write: `יש משהו שלא מצא את דרכו לחדר עדיין. לא צריך לדעת למה. מה חי בך בקשר לזה?`,
+    en_write: `Something hasn't found its way into the room yet. We don't need to know why. What's alive in you around that?`
   },
   ogden: {
     he: `אני כאן. סקרן לגבי מה שייוולד בין שנינו. מה אתה מביא?`,
     en: `I'm here. Curious about what will be born between us. What are you bringing?`,
     he_explore: `מה אתה מביא לחשוב עליו?`,
-    en_explore: `What are you bringing to think about?`
+    en_explore: `What are you bringing to think about?`,
+    he_write: `מה מביא אותך לדבר על מה שלא יכולת להביא?`,
+    en_write: `What brings you to speak about what you could not bring?`
   },
   loewald: {
     he: `טוב להיות כאן איתך.`,
@@ -5245,16 +5317,14 @@ const THEORIST_OPENING = {
   }
 };
 
-function showTheoristOpening(theoristKey, showContext = true) {
+async function showTheoristOpening(theoristKey, showContext = true) {
   const openingObj = THEORIST_OPENING[theoristKey];
   if (!openingObj) return;
   const lang = (selectedLang && selectedLang.code) || 'he';
   const isEn = (lang === 'en');
   const isExplore = (localStorage.getItem('bw_mode') === 'explore');
+  const isWrite = !!window._bwWriteSessionContext;
   const exploreKey = isEn ? 'en_explore' : 'he_explore';
-  const opening = (isExplore && openingObj[exploreKey])
-    ? openingObj[exploreKey]
-    : (openingObj[lang] || openingObj['en'] || openingObj['he']);
 
   const heShort  = {freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', kohut:'קוהוט', heimann:'היימן'};
   const enShort  = {freud:'Freud', klein:'Klein', winnicott:'Winnicott', ogden:'Ogden', loewald:'Loewald', bion:'Bion', kohut:'Kohut', heimann:'Heimann'};
@@ -5283,7 +5353,55 @@ function showTheoristOpening(theoristKey, showContext = true) {
     chat.appendChild(contextDiv);
   }
 
-  // opening message
+  // Write context: generate opening dynamically — theorist responds after having read the content
+  if (isWrite) {
+    const triggerMsg = isEn
+      ? 'I wrote something for you to read before we talk.'
+      : 'כתבתי לך משהו לפני שנדבר.';
+    showThinking();
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: triggerMsg }],
+          system: buildSystemPrompt(),
+          webSearch: false,
+          theorist: theoristKey,
+          bw_mode: 'session'
+        })
+      });
+      const data = await res.json();
+      hideThinking();
+      const reply = Array.isArray(data.content)
+        ? data.content.filter(b => b.type === 'text').map(b => b.text).join('')
+        : (data.text || '');
+      if (reply) {
+        const attribution = shortMap[theoristKey] || theoristKey;
+        appendMessage('assistant', reply, attribution);
+        // Pre-seed history: trigger (hidden) + response
+        conversationHistory.push({ role: 'user', content: triggerMsg });
+        conversationHistory.push({ role: 'assistant', content: reply });
+        updateReflectionBtn();
+        updateEndSessionBtn();
+        resetIdleTimer();
+      }
+    } catch (e) {
+      hideThinking();
+      // Fallback to static opening on error — still seed triggerMsg so history starts with user turn
+      const fallback = openingObj[isEn ? 'en' : 'he'] || openingObj['he'];
+      appendMessage('assistant', fallback, shortMap[theoristKey] || theoristKey);
+      conversationHistory.push({ role: 'user', content: triggerMsg });
+      conversationHistory.push({ role: 'assistant', content: fallback });
+    }
+    return;
+  }
+
+  // Static opening for session / explore modes
+  const opening = (isExplore && openingObj[exploreKey])
+    ? openingObj[exploreKey]
+    : (openingObj[lang] || openingObj['en'] || openingObj['he']);
+
   const div = document.createElement('div');
   div.className = 'message assistant';
   div.innerHTML = `
@@ -6354,6 +6472,7 @@ function performNewChat() {
   // Clean up write mode if active
   document.body.classList.remove('bw-write-mode');
   window._bwWriteContent = null;
+  window._bwWriteSessionContext = null;
   document.getElementById('bw-write-area')?.remove();
   // BW-41 unified screen: always return to full entry screen.
   // showModeSelect() reads bw_mode from localStorage and pre-selects the pill.
