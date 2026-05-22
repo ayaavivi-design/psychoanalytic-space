@@ -952,8 +952,9 @@ function showWriteInterface() {
       <div id="bw-write-textarea" contenteditable="true"
         data-placeholder="${placeholder}"
         style="flex:1;outline:none;font-family:var(--font-rubik),sans-serif;font-size:15px;line-height:1.85;color:var(--text);width:100%;direction:${dir};min-height:220px;word-break:break-word;white-space:pre-wrap;"></div>
-      <div id="bw-write-hint" style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px;">
-        ${isEn ? 'Use the sidebar to generate session notes when you\'re ready.' : 'השתמש ב"סיכום לפגישה" בסייד-בר כשסיימת.'}
+      <div id="bw-write-hint" style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;align-items:center;">
+        <span>${isEn ? 'Use the sidebar to generate session notes when you\'re ready.' : 'השתמש ב"סיכום לפגישה" בסייד-בר כשסיימת.'}</span>
+        <span onclick="openWriteArchive()" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;margin-${isEn ? 'left' : 'right'}:12px;">${isEn ? 'Archive' : 'ארכיון'}</span>
       </div>
     </div>`;
   chatEl.appendChild(area);
@@ -1034,6 +1035,79 @@ function getPublicWriteContent() {
   return clone.innerText || '';
 }
 
+// ── Write Archive ─────────────────────────────────────────────
+const BW_WRITES_KEY = 'bw_writes';
+
+function saveWriteEntry(fullText, publicText, summary = null) {
+  if (!fullText || fullText.trim().length < 5) return;
+  try {
+    const entries = JSON.parse(localStorage.getItem(BW_WRITES_KEY) || '[]');
+    const now = Date.now();
+    const date = new Date(now).toLocaleDateString('he-IL', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    entries.unshift({ id: now, date, fullText, publicText, summary });
+    if (entries.length > 100) entries.splice(100);
+    localStorage.setItem(BW_WRITES_KEY, JSON.stringify(entries));
+  } catch(e) { console.warn('[bw-archive] save failed', e); }
+}
+
+function openWriteArchive() {
+  document.getElementById('bw-archive-modal')?.remove();
+  const isEn = (window.selectedLang?.code === 'en');
+  const dir = isEn ? 'ltr' : 'rtl';
+  let entries = [];
+  try { entries = JSON.parse(localStorage.getItem(BW_WRITES_KEY) || '[]'); } catch(e) {}
+
+  const modal = document.createElement('div');
+  modal.id = 'bw-archive-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(45,36,32,0.45);display:flex;align-items:center;justify-content:center;';
+
+  const inner = document.createElement('div');
+  inner.style.cssText = `background:var(--bg);border-radius:16px;padding:28px;max-width:540px;width:92%;max-height:80vh;overflow-y:auto;direction:${dir};`;
+
+  const title = isEn ? 'Writing archive' : 'ארכיון כתיבה';
+  const emptyMsg = isEn ? 'No saved entries yet.' : 'עדיין אין רשומות שמורות.';
+
+  let html = `<div style="font-family:var(--font-cormorant),serif;font-size:22px;font-weight:300;color:var(--text);margin-bottom:20px;">${title}</div>`;
+
+  if (entries.length === 0) {
+    html += `<div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--muted);padding:8px 0;">${emptyMsg}</div>`;
+  } else {
+    entries.forEach((entry, i) => {
+      const preview = (entry.summary?.main_theme
+        || (entry.publicText || entry.fullText || '').split('\n')[0]
+        || '—').slice(0, 90);
+      const kpHtml = entry.summary?.key_points?.length
+        ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'Key points:' : 'נקודות עיקריות:'}</div><ul style="margin:0;padding-${dir==='rtl'?'right':'left'}:16px;">${entry.summary.key_points.map(p=>`<li style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${p}</li>`).join('')}</ul></div>` : '';
+      const bringHtml = entry.summary?.bring_to_session
+        ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'What I want to bring:' : 'מה אני רוצה להביא:'}</div><div style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${entry.summary.bring_to_session}</div></div>` : '';
+      html += `
+        <div class="bw-archive-entry" style="border-bottom:1px solid var(--border);padding:14px 0;cursor:pointer;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;">
+            <div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${preview.replace(/</g,'&lt;')}</div>
+            <div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0;">${entry.date || ''}</div>
+          </div>
+          <div class="bw-archive-body" style="display:none;margin-top:14px;">
+            ${entry.summary?.main_theme ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'Theme:' : 'נושא מרכזי:'}</div><div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--text);">${entry.summary.main_theme}</div></div>` : ''}
+            ${kpHtml}${bringHtml}
+            <div style="margin-top:4px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:6px;">${isEn ? 'Full text (including private):' : 'הטקסט המלא (כולל פרטי):'}</div><div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--text);line-height:1.75;white-space:pre-wrap;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;">${(entry.fullText || '').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>
+          </div>
+        </div>`;
+    });
+  }
+
+  inner.innerHTML = html;
+  inner.querySelectorAll('.bw-archive-entry').forEach(el => {
+    el.addEventListener('click', () => {
+      const body = el.querySelector('.bw-archive-body');
+      if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
+    });
+  });
+
+  modal.appendChild(inner);
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
 async function openWriteSummary() {
   const text = getPublicWriteContent() || window._bwWriteContent || '';
   const isEn = (window.selectedLang?.code === 'en');
@@ -1091,6 +1165,9 @@ async function openWriteSummary() {
         <div style="font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Bring to session' : 'להביא לפגישה'}</div>
         <div style="color:var(--text);line-height:1.75;">${data.bring_to_session || ''}</div>
       </div>`;
+
+    // Save to archive
+    saveWriteEntry(getAllWriteContent(), text, data);
 
     // Footer actions
     const modalInner = el.parentElement;
