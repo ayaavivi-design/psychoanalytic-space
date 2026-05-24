@@ -488,23 +488,32 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                   {/* שיחה — split button */}
                   <div style={{ display: 'flex', position: 'relative' }}>
                     <button onClick={() => handleEnterConversation(holdTheorist)} style={{
-                      padding: '10px 18px', borderRadius: '22px 0 0 22px',
-                      border: '1px solid var(--accent)', borderRight: 'none',
+                      padding: '10px 18px',
+                      borderRadius: isHe ? '0 22px 22px 0' : '22px 0 0 22px',
+                      border: '1px solid var(--accent)',
+                      borderRight: isHe ? undefined : 'none',
+                      borderLeft: isHe ? 'none' : undefined,
                       background: 'var(--accent)', color: 'white', fontSize: 13,
                       fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer',
                     }}>
                       {isHe ? 'שיחה — ' : 'Talk — '}{getHoldTheoristName(holdTheorist)}
                     </button>
                     <button onClick={() => setShowHoldTheoristPicker(p => !p)} style={{
-                      padding: '10px 10px', borderRadius: '0 22px 22px 0',
-                      border: '1px solid var(--accent)', borderLeft: '1px solid rgba(255,255,255,0.3)',
+                      padding: '10px 10px',
+                      borderRadius: isHe ? '22px 0 0 22px' : '0 22px 22px 0',
+                      border: '1px solid var(--accent)',
+                      borderRight: isHe ? '1px solid rgba(255,255,255,0.3)' : undefined,
+                      borderLeft: isHe ? undefined : '1px solid rgba(255,255,255,0.3)',
                       background: 'var(--accent)', color: 'white', fontSize: 13, cursor: 'pointer',
                     }}>
                       ▾
                     </button>
                     {showHoldTheoristPicker && (
                       <div style={{
-                        position: 'absolute', top: '100%', right: 0, marginTop: 4,
+                        position: 'absolute', top: '100%',
+                        right: isHe ? undefined : 0,
+                        left: isHe ? 0 : undefined,
+                        marginTop: 4,
                         background: 'var(--surface)', border: '1px solid var(--border)',
                         borderRadius: 12, padding: '6px 4px',
                         display: 'flex', flexDirection: 'column', gap: 2,
