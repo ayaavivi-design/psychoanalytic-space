@@ -1112,10 +1112,13 @@ function openWriteArchive() {
       const bringHtml = entry.summary?.bring_to_session
         ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'What I want to bring:' : 'מה אני רוצה להביא:'}</div><div style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${entry.summary.bring_to_session}</div></div>` : '';
       html += `
-        <div class="bw-archive-entry" style="border-bottom:1px solid var(--border);padding:14px 0;cursor:pointer;">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;">
+        <div class="bw-archive-entry" data-index="${i}" style="border-bottom:1px solid var(--border);padding:14px 0;cursor:pointer;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
             <div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${preview.replace(/</g,'&lt;')}</div>
-            <div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0;">${entry.date || ''}</div>
+            <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+              <div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);white-space:nowrap;">${entry.date || ''}</div>
+              <button class="bw-archive-delete" data-index="${i}" style="background:none;border:none;cursor:pointer;font-size:15px;color:var(--muted);line-height:1;padding:2px 4px;border-radius:4px;transition:color 0.15s;" title="${isEn ? 'Delete' : 'מחק'}">×</button>
+            </div>
           </div>
           <div class="bw-archive-body" style="display:none;margin-top:14px;">
             ${kpHtml}${bringHtml}
@@ -1130,6 +1133,22 @@ function openWriteArchive() {
     el.addEventListener('click', () => {
       const body = el.querySelector('.bw-archive-body');
       if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
+    });
+  });
+
+  // Delete buttons — stop propagation so they don't toggle the entry
+  inner.querySelectorAll('.bw-archive-delete').forEach(btn => {
+    btn.addEventListener('mouseenter', () => { btn.style.color = 'var(--accent)'; });
+    btn.addEventListener('mouseleave', () => { btn.style.color = 'var(--muted)'; });
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const idx = parseInt(btn.getAttribute('data-index'), 10);
+      let stored = [];
+      try { stored = JSON.parse(localStorage.getItem(BW_WRITES_KEY) || '[]'); } catch(_) {}
+      stored.splice(idx, 1);
+      localStorage.setItem(BW_WRITES_KEY, JSON.stringify(stored));
+      modal.remove();
+      openWriteArchive();
     });
   });
 
@@ -5520,6 +5539,8 @@ async function showTheoristOpening(theoristKey, showContext = true) {
         // Strip MEMORY tag before display and history
         const reply = rawReply.split('\n').filter(line => !/\[MEMORY/i.test(line)).join('\n').trim();
         const attribution = shortMap[theoristKey] || theoristKey;
+        // Show the user's written text before the analyst's response
+        appendMessage('user', triggerMsg);
         appendMessage('assistant', reply, attribution);
         // Pre-seed history: actual written text + clean response
         conversationHistory.push({ role: 'user', content: triggerMsg });
