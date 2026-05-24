@@ -4,7 +4,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## Context
-- QA מכסה 6 פונקציות: 4 תיאורטיקנים + vera + elliot (companions נוספו 17.05.2026)
+- QA מכסה 7 פונקציות: 4 תיאורטיקנים + vera + elliot + bion (ביון נבדק ידנית 23.05.2026)
 - Cron: יומי, Vercel native — qa-full route
 - BW-43 — סגור (bw_mode תוקן)
 - BW-35 — סגור (Safety interceptor: 8/8 PASS, שני ביטויים × 4 תיאורטיקנים)
@@ -30,7 +30,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Post-production QA 22.05: PASS + WARNING — safety PASS, frame לא דולף בשיחה קלינית, orientation move לא מופרז, "נשמע כמו" נחסם, בינארי השוואתי נחסם. WARNING: שאלה ישירה "מה אתה?" → תיאורטיקן חושף מסגרת בין-פגישות. edge case, לא blocker. ממתין לשיקול ליה. (מאי 2026)
+1. Bion QA 23.05: PASS + WARNING קל — safety PASS, frame לא דולף, label leak PASS, WHEN YOU ARE WRONG PASS, gender+language PASS, orientation move PASS. WARNING: TRACKING AVOIDANCE — ביון נקד הימנעות נכון אך גייס חלום כגשר במקום להתעלם מהכיוון החדש. לא בלוקר. (מאי 2026)
+2. Post-production QA 22.05: PASS + WARNING — safety PASS, frame לא דולף בשיחה קלינית, orientation move לא מופרז, "נשמע כמו" נחסם, בינארי השוואתי נחסם. WARNING: שאלה ישירה "מה אתה?" → תיאורטיקן חושף מסגרת בין-פגישות. edge case, לא blocker. ממתין לשיקול ליה. (מאי 2026)
 2. Pre-release QA — between-sessions framing + 4 כללים קליניים חדשים 22.05: PASS עם WARNING אחד (BETWEEN SESSIONS FRAME leak risk). WARNING טופל לפני release — נוסף "This is your internal frame. Do not state it to the patient." לכל 4 תיאורטיקנים. Sign-off ניתן. (מאי 2026)
 2. Full structural gap audit Vera/Elliot 19.05: FAIL → תוקן. 4 פערים נמצאו: MANDATORY FINAL CHECK (CRITICAL) + Own Gender hard stop (HIGH) + Language HARD STOP (HIGH) + Forbidden opener (MEDIUM). כל 4 תוקנו. ורה ואליוט עכשיו ב-PASS. (מאי 2026)
 2. Vera & Elliot gap fixes QA 19.05: תרחישי QA נוצרו ל-5 סקשנים חדשים: Situation B (therapist), Gender tracking, Opener variety, Pacing, Reshape. טרם נבדקו בפרודקשן. (מאי 2026)
@@ -39,10 +40,3 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 2. Post-production QA 16.05: 4/4 PASS, BW-51+BW-46+enforceVariedOpening verified in prod ✅ (מאי 2026)
 2. BW-51 sign-off: PASS ✅ — flow-selection DOM indicator + PDF export. Warning: לא שורד restoreConversation (known limitation, לא בלוקר) (מאי 2026)
 3. ויניקוט QA post-prompt fix: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN — שיום רגש ו-sentence completion לא ניתנים לאכיפה בלופ (מאי 2026)
-2. BW-35 Safety QA: 8/8 PASS — interceptor עובד על כל 4 תיאורטיקנים × 2 תרחישים (מאי 2026)
-2. BW-36 Q-3 re-run: ✅ LIKELY RESOLVED ברמת פרומפט. ⚠️ WARNING: אין cross-turn validation (מאי 2026)
-3. fix(blank-screen): welcome.remove() זוהה כ-root cause — תוקן ל-style.display='none' (מאי 2026)
-4. BW-43 תוקן: bw_mode משפיע על system prompt, session mode עובד כהלכה (מאי 2026)
-5. BW-38 sign-off: data-bw-hidden pattern approved ✅
-6. restoreConversation bug: נמצאה `updateSessionTitle(true)` חסרה — Oliver תיקן, sign-off ✅
-7. QA הופחת ל-4 תיאורטיקנים (cost optimization — מאי 2026)

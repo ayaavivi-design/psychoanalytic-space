@@ -4846,8 +4846,8 @@ const UI_TRANSLATIONS = {
     settingsTimer: 'טיימר לסשן', settingsTimerDesc: '50 דקות · מסגרת טיפולית',
     settingsTimerWarnPre: 'דקות לפני הסיום', settingsTimerWarnSuf: 'אזהרה',
     settingsIntakeDone: 'שיחת היכרות הושלמה ✓', settingsIntakeReset: 'אפס',
-    sessionTooltipTitle: 'מצב סשן קליני',
-    sessionTooltipText: 'התיאורטיקן הנבחר יגיב כאנליטיקאי בשיחה — לא כמרצה. מתאים להבאת חומר קליני, חלומות, או מצבים אישיים.',
+    sessionTooltipTitle: 'מצב סשן',
+    sessionTooltipText: 'התיאורטיקן הנבחר חושב איתך בין הפגישות — לעבד מה שעלה ולמצוא מה להביא לפגישה הבאה.',
     welcomeApiText: 'השיחות לא נשמרות על ידינו ולא משמשות לאימון מודלים.',
     privacyLink: 'מדיניות פרטיות',
     privacyTitle: 'מדיניות פרטיות',
@@ -5464,8 +5464,8 @@ async function showTheoristOpening(theoristKey, showContext = true) {
   const t = UI_TRANSLATIONS[lang] || UI_TRANSLATIONS['he'];
 
   const contextMsg = isEn
-    ? `Session mode — ${fullMap[theoristKey] || shortMap[theoristKey]} is responding as analyst`
-    : `מצב סשן — ${fullMap[theoristKey] || shortMap[theoristKey]} מגיב/ה כאנליטיקאי/ת בשיחה`;
+    ? `Session — ${fullMap[theoristKey] || shortMap[theoristKey]} thinking with you between sessions`
+    : `מצב סשן — ${fullMap[theoristKey] || shortMap[theoristKey]} בשיחה בין הפגישות`;
 
   const chat = document.getElementById('chat');
   const welcome = document.getElementById('welcome');
@@ -7007,7 +7007,7 @@ const LANGUAGES = [
 
 
 // Close memory panel on backdrop click
-document.getElementById('memory-panel').addEventListener('click', function(e) {
+document.getElementById('memory-panel')?.addEventListener('click', function(e) {
   if (e.target === this) closeMemory();
 });
 

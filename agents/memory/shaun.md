@@ -21,7 +21,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Write mode — אישור שם + פלייסהולדר: "Write" ✅, placeholder מומלץ: "Something you want your therapist to know." (מאי 2026)
+1. ריוויו מאמרים — 3 מאמרים נמצאו ב-content/writing/. נערך "Why we forget what mattered most" (פב׳ 2026). קובץ ריוויו: content/writing/review/why-we-forget--REVIEW.md. בעיה מרכזית: Bion מוזכר בשלושתם אבל לא בפרודקשן — הצעה לאוגדן. (מאי 2026)
+2. Write mode — אישור שם + פלייסהולדר: "Write" ✅, placeholder מומלץ: "Something you want your therapist to know." (מאי 2026)
 2. ייעוץ שם מותג: "Between" vs "In Between" — המלצה: להישאר עם Between. הטיעון הלשוני חכם אבל שגוי לצרכי brand (מאי 2026)
 2. מצגת ולידציה — 10 שקפים: מטפלים + משקיעים, שמור ב-bizdev/presentation-structure-2026-05.md (מאי 2026)
 2. Flow button copy review + sharpening: גרסאות עברית + אנגלית — כיוון ישיר יותר
