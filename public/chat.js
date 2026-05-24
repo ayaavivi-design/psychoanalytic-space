@@ -1321,7 +1321,7 @@ function showModeSelect() {
 function bwUpdateModeLabels() {
   const isEn = (window.selectedLang?.code === 'en');
   const heading = document.querySelector('#bw-mode-select .bw-entry-heading');
-  if (heading) heading.textContent = isEn ? 'How are you coming in today?' : 'מה עולה לך היום?';
+  if (heading) heading.textContent = isEn ? 'What stayed with you' : 'מה נשאר איתך';
   const sessionLabel = document.getElementById('bw-label-session');
   if (sessionLabel) sessionLabel.textContent = isEn ? 'Session' : 'סשן';
   const exploreLabel = document.getElementById('bw-label-explore');
@@ -1709,8 +1709,8 @@ function confirmTheoristEntry() {
   document.body.classList.remove('bw-selecting');
 
   // Explore + Write: show opening directly. Session: show flow buttons first.
-  // Write-context bypass: skip flow buttons and go straight to opening (resistance work).
-  if (mode === 'session' && !window._bwWriteSessionContext) {
+  // Write-context bypass / Hold-context bypass: skip flow buttons and go straight to opening.
+  if (mode === 'session' && !window._bwWriteSessionContext && !window._bwFromHold) {
     renderFlowButtons();
   } else {
     showTheoristOpening(key, false);
@@ -1722,18 +1722,14 @@ function confirmTheoristEntry() {
 // with the hold text so the user can send it (or edit) as their opening.
 window.enterHoldConversation = function(theoristKey, holdText) {
   window._bwPendingTheorist = theoristKey || 'winnicott';
+  window._bwFromHold = true;
+  // Pass written text as session context — analyst opens based on what was written
+  if (holdText && holdText.trim()) {
+    window._bwWriteSessionContext = { text: holdText.trim(), summary: null };
+  }
   localStorage.setItem('bw_mode', 'session');
   confirmTheoristEntry();
-  if (holdText && holdText.trim()) {
-    setTimeout(() => {
-      const inputEl = document.getElementById('user-input');
-      if (inputEl) {
-        inputEl.value = holdText.trim();
-        inputEl.dispatchEvent(new Event('input'));
-        inputEl.focus();
-      }
-    }, 60);
-  }
+  window._bwFromHold = false;
 };
 
 let uploadedFileContent = null;
@@ -4760,22 +4756,19 @@ Skill תרגום: אם המשתמש מבקש תרגום — למשל "תרגמי
   const _isExplore = localStorage.getItem('bw_mode') === 'explore';
   const exploreModeContext = _isExplore ? EXPLORE_MODE_INSTRUCTION : '';
 
-  // Write mode: inject threshold-work context when user came from Write summary
+  // Write mode: inject between-sessions framing when user came from Hold/Write
   const _writeCtx = window._bwWriteSessionContext;
   const writeSessionContext = _writeCtx ? `
 
-WRITE CONTEXT — THRESHOLD WORK
-The person wrote the following before this session. You have already read it. You hold it.
-
-${_writeCtx.text}${_writeCtx.summary?.main_theme ? `
-
-Core theme: ${_writeCtx.summary.main_theme}` : ''}
+WRITE CONTEXT — BETWEEN-SESSIONS PRESENCE
+The person's first message in this conversation contains what they wrote after their last session. They want to process what is sitting with them, or arrive better prepared for their next session.
 
 CRITICAL — YOUR ROLE:
-- You have read what was written. Do NOT ask "what did you write" or any variation. You already know.
-- Open with one sentence that shows you have received what was written — in your own voice, without quoting it or naming it directly.
-- Do NOT analyze the content. Do NOT summarize it back. Hold it silently as background.
-- Work the threshold: what makes it hard to bring this into the room with the therapist? That is what this conversation is for.
+- You have received what was written — it is their opening message. Do NOT ask "what did you write?" or any variation. You can see it directly.
+- Open with one sentence that shows you have received what was written — in your own voice, without quoting or analyzing it directly.
+- Do NOT close what they brought. Do NOT rush toward meaning. Hold it as presence.
+- Your role here is to accompany, not to treat. Help them stay with what surfaced — process it, understand it, or carry it into their next session.
+- Do NOT suggest what the material means. Ask one open question that opens space.
 - One question at a time.` : '';
 
   return `${promptOpener}${theoristKnowledge}${focusInstruction}${memoryContext}${interpretContext}${writeSessionContext}${flowContext}${genderInstruction}${clinicalInstruction}${exploreModeContext}
@@ -4819,7 +4812,7 @@ const UI_TRANSLATIONS = {
     send: 'שלח',
     memories: 'זיכרונות',
     welcome: 'ברוכ/ה הבא/ה',
-    welcomeHeading: 'מה עולה לך היום?',
+    welcomeHeading: 'מה נשאר איתך',
     welcomeText: 'יש לך משהו מהפגישה האחרונה שעדיין מהדהד?',
     theorists: { freud:'פרויד', klein:'קליין', winnicott:'ויניקוט', ogden:'אוגדן', loewald:'לוואלד', bion:'ביון', lacan:'לאקאן', kohut:'קוהוט', heimann:'היימן' },
     hint: 'Enter לשליחה · Shift+Enter לשורה חדשה',
@@ -5402,32 +5395,32 @@ const THEORIST_OPENING = {
     en: `Good day. I am here. Tell me what is on your mind.`,
     he_explore: `שלום. מה הביא אותך לחקור כאן?`,
     en_explore: `Good day. What has brought you here to think?`,
-    he_write: `יש משהו שכתבת — ולא יכולת להביא לחדר. מה מפריד בינך לבין המטפל/ת?`,
-    en_write: `You wrote something you could not bring into the room. What stands between you and your therapist?`
+    he_write: `קראתי מה שכתבת. יש שם חומר שממתין. מה עוד חי בך בקשר לזה?`,
+    en_write: `I read what you wrote. There's material waiting in it. What else is alive in you around this?`
   },
   klein: {
     he: `אני מקשיבה. ספרי לי מה שעולה.`,
     en: `I am listening. Tell me what comes.`,
     he_explore: `שלום. מה אתה רוצה להבין?`,
     en_explore: `Hello. What would you like to understand?`,
-    he_write: `כתבת משהו שנשאר בצד. מה קורה כשאת/ה מדמיין/ת שהמטפל/ת רואה את זה?`,
-    en_write: `You wrote something that stayed outside the room. What happens when you imagine your therapist seeing it?`
+    he_write: `מה שכתבת נוגע במשהו שם. מה קורה בך עכשיו כשאתה/את יושב/ת עם זה?`,
+    en_write: `What you wrote touches something there. What is moving in you right now as you sit with it?`
   },
   winnicott: {
     he: `שלום. שמח שבאת. לא צריך לדעת מה יקרה כאן. מה חי בך עכשיו?`,
     en: `Hello. I'm glad you're here. We don't need to know what will happen. What's alive in you right now?`,
     he_explore: `שמח שבאת. מה מסקרן אותך?`,
     en_explore: `Glad you came. What draws your curiosity?`,
-    he_write: `יש משהו שלא מצא את דרכו לחדר עדיין. לא צריך לדעת למה. מה חי בך בקשר לזה?`,
-    en_write: `Something hasn't found its way into the room yet. We don't need to know why. What's alive in you around that?`
+    he_write: `קראתי מה שכתבת. לא צריך לסיים את זה עכשיו. מה נושם בתוכך בקשר לזה?`,
+    en_write: `I've been with what you wrote. We don't need to close it now. What breathes in you around this?`
   },
   ogden: {
     he: `אני כאן. סקרן לגבי מה שייוולד בין שנינו. מה אתה מביא?`,
     en: `I'm here. Curious about what will be born between us. What are you bringing?`,
     he_explore: `מה אתה מביא לחשוב עליו?`,
     en_explore: `What are you bringing to think about?`,
-    he_write: `מה מביא אותך לדבר על מה שלא יכולת להביא?`,
-    en_write: `What brings you to speak about what you could not bring?`
+    he_write: `מה שכתבת נמצא ביניהם עכשיו. מה עוד מתרחש?`,
+    en_write: `What you wrote is between us now. What else is happening?`
   },
   loewald: {
     he: `טוב להיות כאן איתך.`,
@@ -5501,7 +5494,10 @@ async function showTheoristOpening(theoristKey, showContext = true) {
 
   // Write context: generate opening dynamically — theorist responds after having read the content
   if (isWrite) {
-    const triggerMsg = isEn ? 'I wrote.' : 'כתבתי.';
+    // Send the actual written text as the first user message (not a placeholder like 'כתבתי.')
+    // This guarantees the model sees the content directly, regardless of system prompt state.
+    const writeCtx = window._bwWriteSessionContext;
+    const triggerMsg = writeCtx.text;
     showThinking();
     try {
       const res = await fetch('/api/chat', {
@@ -5517,13 +5513,15 @@ async function showTheoristOpening(theoristKey, showContext = true) {
       });
       const data = await res.json();
       hideThinking();
-      const reply = Array.isArray(data.content)
+      const rawReply = Array.isArray(data.content)
         ? data.content.filter(b => b.type === 'text').map(b => b.text).join('')
         : (data.text || '');
-      if (reply) {
+      if (rawReply) {
+        // Strip MEMORY tag before display and history
+        const reply = rawReply.split('\n').filter(line => !/\[MEMORY/i.test(line)).join('\n').trim();
         const attribution = shortMap[theoristKey] || theoristKey;
         appendMessage('assistant', reply, attribution);
-        // Pre-seed history: trigger (hidden) + response
+        // Pre-seed history: actual written text + clean response
         conversationHistory.push({ role: 'user', content: triggerMsg });
         conversationHistory.push({ role: 'assistant', content: reply });
         updateReflectionBtn();
@@ -5532,8 +5530,8 @@ async function showTheoristOpening(theoristKey, showContext = true) {
       }
     } catch (e) {
       hideThinking();
-      // Fallback to static opening on error — still seed triggerMsg so history starts with user turn
-      const fallback = openingObj[isEn ? 'en' : 'he'] || openingObj['he'];
+      // Fallback to write-specific static opening on error
+      const fallback = openingObj[isEn ? 'en_write' : 'he_write'] || openingObj[isEn ? 'en' : 'he'] || openingObj['he'];
       appendMessage('assistant', fallback, shortMap[theoristKey] || theoristKey);
       conversationHistory.push({ role: 'user', content: triggerMsg });
       conversationHistory.push({ role: 'assistant', content: fallback });

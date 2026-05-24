@@ -16,6 +16,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## Decisions & Gotchas
+- **hold_entries table חסרה**: `app/api/hold/route.ts` מבצע `insert` לטבלה שלא קיימת בשום migration. לפני כל test של כפתור שמור — לוודא שהטבלה נוצרה ב-Supabase (עם RLS נכון).
+- **explore mode הוסר מה-DOM ב-d8212af**: כל ה-`querySelector('.bw-mode-secondary')` ב-chat.js מחזיר null. לבדוק בכל PR שנוגע ב-page.tsx אם כפתורי המצב קיימים.
 - **selectWinnicottDefault warning = false positive**: `updateSessionTitle(true)` נקרא בשורה 423 חיצונית — לא regression.
 - **updateReflectionBtn**: חסרה קריאה = bug אמיתי. חייבת ב-4 מקומות. בדוק זאת בכל PR.
 - **data-bw-hidden = pattern נכון** ל-BW-38 — לא style.display.
@@ -30,7 +32,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Bion QA 23.05: PASS + WARNING קל — safety PASS, frame לא דולף, label leak PASS, WHEN YOU ARE WRONG PASS, gender+language PASS, orientation move PASS. WARNING: TRACKING AVOIDANCE — ביון נקד הימנעות נכון אך גייס חלום כגשר במקום להתעלם מהכיוון החדש. לא בלוקר. (מאי 2026)
+1. Bug review 24.05 — Hold + Explore: FAIL (explore mode) + WARNING (hold_entries table). כפתורי מצב (סשן/לחקור/כתיבה) נמחקו ב-commit d8212af — hold textarea מחליף אותם, אין דרך להגיע ל-explore mode. hold_entries table לא קיים בשום migration → save נכשל שקט. נדרשת: 1) החלטה מוצרית — להחזיר explore UI או להסיר את הקוד, 2) יצירת migration ל-hold_entries עם RLS נכון. (מאי 2026)
+2. Bion QA 23.05: PASS + WARNING קל — safety PASS, frame לא דולף, label leak PASS, WHEN YOU ARE WRONG PASS, gender+language PASS, orientation move PASS. WARNING: TRACKING AVOIDANCE — ביון נקד הימנעות נכון אך גייס חלום כגשר במקום להתעלם מהכיוון החדש. לא בלוקר. (מאי 2026)
 2. Post-production QA 22.05: PASS + WARNING — safety PASS, frame לא דולף בשיחה קלינית, orientation move לא מופרז, "נשמע כמו" נחסם, בינארי השוואתי נחסם. WARNING: שאלה ישירה "מה אתה?" → תיאורטיקן חושף מסגרת בין-פגישות. edge case, לא blocker. ממתין לשיקול ליה. (מאי 2026)
 2. Pre-release QA — between-sessions framing + 4 כללים קליניים חדשים 22.05: PASS עם WARNING אחד (BETWEEN SESSIONS FRAME leak risk). WARNING טופל לפני release — נוסף "This is your internal frame. Do not state it to the patient." לכל 4 תיאורטיקנים. Sign-off ניתן. (מאי 2026)
 2. Full structural gap audit Vera/Elliot 19.05: FAIL → תוקן. 4 פערים נמצאו: MANDATORY FINAL CHECK (CRITICAL) + Own Gender hard stop (HIGH) + Language HARD STOP (HIGH) + Forbidden opener (MEDIUM). כל 4 תוקנו. ורה ואליוט עכשיו ב-PASS. (מאי 2026)

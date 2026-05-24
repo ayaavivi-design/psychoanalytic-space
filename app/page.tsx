@@ -1,6 +1,6 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { PenLine, Globe, Brain, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, NotebookPen } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { PenLine, Globe, Brain, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, NotebookPen, Mic } from 'lucide-react';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -13,6 +13,9 @@ export default function Home() {
   const [holdTheorist, setHoldTheorist] = useState('winnicott');
   const [showHoldTheoristPicker, setShowHoldTheoristPicker] = useState(false);
   const [holdSaveStatus, setHoldSaveStatus] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const baseHoldTextRef = useRef('');
 
   const THEORIST_CARDS: Record<string, Record<string, { approach: string; concepts: string; forWhom: string }>> = {
     freud: {
@@ -65,8 +68,8 @@ export default function Home() {
     en: { title: 'Write', text: 'Write to your therapist — or just for yourself. What stayed, what wasn\'t said.' },
   };
   const WELCOME_I18N: Record<string, { heading: string; apiText: string; privacyLink: string }> = {
-    he: { heading: 'מה עולה לך היום?', apiText: 'השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.', privacyLink: 'מדיניות פרטיות' },
-    en: { heading: "What's on your mind?", apiText: "Conversations are processed through Anthropic's API and are not stored by us or used for model training.", privacyLink: 'Privacy Policy' },
+    he: { heading: 'מה נשאר איתך', apiText: 'השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.', privacyLink: 'מדיניות פרטיות' },
+    en: { heading: 'What stayed with you', apiText: "Conversations are processed through Anthropic's API and are not stored by us or used for model training.", privacyLink: 'Privacy Policy' },
   };
   const PRIVACY_I18N: Record<string, { title: string; paragraphs: { label: string; text: string }[]; btnOk: string }> = {
     he: {
@@ -131,38 +134,18 @@ export default function Home() {
     return pair ? (isHe ? pair[0] : pair[1]) : key;
   };
 
-  const handleHoldSave = async () => {
+  const handleHoldSave = () => {
     if (!holdText.trim()) return;
-    setHoldSaveStatus('saving');
-    try {
-      const session = (window as any).supabaseClient?.auth
-        ? await (window as any).supabaseClient.auth.getSession()
-        : null;
-      const token = session?.data?.session?.access_token;
-      const res = await fetch('/api/hold', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ content: holdText }),
-      });
-      setHoldSaveStatus(res.ok ? 'saved' : '');
-    } catch { setHoldSaveStatus(''); }
+    (window as any).saveWriteEntry?.(holdText, holdText);
+    setHoldSaveStatus('saved');
+    setTimeout(() => setHoldSaveStatus(''), 2000);
   };
 
-  const handleHoldShare = async () => {
+  const handleHoldShare = () => {
     if (!holdText.trim()) return;
-    setHoldSaveStatus('saving');
-    try {
-      const session = (window as any).supabaseClient?.auth
-        ? await (window as any).supabaseClient.auth.getSession()
-        : null;
-      const token = session?.data?.session?.access_token;
-      const res = await fetch('/api/hold', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ content: holdText }),
-      });
-      setHoldSaveStatus(res.ok ? 'shared' : '');
-    } catch { setHoldSaveStatus(''); }
+    (window as any).saveWriteEntry?.(holdText, holdText);
+    setHoldSaveStatus('shared');
+    setTimeout(() => setHoldSaveStatus(''), 2500);
   };
 
   const handleEnterConversation = (theorist: string) => {
@@ -170,6 +153,38 @@ export default function Home() {
     (window as any).enterHoldConversation?.(theorist, holdText);
     setHoldText('');
     setHoldSaveStatus('');
+  };
+
+  const handleToggleVoice = () => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) return;
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    const r = new SR();
+    r.lang = isHe ? 'he-IL' : 'en-US';
+    r.continuous = false;
+    r.interimResults = true;
+    baseHoldTextRef.current = holdText;
+    r.onresult = (e: any) => {
+      let interim = '', final = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const text = e.results[i][0].transcript;
+        if (e.results[i].isFinal) final += text; else interim += text;
+      }
+      if (final) {
+        baseHoldTextRef.current = baseHoldTextRef.current ? baseHoldTextRef.current + ' ' + final : final;
+        setHoldText(baseHoldTextRef.current);
+      } else {
+        setHoldText(baseHoldTextRef.current ? baseHoldTextRef.current + ' ' + interim : interim);
+      }
+    };
+    r.onerror = () => { setIsRecording(false); recognitionRef.current = null; };
+    r.onend = () => { setIsRecording(false); recognitionRef.current = null; };
+    recognitionRef.current = r;
+    r.start();
+    setIsRecording(true);
   };
   const THEORIST_LABELS: Record<string, [string, string]> = {
     freud:    [isHe ? 'פרויד'   : 'Freud',    isHe ? 'מה שלא נאמר'              : 'What is left unsaid'],
@@ -452,48 +467,71 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <span id="bw-back-btn" onClick={() => (window as any).goBackToChat()} style={{ position: 'absolute', top: 20, left: 24, fontSize: 12, color: 'var(--muted)', cursor: 'pointer', opacity: 0.7, display: 'none' }}>← חזרה</span>
               {/* Hold entry — default screen */}
               <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
-                <p className="bw-entry-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0 }}>מה עולה לך היום?</p>
-                <textarea
-                  value={holdText}
-                  onChange={e => { setHoldText(e.target.value); if (holdSaveStatus) setHoldSaveStatus(''); }}
-                  style={{
-                    width: '100%', minHeight: 180, padding: '16px 20px',
-                    background: 'var(--bg)', border: '1px solid var(--border)',
-                    borderRadius: 16, color: 'var(--text)', fontSize: 15,
-                    fontFamily: 'var(--font-rubik), sans-serif', lineHeight: 1.7,
-                    resize: 'vertical', direction: 'rtl', boxSizing: 'border-box', outline: 'none',
-                  }}
-                />
+                <p className="bw-entry-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0, alignSelf: 'flex-start' }}>{isHe ? 'מה נשאר איתך' : 'What stayed with you'}</p>
+                {/* White card */}
+                <div style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                  <textarea
+                    value={holdText}
+                    onChange={e => { baseHoldTextRef.current = e.target.value; setHoldText(e.target.value); if (holdSaveStatus) setHoldSaveStatus(''); }}
+                    placeholder={isHe ? 'מה נשאר מהפגישה?' : "What's still with you?"}
+                    style={{
+                      width: '100%', minHeight: 260, padding: '20px',
+                      background: 'transparent', border: 'none',
+                      color: 'var(--text)', fontSize: 15,
+                      fontFamily: 'var(--font-rubik), sans-serif', lineHeight: 1.7,
+                      resize: 'none', direction: isHe ? 'rtl' : 'ltr', boxSizing: 'border-box', outline: 'none',
+                      display: 'block',
+                    }}
+                  />
+                  {/* Card footer */}
+                  <div style={{ borderTop: '1px solid var(--border)', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif' }}>
+                      {isHe ? 'נשמר אצלך בלבד.' : 'Stays on your device only.'}
+                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                      <span onClick={() => (window as any).openWriteArchive?.()} style={{ fontSize: 12, color: 'var(--muted)', cursor: 'pointer', textDecoration: 'underline', fontFamily: 'var(--font-rubik), sans-serif' }}>
+                        {isHe ? 'ארכיון' : 'Archive'}
+                      </span>
+                      <button
+                        onClick={handleToggleVoice}
+                        className={isRecording ? 'bw-mic-recording' : ''}
+                        title={isHe ? 'הקלטה קולית' : 'Voice input'}
+                        style={{
+                          width: 30, height: 30, borderRadius: '50%', border: 'none', padding: 0,
+                          background: 'transparent',
+                          color: isRecording ? 'var(--accent)' : 'var(--muted)',
+                          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          transition: 'color 0.15s',
+                        }}
+                      >
+                        <Mic size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {/* Status */}
                 {holdSaveStatus === 'saved' && (
-                  <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0 }}>נשמר.</p>
+                  <p style={{ fontSize: 13, color: 'var(--muted)', fontFamily: 'var(--font-cormorant), serif', fontStyle: 'italic', margin: 0 }}>{isHe ? 'נשמר.' : 'Saved.'}</p>
                 )}
-                {holdSaveStatus === 'shared' && (
-                  <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0 }}>נשמר — יהיה זמין למטפל שלך.</p>
-                )}
+                {/* Actions row — Save + Talk */}
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-                  <button onClick={handleHoldSave} style={{
-                    padding: '10px 20px', borderRadius: 22, border: '1px solid var(--border)',
-                    background: 'none', color: 'var(--text)', fontSize: 13,
-                    fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer',
+                  <button onClick={handleHoldSave} disabled={!holdText.trim()} style={{
+                    padding: '10px 24px', borderRadius: 22, border: 'none',
+                    background: 'var(--accent)', color: 'white', fontSize: 13,
+                    fontFamily: 'var(--font-rubik), sans-serif', cursor: holdText.trim() ? 'pointer' : 'default',
+                    opacity: holdText.trim() ? 1 : 0.35, transition: 'opacity 0.15s',
                   }}>
                     {isHe ? 'שמור' : 'Save'}
-                  </button>
-                  <button onClick={handleHoldShare} style={{
-                    padding: '10px 20px', borderRadius: 22, border: '1px solid var(--border)',
-                    background: 'none', color: 'var(--text)', fontSize: 13,
-                    fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer',
-                  }}>
-                    {isHe ? 'שתף עם המטפל' : 'Share with therapist'}
                   </button>
                   {/* שיחה — split button */}
                   <div style={{ display: 'flex', position: 'relative' }}>
                     <button onClick={() => handleEnterConversation(holdTheorist)} style={{
-                      padding: '10px 18px',
+                      padding: '10px 16px',
                       borderRadius: isHe ? '0 22px 22px 0' : '22px 0 0 22px',
                       border: '1px solid var(--accent)',
                       borderRight: isHe ? undefined : 'none',
                       borderLeft: isHe ? 'none' : undefined,
-                      background: 'var(--accent)', color: 'white', fontSize: 13,
+                      background: 'var(--accent-soft)', color: 'var(--accent)', fontSize: 13,
                       fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer',
                     }}>
                       {isHe ? 'שיחה — ' : 'Talk — '}{getHoldTheoristName(holdTheorist)}
@@ -502,9 +540,9 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                       padding: '10px 10px',
                       borderRadius: isHe ? '22px 0 0 22px' : '0 22px 22px 0',
                       border: '1px solid var(--accent)',
-                      borderRight: isHe ? '1px solid rgba(255,255,255,0.3)' : undefined,
-                      borderLeft: isHe ? undefined : '1px solid rgba(255,255,255,0.3)',
-                      background: 'var(--accent)', color: 'white', fontSize: 13, cursor: 'pointer',
+                      borderRight: isHe ? '1px solid var(--accentDim)' : undefined,
+                      borderLeft: isHe ? undefined : '1px solid var(--accentDim)',
+                      background: 'var(--accent-soft)', color: 'var(--accent)', fontSize: 13, cursor: 'pointer',
                     }}>
                       ▾
                     </button>

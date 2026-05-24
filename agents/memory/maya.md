@@ -10,6 +10,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - icon-system.md: Lucide (size=15, strokeWidth=1.75) + רשימת Unicode מאושרת
 - UX-RULES.md: 9 כללים פעילים
 - between-tokens.json: source of truth לכל מדידה
+- **Hold UI (`/hold` route) — ממצאי מאי 2026:** padding-top 48px→28px, כרטיס max-height 360px, כותרת color→var(--text), placeholder opacity 0.9, כפתור שמור מוסתר עד hasContent. "שתף עם המטפל"/"שיחה" לא קיימים ב-/hold — שאלה פרודקטית פתוחה.
 - **מסך בחירה (BW-41) — ממצאי מאי 2026:**
   - Mode toggle: שני האפשרויות `--muted` בטעינה — אין selected state ברירת מחדל. צריך: "סשן" נבחר כברירת מחדל.
   - welcome padding-top: 8px בפועל — צריך 32px (space-xl).
@@ -33,14 +34,15 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. מפרט עיצוב מצגת ולידציה — שמור ב-bizdev/presentation-design-spec-2026-05.md (מאי 2026)
-2. סקירת UI מלאה — מאי 2026: 5 ממצאים קונקרטיים (ראה למטה)
-2. ניתוח מסך הבחירה (BW-41): 4 ממצאים — mode toggle ללא selected state, padding-top נמוך, כותרות זהות, grid margin ידני. עדכון design-system.md עם לינקי live.
-3. design-system.html v1.1: full token sync, bubble spec fix, States demo + Grid/Breakpoints sections
-4. components.md: 7 קומפוננטים מתועדים עם CSS spec + forbidden patterns לכל אחד
-5. icon-system.md: Lucide + Unicode two-language system, approved lists, size specs
-6. font-size tokenization: globals.css — 37 ערכי hardcoded → 10 tokens (--fs-*)
-7. border-radius fix: תיקון תיעוד design-system.md (radius-lg היה מתועד כ-14px, נכון 16px)
+1. Hold UI review (מאי 2026): 7 ממצאים — padding-top גבוה (48→28px), כרטיס מתפח (flex:1 בלי max-height), כותרת בצבע muted (contrast fail), placeholder בהיר מדי, כפתור שמור נראה שבור כשריק, שתף+שיחה לא קיימים ב-/hold route (שאלה פרודקטית פתוחה לאיה/הילי).
+2. מפרט עיצוב מצגת ולידציה — שמור ב-bizdev/presentation-design-spec-2026-05.md (מאי 2026)
+3. סקירת UI מלאה — מאי 2026: 5 ממצאים קונקרטיים (ראה למטה)
+4. ניתוח מסך הבחירה (BW-41): 4 ממצאים — mode toggle ללא selected state, padding-top נמוך, כותרות זהות, grid margin ידני. עדכון design-system.md עם לינקי live.
+5. design-system.html v1.1: full token sync, bubble spec fix, States demo + Grid/Breakpoints sections
+6. components.md: 7 קומפוננטים מתועדים עם CSS spec + forbidden patterns לכל אחד
+7. icon-system.md: Lucide + Unicode two-language system, approved lists, size specs
+8. font-size tokenization: globals.css — 37 ערכי hardcoded → 10 tokens (--fs-*)
+9. border-radius fix: תיקון תיעוד design-system.md (radius-lg היה מתועד כ-14px, נכון 16px)
 
 ## ממצאי סקירת UI — מאי 2026
 
