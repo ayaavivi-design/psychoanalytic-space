@@ -11,6 +11,16 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 
 ---
 
+## Competitive Intelligence — להציף בדיוני B2B ו-therapist partnerships
+
+- **Therapy Mallard** (therapymallard.com): מקליט פגישות, מתמלל, מחלץ goals/themes. כלי productivity, CBT-oriented. **לא מתחרה ישיר** — הקלטת פגישה פסיכואנליטית לא תואמת את הframe הקליני. מטפל פסיכואנליטי לא ימליץ עליו.
+- **Flourish** (myflourish.ai): AI companion בשם Sunnie, Stanford/Harvard-backed, RCT-validated, CBT/DBT/mindfulness, gamification, קהילה. **לא מתחרה ישיר** — מכוון לmass market, לא לפסיכואנליטי. אבל: יש להם therapist recommendations ו-institutional credibility.
+- **ה-whitespace של Between**: אין כלי שמכוון ספציפית למטופלים פסיכואנליטיים/פסיכודינמיים, שמכבד את הframe, שעובד עם קול תיאורטיקן ייחודי. זו הבחנה שמטפלים פסיכואנליטיים מבינים מיד.
+- **RCT angle לB2B**: מחקר קטן שמודד "האם מטופלים שמשתמשים בBetween מביאים יותר חומר לפגישה הבאה?" — מספיק לפתוח דלתות קליניות ואינסטיטוציות. לא צריך RCT גדול. לשקול כשמגיעים לשלב therapist partnerships.
+- **Therapy Journal** (therapyjournal.app): יומן עם templates מובנים, ספריית קורסים (CBT/psychoeducation), שיתוף entries עם מטפל. **מנגנון B2B**: "Therapist Code" — מטפל מפיץ קוד, מטופל מכניס בפרופיל, entries משותפים נגישים למטפל. פשוט, ללא חיכוך — כדאי לשקול כ-UX pattern אם Between הולכת B2B. המוצר עצמו CBT/solution-focused ("Feel Grateful" כשלב הכנה לפגישה — אנטיתטי לframe פסיכואנליטי). לא מתחרה ישיר. נקודה נוספת: "Invite Therapist" נמצא בניווט הראשי — B2B הוא הלב, לא תוספת. לשקול: אם Between הולכת B2B, האם זה כפתור גלוי בממשק או flow נפרד לחלוטין.
+
+---
+
 ## Decisions & Gotchas
 - **אל תיצרי Jira issue בלי לבדוק duplicates** — תמיד חפשי קודם ב-JQL.
 - **QA bugs**: label `qa-report`, priority High אם safety issue.

@@ -9,6 +9,10 @@ export default function Home() {
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
   const [hoveredMode, setHoveredMode] = useState<string>('session');
   const [currentLang, setCurrentLang] = useState('en');
+  const [holdText, setHoldText] = useState('');
+  const [holdTheorist, setHoldTheorist] = useState('winnicott');
+  const [showHoldTheoristPicker, setShowHoldTheoristPicker] = useState(false);
+  const [holdSaveStatus, setHoldSaveStatus] = useState('');
 
   const THEORIST_CARDS: Record<string, Record<string, { approach: string; concepts: string; forWhom: string }>> = {
     freud: {
@@ -49,8 +53,8 @@ export default function Home() {
     elliot:   { he: 'אליוט',   en: 'Elliot'   },
   };
   const SESSION_TIP_I18N: Record<string, { title: string; text: string }> = {
-    he: { title: 'סשן', text: 'התיאורטיקן הנבחר יגיב כאנליטיקאי בשיחה — לא כמרצה. מתאים להבאת חומר קליני, חלומות, או מצבים אישיים.' },
-    en: { title: 'Clinical Session Mode', text: 'The selected theorist responds as an analyst in conversation — not as a lecturer. Suitable for clinical material, dreams, or personal situations.' },
+    he: { title: 'סשן', text: 'התיאורטיקן הנבחר חושב איתך בין הפגישות — לעבד מה שעלה ולמצוא מה להביא לפגישה הבאה.' },
+    en: { title: 'Session', text: 'The selected theorist thinks with you between sessions — to process what came up and find what to bring to your next session.' },
   };
   const EXPLORE_TIP_I18N: Record<string, { title: string; text: string }> = {
     he: { title: 'חיפוש', text: 'להבין גישה תיאורטית, לשאול על מושג — ללא עיבוד חומר אישי.' },
@@ -114,6 +118,59 @@ export default function Home() {
 
   const isHe = currentLang === 'he';
   const isDev = process.env.NODE_ENV !== 'production';
+
+  const HOLD_THEORIST_NAMES: Record<string, [string, string]> = {
+    freud:    ['פרויד',   'Freud'],
+    klein:    ['קליין',   'Klein'],
+    winnicott:['ויניקוט', 'Winnicott'],
+    ogden:    ['אוגדן',   'Ogden'],
+    bion:     ['ביון',    'Bion'],
+  };
+  const getHoldTheoristName = (key: string) => {
+    const pair = HOLD_THEORIST_NAMES[key];
+    return pair ? (isHe ? pair[0] : pair[1]) : key;
+  };
+
+  const handleHoldSave = async () => {
+    if (!holdText.trim()) return;
+    setHoldSaveStatus('saving');
+    try {
+      const session = (window as any).supabaseClient?.auth
+        ? await (window as any).supabaseClient.auth.getSession()
+        : null;
+      const token = session?.data?.session?.access_token;
+      const res = await fetch('/api/hold', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ content: holdText }),
+      });
+      setHoldSaveStatus(res.ok ? 'saved' : '');
+    } catch { setHoldSaveStatus(''); }
+  };
+
+  const handleHoldShare = async () => {
+    if (!holdText.trim()) return;
+    setHoldSaveStatus('saving');
+    try {
+      const session = (window as any).supabaseClient?.auth
+        ? await (window as any).supabaseClient.auth.getSession()
+        : null;
+      const token = session?.data?.session?.access_token;
+      const res = await fetch('/api/hold', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ content: holdText }),
+      });
+      setHoldSaveStatus(res.ok ? 'shared' : '');
+    } catch { setHoldSaveStatus(''); }
+  };
+
+  const handleEnterConversation = (theorist: string) => {
+    setShowHoldTheoristPicker(false);
+    (window as any).enterHoldConversation?.(theorist, holdText);
+    setHoldText('');
+    setHoldSaveStatus('');
+  };
   const THEORIST_LABELS: Record<string, [string, string]> = {
     freud:    [isHe ? 'פרויד'   : 'Freud',    isHe ? 'מה שלא נאמר'              : 'What is left unsaid'],
     klein:    [isHe ? 'קליין'   : 'Klein',    isHe ? 'מה שקשה לגעת בו'         : 'What is hard to touch'],
@@ -126,7 +183,7 @@ export default function Home() {
   };
   const theoristKeys: string[] = isDev
     ? ['freud','klein','winnicott','ogden','loewald','bion','kohut','heimann']
-    : ['freud','klein','winnicott','ogden'];
+    : ['freud','klein','winnicott','ogden','bion'];
   const THEORIST_LIST: [string, string, string][] = theoristKeys.map(k => [k, THEORIST_LABELS[k][0], THEORIST_LABELS[k][1]]);
 
   return (
@@ -331,20 +388,6 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <span className="sb-icon"><LogOut size={15} strokeWidth={1.75} /></span>
               <span className="sb-label">התנתק</span>
             </div>
-            <div className="sb-item" id="lang-btn-sb" onClick={(e) => { e.stopPropagation(); (window as any).sbLangToggle(); }}>
-              <span className="sb-icon"><Languages size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label" id="sb-lang-label">English</span>
-            </div>
-            <div id="sb-lang-expand" style={{ display: 'none', padding: '2px 4px' }}>
-              {[
-                ['en','🇬🇧','English'],['he','🇮🇱','עברית']
-              ].map(([code, flag, name]) => (
-                <div key={code} className="sb-item" style={{ fontSize: 12, paddingRight: 24 }}
-                  onClick={(e) => { e.stopPropagation(); (window as any).selectLangSB(code, flag, name); }}>
-                  {flag} {name}
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
@@ -374,9 +417,18 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               >
                 ?
               </a>
+              <div
+                id="header-lang-btn"
+                onClick={(e) => { e.stopPropagation(); (window as any).headerLangToggle(); }}
+                style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 11, padding: '2px 6px', borderRadius: 6, fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 500, letterSpacing: '0.04em', transition: 'color 0.15s', lineHeight: 1, display: 'flex', alignItems: 'center', userSelect: 'none' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)'; }}
+              >
+                <span id="header-lang-label">EN</span>
+              </div>
             </div>
             <h1 dir="ltr" style={{ direction: 'ltr' }} suppressHydrationWarning>Between</h1>
-            <div style={{ flexShrink: 0, width: 44 }} />
+            <div style={{ flexShrink: 0, width: 80 }} />
           </div>
           <div className="header-session">
             <div id="session-title" style={{ display: 'none' }}></div>
@@ -398,42 +450,80 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
             <div className="welcome" id="welcome">
               {/* BW-41: back button — top-left corner of content area */}
               <span id="bw-back-btn" onClick={() => (window as any).goBackToChat()} style={{ position: 'absolute', top: 20, left: 24, fontSize: 12, color: 'var(--muted)', cursor: 'pointer', opacity: 0.7, display: 'none' }}>← חזרה</span>
-              {/* BW-41: mode selection — shown to new users */}
-              <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%' }}>
+              {/* Hold entry — default screen */}
+              <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
                 <p className="bw-entry-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0 }}>מה עולה לך היום?</p>
-                <div id="bw-mode-cards">
-                  <div className="bw-mode-card bw-mode-primary"
-                    onClick={() => { (window as any).onModeSelected('session'); setHoveredMode('session'); }}
-                    onMouseEnter={() => setHoveredMode('session')}>
-                    <span id="bw-label-session">סשן</span>
-                    <Sofa size={16} strokeWidth={1.4} />
-                  </div>
-                  <div className="bw-mode-card bw-mode-secondary"
-                    onClick={() => { (window as any).onModeSelected('explore'); setHoveredMode('explore'); }}
-                    onMouseEnter={() => setHoveredMode('explore')}>
-                    <span id="bw-label-explore">לחקור</span>
-                    <BookOpen size={16} strokeWidth={2} />
-                  </div>
-                  <div className="bw-mode-card bw-mode-tertiary"
-                    onClick={() => { (window as any).onModeSelected('write'); setHoveredMode('write'); }}
-                    onMouseEnter={() => setHoveredMode('write')}>
-                    <span id="bw-label-write">כתיבה</span>
-                    <NotebookPen size={16} strokeWidth={1.5} />
+                <textarea
+                  value={holdText}
+                  onChange={e => { setHoldText(e.target.value); if (holdSaveStatus) setHoldSaveStatus(''); }}
+                  style={{
+                    width: '100%', minHeight: 180, padding: '16px 20px',
+                    background: 'var(--bg)', border: '1px solid var(--border)',
+                    borderRadius: 16, color: 'var(--text)', fontSize: 15,
+                    fontFamily: 'var(--font-rubik), sans-serif', lineHeight: 1.7,
+                    resize: 'vertical', direction: 'rtl', boxSizing: 'border-box', outline: 'none',
+                  }}
+                />
+                {holdSaveStatus === 'saved' && (
+                  <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0 }}>נשמר.</p>
+                )}
+                {holdSaveStatus === 'shared' && (
+                  <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0 }}>נשמר — יהיה זמין למטפל שלך.</p>
+                )}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+                  <button onClick={handleHoldSave} style={{
+                    padding: '10px 20px', borderRadius: 22, border: '1px solid var(--border)',
+                    background: 'none', color: 'var(--text)', fontSize: 13,
+                    fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer',
+                  }}>
+                    {isHe ? 'שמור' : 'Save'}
+                  </button>
+                  <button onClick={handleHoldShare} style={{
+                    padding: '10px 20px', borderRadius: 22, border: '1px solid var(--border)',
+                    background: 'none', color: 'var(--text)', fontSize: 13,
+                    fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer',
+                  }}>
+                    {isHe ? 'שתף עם המטפל' : 'Share with therapist'}
+                  </button>
+                  {/* שיחה — split button */}
+                  <div style={{ display: 'flex', position: 'relative' }}>
+                    <button onClick={() => handleEnterConversation(holdTheorist)} style={{
+                      padding: '10px 18px', borderRadius: '22px 0 0 22px',
+                      border: '1px solid var(--accent)', borderRight: 'none',
+                      background: 'var(--accent)', color: 'white', fontSize: 13,
+                      fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer',
+                    }}>
+                      {isHe ? 'שיחה — ' : 'Talk — '}{getHoldTheoristName(holdTheorist)}
+                    </button>
+                    <button onClick={() => setShowHoldTheoristPicker(p => !p)} style={{
+                      padding: '10px 10px', borderRadius: '0 22px 22px 0',
+                      border: '1px solid var(--accent)', borderLeft: '1px solid rgba(255,255,255,0.3)',
+                      background: 'var(--accent)', color: 'white', fontSize: 13, cursor: 'pointer',
+                    }}>
+                      ▾
+                    </button>
+                    {showHoldTheoristPicker && (
+                      <div style={{
+                        position: 'absolute', top: '100%', right: 0, marginTop: 4,
+                        background: 'var(--surface)', border: '1px solid var(--border)',
+                        borderRadius: 12, padding: '6px 4px',
+                        display: 'flex', flexDirection: 'column', gap: 2,
+                        zIndex: 100, minWidth: 140,
+                      }}>
+                        {(['freud','klein','winnicott','ogden','bion'] as const).map(key => (
+                          <button key={key} onClick={() => { setHoldTheorist(key); setShowHoldTheoristPicker(false); }} style={{
+                            background: holdTheorist === key ? 'var(--accent-soft)' : 'none',
+                            border: 'none', padding: '7px 12px', cursor: 'pointer',
+                            borderRadius: 8, fontSize: 13, color: 'var(--text)',
+                            textAlign: 'right', fontFamily: 'var(--font-rubik), sans-serif', width: '100%',
+                          }}>
+                            {getHoldTheoristName(key)}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
-                <p style={{
-                  fontSize: 13, fontFamily: "'Rubik', sans-serif", color: 'var(--muted)',
-                  lineHeight: 1.7, margin: '0 auto', maxWidth: 380, textAlign: 'center',
-                  transition: 'opacity 0.15s ease', opacity: 1,
-                  direction: currentLang === 'he' ? 'rtl' : 'ltr',
-                  minHeight: '66px', width: '100%',
-                }}>
-                  {hoveredMode === 'explore'
-                    ? (EXPLORE_TIP_I18N[currentLang] || EXPLORE_TIP_I18N['en']).text
-                    : hoveredMode === 'write'
-                    ? (WRITE_TIP_I18N[currentLang] || WRITE_TIP_I18N['he']).text
-                    : (SESSION_TIP_I18N[currentLang] || SESSION_TIP_I18N['he']).text}
-                </p>
               </div>
 
               {/* BW-41: theorist selection — slides in after mode pick */}

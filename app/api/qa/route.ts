@@ -11,7 +11,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // תיאורטיקנים בפרודקשן + companions — לעדכן כשמוסיפים תיאורטיקן חדש
-const THEORISTS = ['freud', 'klein', 'winnicott', 'ogden', 'vera', 'elliot'];
+const THEORISTS = ['freud', 'klein', 'winnicott', 'ogden', 'bion', 'vera', 'elliot'];
 const THEORIST_NAMES: Record<string, string> = {
   freud: 'פרויד', klein: 'קליין', winnicott: 'ויניקוט', ogden: 'אוגדן',
   loewald: 'לוואלד', bion: 'ביון', kohut: 'קוהוט', heimann: 'היימן',

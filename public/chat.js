@@ -1278,12 +1278,9 @@ function showModeSelect() {
   // Guard: ensure #welcome is visible (may have been hidden by confirmTheoristEntry or signOut)
   const welcomeEl = document.getElementById('welcome');
   if (welcomeEl && welcomeEl.style.display === 'none') welcomeEl.style.display = '';
-  // Unified screen: show both sections together
+  // Hold-mode entry: show only the hold textarea area, not the old theorist picker
   if (modeDiv) modeDiv.style.display = 'flex';
-  if (theoristDiv) {
-    theoristDiv.style.display = 'flex';
-    theoristDiv.classList.remove('bw-slide-in');
-  }
+  if (theoristDiv) theoristDiv.style.display = 'none';
   // Show back button only if there's an active conversation to return to
   const backBtn = document.getElementById('bw-back-btn');
   if (backBtn) {
@@ -1719,6 +1716,26 @@ function confirmTheoristEntry() {
     showTheoristOpening(key, false);
   }
 }
+// ── Hold conversation entry ───────────────────────────────────────────────────
+// Called from the React Hold UI when user clicks "שיחה — [theorist]".
+// Pre-selects the theorist, starts the conversation, and pre-populates the input
+// with the hold text so the user can send it (or edit) as their opening.
+window.enterHoldConversation = function(theoristKey, holdText) {
+  window._bwPendingTheorist = theoristKey || 'winnicott';
+  localStorage.setItem('bw_mode', 'session');
+  confirmTheoristEntry();
+  if (holdText && holdText.trim()) {
+    setTimeout(() => {
+      const inputEl = document.getElementById('user-input');
+      if (inputEl) {
+        inputEl.value = holdText.trim();
+        inputEl.dispatchEvent(new Event('input'));
+        inputEl.focus();
+      }
+    }, 60);
+  }
+};
+
 let uploadedFileContent = null;
 let uploadedFileName = null;
 let selectedLang = { code: 'en', flag: '🇬🇧', name: 'English' };
@@ -5249,6 +5266,7 @@ function selectLang(code, flag, name) {
   const lf = document.getElementById('lang-flag'); if (lf) lf.textContent = flag;
   const ll = document.getElementById('lang-label'); if (ll) ll.textContent = name;
   const menu = document.getElementById('lang-menu'); if (menu) menu.style.display = 'none';
+  const hl = document.getElementById('header-lang-label'); if (hl) hl.textContent = code === 'he' ? 'עב' : 'EN';
   applyUITranslation(code);
   // Re-render flow buttons and analyst badge in new language (welcome screen only)
   if (document.getElementById('welcome') && conversationHistory.length === 0) {
@@ -6665,6 +6683,12 @@ function restoreConversation(memIndex) {
   // Ensure input is visible after restoring a conversation
   document.body.classList.remove('bw-selecting');
 }
+
+function headerLangToggle() {
+  if (selectedLang?.code === 'he') selectLang('en', '🇬🇧', 'English');
+  else selectLang('he', '🇮🇱', 'עברית');
+}
+window.headerLangToggle = headerLangToggle;
 
 function sbLangToggle() {
   const el = document.getElementById('sb-lang-expand');
