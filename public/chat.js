@@ -1297,9 +1297,8 @@ function showModeSelect() {
   // Guard: ensure #welcome is visible (may have been hidden by confirmTheoristEntry or signOut)
   const welcomeEl = document.getElementById('welcome');
   if (welcomeEl && welcomeEl.style.display === 'none') welcomeEl.style.display = '';
-  // Hold-mode entry: show only the hold textarea area, not the old theorist picker
   if (modeDiv) modeDiv.style.display = 'flex';
-  if (theoristDiv) theoristDiv.style.display = 'none';
+  if (theoristDiv) theoristDiv.style.display = 'flex';
   // Show back button only if there's an active conversation to return to
   const backBtn = document.getElementById('bw-back-btn');
   if (backBtn) {
