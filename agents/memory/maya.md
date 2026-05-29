@@ -34,7 +34,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Hold UI review (מאי 2026): 7 ממצאים — padding-top גבוה (48→28px), כרטיס מתפח (flex:1 בלי max-height), כותרת בצבע muted (contrast fail), placeholder בהיר מדי, כפתור שמור נראה שבור כשריק, שתף+שיחה לא קיימים ב-/hold route (שאלה פרודקטית פתוחה לאיה/הילי).
+1. Hold UI deep audit (מאי 2026): 13 ממצאים — ראה פירוט למטה.
+2. Hold UI review (מאי 2026): 7 ממצאים — padding-top גבוה (48→28px), כרטיס מתפח (flex:1 בלי max-height), כותרת בצבע muted (contrast fail), placeholder בהיר מדי, כפתור שמור נראה שבור כשריק, שתף+שיחה לא קיימים ב-/hold route (שאלה פרודקטית פתוחה לאיה/הילי).
 2. מפרט עיצוב מצגת ולידציה — שמור ב-bizdev/presentation-design-spec-2026-05.md (מאי 2026)
 3. סקירת UI מלאה — מאי 2026: 5 ממצאים קונקרטיים (ראה למטה)
 4. ניתוח מסך הבחירה (BW-41): 4 ממצאים — mode toggle ללא selected state, padding-top נמוך, כותרות זהות, grid margin ידני. עדכון design-system.md עם לינקי live.
@@ -43,6 +44,31 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 7. icon-system.md: Lucide + Unicode two-language system, approved lists, size specs
 8. font-size tokenization: globals.css — 37 ערכי hardcoded → 10 tokens (--fs-*)
 9. border-radius fix: תיקון תיעוד design-system.md (radius-lg היה מתועד כ-14px, נכון 16px)
+
+## ממצאי Hold UI deep audit — מאי 2026
+
+### 13 ממצאים מוכחים (מדידה בפועל)
+
+1. **כותרת — font-family שגוי**: `"David Libre"` בפועל במקום `Cormorant Garamond`. `var(--font-cormorant)` מתפרשת ל-David Libre — bug טכני.
+2. **welcome padding-top: 0px** — צריך `--space-xl` = 32px (דלתא: -32px). תוכן צף גבוה מדי.
+3. **line-height כותרת: 1.9** — לא בטוקנים. צריך 1.3–1.6.
+4. **container gap: 16px** — לא בסקאלה (4/8/12/20/32). הקרוב `--space-lg` = 20px (דלתא: -4px).
+5. **footer padding: 10px 16px** — לא עקבי עם body padding 20px. צריך 10px 20px (דלתא: +4px אופקי).
+6. **גבהים לא עקביים**: שמור=35.5px, ניתוח=37.5px, שיחה=38px — שלושה גבהים שונים בשורה אחת.
+7. **היררכיה הפוכה**: "שמור" קיבל Primary CTA (accent מלא) — "שיחה" קיבל accent-soft. פעולת הליבה נראית משנית.
+8. **"ניתוח" border color**: `var(--border)` = מדהה ברקע. צריך `var(--muted)`.
+9. **split button border broken**: `borderRight: "2px outset rgb(0,0,0)"` — browser default שגוי. נראה שבור לחלוטין.
+10. **6 כפתורים בו-זמנית**: 3 פעולות + 3 suggestions = עומס קוגניטיבי.
+11. **hint "סמן טקסט" לא מזהיר**: נראה כ-metadata, לא כ-affordance.
+12. **footer כרטיס לא נבנה**: mic + ארכיון + hint — 3 elements שלא מדברים.
+13. **RTL split button**: border direction לא תקין ב-RTL.
+
+### קריטי ביותר
+- היררכיית כפתורים הפוכה (שמור > שיחה במראה, הפוך בחשיבות)
+- גבהים לא עקביים בשורת כפתורים
+- font-family שגוי בכותרת (David Libre במקום Cormorant)
+
+---
 
 ## ממצאי סקירת UI — מאי 2026
 

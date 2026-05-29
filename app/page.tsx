@@ -1,6 +1,6 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { PenLine, Globe, Brain, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, NotebookPen } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { PenLine, Globe, Brain, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, NotebookPen, Mic, ScrollText } from 'lucide-react';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -9,6 +9,14 @@ export default function Home() {
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
   const [hoveredMode, setHoveredMode] = useState<string>('session');
   const [currentLang, setCurrentLang] = useState('en');
+  const [holdText, setHoldText] = useState('');
+  const [holdTheorist, setHoldTheorist] = useState('winnicott');
+  const [showHoldTheoristPicker, setShowHoldTheoristPicker] = useState(false);
+  const [holdSaveStatus, setHoldSaveStatus] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const baseHoldTextRef = useRef('');
+  const holdTextareaRef = useRef<HTMLDivElement>(null);
 
   const THEORIST_CARDS: Record<string, Record<string, { approach: string; concepts: string; forWhom: string }>> = {
     freud: {
@@ -49,8 +57,8 @@ export default function Home() {
     elliot:   { he: 'אליוט',   en: 'Elliot'   },
   };
   const SESSION_TIP_I18N: Record<string, { title: string; text: string }> = {
-    he: { title: 'סשן', text: 'התיאורטיקן הנבחר יגיב כאנליטיקאי בשיחה — לא כמרצה. מתאים להבאת חומר קליני, חלומות, או מצבים אישיים.' },
-    en: { title: 'Clinical Session Mode', text: 'The selected theorist responds as an analyst in conversation — not as a lecturer. Suitable for clinical material, dreams, or personal situations.' },
+    he: { title: 'סשן', text: 'התיאורטיקן הנבחר חושב איתך בין הפגישות — לעבד מה שעלה ולמצוא מה להביא לפגישה הבאה.' },
+    en: { title: 'Session', text: 'The selected theorist thinks with you between sessions — to process what came up and find what to bring to your next session.' },
   };
   const EXPLORE_TIP_I18N: Record<string, { title: string; text: string }> = {
     he: { title: 'חיפוש', text: 'להבין גישה תיאורטית, לשאול על מושג — ללא עיבוד חומר אישי.' },
@@ -61,8 +69,8 @@ export default function Home() {
     en: { title: 'Write', text: 'Write to your therapist — or just for yourself. What stayed, what wasn\'t said.' },
   };
   const WELCOME_I18N: Record<string, { heading: string; apiText: string; privacyLink: string }> = {
-    he: { heading: 'מה עולה לך היום?', apiText: 'השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.', privacyLink: 'מדיניות פרטיות' },
-    en: { heading: "What's on your mind?", apiText: "Conversations are processed through Anthropic's API and are not stored by us or used for model training.", privacyLink: 'Privacy Policy' },
+    he: { heading: 'מה נשאר איתך', apiText: 'השיחות מעובדות דרך ממשק ה-API של אנתרופיק ואינן נשמרות על ידינו ואינן משמשות לאימון מודלים.', privacyLink: 'מדיניות פרטיות' },
+    en: { heading: 'What stayed with you', apiText: "Conversations are processed through Anthropic's API and are not stored by us or used for model training.", privacyLink: 'Privacy Policy' },
   };
   const PRIVACY_I18N: Record<string, { title: string; paragraphs: { label: string; text: string }[]; btnOk: string }> = {
     he: {
@@ -97,6 +105,7 @@ export default function Home() {
     setTimeout(() => (window as any).applyUITranslation?.(code), 0);
     // Expose tooltip controls so chat.js can trigger the rich theorist card
     // from entry-screen chips (same tooltip used in sidebar)
+    (window as any).setHoldTheorist = (key: string) => setHoldTheorist(key);
     (window as any).setTheoristTooltip = (key: string, top: number, left: number, flip: boolean) => {
       setCurrentLang((window as any).selectedLang?.code || 'he');
       setTooltip({ text: key, top, left, flip });
@@ -114,6 +123,89 @@ export default function Home() {
 
   const isHe = currentLang === 'he';
   const isDev = process.env.NODE_ENV !== 'production';
+
+  const HOLD_THEORIST_NAMES: Record<string, [string, string]> = {
+    freud:    ['פרויד',   'Freud'],
+    klein:    ['קליין',   'Klein'],
+    winnicott:['ויניקוט', 'Winnicott'],
+    ogden:    ['אוגדן',   'Ogden'],
+    bion:     ['ביון',    'Bion'],
+  };
+  const getHoldTheoristName = (key: string) => {
+    const pair = HOLD_THEORIST_NAMES[key];
+    return pair ? (isHe ? pair[0] : pair[1]) : key;
+  };
+
+  const getHoldContent = () => {
+    const el = holdTextareaRef.current;
+    if (!el) return { full: '', public: '' };
+    const full = el.innerText?.trim() || '';
+    const clone = el.cloneNode(true) as HTMLDivElement;
+    clone.querySelectorAll('.bw-private').forEach(s => s.remove());
+    const pub = clone.innerText?.trim() || full;
+    return { full, public: pub };
+  };
+
+  const handleHoldSave = () => {
+    const { full, public: pub } = getHoldContent();
+    if (!full) return;
+    (window as any).saveWriteEntry?.(full, pub);
+    setHoldSaveStatus('saved');
+    setTimeout(() => setHoldSaveStatus(''), 2000);
+  };
+
+  const handleHoldShare = () => {
+    const { full, public: pub } = getHoldContent();
+    if (!full) return;
+    (window as any).saveWriteEntry?.(full, pub);
+    setHoldSaveStatus('shared');
+    setTimeout(() => setHoldSaveStatus(''), 2500);
+  };
+
+  const handleEnterConversation = (theorist: string) => {
+    setShowHoldTheoristPicker(false);
+    const { public: pub } = getHoldContent();
+    (window as any).enterHoldConversation?.(theorist, pub);
+    if (holdTextareaRef.current) holdTextareaRef.current.innerHTML = '';
+    setHoldText('');
+    setHoldSaveStatus('');
+  };
+
+  const handleToggleVoice = () => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) return;
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    const r = new SR();
+    r.lang = isHe ? 'he-IL' : 'en-US';
+    r.continuous = false;
+    r.interimResults = true;
+    baseHoldTextRef.current = holdTextareaRef.current?.innerText?.trim() || '';
+    r.onresult = (e: any) => {
+      let interim = '', final = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const text = e.results[i][0].transcript;
+        if (e.results[i].isFinal) final += text; else interim += text;
+      }
+      const ta = holdTextareaRef.current;
+      if (final) {
+        baseHoldTextRef.current = baseHoldTextRef.current ? baseHoldTextRef.current + ' ' + final : final;
+        if (ta) ta.innerText = baseHoldTextRef.current;
+        setHoldText(baseHoldTextRef.current);
+      } else {
+        const displayed = baseHoldTextRef.current ? baseHoldTextRef.current + ' ' + interim : interim;
+        if (ta) ta.innerText = displayed;
+        setHoldText(displayed);
+      }
+    };
+    r.onerror = () => { setIsRecording(false); recognitionRef.current = null; };
+    r.onend = () => { setIsRecording(false); recognitionRef.current = null; };
+    recognitionRef.current = r;
+    r.start();
+    setIsRecording(true);
+  };
   const THEORIST_LABELS: Record<string, [string, string]> = {
     freud:    [isHe ? 'פרויד'   : 'Freud',    isHe ? 'מה שלא נאמר'              : 'What is left unsaid'],
     klein:    [isHe ? 'קליין'   : 'Klein',    isHe ? 'מה שקשה לגעת בו'         : 'What is hard to touch'],
@@ -126,7 +218,7 @@ export default function Home() {
   };
   const theoristKeys: string[] = isDev
     ? ['freud','klein','winnicott','ogden','loewald','bion','kohut','heimann']
-    : ['freud','klein','winnicott','ogden'];
+    : ['freud','klein','winnicott','ogden','bion'];
   const THEORIST_LIST: [string, string, string][] = theoristKeys.map(k => [k, THEORIST_LABELS[k][0], THEORIST_LABELS[k][1]]);
 
   return (
@@ -251,6 +343,10 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <span className="sb-icon"><Brain size={15} strokeWidth={1.75} /></span>
               <span className="sb-label"><span id="sb-memory-count">0</span> <span id="sb-memories-label">זיכרונות</span></span>
             </div>
+            <div className="sb-item" onClick={() => (window as any).openWriteArchive?.()}>
+              <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
+              <span className="sb-label" id="sb-write-archive-label">{currentLang === 'he' ? 'מה כתבתי' : 'What I wrote'}</span>
+            </div>
             <div className="sb-item" onClick={() => (window as any).exportPDF()}>
               <span className="sb-icon"><Download size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-pdf-label">הורד PDF</span>
@@ -331,20 +427,6 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <span className="sb-icon"><LogOut size={15} strokeWidth={1.75} /></span>
               <span className="sb-label">התנתק</span>
             </div>
-            <div className="sb-item" id="lang-btn-sb" onClick={(e) => { e.stopPropagation(); (window as any).sbLangToggle(); }}>
-              <span className="sb-icon"><Languages size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label" id="sb-lang-label">English</span>
-            </div>
-            <div id="sb-lang-expand" style={{ display: 'none', padding: '2px 4px' }}>
-              {[
-                ['en','🇬🇧','English'],['he','🇮🇱','עברית']
-              ].map(([code, flag, name]) => (
-                <div key={code} className="sb-item" style={{ fontSize: 12, paddingRight: 24 }}
-                  onClick={(e) => { e.stopPropagation(); (window as any).selectLangSB(code, flag, name); }}>
-                  {flag} {name}
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
@@ -374,9 +456,18 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               >
                 ?
               </a>
+              <div
+                id="header-lang-btn"
+                onClick={(e) => { e.stopPropagation(); (window as any).headerLangToggle(); }}
+                style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 11, padding: '2px 6px', borderRadius: 6, fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 500, letterSpacing: '0.04em', transition: 'color 0.15s', lineHeight: 1, display: 'flex', alignItems: 'center', userSelect: 'none' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)'; }}
+              >
+                <span id="header-lang-label">EN</span>
+              </div>
             </div>
             <h1 dir="ltr" style={{ direction: 'ltr' }} suppressHydrationWarning>Between</h1>
-            <div style={{ flexShrink: 0, width: 44 }} />
+            <div style={{ flexShrink: 0, width: 80 }} />
           </div>
           <div className="header-session">
             <div id="session-title" style={{ display: 'none' }}></div>
@@ -398,50 +489,85 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
             <div className="welcome" id="welcome">
               {/* BW-41: back button — top-left corner of content area */}
               <span id="bw-back-btn" onClick={() => (window as any).goBackToChat()} style={{ position: 'absolute', top: 20, left: 24, fontSize: 12, color: 'var(--muted)', cursor: 'pointer', opacity: 0.7, display: 'none' }}>← חזרה</span>
-              {/* BW-41: mode selection — shown to new users */}
-              <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%' }}>
-                <p className="bw-entry-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0 }}>מה עולה לך היום?</p>
-                <div id="bw-mode-cards">
-                  <div className="bw-mode-card bw-mode-primary"
-                    onClick={() => { (window as any).onModeSelected('session'); setHoveredMode('session'); }}
-                    onMouseEnter={() => setHoveredMode('session')}>
-                    <span id="bw-label-session">סשן</span>
-                    <Sofa size={16} strokeWidth={1.4} />
+              {/* Hold entry — default screen */}
+              <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
+                <p id="bw-hold-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0, alignSelf: 'flex-start' }}>{isHe ? 'מה נשאר איתך?' : 'What stayed with you?'}</p>
+                {/* Single card — everything inside (option ו) */}
+                <div style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                  {/* Textarea — contenteditable for private-marking support */}
+                  <div
+                    id="bw-hold-textarea"
+                    contentEditable
+                    suppressContentEditableWarning
+                    ref={holdTextareaRef}
+                    data-placeholder={isHe ? 'כתוב לעצמך. או כדי להביא לפגישה הבאה.' : 'Write for yourself. Or to bring to your next session.'}
+                    onInput={e => { setHoldText((e.currentTarget as HTMLDivElement).innerText?.trim() || ''); if (holdSaveStatus) setHoldSaveStatus(''); }}
+                    style={{
+                      width: '100%', minHeight: 200, padding: '20px',
+                      background: 'transparent',
+                      color: 'var(--text)', fontSize: 15,
+                      fontFamily: 'var(--font-rubik), sans-serif', lineHeight: 1.7,
+                      direction: isHe ? 'rtl' : 'ltr', boxSizing: 'border-box', outline: 'none',
+                      display: 'block', wordBreak: 'break-word', whiteSpace: 'pre-wrap',
+                    }}
+                  />
+                  {/* Footer: mic + quiet save */}
+                  <div style={{ borderTop: '1px solid var(--border)', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <button
+                      onClick={handleToggleVoice}
+                      className={isRecording ? 'bw-mic-recording' : ''}
+                      title={isHe ? 'הקלטה קולית' : 'Voice input'}
+                      style={{
+                        width: 28, height: 28, borderRadius: '50%', border: 'none', padding: 0,
+                        background: 'transparent', color: isRecording ? 'var(--accent)' : 'var(--muted)',
+                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'color 0.15s', flexShrink: 0,
+                      }}
+                    >
+                      <Mic size={15} />
+                    </button>
+                    <div style={{ flex: 1 }} />
+                    <button
+                      onClick={handleHoldSave}
+                      disabled={!holdText.trim()}
+                      style={{
+                        background: 'transparent', border: '1px solid var(--border)',
+                        borderRadius: 16, height: 30, padding: '0 12px',
+                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif',
+                        color: 'var(--muted)', cursor: holdText.trim() ? 'pointer' : 'default',
+                        opacity: holdText.trim() ? 1 : 0.4,
+                        display: 'inline-flex', alignItems: 'center',
+                        transition: 'opacity 0.15s', flexShrink: 0,
+                      }}
+                    >
+                      {isHe ? 'שמור' : 'Save'}
+                    </button>
                   </div>
-                  <div className="bw-mode-card bw-mode-secondary"
-                    onClick={() => { (window as any).onModeSelected('explore'); setHoveredMode('explore'); }}
-                    onMouseEnter={() => setHoveredMode('explore')}>
-                    <span id="bw-label-explore">לחקור</span>
-                    <BookOpen size={16} strokeWidth={2} />
-                  </div>
-                  <div className="bw-mode-card bw-mode-tertiary"
-                    onClick={() => { (window as any).onModeSelected('write'); setHoveredMode('write'); }}
-                    onMouseEnter={() => setHoveredMode('write')}>
-                    <span id="bw-label-write">כתיבה</span>
-                    <NotebookPen size={16} strokeWidth={1.5} />
+                  {/* Full-width talk button inside card */}
+                  <div style={{ padding: '10px 14px 14px' }}>
+                    <button
+                      onClick={() => handleEnterConversation(holdTheorist)}
+                      style={{
+                        width: '100%', height: 42,
+                        background: 'var(--accent)', color: 'white', border: 'none',
+                        borderRadius: 10, fontSize: 13,
+                        fontFamily: 'var(--font-rubik), sans-serif',
+                        cursor: 'pointer', opacity: holdText.trim() ? 1 : 0.55,
+                        transition: 'opacity 0.15s',
+                      }}
+                    >
+                      {isHe ? `שיחה עם ${getHoldTheoristName(holdTheorist)} ←` : `Talk with ${getHoldTheoristName(holdTheorist)} →`}
+                    </button>
                   </div>
                 </div>
-                <p style={{
-                  fontSize: 13, fontFamily: "'Rubik', sans-serif", color: 'var(--muted)',
-                  lineHeight: 1.7, margin: '0 auto', maxWidth: 380, textAlign: 'center',
-                  transition: 'opacity 0.15s ease', opacity: 1,
-                  direction: currentLang === 'he' ? 'rtl' : 'ltr',
-                  minHeight: '66px', width: '100%',
-                }}>
-                  {hoveredMode === 'explore'
-                    ? (EXPLORE_TIP_I18N[currentLang] || EXPLORE_TIP_I18N['en']).text
-                    : hoveredMode === 'write'
-                    ? (WRITE_TIP_I18N[currentLang] || WRITE_TIP_I18N['he']).text
-                    : (SESSION_TIP_I18N[currentLang] || SESSION_TIP_I18N['he']).text}
+                <p style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', margin: 0, width: '100%', textAlign: isHe ? 'right' : 'left' }}>
+                  {isHe ? 'סמן טקסט כדי לסמן פרטי — לפני שמשתפים.' : 'Highlight text to mark private — before sharing.'}
                 </p>
+                {holdSaveStatus === 'saved' && (
+                  <p style={{ fontSize: 13, color: 'var(--muted)', fontFamily: 'var(--font-cormorant), serif', fontStyle: 'italic', margin: 0 }}>{isHe ? 'נשמר.' : 'Saved.'}</p>
+                )}
               </div>
 
-              {/* BW-41: theorist selection — slides in after mode pick */}
-              <div id="bw-theorist-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 20, width: '100%' }}>
-                <p id="bw-theorist-prompt" className="bw-entry-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0 }}>עם מי תרצה לדבר?</p>
-                <div id="bw-theorist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 150px)', gap: 'var(--space-lg)', width: 'fit-content', margin: '0 auto' }}></div>
-                <button id="bw-theorist-confirm" onClick={() => (window as any).confirmTheoristEntry()} className="bw-confirm-btn" style={{ display: 'none' }}>המשך</button>
-              </div>
 
               {/* flow buttons injected here by renderFlowButtons() */}
               <p id="welcome-api-text" style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.6, margin: 0, marginTop: 'auto', paddingTop: 52 }}>

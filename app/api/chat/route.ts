@@ -150,6 +150,55 @@ async function enforceVariedOpening(
   return fixed;
 }
 
+// בדיקה ותיקון של הפרות סמנטיות — "אה" opener, X-or-Y alternatives
+async function enforceSemanticRules(
+  anthropic: Anthropic,
+  text: string,
+  system: string,
+  messages: Anthropic.MessageParam[],
+  theoristKey: string
+): Promise<string> {
+  const trimmed = text.trim();
+
+  // Fast check 1: "אה" opener in any form
+  const hasAhOpener = /^אה[\s,.:!?–—]|^אה$/.test(trimmed);
+
+  // Fast check 2: X-or-Y alternatives — "כמו X, או כמו Y?" or "— X, או Y?"
+  const hasXorY =
+    /כמו\s+\S.{1,30}[,\s]+או\s+כמו/.test(trimmed) ||
+    /[—–]\s*\S.{1,40}\bאו\b\s+\S.{1,30}\?/.test(trimmed);
+
+  if (!hasAhOpener && !hasXorY) return text;
+
+  const violations: string[] = [];
+  if (hasAhOpener) violations.push('"אה" כמילת פתיחה — אסורה לחלוטין');
+  if (hasXorY) violations.push('מבנה ברירה X-או-Y — מציע אפשרויות במקום שאלה פתוחה');
+
+  const fixResponse = await anthropic.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 1200,
+    temperature: 0.6,
+    system,
+    messages: [
+      ...messages,
+      { role: 'assistant', content: text },
+      {
+        role: 'user',
+        content: `עצור. יש הפרות קליניות בתגובה:
+${violations.map((v, i) => `${i + 1}. ${v}`).join('\n')}
+כתוב מחדש — אותו כיוון קליני, ללא ההפרות.
+${hasAhOpener ? 'אל תפתח ב"אה" — בחר פתיחה אחרת לגמרי.' : ''}
+${hasXorY ? 'במקום "כמו X, או כמו Y?": שאלה אחת פתוחה שאינה מציעה אפשרויות.' : ''}
+אם הייתה שורת [MEMORY: ...] — שמור אותה כשורה אחרונה.`,
+      },
+    ],
+  });
+
+  const fixed = fixResponse.content[0].type === 'text' ? fixResponse.content[0].text : text;
+  console.log(`[QA] הפרות סמנטיות תוקנו (${theoristKey}): ${violations.join('; ')}`);
+  return fixed;
+}
+
 // בדיקה ותיקון של שאלות כפולות — output validation loop
 async function enforceOneQuestion(
   anthropic: Anthropic,
@@ -295,8 +344,14 @@ Rules:
 - This is NOT a citation. The no-citations rule does not apply to it.` : '';
 
     // ─── BUILD SYSTEM PROMPT SERVER-SIDE ─────────────────────────────────────
-    const baseSystem = (theorist && THEORIST_VOICE[theorist]) ? EXPLORE_PREFIX + THEORIST_VOICE[theorist] + EXPLORE_SUFFIX + HEBREW_TERMINOLOGY + END_SESSION_SUFFIX + MEMORY_TAG_INSTRUCTION : '';
-    if (!baseSystem) {
+    // STATIC block: theorist voice + fixed boilerplate — stable across every turn
+    // in a conversation. Marked with cache_control so Anthropic caches it.
+    // END_SESSION_SUFFIX is intentionally excluded — it changes on the final turn,
+    // keeping the static block warm for all turns including the last one.
+    const staticSystem = (theorist && THEORIST_VOICE[theorist])
+      ? EXPLORE_PREFIX + THEORIST_VOICE[theorist] + EXPLORE_SUFFIX + HEBREW_TERMINOLOGY + MEMORY_TAG_INSTRUCTION
+      : '';
+    if (!staticSystem) {
       console.warn(`[SECURITY] theorist "${theorist}" not found in THEORIST_VOICE — empty base system`);
     }
     // ─────────────────────────────────────────────────────────────────────────
@@ -326,10 +381,11 @@ Rules:
     }
     // ─────────────────────────────────────────────────────────────────────────
 
-    // RAG
+    // RAG + dynamic tail
     // Companions get SAFETY_PROTOCOL added at the model level (theorists rely on keyword intercept + UNIVERSAL_SCOPE_INSTRUCTION)
     const safetyAddition = (theorist && COMPANIONS.has(theorist)) ? SAFETY_PROTOCOL : '';
-    let enrichedSystem = baseSystem + safetyAddition + UNIVERSAL_SCOPE_INSTRUCTION;
+    let dynamicSystem = END_SESSION_SUFFIX;
+
     if (theorist && THEORISTS_WITH_RAG.has(theorist) && messages?.length > 0) {
       const lastUserMessage = [...messages].reverse().find((m: { role: string }) => m.role === 'user');
       const query = typeof lastUserMessage?.content === 'string'
@@ -341,13 +397,31 @@ Rules:
           const chunks = await searchKnowledgeHybrid(query, theorist, 4);
           console.log(`[RAG] ${theorist} — נמצאו ${chunks.length} קטעים:`, chunks.map(c => `${c.source_title} (${c.source_year}) — דמיון: ${c.similarity?.toFixed(2)}`));
           const ragContext = formatChunksForPrompt(chunks);
-          if (ragContext) enrichedSystem = baseSystem + ragContext;
+          if (ragContext) dynamicSystem += ragContext;
+          else dynamicSystem += safetyAddition + UNIVERSAL_SCOPE_INSTRUCTION;
         } catch (ragError) {
           // HuggingFace timeout או כשל — ממשיכים בלי RAG, לא חוסמים את השיחה
           console.warn(`[RAG] ${theorist} — נכשל, ממשיך בלי העשרה:`, ragError instanceof Error ? ragError.message : ragError);
+          dynamicSystem += safetyAddition + UNIVERSAL_SCOPE_INSTRUCTION;
         }
+      } else {
+        dynamicSystem += safetyAddition + UNIVERSAL_SCOPE_INSTRUCTION;
       }
+    } else {
+      dynamicSystem += safetyAddition + UNIVERSAL_SCOPE_INSTRUCTION;
     }
+
+    // String version for validation functions (enforceOneQuestion etc.)
+    const enrichedSystem = staticSystem + dynamicSystem;
+
+    // Array version with cache_control for the main API call.
+    // staticSystem (~1,400–2,000 tokens per theorist) is cached for 5 minutes —
+    // cache hits cost 0.1× instead of 1×, saving ~70% on system prompt tokens
+    // across a typical 6-turn conversation.
+    const systemWithCache: Anthropic.TextBlockParam[] = [
+      { type: 'text', text: staticSystem, cache_control: { type: 'ephemeral' } },
+      ...(dynamicSystem.trim() ? [{ type: 'text' as const, text: dynamicSystem }] : []),
+    ];
 
     const tools: Anthropic.Tool[] = webSearch
       ? [{ type: 'web_search_20250305', name: 'web_search' } as unknown as Anthropic.Tool]
@@ -357,7 +431,7 @@ Rules:
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1200,
       temperature: 0.6, // קול התיאורטיקן נשאר עקבי — 1.0 (ברירת מחדל) גרם לשונות גבוהה מדי
-      system: enrichedSystem,
+      system: systemWithCache,
       messages,
       ...(tools.length > 0 && { tools }),
     });
@@ -374,6 +448,11 @@ Rules:
 
       // 2. מניעת פתיחה חוזרת
       validatedText = await enforceVariedOpening(anthropic, validatedText, enrichedSystem, messages);
+
+      // 3. כללים סמנטיים — "אה" opener, X-or-Y alternatives
+      if (bw_mode !== 'explore') {
+        validatedText = await enforceSemanticRules(anthropic, validatedText, enrichedSystem, messages, theorist || '');
+      }
 
       if (validatedText !== response.content[0].text) {
         finalContent = [{ ...response.content[0], text: validatedText }];
