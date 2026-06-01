@@ -34,8 +34,16 @@ if [ ! -d "$FOLDER" ]; then
   exit 1
 fi
 
-# מצא קבצים חדשים/שונים בתיקייה (untracked + modified לעומת HEAD).
-mapfile -t FILES < <(git status --porcelain -- "$FOLDER" | awk '{print $2}' | grep -E '\.(md|txt)$' || true)
+# מצא קבצים חדשים/שונים בתיקייה. שלושה מקרים, מאוחדים:
+#   1. untracked / modified בעץ העבודה (git status)
+#   2. committed מקומית אך לא קיים/שונה מ-origin/main (git diff)
+# כך גם אם הסוכן עשה git commit בטעות — הקובץ עדיין יתפרסם.
+git fetch origin main -q 2>/dev/null || true
+{
+  git status --porcelain -- "$FOLDER" | awk '{print $2}'
+  git diff --name-only origin/main -- "$FOLDER" 2>/dev/null || true
+} | grep -E '\.(md|txt)$' | sort -u > /tmp/publish-files.txt || true
+mapfile -t FILES < /tmp/publish-files.txt
 
 if [ "${#FILES[@]}" -eq 0 ]; then
   echo "ℹ️  אין קבצים חדשים/שונים ב-$FOLDER לפרסום."
