@@ -4,6 +4,7 @@ import { Resend } from 'resend';
 import { THEORIST_VOICE, SAFETY_PROTOCOL } from '@/lib/theorist-voices';
 import { searchKnowledge, formatChunksForPrompt } from '@/lib/rag';
 import { saveReportToGithub } from '@/lib/github-report';
+import { classifyIssues, severityOf } from '@/lib/qa-fixer-map';
 
 // /api/qa-full — endpoint קל לcron של Vercel
 // מריץ 3 תורות לכל תיאורטיקן במקביל (~10s) ושולח email
@@ -90,6 +91,8 @@ function checkTurn(text: string, turnIndex: number, prevOpener: string | null): 
 
 async function runTheorist(theorist: string): Promise<{
   theorist: string; name: string; ok: boolean;
+  severity: 'pass' | 'warning' | 'fail';
+  realFails: string[]; caught: string[]; unknownCodes: string[];
   issues: string[]; totalIssues: string[];
   timeMs: number; ragChunks: number;
   questionLabel: string;
@@ -131,9 +134,16 @@ async function runTheorist(theorist: string): Promise<{
     const statementEndings = (fullText.match(/[.!]/g) || []).length;
     if (statementEndings === 0) allIssues.push('[Q-3] כל התגובות שאלות בלבד — אין תצפית / משפט');
 
+    const cls = classifyIssues(allIssues);
+    const severity: 'pass' | 'warning' | 'fail' =
+      cls.realFails.length > 0 ? 'fail' : cls.caught.length > 0 ? 'warning' : 'pass';
     return {
       theorist, name,
-      ok: allIssues.length === 0,
+      ok: cls.realFails.length === 0, // ירוק רק אם אין כשל שהמשתמש רואה (unknownCodes כלולים ב-realFails)
+      severity,
+      realFails: cls.realFails,
+      caught: cls.caught,
+      unknownCodes: cls.unknownCodes,
       issues: allIssues, totalIssues: allIssues,
       timeMs: Date.now() - start,
       ragChunks: chunks.length,
@@ -144,6 +154,8 @@ async function runTheorist(theorist: string): Promise<{
     const msg = err instanceof Error ? err.message : 'unknown';
     return {
       theorist, name, ok: false,
+      severity: 'fail',
+      realFails: [msg], caught: [], unknownCodes: [],
       issues: [msg], totalIssues: [msg],
       timeMs: Date.now() - start, ragChunks: 0,
       questionLabel: 'בדיקת בוקר',
@@ -162,8 +174,24 @@ export async function GET(req: NextRequest) {
 
   const results = await Promise.all(THEORISTS.map(runTheorist));
 
-  const passed = results.filter(r => r.ok).length;
+  const passed = results.filter(r => r.ok).length; // ok = אין כשל שהמשתמש רואה
   const allOk = passed === results.length;
+
+  // סיווג שלוש-מצבי לדיווח
+  const realFailCount = results.filter(r => r.severity === 'fail').length;
+  const warnCount     = results.filter(r => r.severity === 'warning').length;
+  const caughtTotal   = results.reduce((n, r) => n + r.caught.length, 0); // = קריאות תיקון בפרודקשן (אות עלות)
+  const allClean      = results.every(r => r.severity === 'pass');
+
+  const sevIcon = (s: string) => (s === 'fail' ? '🔴' : s === 'warning' ? '🟡' : '✅');
+  // תא דגלים: כשלים שהמשתמש רואה באדום, נתפסים בפרודקשן בכתום
+  const flagsCell = (r: typeof results[number]) => {
+    const parts = [
+      ...r.realFails.map(f => `<span style="color:#c4607a;">🔴 ${f}</span>`),
+      ...r.caught.map(c => `<span style="color:#b8860b;">🟡 ${c} <em style="color:#aaa;font-style:normal;">(נתפס בפרודקשן)</em></span>`),
+    ];
+    return parts.join('<br>') || '—';
+  };
 
   const now = new Date();
   const months = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
@@ -172,16 +200,16 @@ export async function GET(req: NextRequest) {
   // --- HTML email ---
   const summaryRows = results.map(r => `
     <tr style="border-bottom:1px solid #f0e8e4;">
-      <td style="padding:10px 8px;font-family:sans-serif;font-size:14px;">${r.ok ? '✅' : '⚠️'} ${r.name}</td>
+      <td style="padding:10px 8px;font-family:sans-serif;font-size:14px;">${sevIcon(r.severity)} ${r.name}</td>
       <td style="padding:10px 8px;font-size:13px;color:#888;">${(r.timeMs / 1000).toFixed(0)}s</td>
       <td style="padding:10px 8px;font-size:13px;color:#888;">${r.ragChunks} קטעים</td>
-      <td style="padding:10px 8px;font-size:12px;color:#c4607a;">${(r.totalIssues).join(' | ') || '—'}</td>
+      <td style="padding:10px 8px;font-size:12px;">${flagsCell(r)}</td>
     </tr>`).join('');
 
   const conversations = results.map(r => `
     <div style="margin-bottom:24px;border:1px solid #ede4e0;border-radius:8px;overflow:hidden;">
-      <div style="background:${r.ok ? '#f0faf4' : '#fff5f5'};padding:10px 16px;">
-        <span style="font-size:14px;font-weight:600;">${r.ok ? '✅' : '⚠️'} ${r.name}</span>
+      <div style="background:${r.severity === 'fail' ? '#fff5f5' : r.severity === 'warning' ? '#fffaf0' : '#f0faf4'};padding:10px 16px;">
+        <span style="font-size:14px;font-weight:600;">${sevIcon(r.severity)} ${r.name}</span>
         <span style="font-size:12px;color:#888;margin-right:12px;">${r.turns.length} תורות • ${(r.timeMs / 1000).toFixed(0)}s</span>
       </div>
       <table style="width:100%;border-collapse:collapse;">
@@ -194,7 +222,7 @@ export async function GET(req: NextRequest) {
           <tr style="border-bottom:1px solid #f5f0ee;">
             <td style="padding:6px 8px;font-size:12px;color:#888;text-align:center;">${t.turn}</td>
             <td style="padding:6px 8px;font-size:12px;color:#555;background:#faf7f5;">${t.patient}</td>
-            <td style="padding:6px 8px;font-size:12px;color:#333;">${t.therapist}${t.issues.length ? `<br><span style="color:#c4607a;font-size:11px;">⚠️ ${t.issues.join(' | ')}</span>` : ''}</td>
+            <td style="padding:6px 8px;font-size:12px;color:#333;">${t.therapist}${t.issues.length ? `<br><span style="font-size:11px;">${t.issues.map(iss => `${severityOf(iss) === 'fail' ? '🔴' : '🟡'} ${iss}`).join(' | ')}</span>` : ''}</td>
           </tr>`).join('')}
         </tbody>
       </table>
@@ -208,9 +236,17 @@ export async function GET(req: NextRequest) {
       <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:6px 0 0;">${date}</p>
     </div>
     <div style="padding:24px 32px;">
-      <div style="background:${allOk ? '#f0faf4' : '#fff8f0'};border:1px solid ${allOk ? '#b2dfca' : '#f5cba7'};border-radius:8px;padding:16px;text-align:center;margin-bottom:24px;">
-        <div style="font-size:28px;font-weight:600;color:${allOk ? '#2d8a5e' : '#c4607a'};">${passed}/${results.length}</div>
-        <div style="font-size:13px;color:#888;margin-top:4px;">${allOk ? 'כל הבדיקות עברו ✅' : 'נמצאו דגלים לבדיקה ⚠️'}</div>
+      <div style="background:${realFailCount > 0 ? '#fff5f5' : allClean ? '#f0faf4' : '#fffaf0'};border:1px solid ${realFailCount > 0 ? '#f5b7b7' : allClean ? '#b2dfca' : '#f0d9a8'};border-radius:8px;padding:16px;text-align:center;margin-bottom:24px;">
+        <div style="font-size:28px;font-weight:600;color:${realFailCount > 0 ? '#c4607a' : allClean ? '#2d8a5e' : '#b8860b'};">
+          ${realFailCount > 0 ? `🔴 ${realFailCount} כשלים שהמשתמש רואה` : allClean ? '✅ הכל נקי' : `🟡 הכל נתפס בפרודקשן`}
+        </div>
+        <div style="font-size:13px;color:#888;margin-top:6px;">
+          ${realFailCount > 0
+            ? `דורש טיפול. בנוסף: ${caughtTotal} תיקונים נתפסו בפרודקשן.`
+            : allClean
+            ? `${results.length}/${results.length} תיאורטיקנים — אין דגלים`
+            : `אף משתמש לא ראה בעיה. אבל ${caughtTotal} תיקונים רצו — חולשת פרומפט שעולה קריאות נוספות.`}
+        </div>
       </div>
       <h3 style="font-size:14px;color:#888;margin:0 0 12px;font-weight:400;">סיכום</h3>
       <table style="width:100%;border-collapse:collapse;margin-bottom:32px;">
@@ -229,41 +265,63 @@ export async function GET(req: NextRequest) {
 
   // --- שמירת דוח markdown ל-GitHub (לרן) ---
   const isoDate = now.toISOString().slice(0, 10);
-  const flags = results.flatMap(r =>
-    r.totalIssues.map(issue => `- **${r.name}**: ${issue}`)
+  const realFailLines = results.flatMap(r =>
+    r.realFails.map(issue => `- **${r.name}**: ${issue}`)
+  );
+  const caughtLines = results.flatMap(r =>
+    r.caught.map(issue => `- **${r.name}**: ${issue}`)
   );
   const tableRows = results.map(r =>
-    `| ${r.name} | ${r.ok ? '✅' : '⚠️'} | ${r.ragChunks} | ${r.totalIssues.join(', ') || '—'} |`
+    `| ${r.name} | ${sevIcon(r.severity)} | ${r.ragChunks} | ${r.realFails.join(', ') || '—'} | ${r.caught.join(', ') || '—'} |`
   ).join('\n');
 
   const qaMarkdown = `# דוח QA — ${date}
 
 ## תוצאה כוללת
-**${passed}/${results.length} עברו${allOk ? ' ✅' : ' ⚠️'}**
+${realFailCount > 0
+  ? `🔴 **${realFailCount} תיאורטיקנים עם כשל שהמשתמש רואה** · ${caughtTotal} תיקונים נתפסו בפרודקשן`
+  : allClean
+  ? `✅ **הכל נקי — ${results.length}/${results.length}**`
+  : `🟡 **הכל נתפס בפרודקשן** · ${caughtTotal} תיקונים רצו (חולשת פרומפט = עלות)`}
 
 ## לפי תיאורטיקן
-| תיאורטיקן | תוצאה | RAG | דגלים |
-|---|---|---|---|
+| תיאורטיקן | תוצאה | RAG | כשל (משתמש רואה) | נתפס בפרודקשן |
+|---|---|---|---|---|
 ${tableRows}
 
-## דגלים לתשומת לב
-${flags.length ? flags.join('\n') : 'אין דגלים — כל הבדיקות עברו ✅'}
+## כשלים שהמשתמש רואה
+${realFailLines.length ? realFailLines.join('\n') : 'אין — שום בעיה לא דלפה למשתמש ✅'}
+
+## נתפס בפרודקשן (caught ≠ clean — וגם עולה קריאת תיקון)
+${caughtLines.length ? caughtLines.join('\n') : 'אין תיקונים — הפלט הגולמי היה נקי ✅'}
 `;
 
   await saveReportToGithub('qa-reports', `QA-${isoDate}.md`, qaMarkdown);
 
+  // נושא המייל משקף את המצב האמיתי: כשל שהמשתמש רואה > caught-only > נקי
+  const subject = realFailCount > 0
+    ? `🔴 QA — ${realFailCount} כשלים שהמשתמש רואה — ${date}`
+    : allClean
+    ? `✅ QA — הכל נקי (${results.length}/${results.length}) — ${date}`
+    : `🟡 QA — הכל נתפס בפרודקשן (${caughtTotal} תיקונים) — ${date}`;
+
   await resend.emails.send({
     from: 'QA מרחב פסיכואנליטי <onboarding@resend.dev>',
     to: process.env.QA_REPORT_EMAIL!,
-    subject: `בדיקת איכות — ${passed}/${results.length} — ${date}`,
+    subject,
     html,
   });
 
   return NextResponse.json({
     passed, total: results.length, ok: allOk,
+    realFailCount, warnCount, caughtTotal, allClean,
     timeMs: Date.now() - start,
     results: results.map(r => ({
       theorist: r.theorist, name: r.name, ok: r.ok,
+      severity: r.severity,
+      realFails: r.realFails,
+      caught: r.caught,
+      unknownCodes: r.unknownCodes,
       issues: r.totalIssues, timeMs: r.timeMs,
     })),
   });

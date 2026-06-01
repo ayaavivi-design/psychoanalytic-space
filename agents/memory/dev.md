@@ -22,11 +22,15 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - **data-bw-hidden**: pattern לניהול visibility של auth-screen ו-flow elements — לא style.display.
 - **input-area**: מוסתר ב-showModeSelect() + showTheoristEntry(), מוצג חזרה כש-chat מתחיל בפועל.
 - **stream idle timeout**: ב-CCR — כתוב → שמור ל-/tmp → כתוב → שמור. לא לייצר הכל בתגובה אחת.
+- **QA classification source-of-truth**: `lib/qa-fixer-map.ts` הוא המקור היחיד שממפה קוד issue → fixer בפרודקשן. qa-full מסווג כל issue ל-realFail (אין fixer → המשתמש רואה) או caught (יש fixer → caught≠clean אבל לא דלף). שמרני: קוד לא מוכר → fail.
+- **QA drift guard**: `scripts/qa-drift-check.mjs` (npm run qa:drift) מאמת ששמות ה-fixers ב-QA_RULES קיימים ב-chat/route.ts, ושכל קוד ש-checkTurn פולט מסווג ב-QA_RULES. הרץ אחרי כל שינוי ל-checkTurn או ל-fixers. **לא** מחובר ל-build (אין test runner בפרויקט) — הרצה ידנית/cron.
+- **fixers בפרודקשן הם local non-exported**: enforceOneQuestion/enforceVariedOpening/enforceSemanticRules ב-chat/route.ts אינם מיוצאים. המפה מסתמכת עליהם בשמם בלבד — לכן drift guard גרפי, לא import.
 
 ---
 
 ## History (last 10)
-1. refactor(hold→write): Hold UI כרטיס לבן + voice (Mic) + כותרת "מה נשאר איתך" + כפתורים בשורה אחת. handleHoldSave/Share → saveWriteEntry (localStorage). ארכיון → openWriteArchive(). _bwFromHold flag מדלג על flow buttons. /api/hold מנותק (dead code לניקוי). globals.css: welcome padding-top:0, gap:16px. Explore mode הוסר מה-UI — blocker, ממתין להחלטה מוצרית. (מאי 2026)
+1. feat(qa-classification): מקור-אמת `lib/qa-fixer-map.ts` (QA_RULES, classifyIssues, severityOf, codeOf). qa-full/route.ts מסווג כל issue ל-realFail/caught — הדוח היומי מפסיק לצבוע אדום בעיות שפרודקשן תופס. שלושה מצבים (✅/🟡/🔴) בנושא מייל, banner, טבלאות, JSON. `scripts/qa-drift-check.mjs` + `npm run qa:drift`. אפס שינוי ל-chat/route.ts. typecheck נקי, drift עבר. (יוני 2026)
+2. refactor(hold→write): Hold UI כרטיס לבן + voice (Mic) + כותרת "מה נשאר איתך" + כפתורים בשורה אחת. handleHoldSave/Share → saveWriteEntry (localStorage). ארכיון → openWriteArchive(). _bwFromHold flag מדלג על flow buttons. /api/hold מנותק (dead code לניקוי). globals.css: welcome padding-top:0, gap:16px. Explore mode הוסר מה-UI — blocker, ממתין להחלטה מוצרית. (מאי 2026)
 2. feat(/hold): voice + i18n + design polish — Web Speech API (zero cost, `he-IL`/`en-US`), globe toggle + `bw_lang` localStorage, CSS vars throughout, `position:fixed;inset:0` fixes sidebar bleed from root layout. DB migration still pending. (מאי 2026)
 2. feat(/hold): container POC — app/api/hold/route.ts (POST, auth, crisis detection, Supabase insert to hold_entries) + app/hold/page.tsx (blank textarea, "שמור" button, "נשמר." response). Zero changes to existing code. DB migration required: hold_entries table with RLS + explicit REVOKE/GRANT. (מאי 2026)
 2. feat(write→theorist): THEORIST_OPENING he_write/en_write variants. showTheoristOpening() async — API call when _bwWriteSessionContext present, fallback static. buildSystemPrompt() WRITE CONTEXT block (holds content, forbids "מה כתבתי?"). confirmTheoristEntry() bypass flow buttons when write context. Toggle + 2-button footer in openWriteSummary(). saveWriteEntry() + openWriteArchive() localStorage (bw_writes). Private bubble context-aware: detects .bw-private parent → "בטל" un-marking via window._bwPrivateSpanTarget. (מאי 2026)

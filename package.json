@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "export $(cat .env.local | xargs) && next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "qa:drift": "node scripts/qa-drift-check.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
