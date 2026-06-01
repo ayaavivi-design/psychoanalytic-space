@@ -71,6 +71,14 @@ _קובץ זה הוא append-only — לא מוחקים, מוסיפים.
 **כלל לעתיד:** כל טבלה חדשה שאוליבר יוצר חייבת לכלול `REVOKE`/`GRANT` מפורשים — **לא** לסמוך על ברירת המחדל. Supabase משנה את ברירת המחדל מאוקטובר 2026 כך שטבלאות חדשות לא ייחשפו אוטומטית ל-Data API ללא GRANT מפורש.
 תאריך: מאי 2026
 
+### CCR git push נשבר — אפליקציית Claude הייתה Authorized אבל לא Installed
+**מה קרה:** באמצע מאי 2026 ה-routines המתוזמנים (CCR) הפסיקו לדחוף ל-main. כל נתיבי הכתיבה החזירו 403 — `git push`, POST ל-Vercel bridge, וגם GitHub MCP. בנינו workaround (endpoint `/api/agent-report` + `publish-report.sh` + `AGENT_REPORT_TOKEN`) שגם הוא נחסם, כי CCR חוסם egress ל-Vercel.
+**מה גילינו (השורש):** אפליקציית Claude ב-GitHub (owned by anthropics) הייתה במצב **Authorized** (זהות) אבל **לא Installed** על הריפו. הריפו ציבורי, אז CCR יכל לקרוא/לשכפל בלי התקנה — אבל **כתיבה דורשת התקנה (Installed) עם Contents: Read and write**. בלי זה — push נכשל ב-403.
+**ההבחנה הקריטית:** קלוד המקומי (על מק של איה) דוחף עם ההרשאות האישיות שלה ב-keychain — זה תמיד עבד. הסוכנים בענן (CCR) דוחפים עם המפתח של אפליקציית Claude — וזה מה שלא היה מותקן. עבודת ממשק מקומית שעובדת **לא** מעידה על תקינות ה-routines.
+**מה תיקנו:** התקנת אפליקציית Claude על הריפו דרך `github.com/apps/claude` → Configure → Install (חשבון אישי `ayaavivi-design`, הרשאת write). אחרי זה איתן הוכיח push מ-CCR (commit b9dcad2). מחקנו את כל הגשר (endpoint + script + token).
+**כלל לעתיד:** אם CCR פתאום לא דוחף — בדוק קודם ב-`github.com/settings/installations` שאפליקציית Claude **Installed** (לא רק Authorized) על הריפו עם Contents: write. לא להמציא workarounds לפני שבודקים את זה.
+תאריך: יוני 2026
+
 ---
 
 ## החלטות פתוחות
