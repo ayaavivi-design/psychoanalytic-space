@@ -8,11 +8,11 @@ import { saveReportToGithub } from '@/lib/github-report';
 // lets agents POST a report; Vercel (which HAS GITHUB_TOKEN) does the actual write via
 // the GitHub Contents API — the same mechanism QA-Bot already uses successfully.
 //
-// Auth: x-internal-token header must match INTERNAL_API_TOKEN env var (same secret
-//       already used by /api/daily-summary).
+// Auth: x-internal-token header must match AGENT_REPORT_TOKEN env var (dedicated
+//       secret, separate from INTERNAL_API_TOKEN).
 // Body: { folder: string, filename: string, content: string }
 //
-// Security: agents receive only INTERNAL_API_TOKEN (least-privilege — can only write
+// Security: agents receive only AGENT_REPORT_TOKEN (least-privilege — can only write
 //           a report file into an allow-listed folder). GITHUB_TOKEN never leaves Vercel.
 
 // תיקיות מותרות לכתיבה — סוכן לא יכול לכתוב לאן שבא לו (least-privilege).
@@ -30,9 +30,10 @@ const ALLOWED_FOLDERS = new Set([
 const SAFE_FILENAME = /^[A-Za-z0-9._-]+$/;
 
 export async function POST(req: NextRequest) {
-  // 1. Auth
+  // 1. Auth — dedicated AGENT_REPORT_TOKEN (least-privilege: only writes a report
+  //    file into an allow-listed folder; separate from INTERNAL_API_TOKEN).
   const token = req.headers.get('x-internal-token');
-  if (!token || token !== process.env.INTERNAL_API_TOKEN) {
+  if (!token || token !== process.env.AGENT_REPORT_TOKEN) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
