@@ -173,13 +173,12 @@ STEP 4 — Publish your report
 Write your analysis as a Markdown file into qa-analysis/
 (e.g. qa-analysis/QA-YYYY-MM-DD.md).
 
-Do NOT `git add`, `git commit`, or `git push` — direct pushes from scheduled
-agents no longer reach main. Instead, publish the file through the report bridge
-by running EXACTLY the publish command given in your task instructions. It looks
-like:
+Then commit and push it to main:
 
-  AGENT_REPORT_TOKEN='<token from your task instructions>' bash scripts/publish-report.sh qa-analysis
+  git config user.name 'Eitan-QA'
+  git config user.email 'eitan-qa@between.space'
+  git add qa-analysis/
+  git commit -m "Eitan QA: $(date +%Y-%m-%d)"
+  git push origin main
 
-The script POSTs each new/modified report file in qa-analysis/ to /api/agent-report,
-which writes it to GitHub via the Contents API (the same mechanism QA-Bot uses).
-A line "✅ נשמר (200)" means the report was saved successfully.
+If git push fails, report the full error text.
