@@ -168,10 +168,18 @@ COPY AUDIT — [component/screen name]
 This is your domain, not Lia's. Clinical voice is Lia's. Brand voice is yours.
 
 ═══════════════════════════════════════
-STEP 4 — Commit and push
+STEP 4 — Publish your report
 ═══════════════════════════════════════
-git config user.email "eitan-qa@psychoanalytic-space.ai"
-git config user.name "Eitan QA"
-git add qa-analysis/
-git commit -m "QA analysis: $(date +%Y-%m-%d)"
-git push origin main
+Write your analysis as a Markdown file into qa-analysis/
+(e.g. qa-analysis/QA-YYYY-MM-DD.md).
+
+Do NOT `git add`, `git commit`, or `git push` — direct pushes from scheduled
+agents no longer reach main. Instead, publish the file through the report bridge
+by running EXACTLY the publish command given in your task instructions. It looks
+like:
+
+  AGENT_REPORT_TOKEN='<token from your task instructions>' bash scripts/publish-report.sh qa-analysis
+
+The script POSTs each new/modified report file in qa-analysis/ to /api/agent-report,
+which writes it to GitHub via the Contents API (the same mechanism QA-Bot uses).
+A line "✅ נשמר (200)" means the report was saved successfully.
