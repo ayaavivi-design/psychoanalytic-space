@@ -4,7 +4,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## Context
-- QA מכסה 7 פונקציות: 4 תיאורטיקנים + vera + elliot + bion (ביון נבדק ידנית 23.05.2026)
+- QA מכסה 4 תיאורטיקנים (vera + elliot נעלמו מהדוחות מ-30.05 ואילך — לא ידוע אם הוסרו מה-cron או שינוי אחר)
 - Cron: יומי, Vercel native — qa-full route
 - BW-43 — סגור (bw_mode תוקן)
 - BW-35 — סגור (Safety interceptor: 8/8 PASS, שני ביטויים × 4 תיאורטיקנים)
@@ -12,6 +12,9 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - ויניקוט פרומפט Q-W: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN (semantic faithfulness לא נאכף בלופ)
 - BW-51 — סגור ✅ PASS (flow-selection div DOM-only, invisible, PDF-only. Known limitation: לא שורד restoreConversation)
 - elliot mirroring rule — תוקן ונבדק 19.05.2026: הכלל החדש (מילה/ביטוי קצר, לא בכל תגובה, לא משפט שלם) נמצא בפרומפט שורה 1613. PASS (קוד בלבד)
+- **קליין O-7 — דפוס חוזר**: הופיע 30.05, נעלם 31.05, חזר 01.06. לא תוקן — לא דטרמיניסטי.
+- **קליין Q-3 — all-questions pattern (01.06.2026)**: כל התגובות שאלות בלבד, אין תצפית. WARNING, דורש אימות ידני ותיקון פרומפט.
+- **RAG drop 01.06**: פרויד + קליין + אוגדן → RAG=0. ויניקוט RAG=3. ב-31.05 כולם היו RAG=3. דורש אימות.
 
 ---
 
@@ -32,7 +35,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Bug review 24.05 — Hold + Explore: FAIL (explore mode) + WARNING (hold_entries table). כפתורי מצב (סשן/לחקור/כתיבה) נמחקו ב-commit d8212af — hold textarea מחליף אותם, אין דרך להגיע ל-explore mode. hold_entries table לא קיים בשום migration → save נכשל שקט. נדרשת: 1) החלטה מוצרית — להחזיר explore UI או להסיר את הקוד, 2) יצירת migration ל-hold_entries עם RLS נכון. (מאי 2026)
+1. QA יומי 01.06: 3/4 — קליין כשל O-7 (פתיחה חוזרת "מה") + Q-3 (all-questions, אין תצפית). RAG=0 לפרויד/קליין/אוגדן — חשד לבעיה תשתיתית. Atlassian MCP לא זמין בסביבה — Jira לא עודכן. (יוני 2026)
+2. Bug review 24.05 — Hold + Explore: FAIL (explore mode) + WARNING (hold_entries table). כפתורי מצב (סשן/לחקור/כתיבה) נמחקו ב-commit d8212af — hold textarea מחליף אותם, אין דרך להגיע ל-explore mode. hold_entries table לא קיים בשום migration → save נכשל שקט. נדרשת: 1) החלטה מוצרית — להחזיר explore UI או להסיר את הקוד, 2) יצירת migration ל-hold_entries עם RLS נכון. (מאי 2026)
 2. Bion QA 23.05: PASS + WARNING קל — safety PASS, frame לא דולף, label leak PASS, WHEN YOU ARE WRONG PASS, gender+language PASS, orientation move PASS. WARNING: TRACKING AVOIDANCE — ביון נקד הימנעות נכון אך גייס חלום כגשר במקום להתעלם מהכיוון החדש. לא בלוקר. (מאי 2026)
 2. Post-production QA 22.05: PASS + WARNING — safety PASS, frame לא דולף בשיחה קלינית, orientation move לא מופרז, "נשמע כמו" נחסם, בינארי השוואתי נחסם. WARNING: שאלה ישירה "מה אתה?" → תיאורטיקן חושף מסגרת בין-פגישות. edge case, לא blocker. ממתין לשיקול ליה. (מאי 2026)
 2. Pre-release QA — between-sessions framing + 4 כללים קליניים חדשים 22.05: PASS עם WARNING אחד (BETWEEN SESSIONS FRAME leak risk). WARNING טופל לפני release — נוסף "This is your internal frame. Do not state it to the patient." לכל 4 תיאורטיקנים. Sign-off ניתן. (מאי 2026)
