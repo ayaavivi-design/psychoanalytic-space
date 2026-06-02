@@ -12,9 +12,10 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - ויניקוט פרומפט Q-W: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN (semantic faithfulness לא נאכף בלופ)
 - BW-51 — סגור ✅ PASS (flow-selection div DOM-only, invisible, PDF-only. Known limitation: לא שורד restoreConversation)
 - elliot mirroring rule — תוקן ונבדק 19.05.2026: הכלל החדש (מילה/ביטוי קצר, לא בכל תגובה, לא משפט שלם) נמצא בפרומפט שורה 1613. PASS (קוד בלבד)
-- **קליין O-7 — דפוס חוזר**: הופיע 30.05, נעלם 31.05, חזר 01.06. לא תוקן — לא דטרמיניסטי.
-- **קליין Q-3 — all-questions pattern (01.06.2026)**: כל התגובות שאלות בלבד, אין תצפית. WARNING, דורש אימות ידני ותיקון פרומפט.
-- **RAG drop 01.06**: פרויד + קליין + אוגדן → RAG=0. ויניקוט RAG=3. ב-31.05 כולם היו RAG=3. דורש אימות.
+- **קליין O-7 — דפוס חוזר**: הופיע 30.05, נעלם 31.05, חזר 01.06, נעלם 02.06. לא תוקן — לא דטרמיניסטי. Jira לא עודכן (Atlassian MCP לא זמין).
+- **קליין Q-3 — all-questions pattern**: הופיע 01.06, לא הופיע 02.06. לא תוקן בפרומפט — הנעלמות אינה תיקון. Jira לא עודכן (Atlassian MCP לא זמין).
+- **RAG drop 01.06**: פרויד + קליין + אוגדן → RAG=0. חזרו ל-RAG=3 ב-02.06. הסיבה לא הובנה — לנטר.
+- **02.06 סטטוס**: 4/4 PASS, RAG=3 לכולם. נקי.
 
 ---
 
@@ -35,7 +36,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. QA יומי 01.06: 3/4 — קליין כשל O-7 (פתיחה חוזרת "מה") + Q-3 (all-questions, אין תצפית). RAG=0 לפרויד/קליין/אוגדן — חשד לבעיה תשתיתית. Atlassian MCP לא זמין בסביבה — Jira לא עודכן. (יוני 2026)
+1. QA יומי 02.06: 4/4 PASS — RAG=3 לכולם. קליין O-7+Q-3 לא הופיעו אבל לא תוקנו. RAG drop מ-01.06 חזר לנורמה. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
+2. QA יומי 01.06: 3/4 — קליין כשל O-7 (פתיחה חוזרת "מה") + Q-3 (all-questions, אין תצפית). RAG=0 לפרויד/קליין/אוגדן — חשד לבעיה תשתיתית. Atlassian MCP לא זמין בסביבה — Jira לא עודכן. (יוני 2026)
 2. Bug review 24.05 — Hold + Explore: FAIL (explore mode) + WARNING (hold_entries table). כפתורי מצב (סשן/לחקור/כתיבה) נמחקו ב-commit d8212af — hold textarea מחליף אותם, אין דרך להגיע ל-explore mode. hold_entries table לא קיים בשום migration → save נכשל שקט. נדרשת: 1) החלטה מוצרית — להחזיר explore UI או להסיר את הקוד, 2) יצירת migration ל-hold_entries עם RLS נכון. (מאי 2026)
 2. Bion QA 23.05: PASS + WARNING קל — safety PASS, frame לא דולף, label leak PASS, WHEN YOU ARE WRONG PASS, gender+language PASS, orientation move PASS. WARNING: TRACKING AVOIDANCE — ביון נקד הימנעות נכון אך גייס חלום כגשר במקום להתעלם מהכיוון החדש. לא בלוקר. (מאי 2026)
 2. Post-production QA 22.05: PASS + WARNING — safety PASS, frame לא דולף בשיחה קלינית, orientation move לא מופרז, "נשמע כמו" נחסם, בינארי השוואתי נחסם. WARNING: שאלה ישירה "מה אתה?" → תיאורטיקן חושף מסגרת בין-פגישות. edge case, לא blocker. ממתין לשיקול ליה. (מאי 2026)
