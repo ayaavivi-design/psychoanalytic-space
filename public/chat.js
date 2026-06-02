@@ -637,6 +637,8 @@ function renderAnalystBadge() {
 
 function renderFlowButtons() {
   if (localStorage.getItem('bw_mode') === 'explore') return;
+  // Don't show flow buttons when Hold UI is the active screen
+  if (document.getElementById('bw-hold-textarea')) return;
   const existing = document.getElementById('flow-buttons');
   if (existing) existing.remove();
   // After BW-41 entry, welcome is hidden — append to chat instead
@@ -1054,12 +1056,98 @@ function showWriteInterface() {
   updateEndSessionBtn();
 }
 
+// ── Hold private bubble ───────────────────────────────────────────────────────
+// Mirrors the write-mode private bubble but targets bw-hold-textarea.
+// Called automatically when the Hold div appears in the DOM (see MutationObserver below).
+function initHoldPrivateBubble() {
+  document.getElementById('bw-hold-private-bubble')?.remove();
+  const _arrowHtml = `<span style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #2d2420;"></span>`;
+  const bubble = document.createElement('div');
+  bubble.id = 'bw-hold-private-bubble';
+  bubble.style.cssText = 'display:none;position:fixed;z-index:400;background:#2d2420;color:#fff;border-radius:22px;padding:4px 10px;font-size:11px;font-family:Rubik,sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;box-shadow:0 1px 4px rgba(45,36,32,0.2);user-select:none;';
+  bubble.dataset.mode = 'mark';
+
+  bubble.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    const ta = document.getElementById('bw-hold-textarea');
+    if (!ta) return;
+    if (bubble.dataset.mode === 'unmark') {
+      const span = window._bwHoldPrivateSpanTarget;
+      if (span && span.parentNode) {
+        while (span.firstChild) span.parentNode.insertBefore(span.firstChild, span);
+        span.parentNode.removeChild(span);
+      }
+      window._bwHoldPrivateSpanTarget = null;
+    } else {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed || !ta.contains(sel.anchorNode)) return;
+      try {
+        const range = sel.getRangeAt(0);
+        const span = document.createElement('span');
+        span.className = 'bw-private';
+        range.surroundContents(span);
+        sel.removeAllRanges();
+      } catch (_) { sel.removeAllRanges(); }
+    }
+    bubble.style.display = 'none';
+  });
+
+  document.body.appendChild(bubble);
+
+  const onHoldSelection = () => {
+    const isEn = (window.selectedLang?.code === 'en');
+    const sel = window.getSelection();
+    const ta = document.getElementById('bw-hold-textarea');
+    if (!ta || !sel || sel.isCollapsed || !ta.contains(sel.anchorNode)) {
+      bubble.style.display = 'none'; return;
+    }
+    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    if (rect.width === 0) { bubble.style.display = 'none'; return; }
+
+    const container = sel.getRangeAt(0).commonAncestorContainer;
+    const node = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+    const privateSpan = node?.closest?.('.bw-private');
+
+    if (privateSpan && ta.contains(privateSpan)) {
+      bubble.dataset.mode = 'unmark';
+      window._bwHoldPrivateSpanTarget = privateSpan;
+      bubble.innerHTML = `${isEn ? 'Remove' : 'בטל'}${_arrowHtml}`;
+    } else {
+      bubble.dataset.mode = 'mark';
+      window._bwHoldPrivateSpanTarget = null;
+      bubble.innerHTML = `${isEn ? 'Just me' : 'רק אני'}${_arrowHtml}`;
+    }
+
+    bubble.style.display = 'block';
+    const bw = bubble.offsetWidth || 60;
+    const left = Math.max(8, Math.min(rect.left + rect.width / 2 - bw / 2, window.innerWidth - bw - 8));
+    bubble.style.top = (rect.top - 36) + 'px';
+    bubble.style.left = left + 'px';
+  };
+
+  document.addEventListener('selectionchange', onHoldSelection);
+  window._bwHoldPrivateBubbleCleanup = () => {
+    document.removeEventListener('selectionchange', onHoldSelection);
+    document.getElementById('bw-hold-private-bubble')?.remove();
+  };
+}
+
+// Auto-init: watch for bw-hold-textarea mounting in the DOM (React-rendered)
+(function () {
+  const obs = new MutationObserver(() => {
+    if (document.getElementById('bw-hold-textarea') && !document.getElementById('bw-hold-private-bubble')) {
+      initHoldPrivateBubble();
+    }
+  });
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+
 function getAllWriteContent() {
   return document.getElementById('bw-write-textarea')?.innerText || '';
 }
 
 function getPublicWriteContent() {
-  const ta = document.getElementById('bw-write-textarea');
+  const ta = document.getElementById('bw-write-textarea') || document.getElementById('bw-hold-textarea');
   if (!ta) return '';
   const clone = ta.cloneNode(true);
   clone.querySelectorAll('.bw-private').forEach(el => el.remove());
@@ -1128,6 +1216,7 @@ function openWriteArchive() {
   inner.innerHTML = html;
   inner.querySelectorAll('.bw-archive-entry').forEach(el => {
     el.addEventListener('click', () => {
+      if (window.getSelection && window.getSelection().toString().length > 0) return;
       const body = el.querySelector('.bw-archive-body');
       if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
     });
@@ -1243,15 +1332,14 @@ async function openWriteSummary() {
     document.getElementById('ws-theorist-btn')?.addEventListener('click', (e) => {
       e.currentTarget.disabled = true;
       window._bwWriteSessionContext = { text, summary: data };
+      window._bwPendingTheorist = (activeTheorists && activeTheorists[0]) || 'winnicott';
       localStorage.setItem('bw_mode', 'session');
       document.getElementById('write-summary-modal')?.remove();
       document.body.classList.remove('bw-write-mode');
       document.getElementById('bw-write-area')?.remove();
       const wBtn = document.getElementById('sb-write-summary-btn');
       if (wBtn) wBtn.style.display = 'none';
-      const welcomeEl = document.getElementById('welcome');
-      if (welcomeEl) welcomeEl.style.display = 'flex';
-      showTheoristEntry('session');
+      confirmTheoristEntry();
     });
   } catch (e) {
     const el = document.getElementById('write-summary-results');
@@ -1269,6 +1357,32 @@ function goBackToChat() {
   const welcome = document.getElementById('welcome');
   if (welcome) welcome.style.display = 'none';
   document.body.classList.remove('bw-selecting');
+}
+
+function openHoldSummary() {
+  return openWriteSummary();
+}
+
+function enterHoldConversation(theorist, holdText) {
+  localStorage.setItem('bw_mode', 'session');
+  window._bwPendingTheorist = theorist || 'winnicott';
+  // Pass the hold text so showTheoristOpening can build the write-context API call.
+  // Do NOT reset this here — showTheoristOpening is async and reads it after confirmTheoristEntry returns.
+  // It is cleared inside showTheoristOpening after use.
+  window._bwWriteSessionContext = (holdText && holdText.trim())
+    ? { text: holdText.trim(), summary: null }
+    : null;
+  confirmTheoristEntry();
+}
+
+// ── Explore mode entry from sidebar — localhost only ──────────────────────────
+// Enters explore mode directly: clears session, picks last used theorist (or winnicott),
+// calls confirmTheoristEntry which shows the explore opening.
+function enterExploreModeFromSidebar() {
+  window._bwWriteSessionContext = null;
+  localStorage.setItem('bw_mode', 'explore');
+  window._bwPendingTheorist = localStorage.getItem('bw_explore_theorist') || 'winnicott';
+  confirmTheoristEntry();
 }
 
 function showModeSelect() {
@@ -1721,9 +1835,15 @@ function confirmTheoristEntry() {
 }
 let uploadedFileContent = null;
 let uploadedFileName = null;
-let selectedLang = { code: 'en', flag: '🇬🇧', name: 'English' };
+const _LANGS = {
+  en: { code: 'en', flag: '🇬🇧', name: 'English' },
+  he: { code: 'he', flag: '🇮🇱', name: 'עברית' },
+};
+const _savedLang = localStorage.getItem('bw_lang')
+  || ((navigator.language || '').startsWith('he') ? 'he' : 'en');
+let selectedLang = _LANGS[_savedLang] || _LANGS['he'];
 window.selectedLang = selectedLang;
-window._lang = 'en'; // always in sync with selectedLang
+window._lang = selectedLang.code; // always in sync with selectedLang
 let isThinking = false;
 let sessionMemorySaved = false;
 let conversationHistory = [];
@@ -1971,12 +2091,14 @@ function performTheoristSwitch(el, name) {
     // Deselect current theorist
     el.classList.remove('active');
     activeTheorists = [];
+    window.dispatchEvent(new CustomEvent('holdtheoristchange', { detail: { key: null } }));
   } else {
     // Single-select: deselect all, then select this one
     document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
     activeTheorists = [];
     el.classList.add('active');
     activeTheorists = [name];
+    window.dispatchEvent(new CustomEvent('holdtheoristchange', { detail: { key: name } }));
     // Persist explore theorist choice so grid stays synced after mode switches
     const _exploreKeys = ['freud','klein','winnicott','ogden'];
     if (_exploreKeys.includes(name)) {
@@ -2057,18 +2179,6 @@ function updateSessionTitle(forceNew = false) {
     }
   } else {
     titleEl.textContent = '';
-  }
-  // Update active theorist bar above input
-  const bar = document.getElementById('active-theorist-bar');
-  if (bar) {
-    const isHe = (selectedLang?.code || 'he') !== 'en';
-    if (activeTheorists.length > 0) {
-      const names = activeTheorists.map(k => nameMap[k] || k).join(', ');
-      bar.textContent = isHe ? `מדברים עם ${names}` : `Speaking with ${names}`;
-      bar.style.display = 'block';
-    } else {
-      bar.style.display = 'none';
-    }
   }
 }
 
@@ -4747,8 +4857,10 @@ Skill תרגום: אם המשתמש מבקש תרגום — למשל "תרגמי
   const _writeCtx = window._bwWriteSessionContext;
   const writeSessionContext = _writeCtx ? `
 
-WRITE CONTEXT — THRESHOLD WORK
+WRITE CONTEXT — BETWEEN SESSIONS HOLDING
 The person wrote the following before this session. You have already read it. You hold it.
+
+CRITICAL — DO NOT REDIRECT TO THERAPY AS YOUR OPENING: The patient wrote here specifically to process this material in the space between sessions. That is exactly what this space exists for. Do NOT open with "מה שנפתח עכשיו זקוק להחזקה..." or any variant of the therapy redirect. The redirect is a later option — never an opening move when there is WRITE CONTEXT. Open with presence and engage with the material first.
 
 ${_writeCtx.text}${_writeCtx.summary?.main_theme ? `
 
@@ -4756,10 +4868,30 @@ Core theme: ${_writeCtx.summary.main_theme}` : ''}
 
 CRITICAL — YOUR ROLE:
 - You have read what was written. Do NOT ask "what did you write" or any variation. You already know.
-- Open with one sentence that shows you have received what was written — in your own voice, without quoting it or naming it directly.
+
+YOUR FIRST SENTENCE IS NOT A QUESTION. IT IS A STATEMENT OF PRESENCE.
+Read what was written. Find one word, one texture, one weight in it — something that was alive in what you just read. Your first sentence reflects THAT. It does not interpret, does not summarize, does not ask. It arrives from inside the material and shows you are with it.
+
+CORRECT first sentence examples (structure only — do not copy these, find yours from the actual material):
+- "משהו כבד נשאר." (if weight was present)
+- "יש שם מחשבה שלא מצאה מקום." (if something felt uncontained)
+- "כן." (if something landed cleanly and only needs to be received)
+- One word. One image. Something that names the texture without explaining it.
+
+WRONG first sentences — these are ALL forbidden regardless of wording:
+- Any question about WHY the person wrote, what they wanted to achieve, what they hoped would happen, or what motivated the writing. The act of writing is over. Do not turn it into an object of inquiry.
+- ANY question that asks about the act of writing or its content — "What was written?", "What did you write?", any passive or active variant. You already know. Do not ask.
+- Any meta-announcement about the material ("יש משהו שצריך להיאמר," "I want to address what you wrote," or any equivalent that announces from the outside rather than arriving from inside)
+- Any question about the threshold ("מה קשה להביא לטיפול?")
+- Any question at all as the OPENING sentence
+- "I see that...", "It sounds like...", "I notice..."
+- Confirming you read the text ("קראתי", "ראיתי")
+
 - Do NOT analyze the content. Do NOT summarize it back. Hold it silently as background.
-- Work the threshold: what makes it hard to bring this into the room with the therapist? That is what this conversation is for.
-- One question at a time.` : '';
+- Do NOT confirm or deny that you "read" the text as a completed act. You hold it — you do not report on having read it.
+- STRUCTURE — THIS IS MANDATORY: [statement of presence] + [one question from the material]. Two parts. The statement comes first. The question follows. Both are required.
+- THE QUESTION MUST BE SPECIFIC TO WHAT WAS WRITTEN: It must reference something that was actually IN the text — a word, an image, a tension, something that appeared. A question that could have been asked without reading the text is not a question from the material. It is a generic question. Forbidden.
+- One question only. Never two.` : '';
 
   return `${promptOpener}${theoristKnowledge}${focusInstruction}${memoryContext}${interpretContext}${writeSessionContext}${flowContext}${genderInstruction}${clinicalInstruction}${exploreModeContext}
 
@@ -5246,6 +5378,7 @@ function applyUITranslation(code) {
 function selectLang(code, flag, name) {
   selectedLang = { code, flag, name };
   window.selectedLang = selectedLang;
+  localStorage.setItem('bw_lang', code);
   const lf = document.getElementById('lang-flag'); if (lf) lf.textContent = flag;
   const ll = document.getElementById('lang-label'); if (ll) ll.textContent = name;
   const menu = document.getElementById('lang-menu'); if (menu) menu.style.display = 'none';
@@ -5483,7 +5616,12 @@ async function showTheoristOpening(theoristKey, showContext = true) {
 
   // Write context: generate opening dynamically — theorist responds after having read the content
   if (isWrite) {
-    const triggerMsg = isEn ? 'I wrote.' : 'כתבתי.';
+    const _wCtxText = window._bwWriteSessionContext?.text || '';
+    // Include text directly in the trigger message so the model always has it,
+    // even if the system prompt write-context block fails to inject correctly.
+    const triggerMsg = _wCtxText
+      ? (isEn ? `I wrote:\n\n${_wCtxText}` : `כתבתי:\n\n${_wCtxText}`)
+      : (isEn ? 'I wrote.' : 'כתבתי.');
     showThinking();
     try {
       const res = await fetch('/api/chat', {
@@ -5499,13 +5637,15 @@ async function showTheoristOpening(theoristKey, showContext = true) {
       });
       const data = await res.json();
       hideThinking();
-      const reply = Array.isArray(data.content)
+      let reply = Array.isArray(data.content)
         ? data.content.filter(b => b.type === 'text').map(b => b.text).join('')
         : (data.text || '');
+      // Strip MEMORY tag — same logic as main chat handler (line ~6158)
+      reply = reply.split('\n').filter(line => !/\[MEMORY/i.test(line)).join('\n').trim();
       if (reply) {
         const attribution = shortMap[theoristKey] || theoristKey;
         appendMessage('assistant', reply, attribution);
-        // Pre-seed history: trigger (hidden) + response
+        // Pre-seed history: trigger (hidden) + response (already stripped)
         conversationHistory.push({ role: 'user', content: triggerMsg });
         conversationHistory.push({ role: 'assistant', content: reply });
         updateReflectionBtn();
@@ -5520,6 +5660,7 @@ async function showTheoristOpening(theoristKey, showContext = true) {
       conversationHistory.push({ role: 'user', content: triggerMsg });
       conversationHistory.push({ role: 'assistant', content: fallback });
     }
+    window._bwWriteSessionContext = null; // clear after use
     return;
   }
 
@@ -6062,8 +6203,6 @@ async function sendMessage() {
 
     conversationHistory.push({ role: 'assistant', content: reply });
     saveConversation();
-    updateReflectionBtn();
-    updateEndSessionBtn();
 
     // Build source attribution — never in clinical mode
     // IMPORTANT: match() must come BEFORE replace() — once the tag is stripped it can't be found
@@ -6087,6 +6226,10 @@ async function sendMessage() {
 
     removeThinking();
     appendMessage('assistant', reply, attribution, sourceAttribution);
+    // Update UI buttons AFTER the response bubble is in the DOM — avoids inserting
+    // the "סיימתי להיום" button between the user bubble and the response bubble.
+    updateReflectionBtn();
+    updateEndSessionBtn();
 
   } catch (err) {
     removeThinking();
@@ -6943,8 +7086,12 @@ updateMemoryCount();
 updateReflectionBtn();
 updateEndSessionBtn();
 tryInitSupabase();
-// Apply default language (EN) on first load
+// Apply saved language on load (defaults to Hebrew)
 applyUITranslation(selectedLang.code);
+(function() {
+  const lf = document.getElementById('lang-flag'); if (lf) lf.textContent = selectedLang.flag;
+  const ll = document.getElementById('lang-label'); if (ll) ll.textContent = selectedLang.name;
+})();
 window.signIn = signIn;
 window.signUp = signUp;
 window.resetPassword = resetPassword;
@@ -7669,6 +7816,9 @@ function openSessionSummary() {
 async function _openSessionSummary() {
   const transcript = buildSessionSummaryTranscript();
   if (!transcript) {
+    // Fallback: if there's Hold/Write content, summarize that instead
+    const holdContent = getPublicWriteContent();
+    if (holdContent.trim()) { openWriteSummary(); return; }
     const _ssT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
     alert(_ssT.noActiveConvToSummarize || 'No active conversation to summarize.');
     return;
@@ -8100,6 +8250,7 @@ function updateEndSessionBtn() {
 }
 
 function showEndSessionButton() {
+  if (document.getElementById('bw-hold-textarea')) return;  // לא להציג על מסך Hold — אין שיחה גלויה
   if (document.getElementById('bw-end-session-cta')) return;
   if (document.getElementById('bw-end-session-actions')) return;
   const chat = document.getElementById('chat');

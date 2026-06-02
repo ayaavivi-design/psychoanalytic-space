@@ -121,6 +121,15 @@ export default function Home() {
     return () => window.removeEventListener('langchange', handleLangChange);
   }, []);
 
+  useEffect(() => {
+    const handleTheoristChange = (e: Event) => {
+      const key = (e as CustomEvent).detail?.key;
+      if (key) setHoldTheorist(key);
+    };
+    window.addEventListener('holdtheoristchange', handleTheoristChange);
+    return () => window.removeEventListener('holdtheoristchange', handleTheoristChange);
+  }, []);
+
   const isHe = currentLang === 'he';
   const isDev = process.env.NODE_ENV !== 'production';
 
@@ -164,7 +173,13 @@ export default function Home() {
 
   const handleEnterConversation = (theorist: string) => {
     setShowHoldTheoristPicker(false);
-    const { public: pub } = getHoldContent();
+    const { full, public: pub } = getHoldContent();
+    // Crisis check scans FULL text (incl. .bw-private) so distress marked
+    // private still triggers the banner. Privacy preserved: only `pub` is
+    // passed to the theorist below — bw-private content never reaches the model.
+    if (full && (window as any).checkCrisis?.(full)) {
+      (window as any).showCrisisBanner?.();
+    }
     (window as any).enterHoldConversation?.(theorist, pub);
     if (holdTextareaRef.current) holdTextareaRef.current.innerHTML = '';
     setHoldText('');
@@ -359,6 +374,14 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <span className="sb-icon"><NotebookPen size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-write-summary-label">סיכום לפגישה</span>
             </div>
+            {/* Explore mode — גלוי רק ב-localhost */}
+            {isLocalhost && (
+              <div className="sb-item" onClick={() => (window as any).enterExploreModeFromSidebar?.()}>
+                <span className="sb-icon"><BookOpen size={15} strokeWidth={1.75} /></span>
+                <span className="sb-label">מחקר</span>
+                <span style={{ fontSize: 9, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(לוקאל)' : '(local)'}</span>
+              </div>
+            )}
             {/* פיקוח קליני — גלוי רק ב-localhost */}
             {isLocalhost && (
               <div className="sb-item admin-only" onClick={() => (window as any).openSupervision()}>
@@ -458,12 +481,12 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               </a>
               <div
                 id="header-lang-btn"
-                onClick={(e) => { e.stopPropagation(); (window as any).headerLangToggle(); }}
+                onClick={(e) => { e.stopPropagation(); const nl = currentLang === 'he' ? 'en' : 'he'; setCurrentLang(nl); (window as any).selectLang?.(nl, nl === 'en' ? '🇬🇧' : '🇮🇱', nl === 'en' ? 'English' : 'עברית'); }}
                 style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 11, padding: '2px 6px', borderRadius: 6, fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 500, letterSpacing: '0.04em', transition: 'color 0.15s', lineHeight: 1, display: 'flex', alignItems: 'center', userSelect: 'none' }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)'; }}
               >
-                <span id="header-lang-label">EN</span>
+                <Globe size={16} strokeWidth={1.6} />
               </div>
             </div>
             <h1 dir="ltr" style={{ direction: 'ltr' }} suppressHydrationWarning>Between</h1>
@@ -495,24 +518,41 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                 {/* Single card — everything inside (option ו) */}
                 <div style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                   {/* Textarea — contenteditable for private-marking support */}
-                  <div
-                    id="bw-hold-textarea"
-                    contentEditable
-                    suppressContentEditableWarning
-                    ref={holdTextareaRef}
-                    data-placeholder={isHe ? 'כתוב לעצמך. או כדי להביא לפגישה הבאה.' : 'Write for yourself. Or to bring to your next session.'}
-                    onInput={e => { setHoldText((e.currentTarget as HTMLDivElement).innerText?.trim() || ''); if (holdSaveStatus) setHoldSaveStatus(''); }}
-                    style={{
-                      width: '100%', minHeight: 200, padding: '20px',
-                      background: 'transparent',
-                      color: 'var(--text)', fontSize: 15,
-                      fontFamily: 'var(--font-rubik), sans-serif', lineHeight: 1.7,
-                      direction: isHe ? 'rtl' : 'ltr', boxSizing: 'border-box', outline: 'none',
-                      display: 'block', wordBreak: 'break-word', whiteSpace: 'pre-wrap',
-                    }}
-                  />
-                  {/* Footer: mic + quiet save */}
-                  <div style={{ borderTop: '1px solid var(--border)', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ position: 'relative', width: '100%' }}>
+                    <div
+                      id="bw-hold-textarea"
+                      contentEditable
+                      suppressContentEditableWarning
+                      ref={holdTextareaRef}
+                      onInput={e => { setHoldText((e.currentTarget as HTMLDivElement).innerText?.trim() || ''); if (holdSaveStatus) setHoldSaveStatus(''); }}
+                      style={{
+                        width: '100%', minHeight: 200, padding: '20px',
+                        background: 'transparent',
+                        color: 'var(--text)', fontSize: 15,
+                        fontFamily: 'var(--font-rubik), sans-serif', lineHeight: 1.7,
+                        direction: isHe ? 'rtl' : 'ltr', textAlign: isHe ? 'right' : 'left',
+                        boxSizing: 'border-box', outline: 'none',
+                        display: 'block', wordBreak: 'break-word', whiteSpace: 'pre-wrap',
+                      }}
+                    />
+                    {/* Placeholder — React-controlled, immune to contentEditable Chrome <br> bug */}
+                    {!holdText && (
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          position: 'absolute', top: 20,
+                          right: isHe ? 20 : undefined, left: isHe ? undefined : 20,
+                          color: 'var(--muted)', fontSize: 15,
+                          fontFamily: 'var(--font-rubik), sans-serif',
+                          pointerEvents: 'none', userSelect: 'none', lineHeight: 1.7,
+                        }}
+                      >
+                        {isHe ? 'כתוב לעצמך. או כדי להביא לפגישה הבאה.' : 'Write for yourself. Or to bring to your next session.'}
+                      </span>
+                    )}
+                  </div>
+                  {/* Footer: mic + quiet save — row-reverse in RTL puts mic on the right */}
+                  <div style={{ borderTop: '1px solid var(--border)', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8, flexDirection: isHe ? 'row-reverse' : 'row' }}>
                     <button
                       onClick={handleToggleVoice}
                       className={isRecording ? 'bw-mic-recording' : ''}
@@ -527,6 +567,21 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                       <Mic size={15} />
                     </button>
                     <div style={{ flex: 1 }} />
+                    <button
+                      onClick={() => (window as any).openHoldSummary?.()}
+                      disabled={!holdText.trim()}
+                      style={{
+                        background: 'transparent', border: '1px solid var(--border)',
+                        borderRadius: 16, height: 30, padding: '0 12px',
+                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif',
+                        color: 'var(--muted)', cursor: holdText.trim() ? 'pointer' : 'default',
+                        opacity: holdText.trim() ? 1 : 0.4,
+                        display: 'inline-flex', alignItems: 'center',
+                        transition: 'opacity 0.15s', flexShrink: 0,
+                      }}
+                    >
+                      {isHe ? 'סיכום כתיבה' : 'Writing summary'}
+                    </button>
                     <button
                       onClick={handleHoldSave}
                       disabled={!holdText.trim()}
@@ -547,12 +602,14 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                   <div style={{ padding: '10px 14px 14px' }}>
                     <button
                       onClick={() => handleEnterConversation(holdTheorist)}
+                      disabled={!holdText.trim()}
                       style={{
                         width: '100%', height: 42,
                         background: 'var(--accent)', color: 'white', border: 'none',
                         borderRadius: 10, fontSize: 13,
                         fontFamily: 'var(--font-rubik), sans-serif',
-                        cursor: 'pointer', opacity: holdText.trim() ? 1 : 0.55,
+                        cursor: holdText.trim() ? 'pointer' : 'default',
+                        opacity: holdText.trim() ? 1 : 0.55,
                         transition: 'opacity 0.15s',
                       }}
                     >
@@ -644,7 +701,6 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
 
 
         <div className="input-area-outer">
-          <div id="active-theorist-bar" style={{ display: 'none', textAlign: 'center', fontSize: 11, color: 'var(--accent)', opacity: 0.8, paddingBottom: 4, letterSpacing: '0.03em' }}></div>
           <div className="input-area">
             <div id="file-indicator" style={{ display: 'none', background: 'rgba(196,96,122,0.06)', border: '1px solid var(--accent-dim)', borderRadius: 10, padding: '8px 14px', marginBottom: 8, alignItems: 'center', gap: 10, fontSize: 12, color: 'var(--accent)' }}>
               <span>📄</span>
