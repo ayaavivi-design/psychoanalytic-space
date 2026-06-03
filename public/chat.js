@@ -1169,6 +1169,14 @@ function saveWriteEntry(fullText, publicText, summary = null) {
   } catch(e) { console.warn('[bw-archive] save failed', e); }
 }
 
+function deleteWriteEntry(id) {
+  try {
+    const entries = JSON.parse(localStorage.getItem(BW_WRITES_KEY) || '[]');
+    const filtered = entries.filter(e => e.id !== id);
+    localStorage.setItem(BW_WRITES_KEY, JSON.stringify(filtered));
+  } catch(e) { console.warn('[bw-archive] delete failed', e); }
+}
+
 function openWriteArchive() {
   document.getElementById('bw-archive-modal')?.remove();
   const isEn = (window.selectedLang?.code === 'en');
@@ -1203,7 +1211,10 @@ function openWriteArchive() {
         <div class="bw-archive-entry" style="border-bottom:1px solid var(--border);padding:14px 0;cursor:pointer;">
           <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;">
             <div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${preview.replace(/</g,'&lt;')}</div>
-            <div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0;">${entry.date || ''}</div>
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+              <div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);white-space:nowrap;">${entry.date || ''}</div>
+              <button class="bw-archive-delete" data-id="${entry.id}" title="${isEn ? 'Delete' : 'מחק'}" aria-label="${isEn ? 'Delete' : 'מחק'}" style="background:none;border:none;padding:2px 4px;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;flex-shrink:0;">×</button>
+            </div>
           </div>
           <div class="bw-archive-body" style="display:none;margin-top:14px;">
             ${kpHtml}${bringHtml}
@@ -1219,6 +1230,15 @@ function openWriteArchive() {
       if (window.getSelection && window.getSelection().toString().length > 0) return;
       const body = el.querySelector('.bw-archive-body');
       if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
+    });
+  });
+  inner.querySelectorAll('.bw-archive-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = Number(btn.getAttribute('data-id'));
+      if (!window.confirm(isEn ? 'Delete this entry?' : 'למחוק את הרשומה הזו?')) return;
+      deleteWriteEntry(id);
+      openWriteArchive();
     });
   });
 
@@ -4977,7 +4997,7 @@ const UI_TRANSLATIONS = {
     settingsPersonaLabel: 'מי אתה/את?',
     settingsTimer: 'טיימר לסשן', settingsTimerDesc: '50 דקות · מסגרת טיפולית',
     settingsTimerWarnPre: 'דקות לפני הסיום', settingsTimerWarnSuf: 'אזהרה',
-    settingsIntakeDone: 'שיחת היכרות הושלמה ✓', settingsIntakeReset: 'אפס',
+    settingsIntakeDone: 'שיחת היכרות הושלמה ✓', settingsIntakeReset: 'להתחיל מחדש',
     sessionTooltipTitle: 'מצב סשן',
     sessionTooltipText: 'התיאורטיקן הנבחר חושב איתך בין הפגישות — לעבד מה שעלה ולמצוא מה להביא לפגישה הבאה.',
     welcomeApiText: 'השיחות לא נשמרות על ידינו ולא משמשות לאימון מודלים.',
@@ -5065,7 +5085,7 @@ const UI_TRANSLATIONS = {
     settingsPersonaLabel: 'Who are you?',
     settingsTimer: 'Session timer', settingsTimerDesc: '50 min · clinical framework',
     settingsTimerWarnPre: 'min before end', settingsTimerWarnSuf: 'warning',
-    settingsIntakeDone: 'Intro conversation completed ✓', settingsIntakeReset: 'Reset',
+    settingsIntakeDone: 'Intro conversation completed ✓', settingsIntakeReset: 'Start over',
     sessionTooltipTitle: 'Clinical Session Mode',
     sessionTooltipText: 'The selected theorist responds as an analyst in conversation — not as a lecturer. Suitable for clinical material, dreams, or personal situations.',
     welcomeApiText: 'Conversations are not stored by us or used to train models.',
@@ -5365,12 +5385,8 @@ function applyUITranslation(code) {
       const summaryLang = /[֐-׿]/.test(_apLast.summary) ? 'he' : 'en';
       const langMatch = summaryLang === code;
       _apMemoryEl.innerHTML = _apIsEn
-        ? (langMatch
-          ? `Welcome back. Last session (${_apDate}): ${_apLast.summary}. <span style="color:var(--accent-dim)">Pick up from there or open something new.</span>`
-          : `Welcome back. Ready to continue when you are. <span style="color:var(--accent-dim)">What's on your mind today?</span>`)
-        : (langMatch
-          ? `ברוכ/ה השב/ה. בפגישה האחרונה (${_apDate}): ${_apLast.summary}. <span style="color:var(--accent-dim)">אפשר להמשיך משם או לפתוח כיוון חדש.</span>`
-          : `ברוכ/ה השב/ה. המרחב מוכן כשאת/ה מוכן/ה. <span style="color:var(--accent-dim)">מה עולה היום?</span>`);
+        ? `Welcome back. Ready to continue when you are. <span style="color:var(--accent-dim)">What's on your mind today?</span>`
+        : `ברוכ/ה השב/ה. המרחב מוכן כשאת/ה מוכן/ה. <span style="color:var(--accent-dim)">מה עולה היום?</span>`;
     }
   }
 }
@@ -6950,11 +6966,10 @@ function openSettings() {
 
       </div>
 
-        ${localStorage.getItem('intake_completed') ? `
-        <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;display:flex;align-items:center;justify-content:space-between;">
+        <div id="st-intake-row" style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;display:none;align-items:center;justify-content:space-between;">
           <div id="st-intake-done" style="font-size:13px;color:var(--accent);">שיחת היכרות הושלמה ✓</div>
-          <button id="st-intake-reset" onclick="resetIntake()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:11px;cursor:pointer;">אפס</button>
-        </div>` : ''}
+          <button id="st-intake-reset" onclick="resetIntake()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:11px;cursor:pointer;">להתחיל מחדש</button>
+        </div>
 
         <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;">
@@ -7017,6 +7032,9 @@ function loadSettingsForm() {
   }
   const warningInput = document.getElementById('pref-timer-warning');
   if (warningInput && prefs.timerWarningMinutes) warningInput.value = prefs.timerWarningMinutes;
+  // Show/hide the intake-reset row based on current intake state (modal is cached, so toggle here on every open)
+  const intakeRow = document.getElementById('st-intake-row');
+  if (intakeRow) intakeRow.style.display = localStorage.getItem('intake_completed') ? 'flex' : 'none';
   // Update interpretive memory count
   const interpretCountEl = document.getElementById('st-interpret-count');
   if (interpretCountEl) {
@@ -7130,13 +7148,9 @@ window.resetPassword = resetPassword;
       const summaryLang = /[֐-׿]/.test(last.summary) ? 'he' : 'en';
       const langMatch = summaryLang === _rwLang;
       if (_rwIsEn) {
-        p.innerHTML = langMatch
-          ? `Welcome back. Last session (${date}): ${last.summary}. <span style="color:var(--accent-dim)">Pick up from there or open something new.</span>`
-          : `Welcome back. Ready to continue when you are. <span style="color:var(--accent-dim)">What's on your mind today?</span>`;
+        p.innerHTML = `Welcome back. Ready to continue when you are. <span style="color:var(--accent-dim)">What's on your mind today?</span>`;
       } else {
-        p.innerHTML = langMatch
-          ? `ברוכ/ה השב/ה. בפגישה האחרונה (${date}): ${last.summary}. <span style="color:var(--accent-dim)">אפשר להמשיך משם או לפתוח כיוון חדש.</span>`
-          : `ברוכ/ה השב/ה. המרחב מוכן כשאת/ה מוכן/ה. <span style="color:var(--accent-dim)">מה עולה היום?</span>`;
+        p.innerHTML = `ברוכ/ה השב/ה. המרחב מוכן כשאת/ה מוכן/ה. <span style="color:var(--accent-dim)">מה עולה היום?</span>`;
       }
       // Insert before flow buttons if they exist, otherwise append
       if (flowBtns) welcome.insertBefore(p, flowBtns);
