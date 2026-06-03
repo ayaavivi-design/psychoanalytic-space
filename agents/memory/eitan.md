@@ -12,10 +12,10 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - ויניקוט פרומפט Q-W: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN (semantic faithfulness לא נאכף בלופ)
 - BW-51 — סגור ✅ PASS (flow-selection div DOM-only, invisible, PDF-only. Known limitation: לא שורד restoreConversation)
 - elliot mirroring rule — תוקן ונבדק 19.05.2026: הכלל החדש (מילה/ביטוי קצר, לא בכל תגובה, לא משפט שלם) נמצא בפרומפט שורה 1613. PASS (קוד בלבד)
-- **קליין O-7 — דפוס חוזר**: הופיע 30.05, נעלם 31.05, חזר 01.06, נעלם 02.06. לא תוקן — לא דטרמיניסטי. Jira לא עודכן (Atlassian MCP לא זמין).
-- **קליין Q-3 — all-questions pattern**: הופיע 01.06, לא הופיע 02.06. לא תוקן בפרומפט — הנעלמות אינה תיקון. Jira לא עודכן (Atlassian MCP לא זמין).
-- **RAG drop 01.06**: פרויד + קליין + אוגדן → RAG=0. חזרו ל-RAG=3 ב-02.06. הסיבה לא הובנה — לנטר.
-- **02.06 סטטוס**: 4/4 PASS, RAG=3 לכולם. נקי.
+- **קליין O-7 — דפוס חוזר**: הופיע 30.05, נעלם 31.05, חזר 01.06, נעלם 02.06 ו-03.06. 3/5 ימים. לא תוקן בפרומפט — לא דטרמיניסטי. Jira לא עודכן (Atlassian MCP לא זמין בסביבה).
+- **קליין Q-3 — all-questions pattern**: הופיע 01.06 בלבד. לא תוקן בפרומפט — הנעלמות אינה תיקון.
+- **RAG drop 01.06**: פרויד + קליין + אוגדן → RAG=0. חזרו ל-RAG=3 מ-02.06 ואילך. הסיבה לא הובנה ולא נחקרה — לשלוף לוגי Vercel מ-01.06.
+- **03.06 סטטוס**: 4/4 PASS, RAG=3 לכולם. שלושה ימים רצופים נקיים (01.06 היה חריג).
 
 ---
 
@@ -36,6 +36,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+1. QA יומי 03.06: 4/4 PASS — RAG=3 לכולם. שלושה ימים רצופים נקיים. קליין O-7 נעלם אך לא תוקן (3/5 ימים). Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
 1. QA יומי 02.06: 4/4 PASS — RAG=3 לכולם. קליין O-7+Q-3 לא הופיעו אבל לא תוקנו. RAG drop מ-01.06 חזר לנורמה. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
 2. QA יומי 01.06: 3/4 — קליין כשל O-7 (פתיחה חוזרת "מה") + Q-3 (all-questions, אין תצפית). RAG=0 לפרויד/קליין/אוגדן — חשד לבעיה תשתיתית. Atlassian MCP לא זמין בסביבה — Jira לא עודכן. (יוני 2026)
 2. Bug review 24.05 — Hold + Explore: FAIL (explore mode) + WARNING (hold_entries table). כפתורי מצב (סשן/לחקור/כתיבה) נמחקו ב-commit d8212af — hold textarea מחליף אותם, אין דרך להגיע ל-explore mode. hold_entries table לא קיים בשום migration → save נכשל שקט. נדרשת: 1) החלטה מוצרית — להחזיר explore UI או להסיר את הקוד, 2) יצירת migration ל-hold_entries עם RLS נכון. (מאי 2026)
@@ -48,4 +49,3 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 2. Static QA — vera ו-elliot companions 17.05: ניתוח פרומפטים, 7 תרחישים × 2. תוצאות: 11 PASS, 2 WARNING, 1 FAIL (safety protocol שונה — companions לא מנחים לפנות לעזרה בצורה הנכונה כמו interceptor). הוספת vera+elliot לקרון qa-full ו-qa. (מאי 2026)
 2. Post-production QA 16.05: 4/4 PASS, BW-51+BW-46+enforceVariedOpening verified in prod ✅ (מאי 2026)
 2. BW-51 sign-off: PASS ✅ — flow-selection DOM indicator + PDF export. Warning: לא שורד restoreConversation (known limitation, לא בלוקר) (מאי 2026)
-3. ויניקוט QA post-prompt fix: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN — שיום רגש ו-sentence completion לא ניתנים לאכיפה בלופ (מאי 2026)
