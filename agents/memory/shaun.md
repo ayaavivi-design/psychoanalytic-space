@@ -21,7 +21,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-0. ניוזלטר #4 — "ביון וה-AI: K-link ומה שמודל שפה לא יכול לעשות בשבילך" (סדרה ג׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-03-bion-and-ai-k-link.md. גיליון הבא הוכרז: "למה שוכחים תובנות" (סדרה א׳). (יוני 2026)
+0. ניוזלטר #5 — "למה שוכחים בדיוק את מה שהיה הכי חשוב" (סדרה א׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-04-why-we-forget-insights.md. גיליון הבא הוכרז: "האם AI באמת יכול להקשיב? — על ההבדל בין ניתוח לנוכחות" (סדרה ב׳). (יוני 2026)
+1. ניוזלטר #4 — "ביון וה-AI: K-link ומה שמודל שפה לא יכול לעשות בשבילך" (סדרה ג׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-03-bion-and-ai-k-link.md. גיליון הבא הוכרז: "למה שוכחים תובנות" (סדרה א׳). (יוני 2026)
 1. ניוזלטר #3 — "ויניקוט ב-2026: מה היה אומר על ה-WhatsApp שלנו" (סדרה ג׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-02-winnicott-and-whatsapp.md. גיליון הבא הוכרז: ביון וה-AI — K-link ומודל שפה (סדרה ג׳). (יוני 2026)
 1. ניוזלטר #2 — "מה קורה לנפש בין פגישות" (סדרה א׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-01-what-happens-between-sessions.md. גיליון הבא הוכרז: ויניקוט על WhatsApp (סדרה ג׳). (יוני 2026)
 1. ריוויו מאמרים — 3 מאמרים נמצאו ב-content/writing/. נערך "Why we forget what mattered most" (פב׳ 2026). קובץ ריוויו: content/writing/review/why-we-forget--REVIEW.md. בעיה מרכזית: Bion מוזכר בשלושתם אבל לא בפרודקשן — הצעה לאוגדן. (מאי 2026)
