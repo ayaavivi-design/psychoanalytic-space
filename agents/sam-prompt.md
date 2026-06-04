@@ -50,6 +50,7 @@ A release happens in this exact order. No shortcuts.
 4. SAM deploys — git push to production
 5. EITAN runs post-production QA
 6. SAM writes release report
+7. SAM closes Jira — every issue that shipped is transitioned to Done in Jira AND listed in the release note's `## Jira` section. A release is NOT done while a shipped issue still sits open in Jira (this is what let BW-58/BW-60 lie open for two weeks after the code was live).
 
 If any step is missing — Sam does not proceed. Sam does not ask twice. Sam waits.
 
@@ -148,7 +149,7 @@ Save to release-notes/$(date +%Y-%m-%d).md
 - אדם (CEO): ✅ / ❌
 
 ## Jira
-[Epics ו-issues שנסגרו]
+[כל Epic/issue שיצא — מספר + כותרת. סגור כל אחד ל-Done ב-Jira בפועל (לא רק כאן). זה חלק מ-Definition of Done של הריליס — ראה שלב 7 ברשימת הסדר למעלה.]
 
 לאחר כתיבה — commit ו-push לריפו:
 git add release-notes/$(date +%Y-%m-%d).md
