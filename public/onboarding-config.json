@@ -1,6 +1,6 @@
 {
-  "version": "2026-05-02",
-  "updated_by": "seed",
+  "version": "2026-06-05",
+  "updated_by": "onboarding-agent",
   "tour": {
     "enabled": true,
     "steps": [
@@ -8,10 +8,10 @@
         "id": "step-theorist",
         "target": ".theorist-tag",
         "position": "right",
-        "title": "בחרי תיאורטיקן",
-        "text": "בחרי את המסגרת התיאורטית שמתאימה למה שעלה — פרויד, קליין, ויניקוט ועוד. אפשר להחליף בכל שיחה.",
-        "title_en": "Choose a theorist",
-        "text_en": "Choose the theoretical framework that fits what came up — Freud, Klein, Winnicott, and more. You can switch between sessions.",
+        "title": "עם מי לשבת?",
+        "text": "כל תיאורטיקן מדבר מקול שונה. אפשר לעבור עליהם ולהרגיש — ולהחליף בכל שיחה.",
+        "title_en": "Who to sit with?",
+        "text_en": "Each theorist speaks from a different voice. Browse through them and feel — you can switch between sessions.",
         "personas": ["patient", "therapist", "student"]
       },
       {
@@ -19,7 +19,7 @@
         "target": "#clinical-btn",
         "position": "left",
         "title": "מצב סשן קליני",
-        "text": "הפעילי לפני שמביאה חומר קליני — התיאורטיקן יגיב מתוך הגישה, לא כמרצה.",
+        "text": "הפעל לפני שמביאים חומר קליני — התיאורטיקן יגיב מתוך הגישה, לא כמרצה.",
         "title_en": "Clinical session mode",
         "text_en": "Activate before bringing clinical material — the theorist responds from within the approach, not as a lecturer.",
         "personas": ["therapist", "student"]
@@ -28,10 +28,10 @@
         "id": "step-input",
         "target": "#user-input",
         "position": "top",
-        "title": "התחילי לדבר",
-        "text": "הביאי מה שעלה בפגישה האחרונה. אין צורך להסביר. תני לשיחה להתפתח.",
-        "title_en": "Start talking",
-        "text_en": "Bring what came up in the last session. No need to explain. Let the conversation unfold.",
+        "title": "אפשר להתחיל",
+        "text": "מה שעלה בפגישה האחרונה — אפשר להביא אותו כאן. בלי להסביר. השיחה תתפתח.",
+        "title_en": "You can begin",
+        "text_en": "Bring what came up in your last session. No need to explain. The conversation will unfold.",
         "personas": ["patient", "therapist", "student"]
       }
     ]
@@ -39,7 +39,7 @@
   "sidebar_tips": {
     "⚲": "פיקוח קליני — ניתוח שיחה שכבר קרתה",
     "◎": "סיכום סשן — לאחר שיחה",
-    "◉": "מה לקחתי — רפלקציה אישית (מופיע אחרי 2 תורות)",
+    "◉": "מה לקחתי — רפלקציה אישית",
     "⇌": "השוואת תיאורטיקנים — אותה שאלה, תשובות שונות",
     "◌": "אנונימיזציה — מחיקת פרטים מזהים מחומר קליני"
   },

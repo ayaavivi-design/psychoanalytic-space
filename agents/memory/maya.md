@@ -34,7 +34,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Hold UI deep audit (מאי 2026): 13 ממצאים — ראה פירוט למטה.
+1. דוח אונבורדינג ראשון (יוני 2026): onboarding-reports/ONBOARDING-2026-06-05.md. 5 ממצאים עיקריים — theorist step academic, gender bugs בtour, sidebar ◉ debug text, welcome_headline לשון. Config עודכן. מנגנון חזרה חסר — הועבר להילי. welcome_headline קופי — הועבר לשון.
+2. Hold UI deep audit (מאי 2026): 13 ממצאים — ראה פירוט למטה.
 2. Hold UI review (מאי 2026): 7 ממצאים — padding-top גבוה (48→28px), כרטיס מתפח (flex:1 בלי max-height), כותרת בצבע muted (contrast fail), placeholder בהיר מדי, כפתור שמור נראה שבור כשריק, שתף+שיחה לא קיימים ב-/hold route (שאלה פרודקטית פתוחה לאיה/הילי).
 2. מפרט עיצוב מצגת ולידציה — שמור ב-bizdev/presentation-design-spec-2026-05.md (מאי 2026)
 3. סקירת UI מלאה — מאי 2026: 5 ממצאים קונקרטיים (ראה למטה)
