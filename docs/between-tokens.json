@@ -36,6 +36,11 @@
         "type": "color",
         "description": "accent בהיר — hover, גבולות"
       },
+      "accentDeep": {
+        "value": "#b54f6b",
+        "type": "color",
+        "description": "accent כהה — רקע כפתורי CTA עם טקסט לבן (4.89 על לבן, עובר WCAG AA)"
+      },
       "accentSoft": {
         "value": "rgba(196, 96, 122, 0.08)",
         "type": "color",

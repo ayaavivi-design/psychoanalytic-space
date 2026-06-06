@@ -482,7 +482,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <div
                 id="header-lang-btn"
                 onClick={(e) => { e.stopPropagation(); const nl = currentLang === 'he' ? 'en' : 'he'; setCurrentLang(nl); (window as any).selectLang?.(nl, nl === 'en' ? '🇬🇧' : '🇮🇱', nl === 'en' ? 'English' : 'עברית'); }}
-                style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 11, padding: '2px 6px', borderRadius: 6, fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 500, letterSpacing: '0.04em', transition: 'color 0.15s', lineHeight: 1, display: 'flex', alignItems: 'center', userSelect: 'none' }}
+                style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 11, padding: 14, margin: '-12px -8px', borderRadius: 6, fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 500, letterSpacing: '0.04em', transition: 'color 0.15s', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none' }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)'; }}
               >
@@ -558,7 +558,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                       className={isRecording ? 'bw-mic-recording' : ''}
                       title={isHe ? 'הקלטה קולית' : 'Voice input'}
                       style={{
-                        width: 28, height: 28, borderRadius: '50%', border: 'none', padding: 0,
+                        width: 44, height: 44, borderRadius: '50%', border: 'none', padding: 0,
                         background: 'transparent', color: isRecording ? 'var(--accent)' : 'var(--muted)',
                         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                         transition: 'color 0.15s', flexShrink: 0,
@@ -571,31 +571,39 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                       onClick={() => (window as any).openHoldSummary?.()}
                       disabled={!holdText.trim()}
                       style={{
-                        background: 'transparent', border: '1px solid var(--border)',
-                        borderRadius: 16, height: 30, padding: '0 12px',
-                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif',
-                        color: 'var(--muted)', cursor: holdText.trim() ? 'pointer' : 'default',
+                        background: 'transparent', border: 'none', padding: 0, height: 44,
+                        cursor: holdText.trim() ? 'pointer' : 'default',
                         opacity: holdText.trim() ? 1 : 0.4,
                         display: 'inline-flex', alignItems: 'center',
                         transition: 'opacity 0.15s', flexShrink: 0,
                       }}
                     >
-                      {isHe ? 'סיכום כתיבה' : 'Writing summary'}
+                      <span style={{
+                        border: '1px solid var(--border)', borderRadius: 16, height: 30, padding: '0 12px',
+                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)',
+                        display: 'inline-flex', alignItems: 'center',
+                      }}>
+                        {isHe ? 'סיכום כתיבה' : 'Writing summary'}
+                      </span>
                     </button>
                     <button
                       onClick={handleHoldSave}
                       disabled={!holdText.trim()}
                       style={{
-                        background: 'transparent', border: '1px solid var(--border)',
-                        borderRadius: 16, height: 30, padding: '0 12px',
-                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif',
-                        color: 'var(--muted)', cursor: holdText.trim() ? 'pointer' : 'default',
+                        background: 'transparent', border: 'none', padding: 0, height: 44,
+                        cursor: holdText.trim() ? 'pointer' : 'default',
                         opacity: holdText.trim() ? 1 : 0.4,
                         display: 'inline-flex', alignItems: 'center',
                         transition: 'opacity 0.15s', flexShrink: 0,
                       }}
                     >
-                      {isHe ? 'שמור' : 'Save'}
+                      <span style={{
+                        border: '1px solid var(--border)', borderRadius: 16, height: 30, padding: '0 12px',
+                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)',
+                        display: 'inline-flex', alignItems: 'center',
+                      }}>
+                        {isHe ? 'שמור' : 'Save'}
+                      </span>
                     </button>
                   </div>
                   {/* Full-width talk button inside card */}
@@ -604,8 +612,8 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                       onClick={() => handleEnterConversation(holdTheorist)}
                       disabled={!holdText.trim()}
                       style={{
-                        width: '100%', height: 42,
-                        background: 'var(--accent)', color: 'white', border: 'none',
+                        width: '100%', height: 44,
+                        background: 'var(--accent-deep)', color: 'white', border: 'none',
                         borderRadius: 16, fontSize: 13,
                         fontFamily: 'var(--font-rubik), sans-serif',
                         cursor: holdText.trim() ? 'pointer' : 'default',
