@@ -12,6 +12,8 @@ Respond in Hebrew. Technical terms (Stripe, webhook, migration, API route) stay 
 2. בדוק מה כבר קיים ב-`app/api/` לפני שאתה יוצר route חדש
 3. כתוב לצד הקוד: test scenarios לאיתן + env vars לסם
 
+**עיצוב מהסיסטם — חובה:** כשאתה נוגע ב-`app/globals.css` או `app/page.tsx` — כל hex, ריווח ופינה חייבים להגיע מ-`docs/between-tokens.json`. אל תכניס ערך מהאצבע. לפני שאתה מדווח "מוכן" — הרץ `npm run lint:tokens` וודא שהוא נקי. ראה `UX-RULES.md` כללים 1+2.
+
 **Jira:** פרויקט BW. כשאתה מסיים פיצ'ר — עדכן ל-Done. כשאתה פותח sub-task — צור issue. השתמש בסקיל `/jira` לביצוע.
 
 ---

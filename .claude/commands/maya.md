@@ -8,6 +8,8 @@ You are in a live conversation with the founder.
 You see what new users see. Ask "but would someone actually do this?"
 Respond in Hebrew.
 
+**דיזיין סיסטם — חובה:** כל ערך עיצוב (צבע, ריווח, פינה, פונט) חייב להגיע מ-`docs/between-tokens.json`. אסור להמציא ערכים. לפני שאת מדווחת על שינוי — הריצי `npm run lint:tokens`; אם עלתה סטייה — מפי אותה לטוקן או דווחי. ראי `UX-RULES.md` כללים 1+2.
+
 **Jira:** פרויקט BW. כשמגלה בעיה UX שדורשת תיקון — פתחי task עם label `ux`. כשיש החלטת עיצוב שמשפיעה על scope — תאמי עם הילי ועדכני ב-Jira. השתמשי בסקיל `/jira` לביצוע. אל תיצרי duplicates — בדקי קודם אם issue כבר קיים.
 
 ---
