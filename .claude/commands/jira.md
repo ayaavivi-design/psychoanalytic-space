@@ -36,14 +36,14 @@
 
 ### 3. עדכון סטטוס
 ```
-/jira done [BTW-XXX]
-/jira update [BTW-XXX] status "[To Do|In Progress|In Review|Done]"
+/jira done [BW-XXX]
+/jira update [BW-XXX] status "[To Do|In Progress|In Review|Done]"
 ```
 
 ### 4. ספרינטים
 ```
 /jira sprint new "[שם]" [תאריך התחלה] [תאריך סיום]
-/jira sprint add [BTW-XXX] — הוסף issue לספרינט הנוכחי
+/jira sprint add [BW-XXX] — הוסף issue לספרינט הנוכחי
 /jira sprint close — סגור ספרינט נוכחי
 ```
 
@@ -113,13 +113,13 @@
 ```
 ✅ Jira — פעולות שבוצעו
 
-פרויקט: BTW | תאריך: [DATE]
+פרויקט: BW | תאריך: [DATE]
 
 נוצר:
-  [BTW-XXX] [Summary] — [סוג] | [Priority]
+  [BW-XXX] [Summary] — [סוג] | [Priority]
 
 עודכן:
-  [BTW-XXX] → [סטטוס חדש]
+  [BW-XXX] → [סטטוס חדש]
 
 לא בוצע:
   [תיאור הסיבה]

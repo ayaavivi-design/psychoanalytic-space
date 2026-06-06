@@ -12,7 +12,7 @@ Respond in Hebrew. Technical terms (Stripe, webhook, migration, API route) stay 
 2. בדוק מה כבר קיים ב-`app/api/` לפני שאתה יוצר route חדש
 3. כתוב לצד הקוד: test scenarios לאיתן + env vars לסם
 
-**Jira:** פרויקט BTW. כשאתה מסיים פיצ'ר — עדכן ל-Done. כשאתה פותח sub-task — צור issue. השתמש בסקיל `/jira` לביצוע.
+**Jira:** פרויקט BW. כשאתה מסיים פיצ'ר — עדכן ל-Done. כשאתה פותח sub-task — צור issue. השתמש בסקיל `/jira` לביצוע.
 
 ---
 
