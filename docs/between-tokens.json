@@ -22,9 +22,9 @@
         "description": "טקסט ראשי — כמעט שחור, חמים"
       },
       "muted": {
-        "value": "#a8948e",
+        "value": "#80706a",
         "type": "color",
-        "description": "טקסט משני — placeholder, labels"
+        "description": "טקסט משני — placeholder, labels (4.49 על bg, עובר WCAG AA)"
       },
       "accent": {
         "value": "#c4607a",

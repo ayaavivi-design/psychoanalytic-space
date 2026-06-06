@@ -544,7 +544,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                           right: isHe ? 20 : undefined, left: isHe ? undefined : 20,
                           color: 'var(--muted)', fontSize: 15,
                           fontFamily: 'var(--font-rubik), sans-serif',
-                          pointerEvents: 'none', userSelect: 'none', lineHeight: 1.7,
+                          pointerEvents: 'none', userSelect: 'none', lineHeight: 1.6,
                         }}
                       >
                         {isHe ? 'כתוב לעצמך. או כדי להביא לפגישה הבאה.' : 'Write for yourself. Or to bring to your next session.'}
@@ -552,7 +552,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                     )}
                   </div>
                   {/* Footer: mic + quiet save — row-reverse in RTL puts mic on the right */}
-                  <div style={{ borderTop: '1px solid var(--border)', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8, flexDirection: isHe ? 'row-reverse' : 'row' }}>
+                  <div style={{ borderTop: '1px solid var(--border)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, flexDirection: isHe ? 'row-reverse' : 'row' }}>
                     <button
                       onClick={handleToggleVoice}
                       className={isRecording ? 'bw-mic-recording' : ''}
@@ -599,14 +599,14 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                     </button>
                   </div>
                   {/* Full-width talk button inside card */}
-                  <div style={{ padding: '10px 14px 14px' }}>
+                  <div style={{ padding: '10px 12px 12px' }}>
                     <button
                       onClick={() => handleEnterConversation(holdTheorist)}
                       disabled={!holdText.trim()}
                       style={{
                         width: '100%', height: 42,
                         background: 'var(--accent)', color: 'white', border: 'none',
-                        borderRadius: 10, fontSize: 13,
+                        borderRadius: 16, fontSize: 13,
                         fontFamily: 'var(--font-rubik), sans-serif',
                         cursor: holdText.trim() ? 'pointer' : 'default',
                         opacity: holdText.trim() ? 1 : 0.55,
@@ -757,7 +757,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
           <div style={{ background: '#fff', border: '1px solid #ede4e0', borderRadius: 16, padding: 32, maxWidth: 380, width: '90%', textAlign: 'center', boxShadow: '0 8px 32px rgba(196,96,122,0.12)' }}>
             <div style={{ fontSize: 32, color: '#c4607a', opacity: 0.3, marginBottom: 12, fontFamily: 'var(--font-cormorant), serif' }}>ψ</div>
             <h3 style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 20, fontWeight: 300, fontStyle: 'italic', color: '#c4607a', marginBottom: 10 }}>בחרי תיאורטיקאי</h3>
-            <p style={{ fontSize: 13, color: '#a8948e', lineHeight: 1.8, marginBottom: 24 }}>לחצי על אחד מהשמות למעלה כדי להפעיל את הסוכן עם הידע המעמיק של אותה גישה.</p>
+            <p style={{ fontSize: 13, color: 'var(--muted, #80706a)', lineHeight: 1.8, marginBottom: 24 }}>לחצי על אחד מהשמות למעלה כדי להפעיל את הסוכן עם הידע המעמיק של אותה גישה.</p>
             <button onClick={() => { const p = document.getElementById('choose-popup'); if(p) p.style.display='none'; }}
               style={{ background: '#c4607a', border: 'none', color: '#fff', padding: '10px 28px', borderRadius: 20, fontSize: 14, fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer' }}>הבנתי</button>
           </div>
@@ -786,15 +786,15 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               {name}
             </div>
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--muted, #a8948e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.approach}</div>
+              <div style={{ fontSize: 10, color: 'var(--muted, #80706a)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.approach}</div>
               <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{card.approach}</div>
             </div>
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--muted, #a8948e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.concepts}</div>
+              <div style={{ fontSize: 10, color: 'var(--muted, #80706a)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.concepts}</div>
               <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{card.concepts}</div>
             </div>
             <div>
-              <div style={{ fontSize: 10, color: 'var(--muted, #a8948e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.forWhom}</div>
+              <div style={{ fontSize: 10, color: 'var(--muted, #80706a)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.forWhom}</div>
               <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{card.forWhom}</div>
             </div>
           </div>

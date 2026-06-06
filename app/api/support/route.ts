@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   const html = `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto;color:#2d2420;">
       <h2 style="color:#c4607a;margin-bottom:8px;">פנייה לתמיכה — Between</h2>
-      <p style="font-size:13px;color:#a8948e;margin-bottom:24px;">
+      <p style="font-size:13px;color:#80706a;margin-bottom:24px;">
         <strong>מהמשתמש:</strong> ${userEmail || '—'}
       </p>
       <p style="font-size:14px;margin-bottom:8px;"><strong>נושא:</strong> ${subject}</p>

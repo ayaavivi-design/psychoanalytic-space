@@ -1636,9 +1636,9 @@ function renderTheoristGridForMode(mode) {
       });
       tip.innerHTML =
         `<div style="font-size:13px;font-weight:600;color:var(--accent,#c4607a);margin-bottom:10px;">${name}</div>` +
-        `<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--muted,#a8948e);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.approach}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.approach}</div></div>` +
-        `<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--muted,#a8948e);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.concepts}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.concepts}</div></div>` +
-        `<div><div style="font-size:10px;color:var(--muted,#a8948e);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.forWhom}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.forWhom}</div></div>`;
+        `<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--muted,#80706a);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.approach}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.approach}</div></div>` +
+        `<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--muted,#80706a);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.concepts}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.concepts}</div></div>` +
+        `<div><div style="font-size:10px;color:var(--muted,#80706a);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.forWhom}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.forWhom}</div></div>`;
     };
     const _hideCTip = function() {
       const tip = document.getElementById('bw-companion-tooltip');
@@ -8569,7 +8569,7 @@ function buildConvTab(transcript, personaName) {
         : 'align-self:flex-start;background:#f7f2f9;color:#2a1a30;border:1px solid #e0d4e8;'
     ].join('');
     const lbl = document.createElement('div');
-    lbl.style.cssText = `font-size:9px;color:${isUser?'#a8948e':'#8a6a95'};font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px;`;
+    lbl.style.cssText = `font-size:9px;color:${isUser?'#80706a':'#8a6a95'};font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px;`;
     lbl.textContent = isUser ? personaName : 'הסוכן';
     const txt = document.createElement('div');
     txt.textContent = turn.text;
