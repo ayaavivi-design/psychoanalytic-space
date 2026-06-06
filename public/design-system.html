@@ -17,12 +17,14 @@
       --muted:       #80706a;
       --accent:      #c4607a;
       --accent-dim:  #d4899a;
+      --accent-deep: #b54f6b;
       --accent-soft: rgba(196,96,122,0.08);
       --thinking:    #fdf0f3;
 
       /* Fonts */
       --font-cormorant: 'Cormorant Garamond';
       --font-rubik: 'Rubik';
+      --font-david: 'David Libre';
 
       /* Border radius */
       --radius-xs:     4px;
@@ -53,6 +55,7 @@
       --layout-sidebar-collapsed:  52px;
       --layout-chat-max:          740px;
       --layout-input-max:         800px;
+      --layout-content-max:       900px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -124,6 +127,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 16px;
+      direction: ltr; /* palette reads left→right in logical token order */
     }
     .color-swatch {
       border-radius: var(--radius-md);
@@ -141,11 +145,15 @@
       font-size: var(--fs-body-sm);
       font-weight: 400;
       color: var(--text);
+      direction: ltr;
+      text-align: left;
     }
     .color-value {
       font-size: var(--fs-micro);
       color: var(--muted);
       font-family: monospace;
+      direction: ltr;
+      text-align: left;
     }
 
     /* ── TYPOGRAPHY ── */
@@ -165,6 +173,8 @@
       font-weight: 500;
       color: var(--accent);
       font-family: monospace;
+      direction: ltr;
+      text-align: left;
     }
     .type-meta .type-desc {
       font-size: var(--fs-micro);
@@ -247,87 +257,6 @@
       transition: background 0.15s, border-color 0.15s;
     }
     .btn-flow:hover { background: var(--accent-soft); border-color: var(--accent-dim); }
-
-    /* ── MODE PILL TOGGLE ── */
-    .bw-mode-track {
-      display: flex;
-      background: var(--border);
-      border-radius: var(--radius-xl);
-      padding: 4px;
-      width: fit-content;
-    }
-    .bw-mode-pill {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      flex: 1;
-      padding: 10px 28px;
-      border-radius: var(--radius-xl);
-      font-family: var(--font-cormorant), serif;
-      font-size: var(--fs-heading-card);
-      font-weight: 300;
-      color: var(--muted);
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.2s, color 0.2s;
-      border: none;
-      background: none;
-      white-space: nowrap;
-    }
-    .bw-mode-pill.selected {
-      background: var(--surface);
-      color: var(--text);
-      font-weight: 500;
-    }
-
-    /* ── THEORIST PILL GRID ── */
-    .theorist-pill {
-      padding: 10px 0;
-      border-radius: var(--radius-xl);
-      border: 1.5px solid var(--border);
-      background: var(--surface);
-      text-align: center;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      width: 128px;
-      transition: border-color 0.15s, background 0.15s;
-      user-select: none;
-    }
-    .theorist-pill:hover { border-color: var(--accent-dim); }
-    .theorist-pill.selected {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-    }
-    .t-name {
-      font-family: var(--font-cormorant), serif;
-      font-size: var(--fs-heading-card);
-      font-weight: 300;
-      color: var(--text);
-    }
-    .theorist-pill.selected .t-name { color: var(--accent); }
-
-    /* ── CONFIRM BUTTON ── */
-    .bw-confirm-btn {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius-xl);
-      padding: 11px 36px;
-      font-family: var(--font-rubik), sans-serif;
-      font-size: var(--fs-body-md);
-      font-weight: 400;
-      cursor: pointer;
-      transition: opacity 0.15s;
-      min-width: 160px;
-      max-width: 220px;
-      display: block;
-    }
-    .bw-confirm-btn:hover { opacity: 0.87; }
 
     /* ── SIZES ── */
     .size-grid {
@@ -563,6 +492,10 @@
         <div class="color-info"><div class="color-name">--accent-dim</div><div class="color-value">#d4899a</div></div>
       </div>
       <div class="color-swatch">
+        <div class="color-block" style="background:#b54f6b;"></div>
+        <div class="color-info"><div class="color-name">--accent-deep</div><div class="color-value">#b54f6b</div></div>
+      </div>
+      <div class="color-swatch">
         <div class="color-block" style="background:rgba(196,96,122,0.08);"></div>
         <div class="color-info"><div class="color-name">--accent-soft</div><div class="color-value">rgba(196,96,122,.08)</div></div>
       </div>
@@ -596,9 +529,9 @@
     <div class="type-row">
       <div class="type-meta">
         <div class="type-token">heading-lg</div>
-        <div class="type-desc">Rubik · 22px · 400</div>
+        <div class="type-desc">David Libre · 22px · 400</div>
       </div>
-      <div class="type-sample" style="font-size:22px;font-weight:400;">מה עולה לך היום?</div>
+      <div class="type-sample" style="font-family:'David Libre',serif;font-size:22px;font-weight:400;">מה עולה לך היום?</div>
     </div>
 
     <div class="type-row">
@@ -607,14 +540,6 @@
         <div class="type-desc">Cormorant · 20px · 300</div>
       </div>
       <div class="type-sample" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;">שיחה עם ויניקוט</div>
-    </div>
-
-    <div class="type-row">
-      <div class="type-meta">
-        <div class="type-token">heading-sm</div>
-        <div class="type-desc">Cormorant · 19px · 300 · muted</div>
-      </div>
-      <div class="type-sample" style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:300;color:var(--muted);">Who would you like to speak with?</div>
     </div>
 
     <div class="type-row">
@@ -716,131 +641,7 @@
 
         </div>
       </div>
-
-      <div>
-        <div class="ds-col" style="gap:24px;">
-
-          <div class="ds-col">
-            <div class="ds-label">Mode Pill Toggle — בחירת מצב (BW-41)</div>
-
-            <!-- Hebrew (RTL) -->
-            <div style="font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">עברית — he</div>
-            <div class="bw-mode-track" dir="rtl">
-              <div class="bw-mode-pill selected">
-                <span>סשן</span>
-                <!-- Sofa icon 15px -->
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1Z"/><path d="M4 18v2"/><path d="M20 18v2"/><path d="M12 4v9"/></svg>
-              </div>
-              <div class="bw-mode-pill">
-                <span>לחקור</span>
-                <!-- BookOpen icon 15px -->
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              </div>
-            </div>
-
-            <!-- English (LTR) -->
-            <div style="font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;margin-top:12px;">English — en</div>
-            <div class="bw-mode-track" dir="ltr">
-              <div class="bw-mode-pill selected">
-                <span>Session</span>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1Z"/><path d="M4 18v2"/><path d="M20 18v2"/><path d="M12 4v9"/></svg>
-              </div>
-              <div class="bw-mode-pill">
-                <span>Explore</span>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              </div>
-            </div>
-
-            <div style="font-size:11px;color:var(--muted);margin-top:8px;">Cormorant 18px · track: border bg + radius-xl + padding 4px · pill: flex:1 + padding 10px 28px + radius-xl · text THEN icon (gap 6px) · selected: surface bg + text color</div>
-          </div>
-
-          <div class="ds-col">
-            <div class="ds-label">Theorist Pill Grid — בחירת תיאורטיקן (BW-41)</div>
-
-            <!-- Hebrew (RTL) -->
-            <div style="font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">עברית — he</div>
-            <div style="display:grid;grid-template-columns:repeat(2,128px);gap:12px 14px;direction:rtl;">
-              <div class="theorist-pill">
-                <span class="t-name">פרויד</span>
-              </div>
-              <div class="theorist-pill">
-                <span class="t-name">קליין</span>
-              </div>
-              <div class="theorist-pill selected">
-                <span class="t-name">ויניקוט</span>
-              </div>
-              <div class="theorist-pill">
-                <span class="t-name">אוגדן</span>
-              </div>
-            </div>
-
-            <!-- English (LTR) -->
-            <div style="font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;margin-top:12px;">English — en</div>
-            <div style="display:grid;grid-template-columns:repeat(2,128px);gap:12px 14px;direction:ltr;">
-              <div class="theorist-pill">
-                <span class="t-name">Freud</span>
-              </div>
-              <div class="theorist-pill">
-                <span class="t-name">Klein</span>
-              </div>
-              <div class="theorist-pill selected">
-                <span class="t-name">Winnicott</span>
-              </div>
-              <div class="theorist-pill">
-                <span class="t-name">Ogden</span>
-              </div>
-            </div>
-
-            <div style="font-size:11px;color:var(--muted);margin-top:8px;">Cormorant 18px · radius-xl 22px · padding 10px 0 · width 128px · 2x2 grid (gap 12px 14px) · subtitle hidden · selected: accent border + accent-soft bg + accent name</div>
-          </div>
-
-          <div class="ds-col">
-            <div class="ds-label">Confirm Button — bw-confirm-btn</div>
-            <button class="bw-confirm-btn">המשך</button>
-            <div style="font-size:11px;color:var(--muted);margin-top:4px;">accent bg · white · Rubik 13px · radius-xl 22px · padding 11px 36px · align-self center</div>
-          </div>
-
-        </div>
-      </div>
     </div>
-  </div>
-
-  <!-- ENTRY SCREEN — BW-41 UNIFIED FLOW -->
-  <div class="ds-section">
-    <div class="ds-section-title">מסך כניסה מאוחד — BW-41 Unified Entry Screen</div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:24px;padding:40px 32px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);max-width:480px;">
-
-      <!-- heading -->
-      <p style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:300;color:var(--text);margin:0;">מה עולה לך היום?</p>
-
-      <!-- mode pill toggle -->
-      <div class="bw-mode-track" dir="rtl">
-        <div class="bw-mode-pill selected">
-          <span>סשן</span>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1Z"/><path d="M4 18v2"/><path d="M20 18v2"/><path d="M12 4v9"/></svg>
-        </div>
-        <div class="bw-mode-pill">
-          <span>לחקור</span>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        </div>
-      </div>
-
-      <!-- theorist sub-heading -->
-      <p style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:300;color:var(--text);margin:0;">עם מי תרצה לדבר?</p>
-
-      <!-- theorist pill grid 2x2 -->
-      <div style="display:grid;grid-template-columns:repeat(2,128px);gap:12px 14px;direction:rtl;">
-        <div class="theorist-pill"><span class="t-name">פרויד</span></div>
-        <div class="theorist-pill"><span class="t-name">קליין</span></div>
-        <div class="theorist-pill selected"><span class="t-name">ויניקוט</span></div>
-        <div class="theorist-pill"><span class="t-name">אוגדן</span></div>
-      </div>
-
-      <!-- confirm button -->
-      <button class="bw-confirm-btn">המשך</button>
-
-    </div>
-    <div style="font-size:11px;color:var(--muted);margin-top:12px;">מצב חדש (BW-41): mode + theorist selection על מסך אחד. כפתור "המשך" מופיע רק אחרי בחירת תיאורטיקן. הכל flex column עם gap 24px, מרוכז אנכית ואופקית.</div>
   </div>
 
   <!-- BUTTON SIZES -->
@@ -1000,10 +801,10 @@
 
   <!-- PERSONA ICONS -->
   <div class="ds-section">
-    <div class="ds-section-title">אייקוני פרסונה — Vera &amp; Elliot</div>
+    <div class="ds-section-title">אייקוני פרסונה — קליין ואוגדן</div>
     <div style="display:flex;gap:40px;align-items:flex-start;flex-wrap:wrap;">
 
-      <!-- Vera -->
+      <!-- Klein -->
       <div class="icon-item" style="flex-direction:column;align-items:center;gap:12px;padding:20px 24px;min-width:120px;">
         <span class="icon-glyph" style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round">
@@ -1012,12 +813,12 @@
             <path d="M6 21c0-3 2.7-5 6-5s6 2 6 5"/>
           </svg>
         </span>
-        <span class="icon-label-he">ורה</span>
-        <span class="icon-label-en">Vera</span>
+        <span class="icon-label-he">קליין</span>
+        <span class="icon-label-en">Klein</span>
         <span style="font-size:10px;color:var(--muted);text-align:center;">ראש + קוקו גבוה<br/>page.tsx only</span>
       </div>
 
-      <!-- Elliot -->
+      <!-- Ogden -->
       <div class="icon-item" style="flex-direction:column;align-items:center;gap:12px;padding:20px 24px;min-width:120px;">
         <span class="icon-glyph" style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round">
@@ -1026,8 +827,8 @@
             <path d="M6 21c0-3 2.7-5 6-5s6 2 6 5"/>
           </svg>
         </span>
-        <span class="icon-label-he">אליוט</span>
-        <span class="icon-label-en">Elliot</span>
+        <span class="icon-label-he">אוגדן</span>
+        <span class="icon-label-en">Ogden</span>
         <span style="font-size:10px;color:var(--muted);text-align:center;">ראש + שיער קצר<br/>page.tsx only</span>
       </div>
 

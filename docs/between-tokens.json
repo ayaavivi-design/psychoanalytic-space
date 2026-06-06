@@ -149,11 +149,6 @@
         "type": "fontSizes",
         "description": "Cormorant — כותרת session פעילה"
       },
-      "headingSm": {
-        "value": "19px",
-        "type": "fontSizes",
-        "description": "Cormorant — prompt בתוך flow"
-      },
       "headingCard": {
         "value": "18px",
         "type": "fontSizes",
