@@ -15,6 +15,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - **B2C confirmed, לא B2B**: מסלול מטפלים — אפשרי בהמשך, רק אם discovery יוכיח צורך ממשי.
 - **אין קיצורי דרך**: המוצר צריך לבדל עצמו ב-output ובקול, לא לחקות פיצ'רים מ-ChatGPT.
 - **3 מטפלים לפני scale**: לא להרחיב בלי פידבק אמיתי מהשטח.
+- **בטיחות = blocking**: QA "סימנים אובדניים" חייב להיות עדיפות ראשונה לפני כל release. אם STRATEGIC_PRIORITIES.md לא מציין אותה כ-completed — היא עדיין פתוחה.
 
 ---
 
@@ -23,3 +24,4 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 2. Strategic session: B2C decision confirmed + pre-launch priorities
 3. Team session: differentiation — ChatGPT/Claude vs Between, מה הייחוד שמצדיק תשלום
 4. Jira sprint review: מצב Q2 2026
+5. CEO memo 07.06: ממצא מרכזי — בטיחות לא נבדקה 55 יום. STRATEGIC_PRIORITIES עודכן. דרישה: Eitan מריץ suicide QA לפני כל push.
