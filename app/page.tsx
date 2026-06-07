@@ -233,7 +233,7 @@ export default function Home() {
   };
   const theoristKeys: string[] = isDev
     ? ['freud','klein','winnicott','ogden','loewald','bion','kohut','heimann']
-    : ['freud','klein','winnicott','ogden','bion'];
+    : ['freud','klein','winnicott','ogden'];
   const THEORIST_LIST: [string, string, string][] = theoristKeys.map(k => [k, THEORIST_LABELS[k][0], THEORIST_LABELS[k][1]]);
 
   return (
