@@ -15,15 +15,16 @@ Between הוא מרחב שקט. הדיזיין לא מחליף את הפסיכו
 ## 1. צבעים — Color Tokens
 
 ```css
---bg:          #fdf8f6   /* רקע כללי — לבן-שמנת */
---surface:     #fff      /* כרטיסים, panels */
---border:      #ede4e0   /* גבולות עדינים */
+--bg:          #f3e7e2   /* רקע כללי — רוז עמוק (קנבס כל האפליקציה) */
+--surface:     #fffaf8   /* כרטיסים, panels — משטח צף חמים */
+--border:      #e6d6cf   /* גבולות עדינים — מותאם לרוז */
 --text:        #2d2420   /* טקסט ראשי — כמעט שחור, חמים */
---muted:       #a8948e   /* טקסט משני — אפרסמון בהיר */
+--muted:       #74645e   /* טקסט משני — placeholder, labels (4.65 על הרוז) */
 --accent:      #c4607a   /* צבע ראשי — ורוד-אדום */
 --accent-dim:  #d4899a   /* accent בהיר יותר — hover, גבולות */
+--accent-deep: #a8475f   /* accent כהה — טקסט CTA / רקע כפתורים (4.65 על הרוז) */
 --accent-soft: rgba(196,96,122,0.08)  /* accent כמעט שקוף — selected bg */
---thinking:    #fdf0f3   /* רקע מחשבה של AI */
+--thinking:    #ecc7d4   /* רקע מחשבה של AI — הועמק כדי לבלוט על הרוז */
 ```
 
 ### שימוש
@@ -45,7 +46,7 @@ Between משתמש בשלושה פונטים עם תפקידים מוגדרים:
 |------|--------|--------|
 | **Cormorant Garamond** | `var(--font-cormorant)` | כותרות, שמות תיאורטיקנים, quotes — הקול הספרותי |
 | **Rubik** | `var(--font-rubik)` | ממשק, כפתורים, גוף — פונקציונלי וקריא |
-| **David Libre** | `var(--font-david)` | כותרת welcome בלבד — גשר בין עברית ועיצוב |
+| **Assistant** | `var(--font-assistant)` | כותרות עברית — welcome / entry headings (סאנס הומניסטי, חם) |
 
 ### כלל: אל תערבבו. Cormorant = עומק. Rubik = עשייה.
 
@@ -57,7 +58,7 @@ Between משתמש בשלושה פונטים עם תפקידים מוגדרים:
 |----|------|------|------|-------|
 | `display` | 48px | 300 | Cormorant | אלמנט דקורטיבי (ornament) |
 | `heading-xl` | 26px | 300 | Cormorant | שם המוצר בheader — Between |
-| `heading-lg` | 22px | 400 | David Libre | כותרת welcome — "מה עולה לך היום?" |
+| `heading-lg` | 22px | 400 | Assistant | כותרת welcome — "מה עולה לך היום?" |
 | `heading-md` | 20px | 300 | Cormorant | כותרת session פעילה |
 | `heading-sm` | 19px | 300 | Cormorant | prompt בתוך flow — "עם מי תרצה?" |
 | `heading-card` | 17–18px | 300 | Cormorant | שמות תיאורטיקנים, שמות mode cards |

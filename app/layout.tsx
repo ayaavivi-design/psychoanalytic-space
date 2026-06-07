@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { Rubik, Cormorant_Garamond, Frank_Ruhl_Libre, David_Libre } from 'next/font/google';
+import { Rubik, Cormorant_Garamond, Frank_Ruhl_Libre, Assistant } from 'next/font/google';
 import './globals.css';
 
 const rubik = Rubik({
@@ -18,10 +18,10 @@ const frankRuhl = Frank_Ruhl_Libre({
   display: 'swap',
 });
 
-const davidLibre = David_Libre({
+const assistant = Assistant({
   subsets: ['hebrew', 'latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-david',
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-assistant',
   display: 'swap',
 });
 
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl" className={`${rubik.variable} ${cormorant.variable} ${frankRuhl.variable} ${davidLibre.variable}`} suppressHydrationWarning>
+    <html lang="he" dir="rtl" className={`${rubik.variable} ${cormorant.variable} ${frankRuhl.variable} ${assistant.variable}`} suppressHydrationWarning>
       <body style={{ margin: 0, padding: 0 }} suppressHydrationWarning>
         {children}
         <Script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" strategy="afterInteractive" />

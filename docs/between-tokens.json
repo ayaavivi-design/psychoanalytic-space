@@ -2,19 +2,19 @@
   "global": {
     "color": {
       "bg": {
-        "value": "#fdf8f6",
+        "value": "#f3e7e2",
         "type": "color",
-        "description": "רקע כללי — לבן-שמנת"
+        "description": "רקע כללי — רוז עמוק (קנבס כל האפליקציה)"
       },
       "surface": {
-        "value": "#ffffff",
+        "value": "#fffaf8",
         "type": "color",
-        "description": "כרטיסים, panels"
+        "description": "כרטיסים, panels — משטח צף חמים על הרוז"
       },
       "border": {
-        "value": "#ede4e0",
+        "value": "#e6d6cf",
         "type": "color",
-        "description": "גבולות עדינים"
+        "description": "גבולות עדינים — מותאם לרוז"
       },
       "text": {
         "value": "#2d2420",
@@ -22,9 +22,9 @@
         "description": "טקסט ראשי — כמעט שחור, חמים"
       },
       "muted": {
-        "value": "#80706a",
+        "value": "#74645e",
         "type": "color",
-        "description": "טקסט משני — placeholder, labels (4.49 על bg, עובר WCAG AA)"
+        "description": "טקסט משני — placeholder, labels (4.65 על הרוז, עובר WCAG AA)"
       },
       "accent": {
         "value": "#c4607a",
@@ -37,9 +37,9 @@
         "description": "accent בהיר — hover, גבולות"
       },
       "accentDeep": {
-        "value": "#b54f6b",
+        "value": "#a8475f",
         "type": "color",
-        "description": "accent כהה — רקע כפתורי CTA עם טקסט לבן (4.89 על לבן, עובר WCAG AA)"
+        "description": "accent כהה — טקסט CTA / רקע כפתורים (4.65 על הרוז, עובר WCAG AA)"
       },
       "accentSoft": {
         "value": "rgba(196, 96, 122, 0.08)",
@@ -47,9 +47,9 @@
         "description": "accent שקוף — selected background"
       },
       "thinking": {
-        "value": "#fdf0f3",
+        "value": "#ecc7d4",
         "type": "color",
-        "description": "רקע מחשבה של AI"
+        "description": "רקע מחשבה של AI — הועמק כדי לבלוט על הרוז"
       }
     },
     "borderRadius": {
@@ -122,10 +122,10 @@
         "type": "fontFamilies",
         "description": "ממשק, כפתורים, גוף — פונקציונלי וקריא"
       },
-      "david": {
-        "value": "David Libre",
+      "assistant": {
+        "value": "Assistant",
         "type": "fontFamilies",
-        "description": "כותרת welcome בלבד"
+        "description": "כותרות עברית — welcome / entry headings (סאנס הומניסטי)"
       }
     },
     "fontSizes": {
@@ -142,7 +142,7 @@
       "headingLg": {
         "value": "22px",
         "type": "fontSizes",
-        "description": "David — כותרת welcome"
+        "description": "Assistant — כותרת welcome"
       },
       "headingMd": {
         "value": "20px",

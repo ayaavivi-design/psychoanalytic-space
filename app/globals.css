@@ -1,16 +1,16 @@
 
 :root {
   /* Color tokens */
-  --bg:          #fdf8f6;
-  --surface:     #fff;
-  --border:      #ede4e0;
+  --bg:          #f3e7e2;
+  --surface:     #fffaf8;
+  --border:      #e6d6cf;
   --text:        #2d2420;
-  --muted:       #80706a;
+  --muted:       #74645e;
   --accent:      #c4607a;
   --accent-dim:  #d4899a;
-  --accent-deep: #b54f6b;
+  --accent-deep: #a8475f;
   --accent-soft: rgba(196,96,122,0.08);
-  --thinking:    #fdf0f3;
+  --thinking:    #ecc7d4;
 
   /* Border radius */
   --radius-xs:     4px;   /* inline, message bubble corner  */
@@ -47,7 +47,7 @@
   --fs-body-lg:      15px;  /* Rubik — הודעות שיחה, שדה קלט */
   --fs-heading-card: 18px;  /* Cormorant — שמות תיאורטיקנים, mode cards */
   --fs-heading-md:   20px;  /* Cormorant — כותרת session פעילה */
-  --fs-heading-lg:   22px;  /* David Libre — כותרת welcome */
+  --fs-heading-lg:   22px;  /* Assistant — כותרת welcome */
   --fs-heading-xl:   26px;  /* Cormorant — שם המוצר בheader */
   --fs-display:      48px;  /* Cormorant — אלמנט דקורטיבי */
 }
@@ -674,7 +674,7 @@ header span {
   margin-bottom: var(--space-lg);
 }
 .welcome h2 {
-  font-family: var(--font-david), serif;
+  font-family: var(--font-assistant), sans-serif;
   font-size: var(--fs-heading-lg);
   font-weight: 400;
   color: var(--accent);
@@ -720,11 +720,11 @@ header span {
 [dir="ltr"] .message-body { direction: ltr; text-align: left; }
 [dir="ltr"] .message.user .message-body { text-align: left; }
 
-/* ── BW-41: entry headings — Hebrew RTL uses David Libre (has Hebrew glyphs).
-   Cormorant has no Hebrew support — using it causes mixed-font rendering
-   and misaligned ? character. This override activates automatically in RTL mode. */
+/* ── BW-41: entry headings — Hebrew RTL uses Assistant (humanist sans, full
+   Hebrew glyphs). Cormorant has no Hebrew support — using it causes mixed-font
+   rendering and misaligned ? character. This override activates automatically in RTL mode. */
 [dir="rtl"] .bw-entry-heading {
-  font-family: var(--font-david), serif !important;
+  font-family: var(--font-assistant), sans-serif !important;
 }
 
 /* ── BW-41: Two-mode entry ── */

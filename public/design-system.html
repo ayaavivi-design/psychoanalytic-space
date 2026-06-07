@@ -6,25 +6,25 @@
   <title>Between — Design System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Rubik:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&family=Rubik:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
       /* Colors */
-      --bg:          #fdf8f6;
-      --surface:     #fff;
-      --border:      #ede4e0;
+      --bg:          #f3e7e2;
+      --surface:     #fffaf8;
+      --border:      #e6d6cf;
       --text:        #2d2420;
-      --muted:       #80706a;
+      --muted:       #74645e;
       --accent:      #c4607a;
       --accent-dim:  #d4899a;
-      --accent-deep: #b54f6b;
+      --accent-deep: #a8475f;
       --accent-soft: rgba(196,96,122,0.08);
-      --thinking:    #fdf0f3;
+      --thinking:    #ecc7d4;
 
       /* Fonts */
       --font-cormorant: 'Cormorant Garamond';
       --font-rubik: 'Rubik';
-      --font-david: 'David Libre';
+      --font-assistant: 'Assistant';
 
       /* Border radius */
       --radius-xs:     4px;
@@ -456,7 +456,7 @@
 
   <div class="ds-header">
     <h1>Between</h1>
-    <p>Design System · v1.2 · מאי 2026 · מאיה</p>
+    <p>Design System · v1.4 · יוני 2026 · מאיה</p>
   </div>
 
   <!-- COLORS -->
@@ -464,24 +464,24 @@
     <div class="ds-section-title">צבעים — Color Tokens</div>
     <div class="color-grid">
       <div class="color-swatch">
-        <div class="color-block" style="background:#fdf8f6; border-bottom:1px solid #ede4e0;"></div>
-        <div class="color-info"><div class="color-name">--bg</div><div class="color-value">#fdf8f6</div></div>
+        <div class="color-block" style="background:#f3e7e2; border-bottom:1px solid #e6d6cf;"></div>
+        <div class="color-info"><div class="color-name">--bg</div><div class="color-value">#f3e7e2</div></div>
       </div>
       <div class="color-swatch">
-        <div class="color-block" style="background:#fff; border-bottom:1px solid #ede4e0;"></div>
-        <div class="color-info"><div class="color-name">--surface</div><div class="color-value">#ffffff</div></div>
+        <div class="color-block" style="background:#fffaf8; border-bottom:1px solid #e6d6cf;"></div>
+        <div class="color-info"><div class="color-name">--surface</div><div class="color-value">#fffaf8</div></div>
       </div>
       <div class="color-swatch">
-        <div class="color-block" style="background:#ede4e0;"></div>
-        <div class="color-info"><div class="color-name">--border</div><div class="color-value">#ede4e0</div></div>
+        <div class="color-block" style="background:#e6d6cf;"></div>
+        <div class="color-info"><div class="color-name">--border</div><div class="color-value">#e6d6cf</div></div>
       </div>
       <div class="color-swatch">
         <div class="color-block" style="background:#2d2420;"></div>
         <div class="color-info"><div class="color-name">--text</div><div class="color-value">#2d2420</div></div>
       </div>
       <div class="color-swatch">
-        <div class="color-block" style="background:#80706a;"></div>
-        <div class="color-info"><div class="color-name">--muted</div><div class="color-value">#80706a</div></div>
+        <div class="color-block" style="background:#74645e;"></div>
+        <div class="color-info"><div class="color-name">--muted</div><div class="color-value">#74645e</div></div>
       </div>
       <div class="color-swatch">
         <div class="color-block" style="background:#c4607a;"></div>
@@ -492,16 +492,16 @@
         <div class="color-info"><div class="color-name">--accent-dim</div><div class="color-value">#d4899a</div></div>
       </div>
       <div class="color-swatch">
-        <div class="color-block" style="background:#b54f6b;"></div>
-        <div class="color-info"><div class="color-name">--accent-deep</div><div class="color-value">#b54f6b</div></div>
+        <div class="color-block" style="background:#a8475f;"></div>
+        <div class="color-info"><div class="color-name">--accent-deep</div><div class="color-value">#a8475f</div></div>
       </div>
       <div class="color-swatch">
         <div class="color-block" style="background:rgba(196,96,122,0.08);"></div>
         <div class="color-info"><div class="color-name">--accent-soft</div><div class="color-value">rgba(196,96,122,.08)</div></div>
       </div>
       <div class="color-swatch">
-        <div class="color-block" style="background:#fdf0f3;"></div>
-        <div class="color-info"><div class="color-name">--thinking</div><div class="color-value">#fdf0f3</div></div>
+        <div class="color-block" style="background:#ecc7d4;"></div>
+        <div class="color-info"><div class="color-name">--thinking</div><div class="color-value">#ecc7d4</div></div>
       </div>
     </div>
   </div>
@@ -529,9 +529,9 @@
     <div class="type-row">
       <div class="type-meta">
         <div class="type-token">heading-lg</div>
-        <div class="type-desc">David Libre · 22px · 400</div>
+        <div class="type-desc">Assistant · 22px · 400</div>
       </div>
-      <div class="type-sample" style="font-family:'David Libre',serif;font-size:22px;font-weight:400;">מה עולה לך היום?</div>
+      <div class="type-sample" style="font-family:'Assistant',sans-serif;font-size:22px;font-weight:400;">מה עולה לך היום?</div>
     </div>
 
     <div class="type-row">
@@ -1287,7 +1287,7 @@
   </div>
 
   <div style="border-top:1px solid var(--border);padding-top:24px;margin-top:48px;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;">
-    <span>Between Design System · v1.3</span>
+    <span>Between Design System · v1.4</span>
     <span>מאיה · מאי 2026</span>
   </div>
 

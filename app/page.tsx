@@ -514,7 +514,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               <span id="bw-back-btn" onClick={() => (window as any).goBackToChat()} style={{ position: 'absolute', top: 20, left: 24, fontSize: 12, color: 'var(--muted)', cursor: 'pointer', opacity: 0.7, display: 'none' }}>← חזרה</span>
               {/* Hold entry — default screen */}
               <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
-                <p id="bw-hold-heading" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 19, fontWeight: 300, color: 'var(--text)', margin: 0, alignSelf: 'flex-start' }}>{isHe ? 'מה נשאר איתך?' : 'What stayed with you?'}</p>
+                <p id="bw-hold-heading" style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 19, fontWeight: 400, color: 'var(--text)', margin: 0, alignSelf: 'flex-start' }}>{isHe ? 'מה נשאר איתך?' : 'What stayed with you?'}</p>
                 {/* Single card — everything inside (option ו) */}
                 <div style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                   {/* Textarea — contenteditable for private-marking support */}
@@ -762,10 +762,10 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
 
         {/* Choose theorist popup */}
         <div id="choose-popup" style={{ position: 'fixed', inset: 0, zIndex: 150, background: 'rgba(45,36,32,0.35)', display: 'none', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(3px)' }}>
-          <div style={{ background: '#fff', border: '1px solid #ede4e0', borderRadius: 16, padding: 32, maxWidth: 380, width: '90%', textAlign: 'center', boxShadow: '0 8px 32px rgba(196,96,122,0.12)' }}>
+          <div style={{ background: 'var(--surface, #fffaf8)', border: '1px solid var(--border, #e6d6cf)', borderRadius: 16, padding: 32, maxWidth: 380, width: '90%', textAlign: 'center', boxShadow: '0 8px 32px rgba(196,96,122,0.12)' }}>
             <div style={{ fontSize: 32, color: '#c4607a', opacity: 0.3, marginBottom: 12, fontFamily: 'var(--font-cormorant), serif' }}>ψ</div>
             <h3 style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 20, fontWeight: 300, fontStyle: 'italic', color: '#c4607a', marginBottom: 10 }}>בחרי תיאורטיקאי</h3>
-            <p style={{ fontSize: 13, color: 'var(--muted, #80706a)', lineHeight: 1.8, marginBottom: 24 }}>לחצי על אחד מהשמות למעלה כדי להפעיל את הסוכן עם הידע המעמיק של אותה גישה.</p>
+            <p style={{ fontSize: 13, color: 'var(--muted, #74645e)', lineHeight: 1.8, marginBottom: 24 }}>לחצי על אחד מהשמות למעלה כדי להפעיל את הסוכן עם הידע המעמיק של אותה גישה.</p>
             <button onClick={() => { const p = document.getElementById('choose-popup'); if(p) p.style.display='none'; }}
               style={{ background: '#c4607a', border: 'none', color: '#fff', padding: '10px 28px', borderRadius: 20, fontSize: 14, fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer' }}>הבנתי</button>
           </div>
@@ -784,7 +784,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
           <div style={{
             position: 'fixed', top: tooltip.top, left: tooltip.left,
             pointerEvents: 'none', zIndex: 1000,
-            background: 'var(--surface, #fff)', border: '1px solid var(--border, #ede4e0)',
+            background: 'var(--surface, #fff)', border: '1px solid var(--border, #e6d6cf)',
             borderRadius: 12, padding: '14px 16px', width: 240,
             boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
             fontFamily: 'var(--font-rubik), sans-serif',
@@ -794,15 +794,15 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               {name}
             </div>
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--muted, #80706a)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.approach}</div>
+              <div style={{ fontSize: 10, color: 'var(--muted, #74645e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.approach}</div>
               <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{card.approach}</div>
             </div>
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--muted, #80706a)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.concepts}</div>
+              <div style={{ fontSize: 10, color: 'var(--muted, #74645e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.concepts}</div>
               <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{card.concepts}</div>
             </div>
             <div>
-              <div style={{ fontSize: 10, color: 'var(--muted, #80706a)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.forWhom}</div>
+              <div style={{ fontSize: 10, color: 'var(--muted, #74645e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.forWhom}</div>
               <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{card.forWhom}</div>
             </div>
           </div>
