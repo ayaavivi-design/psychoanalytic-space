@@ -11,8 +11,8 @@ from sentence_transformers import SentenceTransformer
 from supabase import create_client
 
 # ─── הגדרות ───────────────────────────────────────────────
-SUPABASE_URL = "https://zyumcusveksvzihgvjrj.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5dW1jdXN2ZWtzdnppaGd2anJqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDQzNTU2MywiZXhwIjoyMDkwMDExNTYzfQ.YFZqq9Mtxne66hK_YihJt049rw7Co8Is3-jy6Rz9ZUc"
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://zyumcusveksvzihgvjrj.supabase.co")
+SUPABASE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]   # export SUPABASE_SERVICE_ROLE_KEY=...
 
 CHUNK_SIZE   = 500   # מילים לכל קטע
 CHUNK_OVERLAP = 50   # חפיפה בין קטעים

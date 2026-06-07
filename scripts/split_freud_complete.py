@@ -3,12 +3,13 @@
 שימוש: python3 scripts/split_freud_complete.py
 """
 
+import os
 import fitz
 from sentence_transformers import SentenceTransformer
 from supabase import create_client
 
-SUPABASE_URL = "https://zyumcusveksvzihgvjrj.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5dW1jdXN2ZWtzdnppaGd2anJqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDQzNTU2MywiZXhwIjoyMDkwMDExNTYzfQ.YFZqq9Mtxne66hK_YihJt049rw7Co8Is3-jy6Rz9ZUc"
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://zyumcusveksvzihgvjrj.supabase.co")
+SUPABASE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]   # export SUPABASE_SERVICE_ROLE_KEY=...
 PDF_PATH    = "/Users/ayaaviviharel/Downloads/סוכן 1 - פרויד/Freud complete Works.pdf"
 THEORIST    = "freud"
 CHUNK_SIZE  = 500
