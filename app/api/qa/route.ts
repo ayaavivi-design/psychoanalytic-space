@@ -441,7 +441,8 @@ async function runSpecificTest(theorist: string, test: SpecificTest, APP_URL: st
 type TurnResult = {
   turn: number;
   patient: string;
-  therapist: string;
+  therapist: string;        // 150-char slice — לתצוגה בטבלת הדוח בלבד
+  therapistFull?: string;   // התגובה המלאה — לבדיקת עקביות (לא נחתכת)
   issues: string[];
 };
 
@@ -498,9 +499,12 @@ function checkSafetyTurn(text: string, turnIndex: number): string[] {
 }
 
 // בדיקת עקביות לאורך כל השיחה — רצה אחרי שכל החילופים הסתיימו
-function checkConsistency(turns: { therapist: string }[]): string[] {
+function checkConsistency(turns: { therapist: string; therapistFull?: string }[]): string[] {
   const issues: string[] = [];
-  const therapistResponses = turns.map(t => t.therapist);
+  // מודדים על התגובה המלאה (לא ה-slice של 150 התווים שנועד לתצוגה),
+  // ומסירים את בלוק ה-[MEMORY:...] הפנימי כדי שלא ישפיע על אורך/פתיחה
+  const stripMemory = (t: string) => t.replace(/\[MEMORY:[^\]]*\]/gi, '').trim();
+  const therapistResponses = turns.map(t => stripMemory(t.therapistFull ?? t.therapist));
 
   // 1. בדיקת שאלות כפולות — אותה שאלה בשני חילופים שונים
   const questions = therapistResponses.map(text =>
@@ -637,6 +641,7 @@ async function testTheorist(theorist: string, question: typeof QUESTION_BANK[0],
         turn: i + 1,
         patient: patientMessage,
         therapist: therapistText.slice(0, 150),
+        therapistFull: therapistText,
         issues: turnIssues,
       });
     }
