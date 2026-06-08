@@ -9,17 +9,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&family=Rubik:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      /* Colors */
+      /* Colors — 4 core, rest derived */
       --bg:          #f3e7e2;
       --surface:     #fffaf8;
-      --border:      #e6d6cf;
       --text:        #2d2420;
-      --muted:       #74645e;
       --accent:      #c4607a;
-      --accent-dim:  #d4899a;
-      --accent-deep: #a8475f;
-      --accent-soft: rgba(196,96,122,0.08);
-      --thinking:    #ecc7d4;
+      /* derived from core */
+      --border:      color-mix(in srgb, var(--bg) 92%, var(--text));
+      --muted:       color-mix(in srgb, var(--text) 65%, var(--bg));
 
       /* Fonts */
       --font-cormorant: 'Cormorant Garamond';
@@ -81,6 +78,8 @@
       font-family: var(--font-cormorant), serif;
       font-size: 40px;
       font-weight: 300;
+      font-style: italic;
+      letter-spacing: 0.04em;
       color: var(--accent);
       margin-bottom: 6px;
     }
@@ -213,7 +212,7 @@
       cursor: pointer;
       transition: border-color 0.15s;
     }
-    .btn-secondary:hover { border-color: var(--accent-dim); }
+    .btn-secondary:hover { border-color: var(--accent); }
 
     .btn-ghost {
       background: transparent;
@@ -240,7 +239,7 @@
       color: var(--text);
       transition: border-color 0.15s;
     }
-    .btn-pill:hover { border-color: var(--accent-dim); }
+    .btn-pill:hover { border-color: var(--accent); }
 
     .btn-flow {
       width: 100%;
@@ -256,7 +255,7 @@
       text-align: center;
       transition: background 0.15s, border-color 0.15s;
     }
-    .btn-flow:hover { background: var(--accent-soft); border-color: var(--accent-dim); }
+    .btn-flow:hover { background: var(--bg); border-color: var(--accent); }
 
     /* ── SIZES ── */
     .size-grid {
@@ -291,7 +290,7 @@
       display: inline-block;
       padding: 3px 8px;
       border-radius: var(--radius-xs);
-      background: var(--accent-soft);
+      background: var(--surface);
       color: var(--accent);
       font-size: var(--fs-micro);
       font-weight: 500;
@@ -307,8 +306,8 @@
       border-bottom: 1px solid var(--border);
     }
     .spacing-block {
-      background: var(--accent-soft);
-      border: 1px solid var(--accent-dim);
+      background: var(--bg);
+      border: 1px solid var(--border);
       border-radius: var(--radius-xs);
       height: 20px;
       flex-shrink: 0;
@@ -335,7 +334,7 @@
       width: 72px;
       height: 72px;
       background: var(--surface);
-      border: 1.5px solid var(--accent-dim);
+      border: 1.5px solid var(--border);
     }
 
     /* ── STATES ── */
@@ -363,7 +362,7 @@
     }
 
     .message-bubble-user {
-      background: var(--accent-soft);
+      background: var(--bg);
       color: var(--text);
       border: 1px solid rgba(196,96,122,0.12);
       border-radius: var(--radius-lg) var(--radius-xs) var(--radius-lg) var(--radius-lg);
@@ -434,7 +433,7 @@
       display: inline-block;
       padding: 3px 10px;
       border-radius: var(--radius-xs);
-      background: var(--accent-soft);
+      background: var(--surface);
       color: var(--accent);
       font-size: var(--fs-caption);
       font-weight: 400;
@@ -464,44 +463,31 @@
     <div class="ds-section-title">צבעים — Color Tokens</div>
     <div class="color-grid">
       <div class="color-swatch">
-        <div class="color-block" style="background:#f3e7e2; border-bottom:1px solid #e6d6cf;"></div>
+        <div class="color-block" style="background:var(--bg); border-bottom:1px solid var(--border);"></div>
         <div class="color-info"><div class="color-name">--bg</div><div class="color-value">#f3e7e2</div></div>
       </div>
       <div class="color-swatch">
-        <div class="color-block" style="background:#fffaf8; border-bottom:1px solid #e6d6cf;"></div>
+        <div class="color-block" style="background:var(--surface); border-bottom:1px solid var(--border);"></div>
         <div class="color-info"><div class="color-name">--surface</div><div class="color-value">#fffaf8</div></div>
       </div>
       <div class="color-swatch">
-        <div class="color-block" style="background:#e6d6cf;"></div>
-        <div class="color-info"><div class="color-name">--border</div><div class="color-value">#e6d6cf</div></div>
-      </div>
-      <div class="color-swatch">
-        <div class="color-block" style="background:#2d2420;"></div>
+        <div class="color-block" style="background:var(--text);"></div>
         <div class="color-info"><div class="color-name">--text</div><div class="color-value">#2d2420</div></div>
       </div>
       <div class="color-swatch">
-        <div class="color-block" style="background:#74645e;"></div>
-        <div class="color-info"><div class="color-name">--muted</div><div class="color-value">#74645e</div></div>
-      </div>
-      <div class="color-swatch">
-        <div class="color-block" style="background:#c4607a;"></div>
+        <div class="color-block" style="background:var(--accent);"></div>
         <div class="color-info"><div class="color-name">--accent</div><div class="color-value">#c4607a</div></div>
       </div>
+    </div>
+    <div class="ds-section-title" style="font-size:13px; opacity:.6; margin-top:24px;">נגזרים — Derived from core</div>
+    <div class="color-grid">
       <div class="color-swatch">
-        <div class="color-block" style="background:#d4899a;"></div>
-        <div class="color-info"><div class="color-name">--accent-dim</div><div class="color-value">#d4899a</div></div>
+        <div class="color-block" style="background:var(--border);"></div>
+        <div class="color-info"><div class="color-name">--border</div><div class="color-value">bg 92% + text</div></div>
       </div>
       <div class="color-swatch">
-        <div class="color-block" style="background:#a8475f;"></div>
-        <div class="color-info"><div class="color-name">--accent-deep</div><div class="color-value">#a8475f</div></div>
-      </div>
-      <div class="color-swatch">
-        <div class="color-block" style="background:rgba(196,96,122,0.08);"></div>
-        <div class="color-info"><div class="color-name">--accent-soft</div><div class="color-value">rgba(196,96,122,.08)</div></div>
-      </div>
-      <div class="color-swatch">
-        <div class="color-block" style="background:#ecc7d4;"></div>
-        <div class="color-info"><div class="color-name">--thinking</div><div class="color-value">#ecc7d4</div></div>
+        <div class="color-block" style="background:var(--muted);"></div>
+        <div class="color-info"><div class="color-name">--muted</div><div class="color-value">text 65% + bg</div></div>
       </div>
     </div>
   </div>
@@ -521,9 +507,9 @@
     <div class="type-row">
       <div class="type-meta">
         <div class="type-token">heading-xl</div>
-        <div class="type-desc">Cormorant · 26px · 300</div>
+        <div class="type-desc">Cormorant · 26px · 300 · italic · accent</div>
       </div>
-      <div class="type-sample" style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;">Between</div>
+      <div class="type-sample" style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);letter-spacing:0.04em;">Between</div>
     </div>
 
     <div class="type-row">
@@ -971,7 +957,7 @@
       <div class="ds-col">
         <div class="ds-label">Default</div>
         <div style="display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 10px 10px 16px;box-shadow:0 2px 8px rgba(45,36,32,0.06);">
-          <span style="flex:1;font-size:var(--fs-body-lg);font-weight:300;color:var(--accent-dim);opacity:0.6;">מה עולה עכשיו?</span>
+          <span style="flex:1;font-size:var(--fs-body-lg);font-weight:300;color:var(--muted);opacity:0.6;">מה עולה עכשיו?</span>
           <span style="width:40px;height:40px;min-width:40px;border-radius:50%;background:var(--accent);opacity:0.25;display:inline-flex;align-items:center;justify-content:center;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
           </span>
@@ -981,13 +967,13 @@
 
       <div class="ds-col">
         <div class="ds-label">Focus</div>
-        <div style="display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--accent-dim);border-radius:var(--radius-lg);padding:10px 10px 10px 16px;box-shadow:0 2px 12px rgba(196,96,122,0.1);">
+        <div style="display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--radius-lg);padding:10px 10px 10px 16px;box-shadow:0 2px 12px rgba(196,96,122,0.1);">
           <span style="flex:1;font-size:var(--fs-body-lg);font-weight:300;color:var(--text);">אני מרגיש</span>
           <span style="width:40px;height:40px;min-width:40px;border-radius:50%;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.88)" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
           </span>
         </div>
-        <div style="font-size:11px;color:var(--muted);">border: var(--accent-dim) · shadow: rgba(196,96,122,.1)</div>
+        <div style="font-size:11px;color:var(--muted);">border: var(--accent) · shadow: rgba(196,96,122,.1)</div>
       </div>
 
       <div class="ds-col">

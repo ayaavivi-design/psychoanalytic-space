@@ -220,7 +220,6 @@ header {
   align-items: center;
   justify-content: space-between;
   background: transparent;
-  border-top: 1px solid var(--border);
   gap: var(--space-sm);
 }
 .session-name {

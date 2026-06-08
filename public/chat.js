@@ -2218,12 +2218,22 @@ function appendMessage(role, content, attribution = '', sourceHTML = '') {
   const cleanContent = content.replace(/\[מקור: .+?\]/g, '').replace(/\[Source: .+?\]/g, '').trim();
 
   const t = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
-  const roleLabel = role === 'user' ? (t.userLabel || 'You') : (t.agentLabel || 'Agent');
+  // User messages carry no label — the bubble itself signals "you".
+  // Assistant messages are labelled with the specific theorist's name, not a generic "agent".
+  let roleLabel = '';
+  if (role !== 'user') {
+    const isHe = (selectedLang?.code || 'he') !== 'en';
+    const nm = isHe
+      ? {freud:'פרויד',klein:'קליין',winnicott:'ויניקוט',ogden:'אוגדן',loewald:'לוואלד',bion:'ביון',kohut:'קוהוט',heimann:'היימן'}
+      : {freud:'Freud',klein:'Klein',winnicott:'Winnicott',ogden:'Ogden',loewald:'Loewald',bion:'Bion',kohut:'Kohut',heimann:'Heimann'};
+    roleLabel = attribution
+      || (activeTheorists.length === 1 ? nm[activeTheorists[0]] : null)
+      || t.agentLabel || 'Agent';
+  }
   div.innerHTML = `
-    <div class="message-role">${roleLabel}</div>
+    ${role === 'user' ? '' : `<div class="message-role">${roleLabel}</div>`}
     <div class="message-body">${(role === 'assistant' ? formatResponse(stripMarkdown(cleanContent)) : cleanContent.replace(/\n/g, '<br>'))}</div>
     ${sourceHTML ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">${sourceHTML}</div>` : ''}
-    ${attribution ? `<div class="attribution">— ${attribution}</div>` : ''}
     ${citationText && role === 'assistant' ? `<div class="attribution" style="margin-top:6px;font-size:11px;">— מתוך: ${citationText}</div>` : ''}
   `;
   chat.appendChild(div);

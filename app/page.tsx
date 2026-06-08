@@ -490,18 +490,19 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
               </div>
             </div>
             <h1 dir="ltr" style={{ direction: 'ltr' }} suppressHydrationWarning>Between</h1>
-            <div style={{ flexShrink: 0, width: 80 }} />
+            <div style={{ flexShrink: 0, minWidth: 80, display: 'flex', justifyContent: 'flex-end' }}>
+              <div id="header-intake-btn" onClick={() => (window as any).startIntake()} style={{ display: 'none', cursor: 'pointer', fontSize: 12, color: '#fff', background: 'var(--accent-deep)', borderRadius: 20, padding: '6px 16px', fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 500, transition: 'opacity 0.2s', whiteSpace: 'nowrap' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}>
+                שיחת היכרות
+              </div>
+            </div>
           </div>
           <div className="header-session">
             <div id="session-title" style={{ display: 'none' }}></div>
             <div style={{ flex: 1 }}></div>
             <div className="session-actions">
-              <div id="header-intake-btn" onClick={() => (window as any).startIntake()} style={{ display: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--accent)', border: '1px solid var(--accent-dim)', borderRadius: 20, padding: '4px 14px', fontFamily: 'var(--font-rubik), sans-serif', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--accent-soft)'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'none'; }}>
-                שיחת היכרות
-              </div>
-              {/* clinical-btn removed from header — toggleClinicalMode accessible via sidebar only */}
+              {/* intake btn moved to header-top right slot; clinical-btn accessible via sidebar only */}
             </div>
           </div>
         </header>
@@ -579,8 +580,8 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                       }}
                     >
                       <span style={{
-                        border: '1px solid var(--border)', borderRadius: 16, height: 30, padding: '0 12px',
-                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)',
+                        border: '1px solid var(--muted)', borderRadius: 16, height: 30, padding: '0 12px',
+                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)',
                         display: 'inline-flex', alignItems: 'center',
                       }}>
                         {isHe ? 'סיכום כתיבה' : 'Writing summary'}
@@ -598,8 +599,8 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                       }}
                     >
                       <span style={{
-                        border: '1px solid var(--border)', borderRadius: 16, height: 30, padding: '0 12px',
-                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)',
+                        border: '1px solid var(--muted)', borderRadius: 16, height: 30, padding: '0 12px',
+                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)',
                         display: 'inline-flex', alignItems: 'center',
                       }}>
                         {isHe ? 'שמור' : 'Save'}

@@ -57,7 +57,7 @@ Between משתמש בשלושה פונטים עם תפקידים מוגדרים:
 | שם | גודל | משקל | פונט | שימוש |
 |----|------|------|------|-------|
 | `display` | 48px | 300 | Cormorant | אלמנט דקורטיבי (ornament) |
-| `heading-xl` | 26px | 300 | Cormorant | שם המוצר בheader — Between |
+| `heading-xl` | 26px | 300 *italic* | Cormorant | שם המוצר בheader — Between (נטוי, צבע accent, letter-spacing 0.04em) |
 | `heading-lg` | 22px | 400 | Assistant | כותרת welcome — "מה עולה לך היום?" |
 | `heading-md` | 20px | 300 | Cormorant | כותרת session פעילה |
 | `heading-sm` | 19px | 300 | Cormorant | prompt בתוך flow — "עם מי תרצה?" |
