@@ -9083,7 +9083,7 @@ async function startOnboardingTour() {
 
     const step = steps[idx];
     const target = document.querySelector(step.target);
-    if (!target) { showStep(idx + 1); return; }  // דלג אם האלמנט לא קיים
+    if (!target || target.offsetParent === null) { showStep(idx + 1); return; }  // דלג אם האלמנט לא קיים או מוסתר (display:none)
 
     const isEn = (window.selectedLang?.code === 'en');
     const dir = isEn ? 'ltr' : 'rtl';

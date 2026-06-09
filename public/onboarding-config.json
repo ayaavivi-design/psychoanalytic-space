@@ -1,9 +1,19 @@
 {
-  "version": "2026-06-05",
-  "updated_by": "onboarding-agent",
+  "version": "2026-06-09",
+  "updated_by": "dev-oliver",
   "tour": {
     "enabled": true,
     "steps": [
+      {
+        "id": "step-intake",
+        "target": "#header-intake-btn",
+        "position": "left",
+        "title": "רוצה שנכיר?",
+        "text": "כמה שאלות קצרות יעזרו למרחב להתאים את עצמו אליך. אפשר גם לדלג ולהתחיל ישר.",
+        "title_en": "A quick introduction?",
+        "text_en": "A few short questions help the space fit you. You can also skip and start right away.",
+        "personas": ["patient", "therapist", "student"]
+      },
       {
         "id": "step-theorist",
         "target": ".theorist-tag",
@@ -15,23 +25,13 @@
         "personas": ["patient", "therapist", "student"]
       },
       {
-        "id": "step-clinical",
-        "target": "#clinical-btn",
-        "position": "left",
-        "title": "מצב סשן קליני",
-        "text": "הפעל לפני שמביאים חומר קליני — התיאורטיקן יגיב מתוך הגישה, לא כמרצה.",
-        "title_en": "Clinical session mode",
-        "text_en": "Activate before bringing clinical material — the theorist responds from within the approach, not as a lecturer.",
-        "personas": ["therapist", "student"]
-      },
-      {
         "id": "step-input",
-        "target": "#user-input",
+        "target": "#bw-hold-textarea",
         "position": "top",
-        "title": "אפשר להתחיל",
-        "text": "מה שעלה בפגישה האחרונה — אפשר להביא אותו כאן. בלי להסביר. השיחה תתפתח.",
-        "title_en": "You can begin",
-        "text_en": "Bring what came up in your last session. No need to explain. The conversation will unfold.",
+        "title": "מה שנשאר מהפגישה",
+        "text": "כתוב כאן מה שעלה — לעצמך, או כדי להביא לפגישה הבאה. כשתרצה, אפשר להמשיך לשיחה עם תיאורטיקן.",
+        "title_en": "What stayed from the session",
+        "text_en": "Write what came up — for yourself, or to bring to your next session. When you want, continue into a conversation with a theorist.",
         "personas": ["patient", "therapist", "student"]
       }
     ]
