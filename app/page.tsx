@@ -548,7 +548,7 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
                           pointerEvents: 'none', userSelect: 'none', lineHeight: 1.6,
                         }}
                       >
-                        {isHe ? 'כתוב לעצמך. או כדי להביא לפגישה הבאה.' : 'Write for yourself. Or to bring to your next session.'}
+                        {isHe ? 'כתוב לעצמך או למטפל שלך או להביא לפגישה הבאה' : 'Write for yourself, for your therapist, or to bring to your next session.'}
                       </span>
                     )}
                   </div>
