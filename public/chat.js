@@ -9134,7 +9134,7 @@ async function startOnboardingTour() {
     document.body.appendChild(hl);
 
     tip.innerHTML = `
-      <div style="font-size:10px;color:rgba(196,96,122,0.8);font-weight:700;letter-spacing:.08em;margin-bottom:6px;">
+      <div style="font-size:10px;color:rgba(196,96,122,0.8);font-weight:700;letter-spacing:.08em;margin-bottom:6px;direction:ltr;text-align:${dir === 'rtl' ? 'right' : 'left'};">
         ${idx + 1} / ${steps.length}
       </div>
       <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">${title}</div>
