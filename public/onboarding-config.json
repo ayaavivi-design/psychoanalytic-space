@@ -15,16 +15,6 @@
         "personas": ["patient", "therapist", "student"]
       },
       {
-        "id": "step-theorist",
-        "target": ".theorist-tag",
-        "position": "right",
-        "title": "עם מי לשבת?",
-        "text": "כל תיאורטיקן מדבר מקול שונה. אפשר לעבור עליהם ולהרגיש — ולהחליף בכל שיחה.",
-        "title_en": "Who to sit with?",
-        "text_en": "Each theorist speaks from a different voice. Browse through them and feel — you can switch between sessions.",
-        "personas": ["patient", "therapist", "student"]
-      },
-      {
         "id": "step-input",
         "target": "#bw-hold-textarea",
         "position": "top",
@@ -32,6 +22,16 @@
         "text": "כתוב כאן מה שעלה — לעצמך, או כדי להביא לפגישה הבאה. כשתרצה, אפשר להמשיך לשיחה עם תיאורטיקן.",
         "title_en": "What stayed from the session",
         "text_en": "Write what came up — for yourself, or to bring to your next session. When you want, continue into a conversation with a theorist.",
+        "personas": ["patient", "therapist", "student"]
+      },
+      {
+        "id": "step-theorist",
+        "target": ".theorist-tag",
+        "position": "right",
+        "title": "עם מי לשבת?",
+        "text": "כל תיאורטיקן מדבר מקול שונה. אפשר לעבור עליהם ולהרגיש — ולהחליף בכל שיחה.",
+        "title_en": "Who to sit with?",
+        "text_en": "Each theorist speaks from a different voice. Browse through them and feel — you can switch between sessions.",
         "personas": ["patient", "therapist", "student"]
       }
     ]

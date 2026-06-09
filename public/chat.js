@@ -9092,7 +9092,7 @@ async function startOnboardingTour() {
     const skipLabel = isEn ? 'Skip' : 'דלג';
     const nextLabel = isEn
       ? (idx === steps.length - 1 ? 'Done ✓' : 'Next →')
-      : (idx === steps.length - 1 ? 'סיים ✓' : 'הבא →');
+      : (idx === steps.length - 1 ? 'סיים ✓' : 'הבא ←');
 
     const rect = target.getBoundingClientRect();
     const tip = document.createElement('div');
