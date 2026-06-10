@@ -12,9 +12,9 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - ויניקוט פרומפט Q-W: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN (semantic faithfulness לא נאכף בלופ)
 - BW-51 — סגור ✅ PASS (flow-selection div DOM-only, invisible, PDF-only. Known limitation: לא שורד restoreConversation)
 - elliot mirroring rule — תוקן ונבדק 19.05.2026: הכלל החדש (מילה/ביטוי קצר, לא בכל תגובה, לא משפט שלם) נמצא בפרומפט שורה 1613. PASS (קוד בלבד)
-- **קליין — דפוס over-question לסירוגין**: 05.06 ✅ → 06.06 🟡 Q-1 → 07.06 ✅ → 08.06 🟡 Q-1 → 09.06 ✅. הכשל כל "יום זוגי". Klein VOICE IDENTITY fix (`lib/theorist-voices.ts`, תחילת בלוק קליין) — **לא בוצע, MEDIUM priority לפי ליה 07.06**.
+- **קליין — דפוס over-question לסירוגין + REGRESSION**: 06.06 🟡 Q-1 תור 3 → 07.06 ✅ → 08.06 🟡 Q-1 תור 5 → 09.06 ✅ → 10.06 🟡 Q-1 **תור 2**. הכשל כל "יום זוגי" ומוקדם יותר בכל ריצה. Klein VOICE IDENTITY fix (`lib/theorist-voices.ts`, תחילת בלוק קליין) — **לא בוצע, 3 ימים מאז המלצת ליה 07.06, עדיפות גבוהה**.
 - **RAG drop 01.06**: פרויד + קליין + אוגדן → RAG=0. חזרו ל-RAG=3 מ-02.06 ואילך. הסיבה לא הובנה — **פעולה נדרשת: לשלוף לוגי Vercel מ-01.06 לפני שיחזור**.
-- **09.06 סטטוס**: 4/4 PASS ✅. RAG=3 לכולם. יום נקי — אבל הדפוס מנבא כשל קליין מחר.
+- **10.06 סטטוס**: 3/4 — קליין 🟡 Q-1 תור 2. RAG=3 לכולם. הכשל מוקדם מאי פעם — תור 2 = שיחה שזה עתה התחילה.
 
 ---
 
@@ -35,6 +35,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+1. QA יומי 10.06: 3/4 — קליין 🟡 Q-1 תור 2 (regression — מוקדם מ-08.06 תור 5). VOICE IDENTITY fix עדיין לא בוצע — 3 ימים. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
 1. QA יומי 09.06: 4/4 PASS ✅. RAG=3 לכולם. קליין נקייה היום — דפוס לסירוגין ממשיך (כשל צפוי מחר). VOICE IDENTITY fix (ליה 07.06) עדיין לא בוצע — 2 ימים. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
 1. QA יומי 08.06: 3/4 — קליין 🟡 Q-1 תור 5 (נתפס בפרודקשן). RAG=3 לכולם. VOICE IDENTITY fix (ליה 07.06) עדיין לא בוצע — 4 ימים. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
 1. QA יומי 07.06: 4/4 PASS מלא. RAG=3 לכולם. Check 5a (קליין) עדיין לא בוצע — 3 ימים מאז ממליצת ליה HIGH priority. RAG drop מ-01.06 עדיין לא נחקר. (יוני 2026)
@@ -53,4 +54,3 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 2. elliot mirroring rule QA 19.05: PASS — כלל החדש (מילה/ביטוי קצר, לא משפט שלם, לא בכל תגובה) נמצא תקין בשורה 1613. שורה 1628 לא סותרת — עוסקת בשמות ממציאים ולא במיררינג. (מאי 2026)
 2. Static QA — vera ו-elliot companions 17.05: ניתוח פרומפטים, 7 תרחישים × 2. תוצאות: 11 PASS, 2 WARNING, 1 FAIL (safety protocol שונה — companions לא מנחים לפנות לעזרה בצורה הנכונה כמו interceptor). הוספת vera+elliot לקרון qa-full ו-qa. (מאי 2026)
 2. Post-production QA 16.05: 4/4 PASS, BW-51+BW-46+enforceVariedOpening verified in prod ✅ (מאי 2026)
-2. BW-51 sign-off: PASS ✅ — flow-selection DOM indicator + PDF export. Warning: לא שורד restoreConversation (known limitation, לא בלוקר) (מאי 2026)
