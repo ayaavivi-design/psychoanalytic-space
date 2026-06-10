@@ -21,6 +21,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+0. ניוזלטר #11 — "אוגדן והשלישי האנליטי — מה נולד כששניים נפגשים" (סדרה ג׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-10-ogden-and-the-analytic-third.md. גיליון הבא הוכרז: "להביא משהו לפגישה — מה זה אומר שחומר 'מוכן'?" (סדרה א׳). (יוני 2026)
 0. ניוזלטר #10 — "AI ורגשות — האם בכלל אפשר לפגוש מישהו שלא קיים?" (סדרה ב׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-09-ai-and-emotions-can-you-meet-someone-who-doesnt-exist.md. גיליון הבא הוכרז: "אוגדן והשלישי האנליטי — מה נולד כששניים נפגשים" (סדרה ג׳). (יוני 2026)
 0. ניוזלטר #9 — "להתכונן לפגישה הבאה — מה זה בכלל אומר?" (סדרה א׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-08-preparing-for-the-next-session.md. גיליון הבא הוכרז: "AI ורגשות — האם בכלל אפשר לפגוש מישהו שלא קיים?" (סדרה ב׳). (יוני 2026)
 0. ניוזלטר #8 — "קוהוט וה-מה-שאיש-לא-אמר-לך — על הצורך בראייה שאנחנו לא מבקשים" (סדרה ג׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-07-kohut-and-the-need-to-be-seen.md. גיליון הבא הוכרז: "להתכונן לפגישה הבאה — מה זה בכלל אומר?" (סדרה א׳). (יוני 2026)
@@ -30,10 +31,3 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 1. ניוזלטר #4 — "ביון וה-AI: K-link ומה שמודל שפה לא יכול לעשות בשבילך" (סדרה ג׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-03-bion-and-ai-k-link.md. גיליון הבא הוכרז: "למה שוכחים תובנות" (סדרה א׳). (יוני 2026)
 1. ניוזלטר #3 — "ויניקוט ב-2026: מה היה אומר על ה-WhatsApp שלנו" (סדרה ג׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-02-winnicott-and-whatsapp.md. גיליון הבא הוכרז: ביון וה-AI — K-link ומודל שפה (סדרה ג׳). (יוני 2026)
 1. ניוזלטר #2 — "מה קורה לנפש בין פגישות" (סדרה א׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-01-what-happens-between-sessions.md. גיליון הבא הוכרז: ויניקוט על WhatsApp (סדרה ג׳). (יוני 2026)
-1. ריוויו מאמרים — 3 מאמרים נמצאו ב-content/writing/. נערך "Why we forget what mattered most" (פב׳ 2026). קובץ ריוויו: content/writing/review/why-we-forget--REVIEW.md. בעיה מרכזית: Bion מוזכר בשלושתם אבל לא בפרודקשן — הצעה לאוגדן. (מאי 2026)
-2. Write mode — אישור שם + פלייסהולדר: "Write" ✅, placeholder מומלץ: "Something you want your therapist to know." (מאי 2026)
-2. ייעוץ שם מותג: "Between" vs "In Between" — המלצה: להישאר עם Between. הטיעון הלשוני חכם אבל שגוי לצרכי brand (מאי 2026)
-2. מצגת ולידציה — 10 שקפים: מטפלים + משקיעים, שמור ב-bizdev/presentation-structure-2026-05.md (מאי 2026)
-2. Flow button copy review + sharpening: גרסאות עברית + אנגלית — כיוון ישיר יותר
-3. Hebrew translation review: UI elements חדשים מ-BW-41
-4. Positioning session: מה מבדיל את Between מ-ChatGPT/Claude לשימוש קליני
