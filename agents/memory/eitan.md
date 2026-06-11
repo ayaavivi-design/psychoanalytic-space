@@ -12,9 +12,9 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - ויניקוט פרומפט Q-W: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN (semantic faithfulness לא נאכף בלופ)
 - BW-51 — סגור ✅ PASS (flow-selection div DOM-only, invisible, PDF-only. Known limitation: לא שורד restoreConversation)
 - elliot mirroring rule — תוקן ונבדק 19.05.2026: הכלל החדש (מילה/ביטוי קצר, לא בכל תגובה, לא משפט שלם) נמצא בפרומפט שורה 1613. PASS (קוד בלבד)
-- **קליין — דפוס over-question לסירוגין + REGRESSION**: 06.06 🟡 Q-1 תור 3 → 07.06 ✅ → 08.06 🟡 Q-1 תור 5 → 09.06 ✅ → 10.06 🟡 Q-1 **תור 2**. הכשל כל "יום זוגי" ומוקדם יותר בכל ריצה. Klein VOICE IDENTITY fix (`lib/theorist-voices.ts`, תחילת בלוק קליין) — **לא בוצע, 3 ימים מאז המלצת ליה 07.06, עדיפות גבוהה**.
+- **קליין — דפוס over-question לסירוגין + REGRESSION**: 06.06 🟡 Q-1 תור 3 → 07.06 ✅ → 08.06 🟡 Q-1 תור 5 → 09.06 ✅ → 10.06 🟡 Q-1 **תור 2** → 11.06 ✅. הדפוס: כשל כל "יום זוגי", מוקדם יותר בכל ריצה. Klein VOICE IDENTITY fix (`lib/theorist-voices.ts`, תחילת בלוק קליין) — **לא בוצע, 4 ימים מאז המלצת ליה 07.06, עדיפות גבוהה. כשל צפוי ב-12.06 אם לא יוסד**.
 - **RAG drop 01.06**: פרויד + קליין + אוגדן → RAG=0. חזרו ל-RAG=3 מ-02.06 ואילך. הסיבה לא הובנה — **פעולה נדרשת: לשלוף לוגי Vercel מ-01.06 לפני שיחזור**.
-- **10.06 סטטוס**: 3/4 — קליין 🟡 Q-1 תור 2. RAG=3 לכולם. הכשל מוקדם מאי פעם — תור 2 = שיחה שזה עתה התחילה.
+- **11.06 סטטוס**: 4/4 PASS ✅. RAG=3 לכולם. קליין נקייה — alternating pattern ממשיך.
 
 ---
 
@@ -35,6 +35,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+1. QA יומי 11.06: 4/4 PASS ✅. RAG=3 לכולם. קליין נקייה — alternating pattern ממשיך. VOICE IDENTITY fix עדיין לא בוצע — 4 ימים מאז ממליצת ליה. כשל צפוי ב-12.06. שאלת זהות ישירה (OPEN_DECISIONS) — 20 יום, לא נבדקה. (יוני 2026)
 1. QA יומי 10.06: 3/4 — קליין 🟡 Q-1 תור 2 (regression — מוקדם מ-08.06 תור 5). VOICE IDENTITY fix עדיין לא בוצע — 3 ימים. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
 1. QA יומי 09.06: 4/4 PASS ✅. RAG=3 לכולם. קליין נקייה היום — דפוס לסירוגין ממשיך (כשל צפוי מחר). VOICE IDENTITY fix (ליה 07.06) עדיין לא בוצע — 2 ימים. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
 1. QA יומי 08.06: 3/4 — קליין 🟡 Q-1 תור 5 (נתפס בפרודקשן). RAG=3 לכולם. VOICE IDENTITY fix (ליה 07.06) עדיין לא בוצע — 4 ימים. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
@@ -44,13 +45,3 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 1. QA יומי 04.06: 4/4 PASS — RAG=3 לכולם. ארבעה ימים רצופים נקיים. קליין O-7 לא תוקן — שונות מודל. RAG drop מ-01.06 לא נחקר — פעולה נדרשת. (יוני 2026)
 1. QA יומי 03.06: 4/4 PASS — RAG=3 לכולם. שלושה ימים רצופים נקיים. קליין O-7 נעלם אך לא תוקן (3/5 ימים). Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
 1. QA יומי 02.06: 4/4 PASS — RAG=3 לכולם. קליין O-7+Q-3 לא הופיעו אבל לא תוקנו. RAG drop מ-01.06 חזר לנורמה. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
-2. QA יומי 01.06: 3/4 — קליין כשל O-7 (פתיחה חוזרת "מה") + Q-3 (all-questions, אין תצפית). RAG=0 לפרויד/קליין/אוגדן — חשד לבעיה תשתיתית. Atlassian MCP לא זמין בסביבה — Jira לא עודכן. (יוני 2026)
-2. Bug review 24.05 — Hold + Explore: FAIL (explore mode) + WARNING (hold_entries table). כפתורי מצב (סשן/לחקור/כתיבה) נמחקו ב-commit d8212af — hold textarea מחליף אותם, אין דרך להגיע ל-explore mode. hold_entries table לא קיים בשום migration → save נכשל שקט. נדרשת: 1) החלטה מוצרית — להחזיר explore UI או להסיר את הקוד, 2) יצירת migration ל-hold_entries עם RLS נכון. (מאי 2026)
-2. Bion QA 23.05: PASS + WARNING קל — safety PASS, frame לא דולף, label leak PASS, WHEN YOU ARE WRONG PASS, gender+language PASS, orientation move PASS. WARNING: TRACKING AVOIDANCE — ביון נקד הימנעות נכון אך גייס חלום כגשר במקום להתעלם מהכיוון החדש. לא בלוקר. (מאי 2026)
-2. Post-production QA 22.05: PASS + WARNING — safety PASS, frame לא דולף בשיחה קלינית, orientation move לא מופרז, "נשמע כמו" נחסם, בינארי השוואתי נחסם. WARNING: שאלה ישירה "מה אתה?" → תיאורטיקן חושף מסגרת בין-פגישות. edge case, לא blocker. ממתין לשיקול ליה. (מאי 2026)
-2. Pre-release QA — between-sessions framing + 4 כללים קליניים חדשים 22.05: PASS עם WARNING אחד (BETWEEN SESSIONS FRAME leak risk). WARNING טופל לפני release — נוסף "This is your internal frame. Do not state it to the patient." לכל 4 תיאורטיקנים. Sign-off ניתן. (מאי 2026)
-2. Full structural gap audit Vera/Elliot 19.05: FAIL → תוקן. 4 פערים נמצאו: MANDATORY FINAL CHECK (CRITICAL) + Own Gender hard stop (HIGH) + Language HARD STOP (HIGH) + Forbidden opener (MEDIUM). כל 4 תוקנו. ורה ואליוט עכשיו ב-PASS. (מאי 2026)
-2. Vera & Elliot gap fixes QA 19.05: תרחישי QA נוצרו ל-5 סקשנים חדשים: Situation B (therapist), Gender tracking, Opener variety, Pacing, Reshape. טרם נבדקו בפרודקשן. (מאי 2026)
-2. elliot mirroring rule QA 19.05: PASS — כלל החדש (מילה/ביטוי קצר, לא משפט שלם, לא בכל תגובה) נמצא תקין בשורה 1613. שורה 1628 לא סותרת — עוסקת בשמות ממציאים ולא במיררינג. (מאי 2026)
-2. Static QA — vera ו-elliot companions 17.05: ניתוח פרומפטים, 7 תרחישים × 2. תוצאות: 11 PASS, 2 WARNING, 1 FAIL (safety protocol שונה — companions לא מנחים לפנות לעזרה בצורה הנכונה כמו interceptor). הוספת vera+elliot לקרון qa-full ו-qa. (מאי 2026)
-2. Post-production QA 16.05: 4/4 PASS, BW-51+BW-46+enforceVariedOpening verified in prod ✅ (מאי 2026)
