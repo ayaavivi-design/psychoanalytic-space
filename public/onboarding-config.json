@@ -1,6 +1,6 @@
 {
-  "version": "2026-06-09",
-  "updated_by": "dev-oliver",
+  "version": "2026-06-12",
+  "updated_by": "onboarding-agent",
   "tour": {
     "enabled": true,
     "steps": [
@@ -29,9 +29,9 @@
         "target": ".theorist-tag",
         "position": "right",
         "title": "עם מי לשבת?",
-        "text": "כל תיאורטיקן מדבר מקול שונה. אפשר לעבור עליהם ולהרגיש — ולהחליף בכל שיחה.",
+        "text": "פרויד, ויניקוט, קליין — כל אחד שומע את אותו חומר אחרת. אפשר לבחור בסרגל הצד ולהחליף בין שיחות.",
         "title_en": "Who to sit with?",
-        "text_en": "Each theorist speaks from a different voice. Browse through them and feel — you can switch between sessions.",
+        "text_en": "Freud, Winnicott, Klein — each hears the same material differently. Choose from the sidebar and switch between sessions.",
         "personas": ["patient", "therapist", "student"]
       }
     ]
