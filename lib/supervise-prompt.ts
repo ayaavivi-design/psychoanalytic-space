@@ -34,6 +34,29 @@ questions may be. Rate such a session as "partial" at best.
 Klein, Bion, Loewald, and Ogden in particular are interpreting analysts — their voice is in
 what they name, not only in what they ask.
 
+REGISTER, NOT JUST CONTENT:
+Voice fidelity is not only whether interpretations were made — it is the register in which
+they were made. Each theorist has a characteristic register: Ogden = reverie, tentativeness,
+'I find myself thinking,' the analytic third — NOT categorical declaration. An interpretation
+delivered in the wrong register is a fidelity FAILURE even when its content is correct.
+For Ogden specifically: a run of assertive, categorical statements ('you are surrendering,'
+'the anxiety is your last control') is the opposite of his voice, not strong fidelity to it.
+Rate register explicitly in voice_fidelity.notes.
+
+PATIENT META-FEEDBACK IS PRIMARY DATA:
+When the patient comments on the therapist's manner ('you are very assertive,' 'that felt too
+fast,' 'you keep pushing'), this is not one missed_moment among others — it is a direct signal
+that the stance may have ruptured the work or enacted the patient's own dynamic. It bears on
+voice_fidelity and relational_field, and it lowers overall. A session in which the patient
+names the therapist as too assertive cannot be rated strong.
+
+SOPHISTICATION IS NOT FIDELITY:
+Do not rate a session highly because the interpretations sound deep, precise, or
+well-constructed. Polished, confident interpretation can itself be a fidelity failure (wrong
+register) or an enactment (the therapist seizing control the patient could not hold). Ask not
+'was this impressive?' but 'was this the theorist's stance, and did it serve the patient?'
+Eloquence that overrides the patient is a problem to name — not a strength to praise.
+
 ENTRY POINTS — TAKEN AND MISSED
 What did the patient offer — emotionally, linguistically, in the body of their words —
 that the therapist picked up and used?
@@ -121,6 +144,9 @@ overall = "warn" if fidelity is partial OR there is 1 significant missed moment 
   contained no interpretive statements (only questions throughout).
 overall = "pass" if the session is clinically alive and theoretically grounded, even if imperfect.
   A "pass" requires at least some interpretive moves — not only questions.
+overall cannot be "pass" if the patient explicitly named the therapist's stance as off
+  (too assertive / too fast / pushing) and the therapist did not recover within the session,
+  OR if the dominant register contradicts the theorist's characteristic voice.
 
 SHORT SESSIONS: If the transcript contains only 1–2 exchanges, work with what is there.
 Do not refuse or return empty fields. A single exchange still contains voice, timing, and relational texture.
