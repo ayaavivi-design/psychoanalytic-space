@@ -39,7 +39,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-1. Release BW-96/97 13.06: smoke test PASS (template literal tsc EXIT=0 + runtime JSON תקין דרך /eval ליה). חתמתי release/eitan-approval.md, סם דחף לפרודקשן (commit 29fe835, deploy READY). שני ה-issues → Done. **post-prod QA (live API): 3/4 + safety 4/4 — יציב, אין rollback. פרויד 🔴 = דגל קיים (BW-99), לא regression מהריליס. דוח: release-reports/post-qa-2026-06-13-2337.md (commit d24d5e3).** (יוני 2026)
+1. Smoke test dependency vulns 14.06: PASS — חתמתי eitan-approval.md. שינוי package.json+lockfile בלבד (uuid+ws fix · הסרת @xenova/transformers → CRITICAL protobufjs נמחק · next 16.2.1→16.2.9 patch). audit 12→3 (Critical 1→0, High 4→0). אימות עצמי: tsc EXIT=0 · build EXIT=0 · lockfile נקי מ-xenova+protobufjs · dev server כל בקשות 200 · e2e `/api/qa-quick?theorist=freud` HTTP 200 10.4s ragChunks=3 אפס דגלים. **RAG עבד בלי @xenova — הוכחה שהחבילה מתה (embeddings מ-HF remote).** 3 שנותרו לא בני-תיקון בטוח (anthropic-sdk Memory Tool לא בשימוש + postcss transitive בתוך next). לוקאלי, לא נדחף. (יוני 2026)
+2. Release BW-96/97 13.06: smoke test PASS (template literal tsc EXIT=0 + runtime JSON תקין דרך /eval ליה). חתמתי release/eitan-approval.md, סם דחף לפרודקשן (commit 29fe835, deploy READY). שני ה-issues → Done. **post-prod QA (live API): 3/4 + safety 4/4 — יציב, אין rollback. פרויד 🔴 = דגל קיים (BW-99), לא regression מהריליס. דוח: release-reports/post-qa-2026-06-13-2337.md (commit d24d5e3).** (יוני 2026)
 1. QA יומי 13.06: 3/4 — פרויד 🔴 FAIL (Q-3: כל התגובות שאלות בלבד, ללא תצפית — כשל שמשתמש רואה). קליין ✅ שלישי ברצף. נדרש: Observation Rule לבלוק פרויד + check בוולידציה. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
 1. QA יומי 12.06: 4/4 PASS ✅. קליין נקייה — שני ימים רצופים, הדפוס נקטע (כשל לא התממש כפי שניבאתי). גילוי: IDENTITY QUESTION rule בקוד ל-4 תיאורטיקנים — ממתין live test מליה לסגירה. VOICE IDENTITY block עדיין לא יושם. (יוני 2026)
 1. QA יומי 11.06: 4/4 PASS ✅. RAG=3 לכולם. קליין נקייה — alternating pattern ממשיך. VOICE IDENTITY fix עדיין לא בוצע — 4 ימים מאז ממליצת ליה. כשל צפוי ב-12.06. שאלת זהות ישירה (OPEN_DECISIONS) — 20 יום, לא נבדקה. (יוני 2026)
@@ -48,4 +49,3 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 1. QA יומי 08.06: 3/4 — קליין 🟡 Q-1 תור 5 (נתפס בפרודקשן). RAG=3 לכולם. VOICE IDENTITY fix (ליה 07.06) עדיין לא בוצע — 4 ימים. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
 1. QA יומי 07.06: 4/4 PASS מלא. RAG=3 לכולם. Check 5a (קליין) עדיין לא בוצע — 3 ימים מאז ממליצת ליה HIGH priority. RAG drop מ-01.06 עדיין לא נחקר. (יוני 2026)
 1. QA יומי 06.06: 3/4 PASS מלא + קליין 🟡 Q-1 (שתי שאלות תור 3, נתפס בפרודקשן). RAG=3 לכולם. check 5a עדיין לא בוצע — HIGH priority, דחוף. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
-1. QA יומי 05.06: 4/4 PASS — RAG=3 לכולם. חמישה ימים רצופים נקיים. Klein Q-3 לא תוקן (ליה HIGH priority, check 5a). RAG drop מ-01.06 עדיין לא נחקר. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
