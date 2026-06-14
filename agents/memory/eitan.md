@@ -12,13 +12,12 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 - ויניקוט פרומפט Q-W: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN (semantic faithfulness לא נאכף בלופ)
 - BW-51 — סגור ✅ PASS (flow-selection div DOM-only, invisible, PDF-only. Known limitation: לא שורד restoreConversation)
 - elliot mirroring rule — תוקן ונבדק 19.05.2026: הכלל החדש (מילה/ביטוי קצר, לא בכל תגובה, לא משפט שלם) נמצא בפרומפט שורה 1613. PASS (קוד בלבד)
-- **קליין — דפוס over-question**: 06.06🟡(תור3) → 07✅ → 08🟡(תור5) → 09✅ → 10🟡(תור2) → 11✅ → 12✅ → 13✅. **שלושה ימים רצופים נקיים — הדפוס נקטע לפחות זמנית.** VOICE IDENTITY block: סטטוס יישום לא ידוע — לאשר עם אוליבר.
+- **קליין — דפוס over-question**: 06.06🟡(תור3) → 07✅ → 08🟡(תור5) → 09✅ → 10🟡(תור2) → 11✅ → 12✅ → 13✅. **שלושה ימים רצופים נקיים — הדפוס נקטע לפחות זמנית.** STATEMENT REQUIREMENT (04.06) ו-VOICE IDENTITY block (07.06): סטטוס יישום **לא ידוע** — חייב לאשר עם אוליבר לפני עדכון פרויד.
 - **IDENTITY QUESTION rule** — אושר בקוד ל-4 תיאורטיקנים: פרויד (454), קליין (904), ויניקוט (1405), אוגדן (1809). OPEN_DECISIONS ממתין לאישור live test ע"י ליה לפני סגירה רשמית.
 - **Klein reality-reason guard** — הוסף commit 001d7c2 ב-08.06. ייתכן שתרם לימים הנקיים — אין הוכחה.
-- **RAG drop 01.06**: פרויד + קליין + אוגדן → RAG=0. חזרו ל-RAG=3 מ-02.06 ואילך. הסיבה לא הובנה — **פעולה נדרשת: לשלוף לוגי Vercel מ-01.06 לפני שיחזור**.
-- **13.06 סטטוס**: 3/4 — פרויד 🔴 FAIL. RAG=3 לכולם. קליין ✅ שלישי ברצף. **post-release re-run (23:37) אישר שוב 3/4 + safety 4/4 — יציב.**
-- **פרויד Q-3 — דגל פעיל**: 13.06 בוקר כשל Q-3 (כל התגובות שאלות בלבד, אין תצפית). ב-re-run של 23:37 הדגל היה שונה — [עקביות] אורך תגובה אחיד (סטייה 3.8 מילים), לא Q-3 — תנודתיות sampling של אותו דפוס. נפתח **BW-99** (WATCH, Low) — מעקב 14-15.06, תיקון רק אם חוזר. נדרש בעתיד: Observation Rule לבלוק פרויד + check בוולידציה.
-- **BW-96/97 — בפרודקשן ✅ (13.06)**: prompt fidelity ל-downstream agents (summary + supervise). smoke test שלי PASS (template literal tsc EXIT=0 + runtime JSON דרך /eval ליה). post-prod QA יציב. הריליס לא נגע בקולות התיאורטיקנים — לכן דגל פרויד אינו regression מהריליס.
+- **RAG drop 01.06**: פרויד + קליין + אוגדן → RAG=0. חזרו ל-RAG=3 מ-02.06 ואילך. הסיבה לא הובנה — **פעולה נדרשת: לשלוף לוגי Vercel מ-01.06 לפני שיחזור**. RAG=3 יציב מאז.
+- **פרויד Q-3 — דגל פעיל (BW-99)**: 3 אירועים ב-40 יום (05.05, 18.05, 13.06). 13.06 = visible למשתמש, לא נתפס בוולידציה. Q-3 הוא כתם עיוור מובנה של הוולידציה (בודקת תגובה בודדת, לא session). **פעולה נדרשת: STATEMENT REQUIREMENT block לפרויד ב-MANDATORY FINAL CHECK — אחרי אישור שיושם לקליין תחילה.** אם QA של 14.06 יציג Q-3 שוב → שדרג BW-99 ל-Medium.
+- **BW-96/97 — בפרודקשן ✅ (13.06)**: prompt fidelity ל-downstream agents (summary + supervise). post-prod QA יציב. הריליס לא נגע בקולות התיאורטיקנים.
 
 ---
 
@@ -39,6 +38,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+1. QA יומי 14.06: ניתוח 5 דוחות (09–13.06). פרויד Q-3 visible ב-13.06 — 3 אירועים ב-40 יום. המלצה: STATEMENT REQUIREMENT block לפרויד, אחרי אישור שיושם לקליין. BW-99 נשאר WATCH, שדרג ל-Medium אם 14.06 חוזר. דוח: qa-analysis/QA-2026-06-14.md. (יוני 2026)
 1. Smoke test dependency vulns 14.06: PASS — חתמתי eitan-approval.md. שינוי package.json+lockfile בלבד (uuid+ws fix · הסרת @xenova/transformers → CRITICAL protobufjs נמחק · next 16.2.1→16.2.9 patch). audit 12→3 (Critical 1→0, High 4→0). אימות עצמי: tsc EXIT=0 · build EXIT=0 · lockfile נקי מ-xenova+protobufjs · dev server כל בקשות 200 · e2e `/api/qa-quick?theorist=freud` HTTP 200 10.4s ragChunks=3 אפס דגלים. **RAG עבד בלי @xenova — הוכחה שהחבילה מתה (embeddings מ-HF remote).** 3 שנותרו לא בני-תיקון בטוח (anthropic-sdk Memory Tool לא בשימוש + postcss transitive בתוך next). לוקאלי, לא נדחף. (יוני 2026)
 2. Release BW-96/97 13.06: smoke test PASS (template literal tsc EXIT=0 + runtime JSON תקין דרך /eval ליה). חתמתי release/eitan-approval.md, סם דחף לפרודקשן (commit 29fe835, deploy READY). שני ה-issues → Done. **post-prod QA (live API): 3/4 + safety 4/4 — יציב, אין rollback. פרויד 🔴 = דגל קיים (BW-99), לא regression מהריליס. דוח: release-reports/post-qa-2026-06-13-2337.md (commit d24d5e3).** (יוני 2026)
 1. QA יומי 13.06: 3/4 — פרויד 🔴 FAIL (Q-3: כל התגובות שאלות בלבד, ללא תצפית — כשל שמשתמש רואה). קליין ✅ שלישי ברצף. נדרש: Observation Rule לבלוק פרויד + check בוולידציה. Atlassian MCP לא זמין — Jira לא עודכן. (יוני 2026)
