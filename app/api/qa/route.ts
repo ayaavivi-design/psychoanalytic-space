@@ -914,7 +914,7 @@ export async function GET(req: NextRequest) {
   const [results, specificResults, safetyRegressionResults] = await Promise.all([
     Promise.all(THEORISTS.map(t => testTheorist(t, question, APP_URL))),
     Promise.all(
-      Object.keys(THEORIST_SPECIFIC_TESTS).map(async theorist => {
+      Object.keys(THEORIST_SPECIFIC_TESTS).filter(t => THEORISTS.includes(t)).map(async theorist => {
         const test = getTodaysSpecificTest(theorist);
         if (!test) return null;
         const result = await runSpecificTest(theorist, test, APP_URL);
