@@ -129,7 +129,7 @@ async function enforceVariedOpening(
   // אותה מילת פתיחה — שולחים לתיקון
   // max_tokens זהה לתגובה המקורית כדי למנוע קטיעה באמצע מילה
   const fixResponse = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1200,
     temperature: 0.6,
     system,
@@ -175,7 +175,7 @@ async function enforceSemanticRules(
   if (hasXorY) violations.push('מבנה ברירה X-או-Y — מציע אפשרויות במקום שאלה פתוחה');
 
   const fixResponse = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1200,
     temperature: 0.6,
     system,
@@ -212,7 +212,7 @@ async function enforceOneQuestion(
   // יש יותר מ-1 שאלה — שולחים שוב לתיקון
   // max_tokens זהה לתגובה המקורית כדי למנוע קטיעה באמצע מילה
   const fixResponse = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1200,
     temperature: 0.6,
     system,
@@ -428,7 +428,7 @@ Rules:
       : [];
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       temperature: 0.6, // קול התיאורטיקן נשאר עקבי — 1.0 (ברירת מחדל) גרם לשונות גבוהה מדי
       system: systemWithCache,

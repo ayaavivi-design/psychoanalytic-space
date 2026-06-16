@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
     for (let i = 0; i < scenario.turns.length; i++) {
       messages.push({ role: 'user', content: scenario.turns[i] });
       const res = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 300,
         system,
         messages,
@@ -126,7 +126,7 @@ export async function GET(req: NextRequest) {
 
     // שלב 3 — שיפוט
     const judgeRes = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: JUDGE_SYSTEM_PROMPT + '\n\nRULESET:\n' + JUDGE_RULES,
       messages: [{ role: 'user', content: JUDGE_USER_TEMPLATE(transcript, theorist) }],

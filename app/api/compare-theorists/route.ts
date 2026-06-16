@@ -22,7 +22,7 @@ async function getTheoristResponse(
   try {
     const system = THEORIST_VOICE[theorist] + SAFETY_PROTOCOL;
     const res = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 400,
       system,
       messages: [{ role: 'user', content: patientMessage }],

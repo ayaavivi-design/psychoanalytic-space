@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     : `Here is the session transcript:\n\n${transcript}\n\nPlease provide your analysis in the requested JSON format.`;
 
   const res = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 800,
     system: buildSystemPrompt(theorist_key, lang || 'he'),
     messages: [{ role: 'user', content: userMessage }],

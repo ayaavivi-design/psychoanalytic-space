@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
   // ─── שלב 1: סימולציה של ניווט בממשק ─────────────────────────────────────
   const uxNavRes = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 900,
     system: buildUXSimSystem(persona),
     messages: [
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     const turnContext = buildConvContext(persona, transcript, i === 0);
 
     const userMsgRes = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 280,
       system: buildConvSimSystem(persona),
       messages: [{ role: 'user', content: turnContext }],
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
 
     // תגובת המטפל
     const therapistRes = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 500,
       system: therapistSystem,
       messages: therapistHistory,
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
     .join('\n\n');
 
   const feedbackRes = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1200,
     system: buildUXFeedbackSystem(persona),
     messages: [

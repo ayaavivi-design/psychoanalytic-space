@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
       messages.push({ role: 'user', content: CONVERSATION_TURNS[i] });
 
       const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 300,
         system,
         messages,

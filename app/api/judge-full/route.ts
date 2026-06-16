@@ -14,7 +14,7 @@ export const maxDuration = 60;
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const THEORISTS = ['freud', 'klein', 'winnicott', 'ogden', 'loewald', 'bion', 'kohut', 'heimann'];
+const THEORISTS = ['freud', 'klein', 'winnicott', 'ogden'];
 const THEORIST_NAMES: Record<string, string> = {
   freud: 'פרויד', klein: 'קליין', winnicott: 'ויניקוט', ogden: 'אוגדן',
   loewald: 'לוואלד', bion: 'ביון', kohut: 'קוהוט', heimann: 'היימן',
@@ -147,7 +147,7 @@ async function runJudge(theorist: string): Promise<JudgeResult> {
     for (let i = 0; i < scenario.turns.length; i++) {
       messages.push({ role: 'user', content: scenario.turns[i] });
       const res = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 300,
         system,
         messages,
@@ -163,7 +163,7 @@ async function runJudge(theorist: string): Promise<JudgeResult> {
     ).join('\n\n');
 
     const judgeRes = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: JUDGE_SYSTEM_PROMPT + '\n\nRULESET:\n' + JUDGE_RULES,
       messages: [{ role: 'user', content: JUDGE_USER_TEMPLATE(transcript, theorist) }],

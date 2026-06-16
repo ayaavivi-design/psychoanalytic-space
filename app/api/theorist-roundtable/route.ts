@@ -52,7 +52,7 @@ ${othersText}
     const system = THEORIST_VOICE[theorist] + ROUNDTABLE_SUFFIX;
 
     const res = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 150,
       system,
       messages: [{ role: 'user', content: userContent }],

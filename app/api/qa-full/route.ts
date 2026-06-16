@@ -116,7 +116,7 @@ async function runTheorist(theorist: string): Promise<{
     for (let i = 0; i < CONVERSATION_TURNS.length; i++) {
       messages.push({ role: 'user', content: CONVERSATION_TURNS[i] });
       const res = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 250,
         system,
         messages,
