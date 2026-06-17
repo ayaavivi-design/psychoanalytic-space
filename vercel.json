@@ -1,8 +1,4 @@
 {
-  "_frozen_crons_BW114": [
-    { "comment": "Frozen 17.06.2026 pending consultation-register QA rework (BW-114). Restore to crons[] to re-enable.", "path": "/api/qa-full?secret=psycho-qa-2026", "schedule": "0 7 * * *" },
-    { "path": "/api/judge-full?secret=psycho-qa-2026", "schedule": "0 7 */3 * *" }
-  ],
   "crons": [],
   "functions": {
     "app/api/qa-full/route.ts": {
