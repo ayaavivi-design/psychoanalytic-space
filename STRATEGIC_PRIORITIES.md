@@ -1,33 +1,47 @@
 # עדיפויות אסטרטגיות — מרחב פסיכואנליטי
 
-_עודכן לאחרונה: 2026-06-14 (Adam, CEO)_
+_עודכן לאחרונה: 2026-06-21 (Adam, CEO)_
 
 ---
 
 ## המצב הנוכחי
-MVP בפרודקשן. 4 תיאורטיקנים פעילים בQA (פרויד, קליין, ויניקוט, אוגדן). RAG עובד. מערכת בדיקות יומית רצה. ניוזלטר שבועי. לא מחייבים תשלום. לא מפרסמים. B2C — המטופל מגיע ישירות.
+MVP בפרודקשן. 4 תיאורטיקנים פעילים בQA (פרויד, קליין, ויניקוט, אוגדן). RAG עובד. QA יומי רץ. ניוזלטר שבועי. לא מחייבים תשלום. לא מפרסמים. B2C — המטופל מגיע ישירות.
 
-**מה שעדיין לא תועד:** האם פרוטוקול הבטיחות עובד. בדיקת "סימנים אובדניים" לא תועדה מ-13 באפריל 2026 — 62 יום. ממו 07.06 אמר "עוצרים הכל" — לא עצרנו.
-
-**כשל visible חדש (13.06):** פרויד Q-3 — session שכולו שאלות, דלף למשתמש, לא נתפס ע"י הוולידציה.
+**צינור המשוב שבור:** ליה כותבת המלצות ל-`judge-analysis/` — הן לא מגיעות לקוד. שני תיקונים ממתינים 8–14 יום. Judge cron ריק — ה-judge לא רץ אוטומטית. בדיקת "סימנים אובדניים" לא תועדה 70+ יום.
 
 ---
 
-## עדיפות ראשונה — תיעוד בטיחות (חסום הכל, שוב)
+## עדיפות ראשונה — שלושה תיקונים, השבוע
 
-**מה לעשות — לפני הפוש הבא:**
-איתן מתעד ב-MEMORY.md — בכתב — האם בדיקת "סימנים אובדניים" בוצעה. כן / לא / חסום כי ___.
-אם לא בוצעה ואין חסם טכני — מריץ לפני כל דבר אחר.
+כל שלושה מנוסחים, מאומתים, לא דורשים מחקר נוסף.
 
-- תוצאה שלילית = תיקון אותו יום, לפני כל push אחר
-- תוצאה חיובית = כותב ב-MEMORY.md ועוברים לעדיפות שנייה
+### א. Klein VOICE IDENTITY block (14 ימים ממתין — לא בקוד, אומת ע"י ליה 19.06)
+**אוליבר** מוסיף ב-`lib/theorist-voices.ts`, לפני MANDATORY FINAL CHECK של קליין:
 
----
+```
+VOICE IDENTITY — WHERE YOU START FROM
+═══════════════════════════════════════════
 
-## עדיפות שנייה — STATEMENT REQUIREMENT לפרויד (לפני הפוש הבא)
+Before you write, notice what has weight in this material.
+Not a topic. Not a concept. A specific gravity — a word the patient used that carries
+something dangerous, something avoided, something felt but not yet named.
 
-**מה לעשות:**
-אוליבר מוסיף STATEMENT REQUIREMENT בפרומפט של פרויד ב-`lib/theorist-voices.ts` — לפי הבלוק המדויק שליה הגדירה בדוח 13.06:
+Start from there. One sentence that names the weight — then ask, or do not ask.
+
+If your opener is a content word followed by a question ("הרצון...", "הכאב...", "הפחד...")
+— you are asking about the material from above it. Klein does not approach from above.
+She arrives at what is already pressing.
+
+SELF-CHECK BEFORE SENDING: Does your response open from inside the patient's material —
+or does it open with a concept you imported? One word of theirs, used as a landing point
+— not a topic word you introduce. If you find yourself opening with an abstract noun
+the patient did not use — rewrite.
+```
+
+**איתן** מאמת בשיחה חיה אחרי יישום.
+
+### ב. Freud STATEMENT REQUIREMENT (8 ימים ממתין — לא בקוד, אומת ע"י ליה 19.06)
+**אוליבר** מוסיף MANDATORY FINAL CHECK item 11 לפרויד ב-`lib/theorist-voices.ts`:
 
 ```
 STATEMENT REQUIREMENT — ALL TURNS:
@@ -41,30 +55,46 @@ A Freudian analyst who only asks is not interpreting — he is waiting.
 In this session, you do not wait. You speak.
 ```
 
-איתן מאמת בשיחה חיה אחרי יישום.
+**איתן** מאמת בשיחה חיה אחרי יישום.
 
-**נוהל חדש — propagation — יש ליישם מעכשיו:**
+### ג. Judge cron — שורה אחת ב-vercel.json
+**אוליבר** מוסיף ל-`vercel.json` תחת `"crons"`:
+```json
+{ "path": "/api/judge-full", "schedule": "0 8 */3 * *" }
+```
+כרגע `"crons": []` — ה-judge לא רץ אוטומטית. ליה מנתחת ידנית. זה לא בר-קיימא.
+
+---
+
+## עדיפות שנייה — תיעוד בטיחות (חסום הכל)
+
+**מה לעשות — לפני הפוש הבא:**
+**איתן** מתעד ב-MEMORY.md — בכתב — האם בדיקת "סימנים אובדניים" בוצעה:
+> "בדיקת סימנים אובדניים — בוצע ביום ___ / לא בוצע / חסום כי ___"
+
+70+ יום ללא תיעוד. 4 ממוים ציינו זאת. עדיין פתוח.
+
+- תוצאה שלילית = תיקון אותו יום, לפני כל push אחר
+- תוצאה חיובית = כותב ב-MEMORY.md ועוברים לעדיפות שלישית
+
+---
+
+## עדיפות שלישית — BW-64: שאלת זהות ישירה
+
+25+ ימים פתוח. הוולידציה לא תתפוס אותו. ליה + אוליבר. לסגור ב-OPEN_DECISIONS.md אחרי אימות.
+
+---
+
+## נוהל propagation — חובה
 כל תיקון שמוסף לתיאורטיקן אחד — ליה או איתן בודקים "האם זה רלוונטי לשאר?" לפני סגירה.
 
 ---
 
-## עדיפות שלישית — Klein check 5a (לאחר עדיפויות 1+2)
-
-אם "Klein reality-reason guard" מ-08.06 הוא check 5a — איתן מאשר בכתב. אם לא — אוליבר מוסיף check 5a בפרומפט של קליין (`lib/theorist-voices.ts` שורה ~883) בדיוק כמוגדר בדוח ליה מ-04.06.
-
----
-
-## עדיפות רביעית — BW-64: שאלת זהות ישירה
-
-22+ יום פתוח. הוולידציה לא תתפוס אותו. ליה + אוליבר. לסגור ב-OPEN_DECISIONS.md אחרי אימות.
-
----
-
 ## מה חשוב לבדוק עכשיו
-1. **תיעוד בטיחות:** איתן — האם בוצע? כן/לא/חסום — בכתב, לפני הפוש הבא
-2. **פרויד STATEMENT REQUIREMENT:** כשל visible, 3 פעמים ב-40 יום, פתרון ידוע — ליישם לפני הפוש הבא
-3. **נוהל propagation:** כל תיקון = בדיקה אם רלוונטי לשאר התיאורטיקנים
-4. **BW-64:** 22+ יום — לא נבדק ב-QA עדיין
+1. **Klein VOICE IDENTITY:** בקוד? כן/לא. אם לא — מתי
+2. **Freud STATEMENT REQUIREMENT:** בקוד? כן/לא. אם לא — מתי
+3. **Judge cron:** ריק ב-vercel.json — לתקן
+4. **בטיחות:** תועד? כן/לא/חסום — 70+ יום
 
 ---
 
@@ -72,7 +102,7 @@ In this session, you do not wait. You speak.
 - אל תוסיפו תיאורטיקנים חדשים
 - אל תתחילו שיווק — לא לפני בטיחות + 3 מטפלים אמיתיים עם פידבק
 - אל תגעו ב-RAG לפני שהבטיחות מתועדת
-- **אל תוסיפו כלל וולידציה לQ-3** — Q-3 הוא כשל session, הוולידציה בודקת תגובה. הפתרון הוא בפרומפט בלבד.
+- **אל תוסיפו כלל וולידציה לQ-3** — Q-3 הוא כשל session, הוולידציה בודקת תגובה. הפתרון הוא בפרומפט בלבד
 
 ---
 _הקובץ הזה מעודכן על ידי Adam (CEO). כל הסוכנים קוראים אותו לפני שמתחילים._
