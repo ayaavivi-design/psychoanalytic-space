@@ -305,6 +305,23 @@ export default function Home() {
     }
     setConsultText('');
   };
+  // BW-113 (localhost research shortcut) — enter explore mode via the SAME React-safe transition
+  // that startConsultation uses. Must NOT call chat.js confirmTheoristEntry(): that function removes
+  // #chat children directly, which collides with React's reconciliation while the therapist tree
+  // (rendered inside #welcome) is mounted → "insertBefore ... not a child" crash. Here we only set
+  // mode + theorist, hide #welcome, and let the normal explore opening render.
+  const enterResearchFromSidebar = () => {
+    const key = (() => { try { return localStorage.getItem('bw_explore_theorist') || 'winnicott'; } catch { return 'winnicott'; } })();
+    try { localStorage.setItem('bw_mode', 'explore'); } catch { /* ignore */ }
+    (window as any)._bwWriteSessionContext = null;
+    if ((window as any).bwSetActiveTheorist) (window as any).bwSetActiveTheorist(key);
+    document.body.classList.remove('bw-selecting');
+    const _welcomeEl = document.getElementById('welcome');
+    if (_welcomeEl) _welcomeEl.style.display = 'none';
+    if ((window as any).showTheoristOpening) (window as any).showTheoristOpening(key, false);
+    const input = document.getElementById('user-input') as HTMLInputElement | HTMLTextAreaElement | null;
+    if (input) input.focus();
+  };
   const archiveCase = async (id: string, archived: boolean) => {
     try {
       const gh = (window as any).getAuthHeaders;
@@ -768,7 +785,7 @@ export default function Home() {
             </div>
             {/* BW-113 — מחקר חזר לסייד-בר כפריט עצמאי (לא קשור למקרה). */}
             {isLocalhost && (
-              <div className="sb-item" data-persona="therapist" onClick={() => (window as any).enterExploreModeFromSidebar?.()}>
+              <div className="sb-item" data-persona="therapist" onClick={() => enterResearchFromSidebar()}>
                 <span className="sb-icon"><BookOpen size={15} strokeWidth={1.75} /></span>
                 <span className="sb-label">מחקר</span>
                 <span style={{ fontSize: 9, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(לוקאל)' : '(local)'}</span>

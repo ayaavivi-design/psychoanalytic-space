@@ -249,7 +249,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     // ⚠ SECURITY: body.system is intentionally ignored.
     // System prompt is built server-side from THEORIST_VOICE to prevent client override.
-    const { messages, webSearch, theorist, bw_mode, bw_end_session } = body;
+    const { messages, webSearch, theorist, bw_mode, bw_end_session, uiLang } = body;
 
     // ─── EXPLORATION MODE PREFIX + SUFFIX ────────────────────────────────────
     // כשהמשתמש ב"לחקור" — התיאורטיקן מלמד, לא מנהל סשן קליני.
@@ -267,6 +267,12 @@ YOUR ROLE IN THIS MODE:
 - Answer in first person, from your own clinical and theoretical experience: precise, direct, in your own voice.
 - If the user asks "what is X?" — explain it as you understand it, with the conviction of someone who built or shaped the concept.
 - If the user brings personal material — briefly acknowledge, then redirect: respond with the concept itself, not with a clinical question about their experience.
+
+FOREIGN CONCEPT — when asked about a term that is NOT your own (another theorist's concept, e.g. Mahler's "rapprochement"):
+- Do NOT recite a neutral, textbook, developmental description. ONE sentence at most to locate the term — then immediately meet it from YOUR framework, in your language, with your emphasis.
+- LAND IT IN CLINICAL REALITY: show what this looks like in the consulting room / between sessions (in general terms — do NOT ask about the user's own therapy). The user is in or near treatment — give them something they can take back, not a developmental lecture.
+- Do NOT converge on the shared cliché "it is not a stage, it is a lifelong structure." If your framework genuinely leads there, say it in your own distinct terms — never that exact formula.
+- A third party named in the material (e.g. Margaret Mahler) — get the facts right, INCLUDING GENDER. Mahler is a woman (Hebrew: "תיארה", never "תיאר").
 ══════════════════════════════════════
 
 ` : '';
@@ -367,13 +373,31 @@ Rules:
 - Do NOT skip this line. Do NOT add anything after it.
 - This is NOT a citation. The no-citations rule does not apply to it.` : '';
 
+    // ─── LANGUAGE ANCHOR — UI language decides, overrides infer-from-message ──
+    // The client sends uiLang ('he' | 'en') = the user's interface language. This is
+    // the authoritative signal: a Hebrew-UI user gets Hebrew even when the message
+    // contains a foreign concept name (e.g. "rapprochement"). Missing uiLang → empty
+    // (falls back to the per-voice "detect from message" rule, e.g. internal QA calls).
+    const LANGUAGE_ANCHOR =
+      uiLang === 'en' ? `══════════════════════════════════════
+LANGUAGE — ABSOLUTE, OVERRIDES EVERYTHING BELOW
+The user's interface is set to English. Respond ENTIRELY in English, every turn — even when the message contains a Hebrew word, name, or quote. This overrides any "detect the language from the message" instruction below.
+══════════════════════════════════════
+
+` : uiLang === 'he' ? `══════════════════════════════════════
+LANGUAGE — ABSOLUTE, OVERRIDES EVERYTHING BELOW
+ממשק המשתמש מוגדר לעברית. השב/י כולו בעברית, בכל תור — גם כאשר ההודעה מכילה מונח לועזי, שם מושג, או ציטוט באנגלית (למשל "rapprochement", "holding", "self-object"). השאר/י את שם המושג הלועזי באותיות המקור, אבל כל שאר המשפט בעברית. זה גובר על כל הוראה למטה ש"מזהה שפה מההודעה".
+══════════════════════════════════════
+
+` : '';
+
     // ─── BUILD SYSTEM PROMPT SERVER-SIDE ─────────────────────────────────────
     // STATIC block: theorist voice + fixed boilerplate — stable across every turn
     // in a conversation. Marked with cache_control so Anthropic caches it.
     // END_SESSION_SUFFIX is intentionally excluded — it changes on the final turn,
     // keeping the static block warm for all turns including the last one.
     const staticSystem = (theorist && THEORIST_VOICE[theorist])
-      ? CONSULT_PREFIX + EXPLORE_PREFIX + THEORIST_VOICE[theorist] + EXPLORE_SUFFIX + CONSULT_SUFFIX + HEBREW_TERMINOLOGY + MEMORY_TAG_INSTRUCTION
+      ? LANGUAGE_ANCHOR + CONSULT_PREFIX + EXPLORE_PREFIX + THEORIST_VOICE[theorist] + EXPLORE_SUFFIX + CONSULT_SUFFIX + HEBREW_TERMINOLOGY + MEMORY_TAG_INSTRUCTION
       : '';
     if (!staticSystem) {
       console.warn(`[SECURITY] theorist "${theorist}" not found in THEORIST_VOICE — empty base system`);

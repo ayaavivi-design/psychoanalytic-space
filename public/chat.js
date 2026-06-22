@@ -811,7 +811,8 @@ async function startFlow(flowKey) {
         system: buildSystemPrompt(),
         webSearch: false,
         theorist: theoristKey,
-        bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session')
+        bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
+        uiLang: (window.selectedLang?.code || 'he')
       })
     });
     const data = await response.json();
@@ -887,7 +888,8 @@ async function startAfterSessionConversation(text, theoristKey) {
         system: buildSystemPrompt(),
         webSearch: false,
         theorist: theoristKey,
-        bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session')
+        bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
+        uiLang: (window.selectedLang?.code || 'he')
       })
     });
     const data = await response.json();
@@ -5711,7 +5713,8 @@ async function showTheoristOpening(theoristKey, showContext = true) {
           system: buildSystemPrompt(),
           webSearch: false,
           theorist: theoristKey,
-          bw_mode: 'session'
+          bw_mode: 'session',
+          uiLang: (window.selectedLang?.code || 'he')
         })
       });
       const data = await res.json();
@@ -6186,7 +6189,8 @@ async function sendMessage() {
         system: buildSystemPrompt(),
         webSearch: window.webSearch && !window.clinicalMode,
         theorist: activeTheorists.length === 1 ? activeTheorists[0] : null,
-        bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session')
+        bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
+        uiLang: (window.selectedLang?.code || 'he')
       })
     });
 
@@ -7470,7 +7474,7 @@ async function handleSilence() {
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-      body: JSON.stringify({ messages, system: buildSystemPrompt(), webSearch: false, bw_mode: localStorage.getItem('bw_mode') || 'session' })
+      body: JSON.stringify({ messages, system: buildSystemPrompt(), webSearch: false, bw_mode: localStorage.getItem('bw_mode') || 'session', uiLang: (window.selectedLang?.code || 'he') })
     });
 
     const data = await response.json();
@@ -8400,6 +8404,7 @@ async function triggerEndSession() {
         system: buildSystemPrompt(),
         theorist: activeTheorists.length === 1 ? activeTheorists[0] : null,
         bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
+        uiLang: (window.selectedLang?.code || 'he'),
         bw_end_session: true
       })
     });
