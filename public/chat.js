@@ -65,6 +65,9 @@ function hideAuthScreen() {
 }
 
 function proceedToApp() {
+  // BW-111 — re-resolve persona from the allowlist (/api/me) on every app entry, post-auth.
+  // Authoritative + fail-closed: a non-allowlisted account always resolves to patient.
+  if (window.__resolvePersona) window.__resolvePersona();
   applyUITranslation(selectedLang?.code || 'en');
   bwUpdateModeLabels(); // immediate — prevents Hebrew flash for English users
   setTimeout(checkIntakeStatus, 100);
@@ -78,7 +81,10 @@ function proceedToApp() {
   setTimeout(() => {
     const _chatEl = document.getElementById('chat');
     const _hasRendered = _chatEl && Array.from(_chatEl.children).some(c => c.id !== 'welcome' && c.id !== 'bw-end-session-cta');
-    if (!_hasRendered) showModeSelect();
+    // BW-113 — therapist hub is a React view inside #welcome; showModeSelect() would clobber it.
+    // Skip the mode-select screen entirely in therapist persona.
+    const _isTherapist = document.getElementById('sidebar')?.classList.contains('persona-therapist');
+    if (!_hasRendered && !_isTherapist) showModeSelect();
   }, 350);
   setTimeout(() => { initSidebarTips(); startOnboardingTour(); }, 800);
 }
@@ -556,9 +562,24 @@ const STORAGE_KEY = 'psycho_agent_v2';
 
 function formatResponse(text) {
   const lines = text.split('\n');
-  const formatted = lines.map(line => {
+  // BW-118 — in therapist consultation mode, → lines are reflective questions to sit with,
+  // NOT clickable prompts. Render as a quiet block (label + plain text), never as buttons.
+  const _isTherapist = document.getElementById('sidebar')?.classList.contains('persona-therapist');
+  const firstFollowupIdx = lines.findIndex(l => l.trim().startsWith('→'));
+  let lastFollowupIdx = -1;
+  lines.forEach((l, i) => { if (l.trim().startsWith('→')) lastFollowupIdx = i; });
+  const formatted = lines.map((line, idx) => {
     const t = line.trim();
     if (t.startsWith('→')) {
+      if (_isTherapist) {
+        // BW-118 — wrap the whole reflective-questions block in a nested "thinking" card (Maya).
+        const q = t.replace(/^→\s*/, '');
+        const open = idx === firstFollowupIdx
+          ? `<div style="background:var(--thinking);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:20px;"><span style="display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;font-family:'Rubik',sans-serif;">שאלות להישאר איתן</span>`
+          : '';
+        const close = idx === lastFollowupIdx ? `</div>` : '';
+        return `${open}<span class="followup-q" style="color:var(--text);font-size:13px;line-height:1.6;font-family:'Rubik',sans-serif;">${q}</span>${close}`;
+      }
       return `<span class="followup-q" onclick="useFollowup(this)" style="display:inline-block;cursor:pointer;color:var(--accent);font-size:13px;padding:5px 12px;margin:3px 0;font-family:'Rubik',sans-serif;background:var(--accent-soft);border:1px solid var(--accent-dim);border-radius:var(--radius-xl);transition:background 0.15s,border-color 0.15s;" onmouseover="this.style.background='rgba(196,96,122,0.14)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='var(--accent-soft)';this.style.borderColor='var(--accent-dim)'">${t}</span><br>`;
     }
     if (t.startsWith('📄')) {
@@ -636,6 +657,8 @@ function renderAnalystBadge() {
 }
 
 function renderFlowButtons() {
+  // BW-113 — therapist consultation mode has no patient flow buttons
+  if (document.getElementById('sidebar')?.classList.contains('persona-therapist')) return;
   if (localStorage.getItem('bw_mode') === 'explore') return;
   // Don't show flow buttons when Hold UI is the active screen
   if (document.getElementById('bw-hold-textarea')) return;
@@ -788,7 +811,7 @@ async function startFlow(flowKey) {
         system: buildSystemPrompt(),
         webSearch: false,
         theorist: theoristKey,
-        bw_mode: localStorage.getItem('bw_mode') || 'session'
+        bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session')
       })
     });
     const data = await response.json();
@@ -864,7 +887,7 @@ async function startAfterSessionConversation(text, theoristKey) {
         system: buildSystemPrompt(),
         webSearch: false,
         theorist: theoristKey,
-        bw_mode: localStorage.getItem('bw_mode') || 'session'
+        bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session')
       })
     });
     const data = await response.json();
@@ -957,7 +980,7 @@ function showWriteInterface() {
         data-placeholder="${placeholder}"
         style="flex:1;outline:none;font-family:var(--font-rubik),sans-serif;font-size:15px;line-height:1.85;color:var(--text);width:100%;direction:${dir};min-height:220px;word-break:break-word;white-space:pre-wrap;"></div>
       <div id="bw-write-hint" style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;align-items:center;">
-        <span id="bw-write-hint-text">${isEn ? 'Use the sidebar to generate session notes when you\'re ready.' : 'השתמש ב"סיכום לפגישה" בסייד-בר כשסיימת.'}</span>
+        <span id="bw-write-hint-text">${isEn ? 'Use the sidebar to generate session notes when you\'re ready.' : 'השתמש ב"סיכום לכתיבה" בסייד-בר כשסיימת.'}</span>
         <span id="bw-write-hint-archive" onclick="openWriteArchive()" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;margin-${isEn ? 'left' : 'right'}:12px;">${isEn ? 'Archive' : 'ארכיון'}</span>
       </div>
     </div>`;
@@ -1266,7 +1289,7 @@ async function openWriteSummary() {
   overlay.innerHTML = `
     <div style="background:var(--bg);border-radius:16px;width:520px;max-width:92vw;max-height:82vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:${dir};padding:28px 28px 24px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <span style="font-family:var(--font-cormorant),serif;font-size:20px;font-weight:400;color:var(--text);">${isEn ? 'Session notes' : 'סיכום לפגישה'}</span>
+        <span style="font-family:var(--font-cormorant),serif;font-size:20px;font-weight:400;color:var(--text);">${isEn ? 'Session notes' : 'סיכום לכתיבה'}</span>
         <button onclick="document.getElementById('write-summary-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted);line-height:1;">×</button>
       </div>
       <div id="write-summary-results" style="font-family:var(--font-rubik),sans-serif;font-size:14px;color:var(--text);line-height:1.7;">
@@ -1345,7 +1368,7 @@ async function openWriteSummary() {
     document.getElementById('ws-send-btn')?.addEventListener('click', () => {
       const attachLetter = document.getElementById('ws-attach-letter')?.checked;
       const emailHtml = attachLetter ? summaryHtml + letterHtml : summaryHtml;
-      openSendToTherapistForm(footer, emailHtml, isEn ? 'Session notes' : 'סיכום לפגישה');
+      openSendToTherapistForm(footer, emailHtml, isEn ? 'Session notes' : 'סיכום לכתיבה');
     });
 
     // Talk with theorist
@@ -1466,7 +1489,7 @@ function bwUpdateModeLabels() {
   const writeLabel = document.getElementById('bw-label-write');
   if (writeLabel) writeLabel.textContent = isEn ? 'Write' : 'כתיבה';
   const writeSummaryLabel = document.getElementById('sb-write-summary-label');
-  if (writeSummaryLabel) writeSummaryLabel.textContent = isEn ? 'Session notes' : 'סיכום לפגישה';
+  if (writeSummaryLabel) writeSummaryLabel.textContent = isEn ? 'Session notes' : 'סיכום לכתיבה';
   // Update write area texts if currently shown
   const _writeArea = document.getElementById('bw-write-area');
   if (_writeArea) {
@@ -1475,7 +1498,7 @@ function bwUpdateModeLabels() {
     const _wTa = document.getElementById('bw-write-textarea');
     if (_wTa) _wTa.dataset.placeholder = isEn ? 'Something you want your therapist to know.' : 'משהו שתרצה שהמטפל שלך ידע.';
     const _wHintText = document.getElementById('bw-write-hint-text');
-    if (_wHintText) _wHintText.textContent = isEn ? "Use the sidebar to generate session notes when you're ready." : 'השתמש ב"סיכום לפגישה" בסייד-בר כשסיימת.';
+    if (_wHintText) _wHintText.textContent = isEn ? "Use the sidebar to generate session notes when you're ready." : 'השתמש ב"סיכום לכתיבה" בסייד-בר כשסיימת.';
     const _wHintArchive = document.getElementById('bw-write-hint-archive');
     if (_wHintArchive) { _wHintArchive.textContent = isEn ? 'Archive' : 'ארכיון'; _wHintArchive.style.marginLeft = isEn ? '12px' : ''; _wHintArchive.style.marginRight = isEn ? '' : '12px'; }
     _writeArea.style.direction = isEn ? 'ltr' : 'rtl';
@@ -1822,7 +1845,10 @@ function confirmTheoristEntry() {
   const input = document.getElementById('user-input');
   if (input) {
     const isEn = (window.selectedLang?.code === 'en');
-    if (mode === 'session') {
+    const _apIsTherapistPh = document.getElementById('sidebar')?.classList.contains('persona-therapist');
+    if (_apIsTherapistPh) {
+      input.placeholder = isEn ? 'What are you bringing to consultation?' : 'מה מביאים להתייעצות?';
+    } else if (mode === 'session') {
       input.placeholder = isEn ? "What's coming up right now?" : 'מה עולה עכשיו?';
     } else {
       input.placeholder = isEn ? 'What would you like to understand?' : 'מה תרצה/י להבין?';
@@ -2035,6 +2061,17 @@ function toggleTheorist(el, name) {
   performTheoristSwitch(el, name);
 }
 
+// BW-113 — set the active theorist by key without relying on the sidebar tag being rendered
+// (the theorist list is collapsed by default). Used by the therapist case-first consultation flow.
+window.bwSetActiveTheorist = function(key) {
+  document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
+  activeTheorists = [key];
+  window._bwPendingTheorist = null;
+  const tag = document.querySelector(`.theorist-tag[data-key="${key}"]`);
+  if (tag) tag.classList.add('active');
+  try { window.dispatchEvent(new CustomEvent('holdtheoristchange', { detail: { key } })); } catch (e) {}
+};
+
 function showTheoristSwitchModal(el, name) {
   const isEn = (window.selectedLang?.code === 'en');
   const existing = document.getElementById('theorist-switch-modal');
@@ -2188,17 +2225,31 @@ function updateSessionTitle(forceNew = false) {
   const enNames = {freud:'Freud',klein:'Klein',winnicott:'Winnicott',ogden:'Ogden',loewald:'Loewald',bion:'Bion',kohut:'Kohut',heimann:'Heimann'};
   const t = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
   const nameMap = (selectedLang?.code === 'he' || !selectedLang) ? heNames : (t.theorists || enNames);
-  if (activeTheorists.length > 0) {
+  const isEn = (selectedLang?.code === 'en');
+  const _apIsTherapistTitle = document.getElementById('sidebar')?.classList.contains('persona-therapist');
+
+  if (_apIsTherapistTitle && activeTheorists.length === 1 && conversationHistory.length > 0) {
+    // Therapist consultation mode — show "התייעצות — [name]" caption
+    const tName = nameMap[activeTheorists[0]] || activeTheorists[0];
+    titleEl.textContent = isEn ? `Consultation — ${tName}` : `התייעצות — ${tName}`;
+    titleEl.style.display = 'block';
+    titleEl.style.fontSize = '11px';
+    titleEl.style.color = 'var(--muted)';
+    titleEl.style.fontFamily = 'var(--font-rubik), sans-serif';
+  } else if (activeTheorists.length > 0) {
     const names = activeTheorists.map(k => nameMap[k] || k).join(', ');
     if (forceNew || conversationHistory.length === 0) {
       titleEl.textContent = '';
+      titleEl.style.display = 'none';
     } else {
       const memories = loadMemory();
       const lastMem = memories.filter(m => activeTheorists.includes(m.theorist)).slice(-1)[0];
       titleEl.textContent = lastMem ? `${lastMem.summary.slice(0,50)}... · ${names}` : '';
+      titleEl.style.display = titleEl.textContent ? 'block' : 'none';
     }
   } else {
     titleEl.textContent = '';
+    titleEl.style.display = 'none';
   }
 }
 
@@ -4962,7 +5013,7 @@ const UI_TRANSLATIONS = {
     subtitle: 'בין פגישות',
     placeholder: 'מה עולה לך עכשיו?',
     send: 'שלח',
-    memories: 'זיכרונות',
+    memories: 'ארכיון',
     welcome: 'ברוכ/ה הבא/ה',
     welcomeHeading: 'מה עולה לך היום?',
     welcomeText: 'יש לך משהו מהפגישה האחרונה שעדיין מהדהד?',
@@ -4984,7 +5035,7 @@ const UI_TRANSLATIONS = {
     downloadPDF: 'הורד PDF',
     theoreticalApproach: 'גישה תיאורטית',
     supervision: 'פיקוח קליני',
-    sessionSummary: 'סיכום סשן',
+    sessionSummary: 'סיכום התייעצות',
     reflection: 'מה לקחתי מהשיחה',
     anonymize: 'אנונימיזציה',
     userFeedback: 'פידבק משתמש',
@@ -5068,7 +5119,7 @@ const UI_TRANSLATIONS = {
     subtitle: 'between sessions',
     placeholder: "What's coming up for you?",
     send: 'Send',
-    memories: 'memories',
+    memories: 'Archive',
     welcome: 'Welcome',
     welcomeHeading: "What's on your mind?",
     welcomeText: 'Is there something from your last session that still resonates?',
@@ -5116,7 +5167,7 @@ const UI_TRANSLATIONS = {
     downloadPDF: 'Download PDF',
     theoreticalApproach: 'Theoretical approach',
     supervision: 'Clinical supervision',
-    sessionSummary: 'Session summary',
+    sessionSummary: 'Consultation summary',
     reflection: 'What I took from this',
     anonymize: 'Anonymize',
     userFeedback: 'User feedback',
@@ -5386,7 +5437,9 @@ function applyUITranslation(code) {
   } catch(e) {}
   // Re-render memory-aware welcome text in correct language (targets dedicated element, not api-note)
   const _apMemoryEl = document.querySelector('.welcome p:not(#welcome-api-text):not(.bw-entry-heading)');
-  if (_apMemoryEl && conversationHistory.length === 0) {
+  // BW-113 — don't overwrite the therapist case-first React title with the patient "welcome back" greeting.
+  const _apIsTherapist = document.getElementById('sidebar')?.classList.contains('persona-therapist');
+  if (_apMemoryEl && conversationHistory.length === 0 && !_apIsTherapist) {
     const _apMemories = loadMemory();
     if (_apMemories.length > 0) {
       const _apLast = _apMemories[_apMemories.length - 1];
@@ -6133,7 +6186,7 @@ async function sendMessage() {
         system: buildSystemPrompt(),
         webSearch: window.webSearch && !window.clinicalMode,
         theorist: activeTheorists.length === 1 ? activeTheorists[0] : null,
-        bw_mode: localStorage.getItem('bw_mode') || 'session'
+        bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session')
       })
     });
 
@@ -6782,6 +6835,30 @@ function performNewChat() {
   setTimeout(checkIntakeStatus, 50);
 }
 
+// BW-116 — exit an active consultation chat back to the therapist React home (My Cases / Archive).
+// Mirrors performNewChat's cleanup but WITHOUT showModeSelect()/renderAnalystBadge()/clinical reset,
+// which are patient-flow only and would clobber the React therapist view living inside #welcome.
+function bwExitChatToHome() {
+  try { stopSessionTimer(); } catch (e) { /* noop */ }
+  clearTimeout(silenceTimer); silenceResponseSent = false;
+  clearTimeout(idleTimer); idleTimer = null; idleMessageSent = false;
+  conversationHistory = [];
+  sessionMemorySaved = false;
+  try { saveConversation(); } catch (e) { /* noop */ }
+  const titleEl = document.getElementById('session-title'); if (titleEl) titleEl.textContent = '';
+  const chat = document.getElementById('chat');
+  if (chat) {
+    Array.from(chat.children).forEach(child => { if (child.id !== 'welcome') child.remove(); });
+    chat.scrollTop = 0;
+  }
+  const welcome = document.getElementById('welcome'); if (welcome) welcome.style.display = '';
+  document.body.classList.remove('bw-selecting');
+  document.body.classList.remove('bw-write-mode');
+  window.activeFlow = null;
+  const ui = document.getElementById('user-input'); if (ui) ui.value = '';
+}
+window.bwExitChatToHome = bwExitChatToHome;
+
 function restoreConversation(memIndex) {
   const memories = loadMemory();
   const mem = memories[memIndex];
@@ -7151,7 +7228,9 @@ window.resetPassword = resetPassword;
     const date = new Date(last.ts).toLocaleDateString(_rwIsEn ? 'en-US' : 'he-IL');
     const welcome = document.getElementById('welcome');
     const flowBtns = document.getElementById('flow-buttons');
-    if (welcome) {
+    // BW-113 — therapist uses the case-first React views; skip the patient "welcome back" greeting.
+    const _isTherapist = document.getElementById('sidebar')?.classList.contains('persona-therapist');
+    if (welcome && !_isTherapist) {
       const p = document.createElement('p');
       p.style.cssText = 'font-size:13px;color:var(--muted);line-height:1.7;max-width:360px;margin:12px auto 0;text-align:center;';
       // Memory snippet: show only if language matches, otherwise show generic return greeting
@@ -7466,6 +7545,8 @@ const BIO_PLACEHOLDER = {
 
 function applyPersona(type) {
   if (!type || !PERSONA_CONFIG[type]) return;
+  // BW-104 — update production sidebar persona filter (localhost uses the dev switcher instead)
+  if (window.__setSidebarPersona) window.__setSidebarPersona(type);
   const config = PERSONA_CONFIG[type];
   const input = document.getElementById('user-input');
   if (input && localStorage.getItem('bw_mode') !== 'explore') {
@@ -7866,7 +7947,7 @@ async function _openSessionSummary() {
   overlay.innerHTML = `
     <div id="session-summary-box" style="background:#fff;border-radius:14px;width:580px;max-width:92vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:rtl;">
       <div style="background:#3a2540;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:14px 14px 0 0;position:sticky;top:0;">
-        <span style="color:rgba(255,255,255,0.85);font-size:14px;">◎ סיכום סשן — ${theorist}</span>
+        <span style="color:rgba(255,255,255,0.85);font-size:14px;">${document.getElementById('sidebar')?.classList.contains('persona-therapist') ? '◎ סיכום התייעצות' : '◎ סיכום סשן'} — ${theorist}</span>
         <button id="ss-close-btn" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;line-height:1;">×</button>
       </div>
       <div id="session-summary-results" style="padding:20px;">
@@ -7929,28 +8010,33 @@ function buildSummaryCard(s, theoristLabel) {
     ${s.what_remained ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff9f0;border-radius:6px;border:1px solid #f5c97a;"><div style="font-size:11px;color:#92600a;font-weight:600;margin-bottom:4px;">מה נותר פתוח</div><div style="font-size:12px;color:#333;">${s.what_remained}</div></div>` : ''}
     ${s.theorist_approach ? `<div style="margin-bottom:14px;padding:10px 14px;background:#f7f5fb;border-radius:6px;border:1px solid #d8c8e0;"><div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:4px;">הגישה הטיפולית</div><div style="font-size:12px;color:#333;">${s.theorist_approach}</div></div>` : ''}
     ${s.next_session_focus ? `<div style="padding:10px 14px;background:rgba(58,37,64,0.07);border-radius:6px;border-right:3px solid #3a2540;"><div style="font-size:11px;color:#3a2540;font-weight:600;margin-bottom:4px;">המוקד לסשן הבא</div><div style="font-size:12px;color:#333;font-weight:500;">${s.next_session_focus}</div></div>` : ''}
+    ${!document.getElementById('sidebar')?.classList.contains('persona-therapist') ? `
     <div style="margin-top:14px;padding:12px 14px;background:#faf7fc;border-radius:6px;border:1px dashed #c4b0cc;">
       <div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:6px;">מה אני רוצה להביא לפגישה הבאה</div>
       <textarea id="ss-next-session-note" placeholder="כתוב/י כאן בחופשיות..." style="width:100%;min-height:60px;padding:8px 10px;border:1px solid #d4c2e0;border-radius:6px;font-family:'Rubik',sans-serif;font-size:12px;color:#333;background:#fff;resize:vertical;outline:none;box-sizing:border-box;line-height:1.6;"></textarea>
-    </div>
+    </div>` : ''}
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid #e8e0ec;display:flex;gap:8px;flex-wrap:wrap;">
       <button id="ss-download-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
         ↓ הורד סיכום
       </button>
+      ${!document.getElementById('sidebar')?.classList.contains('persona-therapist') ? `
       <button id="ss-send-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
         ✉ שלח למטפל/ת
-      </button>
+      </button>` : ''}
     </div>
     <div id="ss-send-form-slot"></div>`;
 
   wrap.querySelector('#ss-download-btn').addEventListener('click', () =>
     downloadSessionSummary(s, theoristLabel));
 
-  wrap.querySelector('#ss-send-btn').addEventListener('click', function() {
-    const isHe = (window._lang || 'he') !== 'en';
-    const subject = isHe ? `סיכום סשן — ${s.theorist || theoristLabel || ''}` : `Session Summary — ${s.theorist || theoristLabel || ''}`;
-    openSendToTherapistForm(wrap.querySelector('#ss-send-form-slot'), buildSummaryHTML(s, theoristLabel), subject);
-  });
+  const _ssSendBtn = wrap.querySelector('#ss-send-btn');
+  if (_ssSendBtn) {
+    _ssSendBtn.addEventListener('click', function() {
+      const isHe = (window._lang || 'he') !== 'en';
+      const subject = isHe ? `סיכום סשן — ${s.theorist || theoristLabel || ''}` : `Session Summary — ${s.theorist || theoristLabel || ''}`;
+      openSendToTherapistForm(wrap.querySelector('#ss-send-form-slot'), buildSummaryHTML(s, theoristLabel), subject);
+    });
+  }
 
   return wrap;
 }
@@ -8274,6 +8360,8 @@ function updateEndSessionBtn() {
 }
 
 function showEndSessionButton() {
+  // BW-113 — therapist consultation has no "done for today" button
+  if (document.getElementById('sidebar')?.classList.contains('persona-therapist')) return;
   if (document.getElementById('bw-hold-textarea')) return;  // לא להציג על מסך Hold — אין שיחה גלויה
   if (document.getElementById('bw-end-session-cta')) return;
   if (document.getElementById('bw-end-session-actions')) return;
@@ -8311,7 +8399,7 @@ async function triggerEndSession() {
         messages,
         system: buildSystemPrompt(),
         theorist: activeTheorists.length === 1 ? activeTheorists[0] : null,
-        bw_mode: localStorage.getItem('bw_mode') || 'session',
+        bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
         bw_end_session: true
       })
     });

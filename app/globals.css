@@ -144,6 +144,17 @@ body {
 #sidebar .theorist-tag.active {
   color: #fff;
 }
+/* BW-104 — persona filter: gate sidebar items by patient/therapist.
+   Production sidebar is set by login persona; localhost adds a dev preview switcher. */
+#sidebar.persona-patient [data-persona="therapist"] { display: none !important; }
+#sidebar.persona-therapist [data-persona="patient"] { display: none !important; }
+/* BW-112 — admin-only tools (user feedback, board room) never appear in a user persona. */
+#sidebar.persona-patient [data-persona="admin"],
+#sidebar.persona-therapist [data-persona="admin"] { display: none !important; }
+
+/* BW-112 — therapist hub: inline helper line (not a tooltip). Always visible, in-flow, never covers text. */
+.hub-helpcap { text-align: center; font-size: 11.5px; line-height: 1.7; color: var(--muted); max-width: 440px; margin: 8px auto 0; }
+.hub-helpcap b { color: var(--accent); font-weight: 500; }
 #intake-start-btn {
   font-size: var(--fs-body-md) !important;
   letter-spacing: 0 !important;
