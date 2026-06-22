@@ -99,6 +99,8 @@ export default function Home() {
   // Local: driven by the dev tabs below so Aya can preview both interfaces.
   const [devPersona, setDevPersona] = useState<'patient' | 'therapist'>('patient');
   const [prodPersona, setProdPersona] = useState<'patient' | 'therapist'>('patient');
+  // BW-111 — shown when a user chose "therapist" at login but is not on the allowlist.
+  const [personaNotice, setPersonaNotice] = useState(false);
   // BW-112 — therapist hub: mode selection + theorist selection (UI state; send-wiring is step 1b).
   const [hubMode, setHubMode] = useState<'consult' | 'research' | null>(null);
   const [hubTheorists, setHubTheorists] = useState<string[]>([]);
@@ -150,13 +152,18 @@ export default function Home() {
     // BW-111 — production persona is SERVER-GATED by allowlist (/api/me), not a public choice.
     // Fail-closed: patient by default; only an allowlisted account resolves to therapist.
     (window as any).__resolvePersona = async () => {
+      let choice = 'patient';
+      try { choice = localStorage.getItem('bw_persona_choice') || 'patient'; } catch {}
       try {
         const gh = (window as any).getAuthHeaders;
         const headers = gh ? await gh() : {};
         const r = await fetch('/api/me', { headers });
         const d = await r.json();
-        const p = d?.isTherapist ? 'therapist' : 'patient';
+        const allowed = !!d?.isTherapist;
+        // Therapist mode only when the user CHOSE it AND is on the allowlist. Fail-closed to patient.
+        const p = (choice === 'therapist' && allowed) ? 'therapist' : 'patient';
         setProdPersona(p);
+        setPersonaNotice(choice === 'therapist' && !allowed);
         try { const prefs = JSON.parse(localStorage.getItem('user_prefs') || '{}'); prefs.persona = p; localStorage.setItem('user_prefs', JSON.stringify(prefs)); } catch {}
       } catch { setProdPersona('patient'); }
     };
@@ -630,11 +637,31 @@ export default function Home() {
           </div>
         <div style={{ textAlign: 'center', maxWidth: 420, width: '90%', padding: '0 20px' }}>
           <h2 id="auth-title" dir="ltr" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 28, fontWeight: 300, fontStyle: 'italic', color: 'var(--accent)', marginBottom: 8, direction: 'ltr' }} suppressHydrationWarning>Between</h2>
-          <p id="auth-subtitle" style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8, marginBottom: 12 }}>מה שעלה בפגישה — אפשר להביא לכאן.</p>
+          <p id="auth-subtitle" style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8, marginBottom: 12 }}>מרחב לחשוב על מה שנשאר בין מפגש למפגש.</p>
 
-          {/* BW-111 — persona is SERVER-GATED by allowlist (/api/me), not a public self-select.
-              The old "מי אתה/את?" toggle was removed: therapist access is derived from the account
-              after login, not chosen on the auth screen. Patient is the default for everyone else. */}
+          {/* BW-111 — login persona CHOICE. The choice is a request; therapist is granted only if the
+              account is on the allowlist (server-gated via /api/me in __resolvePersona). Else → patient. */}
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 8, opacity: 0.8 }}>כניסה כ:</div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {([['patient','בטיפול'],['therapist','מטפל/ת']] as [string,string][]).map(([key, label]) => (
+                <button key={key} id={`persona-choice-${key}`}
+                  onClick={() => {
+                    try { localStorage.setItem('bw_persona_choice', key); } catch {}
+                    ['patient','therapist'].forEach(k => {
+                      const btn = document.getElementById(`persona-choice-${k}`);
+                      if (!btn) return;
+                      btn.style.background = k === key ? 'var(--accent-soft)' : 'none';
+                      btn.style.borderColor = k === key ? 'var(--accent)' : 'var(--border)';
+                      btn.style.color = k === key ? 'var(--accent)' : 'var(--muted)';
+                    });
+                  }}
+                  style={{ flex: 1, background: 'none', border: '1px solid var(--border)', borderRadius: 8, padding: '9px 8px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)', cursor: 'pointer', transition: 'all 0.15s' }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
             <input id="auth-email" type="email" placeholder="כתובת מייל" dir="ltr"
@@ -668,7 +695,7 @@ export default function Home() {
             פרטי הכניסה מוצפנים ומאובטחים.
           </p>
           <p id="auth-disclaimer" style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.85, marginTop: 12, opacity: 0.6, borderTop: '1px solid var(--border)', paddingTop: 14, width: 'calc(100% + 320px)', marginLeft: '-160px', marginRight: '-160px' }}>
-Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף לטיפול. הוא נועד ללוות אנשים שנמצאים בתהליך: בטיפול, בהכשרה, או בחקירה עצמית. פסיכואנליזה מתרחשת בין שני בני אדם בנוכחות, בקשר, ובזמן. הממשק נועד לצד המטפל, לא במקומו.
+מרחב לחשיבה בין מפגשים — לא תחליף לטיפול ולא לסופרוויז'ן. העבודה קורית בין שני בני אדם: בנוכחות, בקשר, בזמן.
           </p>
         </div>
         </>}
@@ -873,6 +900,13 @@ Between הוא כלי לחשיבה ולהבנה עצמית ולא תחליף ל�
             <div className="welcome" id="welcome">
               {/* BW-41: back button — top-left corner of content area */}
               <span id="bw-back-btn" onClick={() => (window as any).goBackToChat()} style={{ position: 'absolute', top: 20, left: 24, fontSize: 12, color: 'var(--muted)', cursor: 'pointer', opacity: 0.7, display: 'none' }}>← חזרה</span>
+              {/* BW-111 — chose "therapist" at login but not on the allowlist → entered as patient. */}
+              {personaNotice && (
+                <div style={{ width: '100%', background: 'var(--thinking)', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ flex: 1, fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>גישת מטפלים בהזמנה בלבד כרגע — נכנסת כמטופל/ת.</span>
+                  <span onClick={() => setPersonaNotice(false)} style={{ fontSize: 14, color: 'var(--muted)', cursor: 'pointer', userSelect: 'none' }}>✕</span>
+                </div>
+              )}
               {/* Hold entry — patient only (therapist lands on direct conversation, no Hold) */}
               {activePersona === 'patient' && (
               <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
