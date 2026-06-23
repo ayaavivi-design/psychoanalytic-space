@@ -1426,8 +1426,22 @@ function enterHoldConversation(theorist, holdText) {
 function enterExploreModeFromSidebar() {
   window._bwWriteSessionContext = null;
   localStorage.setItem('bw_mode', 'explore');
-  window._bwPendingTheorist = localStorage.getItem('bw_explore_theorist') || 'winnicott';
-  confirmTheoristEntry();
+  // Resolve the theorist to research with — honor the LIVE sidebar selection first (any of the 8;
+  // the non-active four are only ever captured in activeTheorists, never in bw_explore_theorist),
+  // then the persisted explore choice, then the default.
+  const key = (Array.isArray(activeTheorists) && activeTheorists[0])
+    || localStorage.getItem('bw_explore_theorist')
+    || 'winnicott';
+  // React-safe entry — do NOT call confirmTheoristEntry(): it removes #chat children directly and
+  // collides with React reconciliation while the therapist tree is mounted (insertBefore crash).
+  // Mirror startConsultation(): set theorist, hide #welcome, render the opening. No node removal.
+  if (window.bwSetActiveTheorist) window.bwSetActiveTheorist(key);
+  document.body.classList.remove('bw-selecting');
+  const _welcomeEl = document.getElementById('welcome');
+  if (_welcomeEl) _welcomeEl.style.display = 'none';
+  showTheoristOpening(key, false);
+  const _input = document.getElementById('user-input');
+  if (_input) _input.focus();
 }
 
 function showModeSelect() {
@@ -6464,7 +6478,6 @@ async function exportPDF() {
   </head><body>
     <div style="display:flex;align-items:center;gap:10px;">
       <h1 style="direction:ltr;font-family:'Cormorant Garamond',serif;font-style:italic;">Between</h1>
-      <span style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--accent);opacity:0.7;line-height:1;margin-top:2px;">ψ</span>
     </div>
     <div class="meta">${topic ? `${sessionTitle} · ${date}` : sessionTitle}</div>
     <hr>`;
@@ -6765,7 +6778,6 @@ function showBlockedScreen() {
   if (!chat) return;
   chat.innerHTML = `
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:48px 32px;direction:rtl;">
-      <div style="font-size:36px;margin-bottom:20px;color:var(--accent);">ψ</div>
       <h2 style="font-family:Rubik,sans-serif;color:var(--text);font-size:20px;font-weight:500;margin-bottom:12px;">סיימת את תקופת הניסיון</h2>
       <p style="font-family:Rubik,sans-serif;color:var(--muted);font-size:14px;max-width:300px;line-height:1.8;margin-bottom:28px;">השתמשת ב-3 השיחות שעמדו לרשותך בבטא.<br>אשמח לשמוע ממך — כתבי לי ונמשיך משם.</p>
       <a href="mailto:ayaavivi@gmail.com" style="display:inline-block;background:var(--accent);color:#fff;padding:12px 28px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;text-decoration:none;">צרי קשר</a>
@@ -7415,7 +7427,6 @@ function showSessionEndScreen() {
   screen.style.cssText = 'position:fixed;inset:0;z-index:400;background:rgba(45,36,32,0.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
   screen.innerHTML = `
     <div style="background:var(--bg);border-radius:16px;padding:40px 36px;max-width:360px;width:90%;text-align:center;direction:rtl;box-shadow:0 16px 48px rgba(196,96,122,0.15);">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:44px;color:var(--accent);opacity:0.2;margin-bottom:14px;">ψ</div>
       <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:10px;">הסשן הסתיים</h3>
       <p style="font-size:13px;color:var(--muted);line-height:1.9;margin-bottom:28px;">50 הדקות הגיעו לקצן.<br>המסגרת הטיפולית חשובה גם כאן.</p>
       <button onclick="acknowledgeSessionEnd()" style="background:var(--accent);border:none;color:#fff;padding:11px 0;border-radius:20px;font-size:13px;font-family:'Rubik',sans-serif;cursor:pointer;width:100%;margin-bottom:10px;">הבנתי · אחזור מחר</button>
