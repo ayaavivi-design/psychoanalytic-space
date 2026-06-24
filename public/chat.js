@@ -819,7 +819,7 @@ async function startFlow(flowKey) {
     hideThinking();
     isThinking = false;
     document.getElementById('send-btn').disabled = false;
-    if (data.error) throw new Error(data.error.message);
+    if (data.error) throw new Error(typeof data.error === 'string' ? data.error : (data.error.message || 'error'));
     const reply = Array.isArray(data.content)
       ? data.content.filter(b => b.type === 'text').map(b => b.text).join('')
       : (data.text || '');
@@ -896,7 +896,7 @@ async function startAfterSessionConversation(text, theoristKey) {
     hideThinking();
     isThinking = false;
     document.getElementById('send-btn').disabled = false;
-    if (data.error) throw new Error(data.error.message);
+    if (data.error) throw new Error(typeof data.error === 'string' ? data.error : (data.error.message || 'error'));
     const reply = Array.isArray(data.content)
       ? data.content.filter(b => b.type === 'text').map(b => b.text).join('')
       : (data.text || '');
@@ -6210,7 +6210,15 @@ async function sendMessage() {
 
     let data = await response.json();
     if (data.error) {
-      throw new Error(`שגיאה מהשרת: ${data.error.type} — ${data.error.message}`);
+      const _isEn = (window.selectedLang?.code === 'en');
+      // requireAuth returns {error:'Unauthorized'|'Invalid token'} (a string); the chat route
+      // returns {error:{type,message}}. Handle every shape so the user never sees "undefined — undefined".
+      const _msg = (response.status === 401)
+        ? (_isEn ? 'Your session expired — please refresh the page and sign in again.' : 'ההתחברות פגה — רענני את הדף והתחברי מחדש.')
+        : (typeof data.error === 'string'
+            ? data.error
+            : (data.error.message || (_isEn ? 'Temporary server error — please try again in a moment.' : 'שגיאה זמנית בשרת — נסי שוב בעוד רגע.')));
+      throw new Error(_msg);
     }
 
     // Server-side safety intercept — מציגים בנר + מרנדרים תגובה כבועה כדי שהשיחה לא תיפסק.
@@ -7489,7 +7497,7 @@ async function handleSilence() {
     });
 
     const data = await response.json();
-    if (data.error) throw new Error(data.error.message);
+    if (data.error) throw new Error(typeof data.error === 'string' ? data.error : (data.error.message || 'error'));
 
     let reply = '';
     if (data.content) {
