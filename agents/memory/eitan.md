@@ -5,18 +5,18 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 
 ## Context
 - QA מכסה 4 תיאורטיקנים (vera + elliot נעלמו מהדוחות מ-30.05 ואילך — לא ידוע אם הוסרו מה-cron או שינוי אחר)
-- **Cron: מוקפא — vercel.json מכיל `"crons": []`. אין qa-full ואין judge-full. אומת 22.06.**
+- **Cron: מוקפא — vercel.json מכיל `"crons": []`. אין qa-full ואין judge-full. אומת 22.06 ו-24.06. 7 ימים עיוורים (17–24.06).**
 - BW-43 — סגור (bw_mode תוקן)
 - BW-35 — סגור (Safety interceptor: 8/8 PASS, שני ביטויים × 4 תיאורטיקנים)
 - BW-36 Q-3 — ליבת הבעיה נפתרה ברמת הפרומפט. ⚠️ WARNING: אין cross-turn enforcement ב-validation loop
 - ויניקוט פרומפט Q-W: Q-W1 PASS, Q-W2 PASS, Q-W3 CONCERN (semantic faithfulness לא נאכף בלופ)
 - BW-51 — סגור ✅ PASS (flow-selection div DOM-only, invisible, PDF-only. Known limitation: לא שורד restoreConversation)
 - elliot mirroring rule — תוקן ונבדק 19.05.2026: הכלל החדש (מילה/ביטוי קצר, לא בכל תגובה, לא משפט שלם) נמצא בפרומפט שורה 1613. PASS (קוד בלבד)
-- **קליין O-7 — פתוח**: 17.06 × 2 בשיחה אחת ("מה" תור 2, "הרצון" תור 4). נתפסו בפרודקשן. VOICE IDENTITY block **עדיין לא בקוד** (15 ימים ממתין). ניסוח מאושר ב-STRATEGIC_PRIORITIES.md + JUDGE-2026-06-19.md.
+- **קליין O-7 — פתוח**: 17.06 × 2 בשיחה אחת ("מה" תור 2, "הרצון" תור 4). נתפסו בפרודקשן. VOICE IDENTITY block **עדיין לא בקוד** (17 ימים ממתין). ניסוח מאושר ב-STRATEGIC_PRIORITIES.md + JUDGE-2026-06-22.md. **ליה: סף Tier 1 ב-25.06 אם לא נכנס.**
 - **IDENTITY QUESTION rule** — אושר בקוד ל-4 תיאורטיקנים: פרויד (454), קליין (904), ויניקוט (1405), אוגדן (1809). OPEN_DECISIONS ממתין לאישור live test ע"י ליה לפני סגירה רשמית.
 - **Klein reality-reason guard** — הוסף commit 001d7c2 ב-08.06. ייתכן שתרם לימים הנקיים — אין הוכחה.
 - **RAG drop 01.06**: פרויד + קליין + אוגדן → RAG=0. חזרו ל-RAG=3 מ-02.06 ואילך. הסיבה לא הובנה — **פעולה נדרשת: לשלוף לוגי Vercel מ-01.06 לפני שיחזור**. RAG=3 יציב מאז.
-- **פרויד Q-3 — דגל פעיל (BW-99)**: 3 אירועים ב-40 יום (05.05, 18.05, 13.06). 13.06 = visible למשתמש. STATEMENT REQUIREMENT **עדיין לא בקוד** (9 ימים ממתין). ניסוח מאושר ב-STRATEGIC_PRIORITIES.md.
+- **פרויד Q-3 — דגל פעיל (BW-99)**: 3 אירועים ב-40 יום (05.05, 18.05, 13.06). 13.06 = visible למשתמש. STATEMENT REQUIREMENT **עדיין לא בקוד** (11 ימים ממתין). ניסוח מאושר ב-STRATEGIC_PRIORITIES.md.
 - **Judge model ID — תוקן ✅ (22.06 אומת)**: `claude-sonnet-4-6` בשלושת קבצי judge (route.ts, judge-run/route.ts, judge-full/route.ts). ניתוחי 18–19.06 טעו לחשוב שלא תוקן — **תוקן**.
 - **BW-96/97 — בפרודקשן ✅ (13.06)**: prompt fidelity ל-downstream agents (summary + supervise). post-prod QA יציב. הריליס לא נגע בקולות התיאורטיקנים.
 
@@ -39,6 +39,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+1. QA יומי 24.06: ניתוח 5 דוחות (11–17.06) + בדיקת קוד ישירה. הדוח האחרון מ-17.06 — 7 ימים עיוורים. Klein VOICE IDENTITY + Freud STATEMENT REQUIREMENT: עדיין לא בקוד (17/11 ימים). ליה: סף Tier 1 לקליין ב-25.06. cron עדיין ריק. המלצה: שני בלוקים היום + cron. דוח: qa-analysis/QA-2026-06-24.md. (יוני 2026)
 1. QA יומי 22.06: ניתוח 5 דוחות (11–17.06) + בדיקת קוד ישירה. גילוי: Judge model ID תוקן (claude-sonnet-4-6) — ניתוחי 18-19.06 טעו. Klein VOICE IDENTITY + Freud STATEMENT REQUIREMENT: עדיין לא בקוד (15/9 ימים). vercel.json `"crons": []` — 5 ימים עיוורים. המלצה: Oliver מוסיף 3 תיקונים + cron. דוח: qa-analysis/QA-2026-06-22.md. (יוני 2026)
 1. QA יומי 14.06: ניתוח 5 דוחות (09–13.06). פרויד Q-3 visible ב-13.06 — 3 אירועים ב-40 יום. המלצה: STATEMENT REQUIREMENT block לפרויד, אחרי אישור שיושם לקליין. BW-99 נשאר WATCH, שדרג ל-Medium אם 14.06 חוזר. דוח: qa-analysis/QA-2026-06-14.md. (יוני 2026)
 1. Smoke test dependency vulns 14.06: PASS — חתמתי eitan-approval.md. שינוי package.json+lockfile בלבד (uuid+ws fix · הסרת @xenova/transformers → CRITICAL protobufjs נמחק · next 16.2.1→16.2.9 patch). audit 12→3 (Critical 1→0, High 4→0). אימות עצמי: tsc EXIT=0 · build EXIT=0 · lockfile נקי מ-xenova+protobufjs · dev server כל בקשות 200 · e2e `/api/qa-quick?theorist=freud` HTTP 200 10.4s ragChunks=3 אפס דגלים. **RAG עבד בלי @xenova — הוכחה שהחבילה מתה (embeddings מ-HF remote).** 3 שנותרו לא בני-תיקון בטוח (anthropic-sdk Memory Tool לא בשימוש + postcss transitive בתוך next). לוקאלי, לא נדחף. (יוני 2026)
