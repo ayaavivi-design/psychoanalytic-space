@@ -21,6 +21,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+0. ניוזלטר #25 — "ביון ושאלת ה-K — האם אפשר לדעת בלי לחוות?" (סדרה ג׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-24-bion-k-link-knowing-without-experiencing.md. גיליון הבא: פתוח — הציר חוזר לסדרה א׳ או ב׳. (יוני 2026)
 0. ניוזלטר #24 — "כשהפגישה נגמרת — מה קורה לחומר שלא הספקנו לגעת בו?" (סדרה א׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-23-when-therapy-ends-unfinished-material.md. גיליון הבא הוכרז: "ביון ושאלת ה-K — האם אפשר לדעת בלי לחוות?" (סדרה ג׳). (יוני 2026)
 0. ניוזלטר #23 — "מה זה אומר שמכונה 'מחזיקה' — Holding Environment ודיגיטל" (סדרה ב׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-22-holding-environment-and-digital.md. גיליון הבא הוכרז: "כשהטיפול נגמר — מה קורה לחומר שלא הספקנו לגעת בו?" (סדרה א׳). (יוני 2026)
 0. ניוזלטר #22 — "החלום שלא הביאת לפגישה — על מה שנשאר מחוץ לחדר" (סדרה א׳). שמור ב-marketing-reports/NEWSLETTER-2026-06-21-the-dream-you-didnt-bring-to-the-session.md. גיליון הבא הוכרז: "מה זה אומר שמכונה 'מחזיקה' — על Holding Environment ודיגיטל" (סדרה ב׳). (יוני 2026)
