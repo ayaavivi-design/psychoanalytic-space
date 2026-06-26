@@ -1,5 +1,5 @@
 {
-  "version": "2026-06-19",
+  "version": "2026-06-26",
   "updated_by": "onboarding-agent",
   "tour": {
     "enabled": true,
@@ -19,9 +19,9 @@
         "target": "#bw-hold-textarea",
         "position": "top",
         "title": "מה שנשאר מהפגישה",
-        "text": "כתוב כאן מה שעלה — לעצמך, או כדי להביא לפגישה הבאה. כשתרצה, אפשר להמשיך לשיחה עם תיאורטיקן.",
+        "text": "כתוב מה שלא עוזב אותך — גם אם עדיין לא ברור. כשרוצה, אפשר לשבת עם זה עם אחד התיאורטיקנים.",
         "title_en": "What stayed from the session",
-        "text_en": "Write what came up — for yourself, or to bring to your next session. When you want, continue into a conversation with a theorist.",
+        "text_en": "Write what won't leave you — even if it isn't clear yet. When you're ready, you can sit with it with one of the theorists.",
         "personas": ["patient", "therapist", "student"]
       },
       {

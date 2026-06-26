@@ -17,7 +17,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
   - שתי כותרות זהות 19px — צריך היררכיה: ראשית 20px italic, שנייה 19px.
   - theorist grid: `margin: 0 195px` ידני — צריך `width:fit-content; margin:0 auto`.
 - **Domain:** psychoanalytic-space.vercel.app ו-chat.getbetween.app = אותו deployment. הראשון לפיתוח/QA, השני לשיווק/משתמשים.
-- **BW-114 (יוני 2026):** Eitan קפא daily QA + judge crons עם הנחה "product is now therapist-first (colleague consultation)" — בסתירה ל-STRATEGIC_PRIORITIES.md + MEMORY.md (B2C, patient direct). **לא אושר ע"י איה — לברר לפני כל עבודה על onboarding flow.**
+- **BW-114 — נסגר (יוני 2026):** ממשק מטפל מלא שוחרר (allowlist-gated). patient flow byte-identical. שני מסלולים קיימים. BW-111: persona choice בlogin — "בטיפול" / "מטפל/ת". מטפלת שנחסמת: "גישת מטפלים בהזמנה בלבד — נכנסת כמטופל/ת" — **ללא CTA.** dead end לmטפלות לא-allowlisted.
 - **step-theorist bug (פתוח):** theoristsOpen=useState(false) → .theorist-tag לא בDOM → tour מדלג על שלב 3. אוליבר לא תיקן אחרי 2 שבועות. המלצה: theoristsOpen=true בזמן tour, או trigger לפני showStep.
 - design-system.md: עודכן עם לינקי live בראש הקובץ.
 
@@ -37,6 +37,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+1. **דוח אונבורדינג 2026-06-26 (ONBOARDING-2026-06-26.md).** BW-114 נסגר — ממשק מטפל מלא (allowlist-gated) + persona choice בכניסה (BW-111). ממצא חדש קריטי: מטפלת שנחסמת בכניסה מקבלת "הזמנה בלבד" בלי CTA — dead end מוחלט. step-theorist — שבוע שלישי, אסקלציה לאיה. welcome_headline — שבוע שלישי, ultimatum לשון: עד 2026-07-03. config: step-input text עודכן ("מה שלא עוזב אותך — גם אם עדיין לא ברור"). שאלה חדשה לליה+לינה: privacy notice למטפלת שמביאה חומר קליני.
 1. **דוח אונבורדינג 2026-06-19 (ONBOARDING-2026-06-19.md).** ממצא דחוף: BW-114 — Eitan קפא QA crons עם הנחה "product is now therapist-first" בסתירה ל-STRATEGIC_PRIORITIES (B2C). דחוף לאיה. step-theorist bug — שבוע שני בלי תיקון מאוליבר. sidebar_tips עודכנו (◎+◉). שלושה פתוחים: step-theorist (אוליבר), welcome_headline (שון — שבועיים), return mechanism (הילי — שבועיים).
 1. **דוח אונבורדינג 2026-06-12 (ONBOARDING-2026-06-12.md).** ממצא קריטי: `step-theorist` לעולם לא מוצג — `.theorist-tag` לא בDOM כי `theoristsOpen=false` כברירת מחדל. step-intake עובד לmשתמשים חדשים ✓. config עודכן: step-theorist text עם שמות קונקרטיים + "בסרגל הצד". open: תיקון קוד לאוליבר (קריטי), welcome_headline לשון (ממתין), מנגנון חזרה להילי (ממתין).
 1. **דיזיין סיסטם — זוקק, נדחף, ושמות פרסונה שונו (יוני 2026, אישורי איה + push מפורש).** סגירת מחזור הזיקוק: BW-41 phantom הוסר, ואז לבקשת איה אייקוני הפרסונה ורה/אליוט → **קליין (נקבה) / אוגדן (זכר)** — שמות התיאורטיקנים האמיתיים. בקוד ורה/אליוט נשארים מוקפאים (`if(false)`), לא נגעתי. התיאורים ("ראש+קוקו"/"page.tsx only") + שורת ההסבר התחתונה הוסרו — האייקונים הם **סימון מגדר בלבד**. **נדחף ב-3 commits** (`e1ac775` זיקוק+שמות, `f7a2d9b` סימון מגדר, ועוד `4c366d4` אכיפת טוקנים ב-prompts של maya+dev). **BW-74 נפתח לאוליבר** (פונט Frank Ruhl Libre נטען ב-layout.tsx אבל var(--font-frank) לא בשימוש). **gotcha תהליך: שרת `mcp__atlassian` החזיר ריק לכל בקשה (session לא מאומת) — עברתי לשרת Atlassian השני (`0bdec50d...`, cloudId 03a5ff06) שעבד.** dev.md memory של אוליבר — באג מספור (7×"2" ב-History) — השארתי לו.
