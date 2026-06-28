@@ -1,22 +1,29 @@
 # עדיפויות אסטרטגיות — מרחב פסיכואנליטי
 
-_עודכן לאחרונה: 2026-06-21 (Adam, CEO)_
+_עודכן לאחרונה: 2026-06-28 (Adam, CEO)_
 
 ---
 
 ## המצב הנוכחי
-MVP בפרודקשן. 4 תיאורטיקנים פעילים בQA (פרויד, קליין, ויניקוט, אוגדן). RAG עובד. QA יומי רץ. ניוזלטר שבועי. לא מחייבים תשלום. לא מפרסמים. B2C — המטופל מגיע ישירות.
+MVP בפרודקשן. 4 תיאורטיקנים פעילים (פרויד, קליין, ויניקוט, אוגדן). RAG עובד. **QA לא רץ 10 ימים. Judge לא רץ 12 ימים.** `vercel.json` מכיל `"crons": []` — המערכת רצה עיוורת מאז 17.06. B2C — המטופל מגיע ישירות.
 
-**צינור המשוב שבור:** ליה כותבת המלצות ל-`judge-analysis/` — הן לא מגיעות לקוד. שני תיקונים ממתינים 8–14 יום. Judge cron ריק — ה-judge לא רץ אוטומטית. בדיקת "סימנים אובדניים" לא תועדה 70+ יום.
+**בלוק ביצוע:** אוליבר הוא ה-bottleneck. Klein VOICE IDENTITY ו-Freud STATEMENT REQUIREMENT ממתינים 17 ו-11 ימים. שלושה ממוים קראו לו בשמו. הוא לא ביצע. האסקלציה הבאה היא שיחה ישירה — לא ממו נוסף.
 
 ---
 
-## עדיפות ראשונה — שלושה תיקונים, השבוע
+## עדיפות ראשונה — שלוש פעולות אוליבר, עד 30.06
 
-כל שלושה מנוסחים, מאומתים, לא דורשים מחקר נוסף.
+כל שלוש מנוסחות, מאומתות, לא דורשות מחקר נוסף.
 
-### א. Klein VOICE IDENTITY block (14 ימים ממתין — לא בקוד, אומת ע"י ליה 19.06)
-**אוליבר** מוסיף ב-`lib/theorist-voices.ts`, לפני MANDATORY FINAL CHECK של קליין:
+### א. Judge cron — שורה אחת ב-vercel.json (היום)
+**אוליבר** מוסיף ל-`vercel.json` תחת `"crons"`:
+```json
+{ "path": "/api/judge-full", "schedule": "0 8 */3 * *" }
+```
+כרגע `"crons": []` — המערכת עיוורת 10 ימים.
+
+### ב. Klein VOICE IDENTITY block (עד 30.06)
+**אוליבר** מוסיף ב-`lib/theorist-voices.ts`, לפני MANDATORY FINAL CHECK של קליין (סביב שורה 889):
 
 ```
 VOICE IDENTITY — WHERE YOU START FROM
@@ -28,7 +35,7 @@ something dangerous, something avoided, something felt but not yet named.
 
 Start from there. One sentence that names the weight — then ask, or do not ask.
 
-If your opener is a content word followed by a question ("הרצון...", "הכאב...", "הפחד...")
+If your opener is a content word followed by a question ("הרצון...", "מה...", "הכאב...", "הפחד...")
 — you are asking about the material from above it. Klein does not approach from above.
 She arrives at what is already pressing.
 
@@ -40,8 +47,8 @@ the patient did not use — rewrite.
 
 **איתן** מאמת בשיחה חיה אחרי יישום.
 
-### ב. Freud STATEMENT REQUIREMENT (8 ימים ממתין — לא בקוד, אומת ע"י ליה 19.06)
-**אוליבר** מוסיף MANDATORY FINAL CHECK item 11 לפרויד ב-`lib/theorist-voices.ts`:
+### ג. Freud STATEMENT REQUIREMENT (עד 30.06)
+**אוליבר** מוסיף כ-item 12 ב-MANDATORY FINAL CHECK של פרויד ב-`lib/theorist-voices.ts`:
 
 ```
 STATEMENT REQUIREMENT — ALL TURNS:
@@ -57,31 +64,20 @@ In this session, you do not wait. You speak.
 
 **איתן** מאמת בשיחה חיה אחרי יישום.
 
-### ג. Judge cron — שורה אחת ב-vercel.json
-**אוליבר** מוסיף ל-`vercel.json` תחת `"crons"`:
-```json
-{ "path": "/api/judge-full", "schedule": "0 8 */3 * *" }
-```
-כרגע `"crons": []` — ה-judge לא רץ אוטומטית. ליה מנתחת ידנית. זה לא בר-קיימא.
+---
+
+## עדיפות שנייה — BW-64 סגירה (אחרי cron חי)
+
+שאלת זהות ישירה: הכלל בקוד ל-4 תיאורטיקנים. **ליה** מאמתת בשיחה חיה → סגירה ב-OPEN_DECISIONS.md.
 
 ---
 
-## עדיפות שנייה — תיעוד בטיחות (חסום הכל)
+## עדיפות שלישית — תיעוד בטיחות
 
-**מה לעשות — לפני הפוש הבא:**
 **איתן** מתעד ב-MEMORY.md — בכתב — האם בדיקת "סימנים אובדניים" בוצעה:
 > "בדיקת סימנים אובדניים — בוצע ביום ___ / לא בוצע / חסום כי ___"
 
-70+ יום ללא תיעוד. 4 ממוים ציינו זאת. עדיין פתוח.
-
-- תוצאה שלילית = תיקון אותו יום, לפני כל push אחר
-- תוצאה חיובית = כותב ב-MEMORY.md ועוברים לעדיפות שלישית
-
----
-
-## עדיפות שלישית — BW-64: שאלת זהות ישירה
-
-25+ ימים פתוח. הוולידציה לא תתפוס אותו. ליה + אוליבר. לסגור ב-OPEN_DECISIONS.md אחרי אימות.
+70+ יום ללא תיעוד. 5 ממוים ציינו זאת. עדיין פתוח.
 
 ---
 
@@ -91,15 +87,16 @@ In this session, you do not wait. You speak.
 ---
 
 ## מה חשוב לבדוק עכשיו
-1. **Klein VOICE IDENTITY:** בקוד? כן/לא. אם לא — מתי
-2. **Freud STATEMENT REQUIREMENT:** בקוד? כן/לא. אם לא — מתי
-3. **Judge cron:** ריק ב-vercel.json — לתקן
-4. **בטיחות:** תועד? כן/לא/חסום — 70+ יום
+1. **Judge cron:** בקוד היום? כן/לא
+2. **Klein VOICE IDENTITY:** בקוד עד 30.06? כן/לא
+3. **Freud STATEMENT REQUIREMENT:** בקוד עד 30.06? כן/לא
+4. **BW-64 live test:** ליה אישרה? כן/לא
 
 ---
 
 ## מה לא לגעת בו עכשיו
 - אל תוסיפו תיאורטיקנים חדשים
+- אל תרחיבו ממשק מטפלת לפני שה-cron חי ושלושת הבלוקים בקוד
 - אל תתחילו שיווק — לא לפני בטיחות + 3 מטפלים אמיתיים עם פידבק
 - אל תגעו ב-RAG לפני שהבטיחות מתועדת
 - **אל תוסיפו כלל וולידציה לQ-3** — Q-3 הוא כשל session, הוולידציה בודקת תגובה. הפתרון הוא בפרומפט בלבד
