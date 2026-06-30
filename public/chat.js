@@ -575,7 +575,7 @@ function formatResponse(text) {
         // BW-118 — wrap the whole reflective-questions block in a nested "thinking" card (Maya).
         const q = t.replace(/^→\s*/, '');
         const open = idx === firstFollowupIdx
-          ? `<div style="background:var(--thinking);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:20px;"><span style="display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;font-family:'Rubik',sans-serif;">שאלות להישאר איתן</span>`
+          ? `<div style="background:var(--thinking);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:20px;"><span style="display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;font-family:'Rubik',sans-serif;">${(window._lang === 'en') ? 'Questions to stay with' : 'שאלות להישאר איתן'}</span>`
           : '';
         const close = idx === lastFollowupIdx ? `</div>` : '';
         return `${open}<span class="followup-q" style="color:var(--text);font-size:13px;line-height:1.6;font-family:'Rubik',sans-serif;">${q}</span>${close}`;
@@ -2130,7 +2130,9 @@ function showTheoristSwitchModal(el, name) {
   document.getElementById('tsm-confirm').addEventListener('click', () => {
     modal.remove();
     // Generate interpretive memory before clearing — fire-and-forget
-    if (activeTheorists.length === 1 && conversationHistory.length >= 6) {
+    // Skip entirely in therapist persona (ephemeral model — no between-session memory, no cross-case bleed)
+    if (!document.getElementById('sidebar')?.classList.contains('persona-therapist')
+        && activeTheorists.length === 1 && conversationHistory.length >= 6) {
       generateInterpretiveMemory(activeTheorists[0], conversationHistory);
     }
     // Deactivate ALL current theorist buttons before switching — prevents multiple active at once
@@ -3597,8 +3599,10 @@ function buildSystemPrompt() {
     : '';
 
   // Interpretive memory — cross-session psychoanalytic patterns (last 3 sessions for this theorist)
+  // Therapist persona: never inject (ephemeral model + prevents cross-case clinical bleed)
+  const _isTherapistPersona = document.getElementById('sidebar')?.classList.contains('persona-therapist');
   const interpretMemories = loadInterpretiveMemories();
-  const filteredInterpret = activeT
+  const filteredInterpret = (activeT && !_isTherapistPersona)
     ? interpretMemories.filter(m => m.theorist === activeT).slice(-3)
     : [];
   const interpretContext = filteredInterpret.length > 0
@@ -6823,7 +6827,9 @@ function performNewChat() {
   silenceResponseSent = false;
   clearTimeout(idleTimer); idleTimer = null; idleMessageSent = false;
   // Generate interpretive memory before clearing — fire-and-forget
-  if (activeTheorists.length === 1 && conversationHistory.length >= 6) {
+  // Skip entirely in therapist persona (ephemeral model — no between-session memory, no cross-case bleed)
+  if (!document.getElementById('sidebar')?.classList.contains('persona-therapist')
+      && activeTheorists.length === 1 && conversationHistory.length >= 6) {
     generateInterpretiveMemory(activeTheorists[0], conversationHistory);
   }
   conversationHistory = [];
@@ -7082,7 +7088,7 @@ function openSettings() {
           <button id="st-intake-reset" onclick="resetIntake()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:11px;cursor:pointer;">להתחיל מחדש</button>
         </div>
 
-        <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;">
+        <div id="st-interpret-section" style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;">
             <div style="flex:1;">
               <div style="font-size:13px;color:var(--text);font-weight:400;margin-bottom:2px;">זיכרון פרשני</div>
@@ -7146,6 +7152,12 @@ function loadSettingsForm() {
   // Show/hide the intake-reset row based on current intake state (modal is cached, so toggle here on every open)
   const intakeRow = document.getElementById('st-intake-row');
   if (intakeRow) intakeRow.style.display = localStorage.getItem('intake_completed') ? 'flex' : 'none';
+  // Therapist persona: hide the whole interpretive-memory section (disabled in this mode)
+  const interpretSection = document.getElementById('st-interpret-section');
+  if (interpretSection) {
+    interpretSection.style.display =
+      document.getElementById('sidebar')?.classList.contains('persona-therapist') ? 'none' : '';
+  }
   // Update interpretive memory count
   const interpretCountEl = document.getElementById('st-interpret-count');
   if (interpretCountEl) {
