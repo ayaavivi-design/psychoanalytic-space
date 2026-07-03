@@ -8592,6 +8592,7 @@ function buildReflectionHTML(r) {
   <div class="footer">נוצר על ידי Between</div>
 </body>
 </html>`;
+  return html;
 }
 
 function downloadReflection(r) {
