@@ -1,5 +1,5 @@
 {
-  "version": "2026-06-26",
+  "version": "2026-07-03",
   "updated_by": "onboarding-agent",
   "tour": {
     "enabled": true,
@@ -9,9 +9,9 @@
         "target": "#header-intake-btn",
         "position": "left",
         "title": "רוצה שנכיר?",
-        "text": "כמה שאלות קצרות יעזרו למרחב להתאים את עצמו אליך. אפשר גם לדלג ולהתחיל ישר.",
+        "text": "כמה שאלות קצרות. אפשר לדלג ולהתחיל ישר.",
         "title_en": "A quick introduction?",
-        "text_en": "A few short questions help the space fit you. You can also skip and start right away.",
+        "text_en": "A few short questions. Or skip and start right away.",
         "personas": ["patient", "therapist", "student"]
       },
       {
@@ -38,10 +38,10 @@
   },
   "sidebar_tips": {
     "⚲": "פיקוח קליני — ניתוח שיחה שכבר קרתה",
-    "◎": "סיכום — מה נשאר מהשיחה הזו",
+    "◎": "סיכום — מה עלה בשיחה הזו",
     "◉": "מה לקחתי — לכתוב לעצמי מה נשאר",
     "⇌": "השוואת תיאורטיקנים — אותה שאלה, תשובות שונות",
     "◌": "אנונימיזציה — מחיקת פרטים מזהים מחומר קליני"
   },
-  "welcome_headline": "מרחב לעיבוד — לזמן שבין הפגישות"
+  "welcome_headline": "לפני שנעלם — לזמן שבין הפגישות"
 }
