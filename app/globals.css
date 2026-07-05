@@ -125,6 +125,9 @@ body {
 }
 .sb-item:hover .sb-icon,
 .sb-item.active .sb-icon { color: var(--accent); }
+/* מצב מחקר פעיל (localhost) — כל פריט "מחקר" נצבע ורוד */
+.sb-item.research-active { color: var(--accent); }
+.sb-item.research-active .sb-icon { color: var(--accent); }
 .sb-label { overflow: hidden; text-overflow: ellipsis; }
 #sidebar.collapsed .sb-label { display: none; }
 #sidebar.collapsed .sb-section-label { display: none; }

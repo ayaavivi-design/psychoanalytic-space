@@ -121,7 +121,8 @@ export async function searchKnowledgeHybrid(
 }
 
 export function formatChunksForPrompt(
-  chunks: { content: string; source_title: string; source_year: number | null }[]
+  chunks: { content: string; source_title: string; source_year: number | null }[],
+  withCitationTag = true
 ): string {
   if (!chunks.length) return '';
 
@@ -134,5 +135,10 @@ export function formatChunksForPrompt(
     })
     .join('\n\n---\n\n');
 
-  return `\n\nRELEVANT PASSAGES FROM ORIGINAL TEXTS — these are direct excerpts. Use them as ground for your response. You may quote directly with attribution:\n\n${passages}\n\n---\n\nIMPORTANT: If you used any of the passages above, add exactly one citation tag at the very end of your response, on its own line. Format: [מקור: title, year] if responding in Hebrew, or [Source: title, year] if responding in English. Use the title and year exactly as shown in the passage header. Only add this tag if you actually drew from one of the passages — omit it entirely if you did not.\n`;
+  const intro = `\n\nRELEVANT PASSAGES FROM ORIGINAL TEXTS — these are direct excerpts. Use them as ground for your response. You may quote directly with attribution:\n\n${passages}`;
+
+  // Explore/research mode handles attribution with its own 📄 reference format — skip the [מקור:] tag there to avoid a double citation.
+  if (!withCitationTag) return `${intro}\n`;
+
+  return `${intro}\n\n---\n\nIMPORTANT: If you used any of the passages above, add exactly one citation tag at the very end of your response, on its own line. Format: [מקור: title, year] if responding in Hebrew, or [Source: title, year] if responding in English. Use the title and year exactly as shown in the passage header. Only add this tag if you actually drew from one of the passages — omit it entirely if you did not.\n`;
 }

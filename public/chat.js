@@ -85,6 +85,9 @@ function proceedToApp() {
     // Skip the mode-select screen entirely in therapist persona.
     const _isTherapist = document.getElementById('sidebar')?.classList.contains('persona-therapist');
     if (!_hasRendered && !_isTherapist) showModeSelect();
+    // Ephemeral therapist: no mode-select screen, but still hide the bottom composer on the writing page.
+    // It reappears only when a consult dialogue starts (startConsultation removes bw-selecting).
+    if (!_hasRendered && _isTherapist) document.body.classList.add('bw-selecting');
   }, 350);
   setTimeout(() => { initSidebarTips(); startOnboardingTour(); }, 800);
 }
@@ -652,7 +655,10 @@ function renderAnalystBadge() {
   badge.style.cssText = 'font-size:11px;color:var(--muted);letter-spacing:0.03em;margin-top:6px;margin-bottom:16px;';
   badge.innerHTML = `${withLabel} · <span onclick="document.getElementById('sb-theorists-label')?.closest('.sb-item')?.click()" style="color:var(--accent);cursor:pointer;text-decoration:underline;">${changeLabel}</span>`;
   const h2 = welcome.querySelector('h2');
-  if (h2 && h2.nextSibling) welcome.insertBefore(badge, h2.nextSibling);
+  // React-safe: only insertBefore when the reference node is genuinely a child of #welcome.
+  // React may have re-rendered #welcome's children, leaving h2.nextSibling parented elsewhere —
+  // an unguarded insertBefore then throws NotFoundError and crashes the whole React tree (blank screen).
+  if (h2 && h2.nextSibling && h2.nextSibling.parentNode === welcome) welcome.insertBefore(badge, h2.nextSibling);
   else welcome.appendChild(badge);
 }
 
@@ -690,7 +696,8 @@ function renderFlowButtons() {
       onmouseout="this.classList.remove('flow-btn-hover')">${b.label}</button>`
   ).join('');
   const apiNote = document.getElementById('welcome-api-text');
-  if (apiNote && welcomeVisible) appendTarget.insertBefore(container, apiNote);
+  // React-safe: only insertBefore when apiNote is genuinely a child of appendTarget (see renderAnalystBadge).
+  if (apiNote && welcomeVisible && apiNote.parentNode === appendTarget) appendTarget.insertBefore(container, apiNote);
   else appendTarget.appendChild(container);
 }
 
@@ -966,9 +973,20 @@ function showWriteInterface() {
         border-bottom: 1px solid #d4899a;
         border-radius: 2px;
       }
+      .bw-hold-chip {
+        border: 1px solid var(--border); border-radius: 22px; padding: 7px 16px;
+        font-size: 13px; font-family: var(--font-rubik), sans-serif; cursor: pointer;
+        color: var(--text); background: var(--surface); transition: background 0.15s, border-color 0.15s, color 0.15s;
+      }
+      .bw-hold-chip.active {
+        border-color: var(--accent); background: var(--accent); color: #fff;
+      }
     `;
     document.head.appendChild(s);
   }
+
+  // Reset any stale selection from a previous write session
+  window._bwHoldPickerSelected = null;
 
   const area = document.createElement('div');
   area.id = 'bw-write-area';
@@ -981,9 +999,20 @@ function showWriteInterface() {
       <div id="bw-write-textarea" contenteditable="true"
         data-placeholder="${placeholder}"
         style="flex:1;outline:none;font-family:var(--font-rubik),sans-serif;font-size:15px;line-height:1.85;color:var(--text);width:100%;direction:${dir};min-height:220px;word-break:break-word;white-space:pre-wrap;"></div>
-      <div id="bw-write-hint" style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;align-items:center;">
-        <span id="bw-write-hint-text">${isEn ? 'Use the sidebar to generate session notes when you\'re ready.' : 'השתמש ב"סיכום לכתיבה" בסייד-בר כשסיימת.'}</span>
-        <span id="bw-write-hint-archive" onclick="openWriteArchive()" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;margin-${isEn ? 'left' : 'right'}:12px;">${isEn ? 'Archive' : 'ארכיון'}</span>
+      <div id="bw-write-hold-picker" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);flex-direction:column;align-items:center;">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
+          <span class="bw-hold-chip" data-key="freud" onclick="selectHoldTheorist('freud')">${isEn ? 'Freud' : 'פרויד'}</span>
+          <span class="bw-hold-chip" data-key="klein" onclick="selectHoldTheorist('klein')">${isEn ? 'Klein' : 'קליין'}</span>
+          <span class="bw-hold-chip" data-key="winnicott" onclick="selectHoldTheorist('winnicott')">${isEn ? 'Winnicott' : 'ויניקוט'}</span>
+          <span class="bw-hold-chip" data-key="ogden" onclick="selectHoldTheorist('ogden')">${isEn ? 'Ogden' : 'אוגדן'}</span>
+        </div>
+        <button id="bw-hold-start-btn" disabled onclick="startHoldConversation()"
+          style="margin-top:12px;padding:10px 28px;border-radius:22px;border:none;font-size:13px;font-family:var(--font-rubik),sans-serif;background:var(--border);color:var(--muted);cursor:default;">
+          ${isEn ? 'Talk it through' : 'שיחה'}
+        </button>
+      </div>
+      <div id="bw-write-hint" style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:flex-end;align-items:center;">
+        <span id="bw-write-hint-archive" onclick="openWriteArchive()" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;">${isEn ? 'What I wrote' : 'מה כתבתי'}</span>
       </div>
     </div>`;
   chatEl.appendChild(area);
@@ -1071,7 +1100,10 @@ function showWriteInterface() {
   const ta = document.getElementById('bw-write-textarea');
   if (ta) {
     ta.focus();
-    ta.addEventListener('input', () => { window._bwWriteContent = getAllWriteContent(); });
+    ta.addEventListener('input', () => {
+      window._bwWriteContent = getAllWriteContent();
+      bwUpdateHoldPickerVisibility();
+    });
   }
 
   // Show sidebar button
@@ -1216,8 +1248,8 @@ function openWriteArchive() {
   const inner = document.createElement('div');
   inner.style.cssText = `background:var(--bg);border-radius:16px;padding:28px;max-width:540px;width:92%;max-height:80vh;overflow-y:auto;direction:${dir};`;
 
-  const title = isEn ? 'Writing archive' : 'ארכיון כתיבה';
-  const emptyMsg = isEn ? 'No saved entries yet.' : 'עדיין אין רשומות שמורות.';
+  const title = isEn ? 'What I wrote' : 'מה כתבתי';
+  const emptyMsg = isEn ? 'Nothing here yet.' : 'עדיין לא כתבת כאן.';
 
   let html = `<div style="font-family:var(--font-cormorant),serif;font-size:22px;font-weight:300;color:var(--text);margin-bottom:20px;">${title}</div>`;
 
@@ -1273,7 +1305,9 @@ function openWriteArchive() {
 }
 
 async function openWriteSummary() {
-  const text = getPublicWriteContent() || window._bwWriteContent || '';
+  // PRIVACY: only ever the public text (private '.bw-private' spans stripped).
+  // Never fall back to _bwWriteContent — that holds the FULL text including private.
+  const text = getPublicWriteContent() || '';
   const isEn = (window.selectedLang?.code === 'en');
   const dir = isEn ? 'ltr' : 'rtl';
 
@@ -1291,7 +1325,7 @@ async function openWriteSummary() {
   overlay.innerHTML = `
     <div style="background:var(--bg);border-radius:16px;width:520px;max-width:92vw;max-height:82vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:${dir};padding:28px 28px 24px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <span style="font-family:var(--font-cormorant),serif;font-size:20px;font-weight:400;color:var(--text);">${isEn ? 'Session notes' : 'סיכום לכתיבה'}</span>
+        <span style="font-family:var(--font-cormorant),serif;font-size:20px;font-weight:400;color:var(--text);">${isEn ? 'Session notes' : 'סיכום כתיבה'}</span>
         <button onclick="document.getElementById('write-summary-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted);line-height:1;">×</button>
       </div>
       <div id="write-summary-results" style="font-family:var(--font-rubik),sans-serif;font-size:14px;color:var(--text);line-height:1.7;">
@@ -1340,14 +1374,11 @@ async function openWriteSummary() {
       </label>
       <label id="ws-attach-toggle-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;direction:${toggleDir};font-family:var(--font-rubik),sans-serif;font-size:12px;color:var(--muted);user-select:none;">
         <input type="checkbox" id="ws-attach-letter" style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer;">
-        ${isEn ? 'Attach full letter' : 'צרף את הכתיבה המלאה'}
+        ${isEn ? 'Attach my writing' : 'צרף את הכתיבה'}
       </label>
       <div style="display:flex;gap:10px;">
         <button id="ws-send-btn" style="${btnStyle}background:none;border:1px solid var(--border);color:var(--muted);">
           ✉ ${isEn ? 'Send to therapist' : 'שלח למטפל/ת'}
-        </button>
-        <button id="ws-theorist-btn" style="${btnStyle}background:var(--accent);border:none;color:#fff;font-weight:500;">
-          ${isEn ? 'Talk with a theorist' : 'שוחח עם תיאורטיקן'}
         </button>
       </div>`;
     if (modalInner) modalInner.appendChild(footer);
@@ -1366,26 +1397,15 @@ async function openWriteSummary() {
 
     // Send to therapist — summary only, or summary + full letter based on toggle
     const summaryHtml = `${kpHtml ? `<p><strong>${isEn ? 'Key points' : 'נקודות עיקריות'}:</strong></p><ul>${(data.key_points||[]).map(p=>`<li>${p}</li>`).join('')}</ul>` : ''}<p><strong>${isEn ? 'What I want to bring' : 'מה אני רוצה להביא'}:</strong> ${data.bring_to_session || ''}</p>`;
-    const letterHtml = `<hr style="margin:20px 0;border:none;border-top:1px solid #eee;"><p style="font-size:12px;color:#999;margin-bottom:8px;">${isEn ? 'Full letter:' : 'הכתיבה המלאה:'}</p><p style="white-space:pre-wrap;line-height:1.7;">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
+    const letterHtml = `<hr style="margin:20px 0;border:none;border-top:1px solid #eee;"><p style="font-size:12px;color:#999;margin-bottom:8px;">${isEn ? 'My writing:' : 'הכתיבה:'}</p><p style="white-space:pre-wrap;line-height:1.7;">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
     document.getElementById('ws-send-btn')?.addEventListener('click', () => {
       const attachLetter = document.getElementById('ws-attach-letter')?.checked;
       const emailHtml = attachLetter ? summaryHtml + letterHtml : summaryHtml;
-      openSendToTherapistForm(footer, emailHtml, isEn ? 'Session notes' : 'סיכום לכתיבה');
+      openSendToTherapistForm(footer, emailHtml, isEn ? 'Session notes' : 'סיכום כתיבה');
     });
 
-    // Talk with theorist
-    document.getElementById('ws-theorist-btn')?.addEventListener('click', (e) => {
-      e.currentTarget.disabled = true;
-      window._bwWriteSessionContext = { text, summary: data };
-      window._bwPendingTheorist = (activeTheorists && activeTheorists[0]) || 'winnicott';
-      localStorage.setItem('bw_mode', 'session');
-      document.getElementById('write-summary-modal')?.remove();
-      document.body.classList.remove('bw-write-mode');
-      document.getElementById('bw-write-area')?.remove();
-      const wBtn = document.getElementById('sb-write-summary-btn');
-      if (wBtn) wBtn.style.display = 'none';
-      confirmTheoristEntry();
-    });
+    // "Talk with a theorist" removed — patient flow has no exposed theorist conversation;
+    // the patient writes and gets a holding summary, and brings it to their own therapist.
   } catch (e) {
     const el = document.getElementById('write-summary-results');
     if (el) el.innerHTML = `<div style="color:var(--accent);">${isEn ? 'Error generating summary.' : 'שגיאה ביצירת הסיכום.'}</div>`;
@@ -1408,8 +1428,47 @@ function openHoldSummary() {
   return openWriteSummary();
 }
 
+// ── Held conversation entry — patient write screen ─────────────────────────
+// Single-select theorist picker below the writing textarea (BW-121).
+// Unlike the therapist/consult "round table" (multi-select, several theorists at once),
+// the patient can hold with exactly ONE theorist at a time — picking a different chip
+// just switches the selection, it never accumulates.
+function bwUpdateHoldPickerVisibility() {
+  const picker = document.getElementById('bw-write-hold-picker');
+  if (!picker) return;
+  const hasText = getAllWriteContent().trim().length >= 15;
+  picker.style.display = hasText ? 'flex' : 'none';
+}
+
+function selectHoldTheorist(key) {
+  window._bwHoldPickerSelected = key;
+  document.querySelectorAll('#bw-write-hold-picker .bw-hold-chip').forEach(chip => {
+    chip.classList.toggle('active', chip.dataset.key === key);
+  });
+  const isEn = (window.selectedLang?.code === 'en');
+  const heNames = { freud: 'פרויד', klein: 'קליין', winnicott: 'ויניקוט', ogden: 'אוגדן' };
+  const enNames = { freud: 'Freud', klein: 'Klein', winnicott: 'Winnicott', ogden: 'Ogden' };
+  const name = (isEn ? enNames[key] : heNames[key]) || key;
+  const btn = document.getElementById('bw-hold-start-btn');
+  if (btn) {
+    btn.disabled = false;
+    btn.style.background = 'var(--accent)';
+    btn.style.color = '#fff';
+    btn.style.cursor = 'pointer';
+    btn.textContent = isEn ? `Talk with ${name}` : `שיחה עם ${name}`;
+  }
+}
+
+function startHoldConversation() {
+  const key = window._bwHoldPickerSelected;
+  if (!key) return;
+  // Public text only — text marked "just me" (.bw-private) never leaves the device.
+  enterHoldConversation(key, getPublicWriteContent());
+}
+
 function enterHoldConversation(theorist, holdText) {
   localStorage.setItem('bw_mode', 'session');
+  syncExploreIndicator();
   window._bwPendingTheorist = theorist || 'winnicott';
   // Pass the hold text so showTheoristOpening can build the write-context API call.
   // Do NOT reset this here — showTheoristOpening is async and reads it after confirmTheoristEntry returns.
@@ -1419,13 +1478,22 @@ function enterHoldConversation(theorist, holdText) {
     : null;
   confirmTheoristEntry();
 }
+window.enterHoldConversation = enterHoldConversation;
 
 // ── Explore mode entry from sidebar — localhost only ──────────────────────────
 // Enters explore mode directly: clears session, picks last used theorist (or winnicott),
 // calls confirmTheoristEntry which shows the explore opening.
+// מסמן/מנקה את פריט "מחקר" בסייד-בר לפי מצב bw_mode (localhost בלבד — הפריט קיים רק שם).
+function syncExploreIndicator() {
+  document.getElementById('sb-explore-btn')
+    ?.classList.toggle('research-active', localStorage.getItem('bw_mode') === 'explore');
+}
+window.syncExploreIndicator = syncExploreIndicator;
+
 function enterExploreModeFromSidebar() {
   window._bwWriteSessionContext = null;
   localStorage.setItem('bw_mode', 'explore');
+  syncExploreIndicator();
   // Resolve the theorist to research with — honor the LIVE sidebar selection first (any of the 8;
   // the non-active four are only ever captured in activeTheorists, never in bw_explore_theorist),
   // then the persisted explore choice, then the default.
@@ -1505,7 +1573,7 @@ function bwUpdateModeLabels() {
   const writeLabel = document.getElementById('bw-label-write');
   if (writeLabel) writeLabel.textContent = isEn ? 'Write' : 'כתיבה';
   const writeSummaryLabel = document.getElementById('sb-write-summary-label');
-  if (writeSummaryLabel) writeSummaryLabel.textContent = isEn ? 'Session notes' : 'סיכום לכתיבה';
+  if (writeSummaryLabel) writeSummaryLabel.textContent = isEn ? 'Session notes' : 'סיכום כתיבה';
   // Update write area texts if currently shown
   const _writeArea = document.getElementById('bw-write-area');
   if (_writeArea) {
@@ -1514,9 +1582,9 @@ function bwUpdateModeLabels() {
     const _wTa = document.getElementById('bw-write-textarea');
     if (_wTa) _wTa.dataset.placeholder = isEn ? 'Something you want your therapist to know.' : 'משהו שתרצה שהמטפל שלך ידע.';
     const _wHintText = document.getElementById('bw-write-hint-text');
-    if (_wHintText) _wHintText.textContent = isEn ? "Use the sidebar to generate session notes when you're ready." : 'השתמש ב"סיכום לכתיבה" בסייד-בר כשסיימת.';
+    if (_wHintText) _wHintText.textContent = isEn ? "Use the sidebar to generate session notes when you're ready." : 'השתמש ב"סיכום כתיבה" בסייד-בר כשסיימת.';
     const _wHintArchive = document.getElementById('bw-write-hint-archive');
-    if (_wHintArchive) { _wHintArchive.textContent = isEn ? 'Archive' : 'ארכיון'; _wHintArchive.style.marginLeft = isEn ? '12px' : ''; _wHintArchive.style.marginRight = isEn ? '' : '12px'; }
+    if (_wHintArchive) { _wHintArchive.textContent = isEn ? 'What I wrote' : 'מה כתבתי'; _wHintArchive.style.marginLeft = isEn ? '12px' : ''; _wHintArchive.style.marginRight = isEn ? '' : '12px'; }
     _writeArea.style.direction = isEn ? 'ltr' : 'rtl';
     if (_wTa) _wTa.style.direction = isEn ? 'ltr' : 'rtl';
   }
@@ -1554,6 +1622,7 @@ function bwUpdateModeLabels() {
 
 function onModeSelected(mode) {
   localStorage.setItem('bw_mode', mode);
+  syncExploreIndicator();
   // Unified screen: just toggle pill visual, don't navigate away
   document.querySelector('.bw-mode-primary')?.classList.toggle('bw-mode-selected', mode === 'session');
   document.querySelector('.bw-mode-secondary')?.classList.toggle('bw-mode-selected', mode === 'explore');
@@ -6881,8 +6950,20 @@ function bwExitChatToHome() {
     Array.from(chat.children).forEach(child => { if (child.id !== 'welcome') child.remove(); });
     chat.scrollTop = 0;
   }
-  const welcome = document.getElementById('welcome'); if (welcome) welcome.style.display = '';
-  document.body.classList.remove('bw-selecting');
+  const welcome = document.getElementById('welcome');
+  if (welcome) {
+    welcome.style.display = '';
+    // React owns #welcome's children. Remove the nodes chat.js injected into it (analyst badge /
+    // flow buttons / greeting paragraphs) BEFORE React re-renders on a persona switch — otherwise
+    // React's reconciler hits a foreign DOM node and throws NotFoundError, crashing the whole tree
+    // (the blank-screen bug on patient→therapist→patient).
+    welcome.querySelectorAll('#analyst-badge, #flow-buttons').forEach(n => n.remove());
+    welcome.querySelectorAll(':scope > p:not(#welcome-api-text):not(.bw-entry-heading)').forEach(n => n.remove());
+  }
+  // Therapist returns to the writing page (a welcome view) — keep the bottom composer hidden there.
+  const _exitTherapist = document.getElementById('sidebar')?.classList.contains('persona-therapist');
+  if (_exitTherapist) document.body.classList.add('bw-selecting');
+  else document.body.classList.remove('bw-selecting');
   document.body.classList.remove('bw-write-mode');
   window.activeFlow = null;
   const ui = document.getElementById('user-input'); if (ui) ui.value = '';
@@ -7278,7 +7359,8 @@ window.resetPassword = resetPassword;
         p.innerHTML = `ברוכ/ה השב/ה. המרחב מוכן כשאת/ה מוכן/ה. <span style="color:var(--accent-dim)">מה עולה היום?</span>`;
       }
       // Insert before flow buttons if they exist, otherwise append
-      if (flowBtns) welcome.insertBefore(p, flowBtns);
+      // React-safe: only insertBefore when flowBtns is genuinely a child of #welcome (see renderAnalystBadge).
+      if (flowBtns && flowBtns.parentNode === welcome) welcome.insertBefore(p, flowBtns);
       else welcome.appendChild(p);
     }
   }

@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { PenLine, Globe, Brain, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, NotebookPen, Mic, ScrollText } from 'lucide-react';
+import { PenLine, Globe, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, NotebookPen, Mic, ScrollText } from 'lucide-react';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -17,6 +17,8 @@ export default function Home() {
   const recognitionRef = useRef<any>(null);
   const baseHoldTextRef = useRef('');
   const holdTextareaRef = useRef<HTMLDivElement>(null);
+  const holdDraftTimerRef = useRef<any>(null);
+  const holdDraftRestoredRef = useRef(false);
 
   const THEORIST_CARDS: Record<string, Record<string, { approach: string; concepts: string; forWhom: string }>> = {
     freud: {
@@ -108,6 +110,8 @@ export default function Home() {
   type TherapistCase = { id: string; label: string; created_at: string };
   type Consultation = { id: string; mode: string; theorists: string[]; anonymized_text: string; created_at: string };
   const [therapistView, setTherapistView] = useState<'cases' | 'hub' | 'caseDetail' | 'archive'>('cases');
+  // Ephemeral-consultation step 1 — therapist lands directly on the writing page (skip roster). Guards initial auto-entry.
+  const [therapistReady, setTherapistReady] = useState(false);
   const [cases, setCases] = useState<TherapistCase[]>([]);
   const [casesLoaded, setCasesLoaded] = useState(false);
   const [newCaseLabel, setNewCaseLabel] = useState('');
@@ -207,6 +211,23 @@ export default function Home() {
   // Local preview uses the dev tabs; production follows the login choice.
   const activePersona = isLocalhost ? devPersona : prodPersona;
 
+  // Restore a locally-saved writing draft when the patient writing screen mounts.
+  // Runs once (holdDraftRestoredRef) so it never clobbers live edits. Stored as
+  // HTML to preserve .bw-private marks.
+  useEffect(() => {
+    if (activePersona !== 'patient' || !mounted) return;
+    if (holdDraftRestoredRef.current) return;
+    const el = holdTextareaRef.current;
+    if (!el) return;
+    let draft = '';
+    try { draft = localStorage.getItem('bw_hold_draft') || ''; } catch { /* ignore */ }
+    if (draft) {
+      el.innerHTML = draft;
+      setHoldText(el.innerText?.trim() || '');
+    }
+    holdDraftRestoredRef.current = true;
+  }, [activePersona, mounted]);
+
   // BW-113 — load/create therapist cases (auth via chat.js getAuthHeaders).
   const loadCases = async () => {
     try {
@@ -253,6 +274,36 @@ export default function Home() {
     } catch { setCaseUpdates([]); setNoteAnalysis({}); }
   };
   const openCase = (c: TherapistCase) => { setSelectedCase(c); setConsultsLoaded(false); setConsultations([]); setShowManualWrite(false); setManualText(''); loadCaseUpdates(c.id); setDailyText(''); setTherapistView('caseDetail'); };
+  // Ephemeral-consultation step 1 — therapist entry skips the roster and lands on the existing writing page.
+  // Reuses the case-bound writing view unchanged: open the most recent case, or create a default one if none exist.
+  const enterTherapistWriting = async () => {
+    try {
+      const gh = (window as any).getAuthHeaders;
+      const headers = gh ? await gh() : {};
+      const res = await fetch('/api/cases', { headers });
+      let list: TherapistCase[] = [];
+      if (res.ok) { const d = await res.json(); list = Array.isArray(d.cases) ? d.cases : []; }
+      let target = list[0];
+      if (!target) {
+        const cr = await fetch('/api/cases', { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify({ label: isHe ? 'התייעצות' : 'Consultation' }) });
+        if (cr.ok) target = await cr.json();
+      }
+      if (target) { setCases(list.length ? list : [target]); openCase(target); }
+    } catch { /* ignore */ }
+    setTherapistReady(true);
+  };
+  useEffect(() => {
+    if (activePersona === 'therapist' && !therapistReady && !selectedCase) enterTherapistWriting();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activePersona, therapistReady, selectedCase]);
+  // Ephemeral therapist: the writing page is a welcome view — keep the bottom composer hidden.
+  // Switching to the therapist tab calls bwExitChatToHome() before the sidebar class flips, so that
+  // path can't reliably add bw-selecting; do it here when the persona becomes therapist.
+  // startConsultation() removes bw-selecting when a consultation dialogue actually begins.
+  useEffect(() => {
+    if (activePersona === 'therapist') document.body.classList.add('bw-selecting');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activePersona]);
   useEffect(() => {
     if (therapistView === 'caseDetail' && selectedCase && !consultsLoaded) loadConsultations(selectedCase.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -273,10 +324,10 @@ export default function Home() {
   };
   const openEditNote = (co: Consultation) => { setEditingId(co.id); setManualText(co.anonymized_text); setShowManualWrite(true); };
   // BW-113 — single-theorist consultation: anonymize + file under case, then seed the live chat.
-  const startConsultation = async () => {
+  const startConsultation = async (materialOverride?: string) => {
     const key = hubTheorists[0];
     if (!key) return;
-    const material = consultText.trim();
+    const material = (typeof materialOverride === 'string' ? materialOverride : consultText).trim();
     let seed = material;
     try {
       if (selectedCase && material) {
@@ -547,10 +598,15 @@ export default function Home() {
     if (full && (window as any).checkCrisis?.(full)) {
       (window as any).showCrisisBanner?.();
     }
+    // Default save: commit the writing to the local archive once, on continue.
+    if (full) (window as any).saveWriteEntry?.(full, pub);
     (window as any).enterHoldConversation?.(theorist, pub);
     if (holdTextareaRef.current) holdTextareaRef.current.innerHTML = '';
     setHoldText('');
     setHoldSaveStatus('');
+    // Clear the working draft — it has now been archived.
+    if (holdDraftTimerRef.current) clearTimeout(holdDraftTimerRef.current);
+    try { localStorage.removeItem('bw_hold_draft'); } catch { /* ignore */ }
   };
 
   const handleToggleVoice = () => {
@@ -741,11 +797,6 @@ export default function Home() {
               <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-websearch-label">חיפוש רשת: כבוי</span>
             </div>
-            {/* BW-113 — therapist "Archive" = archived cases (patients), not conversation memory. */}
-            <div className="sb-item" data-persona="therapist" onClick={() => { (window as any).bwExitChatToHome?.(); setTherapistView('archive'); setArchivedLoaded(false); }}>
-              <span className="sb-icon"><Brain size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label" id="sb-memories-label">ארכיון</span>
-            </div>
             <div className="sb-item" data-persona="patient" onClick={() => (window as any).openWriteArchive?.()}>
               <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-write-archive-label">{currentLang === 'he' ? 'מה כתבתי' : 'What I wrote'}</span>
@@ -754,23 +805,19 @@ export default function Home() {
               <span className="sb-icon"><Download size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-pdf-label">הורד PDF</span>
             </div>
-            <div className="sb-item" data-persona="therapist" onClick={() => { (window as any).bwExitChatToHome?.(); setTherapistView('cases'); setCasesLoaded(false); }}>
-              <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label">המקרים שלי</span>
-            </div>
             <div className="sb-item" data-persona="therapist" onClick={() => (window as any).openSessionSummary()}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
               <span className="sb-label" id="sb-summary-label">סיכום התייעצות</span>
             </div>
             <div id="sb-write-summary-btn" className="sb-item" data-persona="patient" onClick={() => (window as any).openWriteSummary()} style={{ display: 'none' }}>
               <span className="sb-icon"><NotebookPen size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label" id="sb-write-summary-label">סיכום לכתיבה</span>
+              <span className="sb-label" id="sb-write-summary-label">סיכום כתיבה</span>
             </div>
             {/* BW-113 — מחקר חזר לסייד-בר כפריט עצמאי (לא קשור למקרה). */}
             {isLocalhost && (
-              <div className="sb-item" data-persona="therapist" onClick={() => (window as any).enterExploreModeFromSidebar?.()}>
+              <div id="sb-explore-btn" className="sb-item" data-persona="therapist" onClick={() => (window as any).enterExploreModeFromSidebar?.()}>
                 <span className="sb-icon"><BookOpen size={15} strokeWidth={1.75} /></span>
-                <span className="sb-label">מחקר</span>
+                <span className="sb-label">{currentLang === 'he' ? 'מחקר' : 'Research'}</span>
                 <span style={{ fontSize: 9, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(לוקאל)' : '(local)'}</span>
               </div>
             )}
@@ -799,7 +846,7 @@ export default function Home() {
           </div>
 
           {/* Theorists section */}
-          <div data-persona="therapist" style={{ borderTop: '1px solid var(--border)', padding: '6px 8px 4px' }}>
+          <div style={{ borderTop: '1px solid var(--border)', padding: '6px 8px 4px' }}>
             <div className="sb-item" onClick={() => setTheoristsOpen(o => !o)}>
               <span className="sb-label" id="sb-theorists-label" style={{ flex: 1 }}>גישה תיאורטית</span>
               <ChevronDown size={13} strokeWidth={1.75} className="theorist-chevron" style={{ color: 'var(--muted)', flexShrink: 0, transition: 'transform 0.2s', transform: theoristsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
@@ -901,9 +948,9 @@ export default function Home() {
               {/* BW-41: back button — top-left corner of content area */}
               <span id="bw-back-btn" onClick={() => (window as any).goBackToChat()} style={{ position: 'absolute', top: 20, left: 24, fontSize: 12, color: 'var(--muted)', cursor: 'pointer', opacity: 0.7, display: 'none' }}>← חזרה</span>
               {/* BW-111 — chose "therapist" at login but not on the allowlist → entered as patient. */}
-              {personaNotice && (
+              {personaNotice && !isLocalhost && (
                 <div style={{ width: '100%', background: 'var(--thinking)', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ flex: 1, fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>גישת מטפלים בהזמנה בלבד כרגע — נכנסת כמטופל/ת.</span>
+                  <span style={{ flex: 1, fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{isHe ? 'גישת מטפלים בהזמנה בלבד כרגע — נכנסת כמטופל/ת.' : 'Therapist access is invite-only for now — you\'re in as a patient.'}</span>
                   <span onClick={() => setPersonaNotice(false)} style={{ fontSize: 14, color: 'var(--muted)', cursor: 'pointer', userSelect: 'none' }}>✕</span>
                 </div>
               )}
@@ -920,7 +967,18 @@ export default function Home() {
                       contentEditable
                       suppressContentEditableWarning
                       ref={holdTextareaRef}
-                      onInput={e => { setHoldText((e.currentTarget as HTMLDivElement).innerText?.trim() || ''); if (holdSaveStatus) setHoldSaveStatus(''); }}
+                      onInput={e => {
+                        const el = e.currentTarget as HTMLDivElement;
+                        setHoldText(el.innerText?.trim() || '');
+                        if (holdSaveStatus) setHoldSaveStatus('');
+                        // Default local draft — debounced. Saved as HTML so private marks survive.
+                        if (holdDraftTimerRef.current) clearTimeout(holdDraftTimerRef.current);
+                        const html = el.innerHTML;
+                        const txt = el.innerText?.trim() || '';
+                        holdDraftTimerRef.current = setTimeout(() => {
+                          try { if (txt) localStorage.setItem('bw_hold_draft', html); else localStorage.removeItem('bw_hold_draft'); } catch { /* ignore */ }
+                        }, 400);
+                      }}
                       style={{
                         width: '100%', minHeight: 200, padding: '20px',
                         background: 'transparent',
@@ -947,8 +1005,9 @@ export default function Home() {
                       </span>
                     )}
                   </div>
-                  {/* Footer: mic + quiet save — row-reverse in RTL puts mic on the right */}
-                  <div style={{ borderTop: '1px solid var(--border)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, flexDirection: isHe ? 'row-reverse' : 'row' }}>
+                  {/* Footer: mic + continue. Parent is direction:rtl in Hebrew, so plain
+                      'row' puts mic at the start (right) and the continue button at the end (left). */}
+                  <div style={{ borderTop: '1px solid var(--border)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, flexDirection: 'row' }}>
                     <button
                       onClick={handleToggleVoice}
                       className={isRecording ? 'bw-mic-recording' : ''}
@@ -963,8 +1022,10 @@ export default function Home() {
                       <Mic size={15} />
                     </button>
                     <div style={{ flex: 1 }} />
+                    {/* Primary action — continue into a held conversation with the theorist.
+                        Label follows the sidebar selection via holdTheorist (holdtheoristchange). */}
                     <button
-                      onClick={() => (window as any).openHoldSummary?.()}
+                      onClick={() => handleEnterConversation(holdTheorist)}
                       disabled={!holdText.trim()}
                       style={{
                         background: 'transparent', border: 'none', padding: 0, height: 44,
@@ -975,46 +1036,33 @@ export default function Home() {
                       }}
                     >
                       <span style={{
-                        border: '1px solid var(--muted)', borderRadius: 16, height: 30, padding: '0 12px',
-                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)',
-                        display: 'inline-flex', alignItems: 'center',
+                        background: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 16, height: 30, padding: '0 14px',
+                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: '#fff',
+                        display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
                       }}>
-                        {isHe ? 'סיכום כתיבה' : 'Writing summary'}
-                      </span>
-                    </button>
-                    <button
-                      onClick={handleHoldSave}
-                      disabled={!holdText.trim()}
-                      style={{
-                        background: 'transparent', border: 'none', padding: 0, height: 44,
-                        cursor: holdText.trim() ? 'pointer' : 'default',
-                        opacity: holdText.trim() ? 1 : 0.4,
-                        display: 'inline-flex', alignItems: 'center',
-                        transition: 'opacity 0.15s', flexShrink: 0,
-                      }}
-                    >
-                      <span style={{
-                        border: '1px solid var(--muted)', borderRadius: 16, height: 30, padding: '0 12px',
-                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)',
-                        display: 'inline-flex', alignItems: 'center',
-                      }}>
-                        {isHe ? 'שמור' : 'Save'}
+                        {isHe ? `המשך לשיחה עם ${getHoldTheoristName(holdTheorist)}` : `Continue with ${getHoldTheoristName(holdTheorist)}`}
                       </span>
                     </button>
                   </div>
-                  {/* Talk button removed: patient mode is Hold-only (no live conversation);
-                      therapist gets a direct conversation entry instead of the Hold card. */}
                 </div>
-                <p style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', margin: 0, width: '100%', textAlign: isHe ? 'right' : 'left' }}>
-                  {isHe ? 'סמן טקסט כדי לסמן פרטי — לפני שמשתפים.' : 'Highlight text to mark private — before sharing.'}
-                </p>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 12, flexDirection: isHe ? 'row-reverse' : 'row' }}>
+                  <p style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', margin: 0, textAlign: isHe ? 'right' : 'left' }}>
+                    {isHe ? 'סמן טקסט כדי לסמן פרטי — לפני שמשתפים.' : 'Highlight text to mark private — before sharing.'}
+                  </p>
+                  <button
+                    onClick={() => (window as any).openWriteArchive?.()}
+                    style={{ background: 'transparent', border: 'none', padding: 0, fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer', textDecoration: 'underline', whiteSpace: 'nowrap', flexShrink: 0 }}
+                  >
+                    {isHe ? 'מה כתבתי' : 'What I wrote'}
+                  </button>
+                </div>
                 {holdSaveStatus === 'saved' && (
                   <p style={{ fontSize: 13, color: 'var(--muted)', fontFamily: 'var(--font-cormorant), serif', fontStyle: 'italic', margin: 0 }}>{isHe ? 'נשמר.' : 'Saved.'}</p>
                 )}
               </div>
               )}
-              {/* BW-113 — therapist case-first landing: "My Cases". */}
-              {activePersona === 'therapist' && therapistView === 'cases' && (
+              {/* BW-113 — therapist case-first landing: "My Cases". Hidden during step-1 auto-entry to land on the writing page. */}
+              {activePersona === 'therapist' && therapistView === 'cases' && therapistReady && (
               <div style={{ width: '100%', maxWidth: 720, margin: '0 auto' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
                   <h2 style={{ fontFamily: 'var(--font-cormorant), Georgia, serif', fontSize: 24, color: 'var(--text)', margin: 0 }}>{isHe ? 'המקרים שלי' : 'My cases'}</h2>
@@ -1072,53 +1120,86 @@ export default function Home() {
               {/* BW-113 — case detail: consultation timeline. */}
               {activePersona === 'therapist' && therapistView === 'caseDetail' && selectedCase && (
               <div style={{ width: '100%', maxWidth: 720, margin: '0 auto' }}>
-                <span onClick={() => { setTherapistView('cases'); setCasesLoaded(false); }} style={{ fontSize: 12, color: 'var(--accent)', cursor: 'pointer', display: 'inline-block', marginBottom: 14 }}>{isHe ? '← המקרים שלי' : '← My cases'}</span>
-                <div style={{ marginBottom: 20 }}>
-                  <h2 style={{ fontFamily: 'var(--font-cormorant), Georgia, serif', fontSize: 24, color: 'var(--text)', margin: 0 }}>{selectedCase.label}</h2>
-                  <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
-                    <button onClick={consultFromCase} style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 22, padding: '8px 18px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer' }}>{isHe ? '+ התייעצות על המקרה' : '+ Consult on the case'}</button>
-                  </div>
-                </div>
+                <p style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 19, fontWeight: 400, color: 'var(--text)', margin: '0 0 16px' }}>{isHe ? 'מה עלה לך מהפגישה?' : 'What came up in the session?'}</p>
                 {/* BW-116 — daily update section */}
                 <div style={{ marginBottom: 24, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '16px 18px' }}>
-                  <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{isHe ? 'עדכון פגישה' : 'Session note'}</div>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                    <textarea
-                      value={dailyText}
-                      onChange={e => setDailyText(e.target.value)}
-                      placeholder={isHe ? 'מה עלה היום? כתבי עדכון על המקרה…' : "What came up today? Write a case update…"}
-                      style={{ flex: 1, minHeight: 80, boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--bg)', color: 'var(--text)', resize: 'vertical', outline: 'none' }}
-                    />
+                  <textarea
+                    value={dailyText}
+                    onChange={e => setDailyText(e.target.value)}
+                    placeholder={isHe ? 'מה עלה היום? כתבי עדכון על המקרה…' : "What came up today? Write a case update…"}
+                    style={{ width: '100%', minHeight: 240, maxHeight: '50vh', overflowY: 'auto', boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--bg)', color: 'var(--text)', resize: 'vertical', outline: 'none' }}
+                  />
+                  <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 8 }}>{isHe ? 'נשמר על המכשיר שלך. לא אצלנו.' : 'Saved on your device. Not with us.'}</div>
+                  {/* Single aligned action row — mic + buttons flush to the start side (mirrors patient footer) */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, flexWrap: 'wrap', flexDirection: isHe ? 'row-reverse' : 'row' }}>
                     <button
                       onClick={handleDailyVoice}
                       title={isDailyRecording ? (isHe ? 'עצור הקלטה' : 'Stop recording') : (isHe ? 'הקלט קול' : 'Record voice')}
-                      style={{ flexShrink: 0, width: 40, height: 40, borderRadius: 20, border: '1px solid var(--border)', background: isDailyRecording ? 'var(--accent-soft)' : 'var(--surface)', color: isDailyRecording ? 'var(--accent)' : 'var(--muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+                      style={{ flexShrink: 0, width: 44, height: 44, borderRadius: '50%', border: 'none', padding: 0, background: 'transparent', color: isDailyRecording ? 'var(--accent)' : 'var(--muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'color 0.15s' }}>
                       <Mic size={16} />
                     </button>
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 8 }}>{isHe ? 'נשמר על המכשיר שלך. לא אצלנו.' : 'Saved on your device. Not with us.'}</div>
-                  <div style={{ display: 'flex', gap: 8, marginTop: 10, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                     <button
                       disabled={!dailyText.trim()}
                       onClick={saveDailyUpdate}
-                      style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '7px 16px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: dailyText.trim() ? 'var(--text)' : 'var(--muted)', cursor: dailyText.trim() ? 'pointer' : 'default', opacity: dailyText.trim() ? 1 : 0.5 }}>
+                      style={{ flexShrink: 0, background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '7px 16px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: dailyText.trim() ? 'var(--text)' : 'var(--muted)', cursor: dailyText.trim() ? 'pointer' : 'default', opacity: dailyText.trim() ? 1 : 0.5 }}>
                       {isHe ? 'שמור' : 'Save'}
                     </button>
                     <button
                       disabled={!dailyText.trim() || analyzingNoteId === 'draft'}
                       onClick={() => analyzeNote(dailyText, 'draft')}
-                      style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '7px 16px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: dailyText.trim() ? 'var(--accent)' : 'var(--muted)', cursor: dailyText.trim() ? 'pointer' : 'default', opacity: dailyText.trim() ? 1 : 0.5 }}>
+                      style={{ flexShrink: 0, background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '7px 16px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: dailyText.trim() ? 'var(--accent)' : 'var(--muted)', cursor: dailyText.trim() ? 'pointer' : 'default', opacity: dailyText.trim() ? 1 : 0.5 }}>
                       {isHe ? 'נתח' : 'Analyze'}
                     </button>
-                    <button
-                      disabled={!dailyText.trim()}
-                      onClick={() => consultFromText(dailyText)}
-                      style={{ background: dailyText.trim() ? 'var(--accent)' : 'var(--border)', border: 'none', borderRadius: 22, padding: '7px 16px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: dailyText.trim() ? '#fff' : 'var(--muted)', cursor: dailyText.trim() ? 'pointer' : 'default' }}>
-                      {isHe ? 'התייעץ' : 'Consult'}
-                    </button>
+                    <div style={{ flex: 1 }} />
                   </div>
                   {renderNoteAnalysis('draft')}
                 </div>
+                {/* Ephemeral consultation — theorist pills always below the writing field */}
+                {(() => {
+                  const HUB_THEORISTS: [string, string][] = [['freud', isHe ? 'פרויד' : 'Freud'], ['klein', isHe ? 'קליין' : 'Klein'], ['winnicott', isHe ? 'ויניקוט' : 'Winnicott'], ['ogden', isHe ? 'אוגדן' : 'Ogden']];
+                  const chipStyle = (on: boolean): React.CSSProperties => ({
+                    border: '1px solid ' + (on ? 'var(--accent)' : 'var(--border)'),
+                    borderRadius: 22, padding: '7px 16px', fontSize: 13, cursor: 'pointer',
+                    color: on ? '#fff' : 'var(--text)', background: on ? 'var(--accent)' : 'var(--surface)',
+                  });
+                  const openRoundtableMockup = () => {
+                    document.getElementById('bw-rt-mockup')?.remove();
+                    const ov = document.createElement('div');
+                    ov.id = 'bw-rt-mockup';
+                    ov.style.cssText = 'position:fixed;inset:0;z-index:900;background:rgba(45,36,32,0.55);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);';
+                    ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
+                    ov.innerHTML = '<div style="position:relative;width:640px;max-width:94vw;height:88vh;background:var(--bg);border-radius:16px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.22);">'
+                      + '<button onclick="document.getElementById(\'bw-rt-mockup\').remove()" style="position:absolute;top:8px;left:12px;z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:50%;width:30px;height:30px;font-size:17px;color:var(--muted);cursor:pointer;line-height:1;">×</button>'
+                      + '<iframe src="/roundtable-mockup.html" style="width:100%;height:100%;border:none;"></iframe>'
+                      + '</div>';
+                    document.body.appendChild(ov);
+                  };
+                  const isRoundtable = hubTheorists.length >= 2;
+                  return (
+                    <div style={{ marginBottom: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 12, paddingBottom: 12 }}>
+                      <div className="hub-helpcap">{isHe ? <>תיאורטיקן <b>אחד</b> — קול אחד, לעומק.<br/>כמה תיאורטיקנים — שולחן עגול, כל אחד מהמקום שלו.</> : <>One theorist — one voice, in depth.<br/>Several — a round table, each from their own place.</>}</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 16, maxWidth: 560 }}>
+                        {HUB_THEORISTS.map(([k, name]) => {
+                          const on = hubTheorists.includes(k);
+                          return <span key={k} onClick={() => setHubTheorists(on ? hubTheorists.filter(x => x !== k) : [...hubTheorists, k])} style={chipStyle(on)}>{name}{on ? ' ✓' : ''}</span>;
+                        })}
+                      </div>
+                      {hubTheorists.length > 0 && (
+                        <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', marginTop: 12 }}>{hubTheorists.length === 1 ? (isHe ? 'נבחר אחד — התייעצות ממוקדת.' : 'One selected — focused consultation.') : (isHe ? `נבחרו ${hubTheorists.length} — שולחן עגול.` : `${hubTheorists.length} selected — round table.`)}</div>
+                      )}
+                      {hubTheorists.length >= 1 && (
+                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+                          <button
+                            disabled={!dailyText.trim()}
+                            onClick={isRoundtable ? openRoundtableMockup : () => startConsultation(dailyText)}
+                            style={{ padding: '10px 28px', borderRadius: 22, border: 'none', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: dailyText.trim() ? 'var(--accent)' : 'var(--border)', color: dailyText.trim() ? '#fff' : 'var(--muted)', cursor: dailyText.trim() ? 'pointer' : 'default' }}>
+                            {isRoundtable ? (isHe ? 'שולחן עגול' : 'Round table') : (isHe ? 'המשך להתייעצות' : 'Continue to consultation')}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
                 {/* BW-116 — past updates from localStorage */}
                 {caseUpdates.length > 0 && (
                   <div style={{ marginBottom: 24 }}>
@@ -1164,9 +1245,7 @@ export default function Home() {
                     </div>
                   </div>
                 )}
-                {consultations.length === 0 ? (
-                  <p style={{ fontSize: 13, color: 'var(--muted)', textAlign: 'center', padding: '40px 0', lineHeight: 1.7 }}>{isHe ? 'עדיין אין התייעצויות במקרה הזה.' : 'No consultations in this case yet.'}</p>
-                ) : (
+                {consultations.length > 0 && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {consultations.map(co => {
                       const modeLabel = co.mode === 'roundtable' ? (isHe ? 'שולחן עגול' : 'Round table') : co.mode === 'research' ? (isHe ? 'מחקר' : 'Research') : co.mode === 'note' ? (isHe ? 'עדכון ידני' : 'Manual note') : (isHe ? 'התייעצות' : 'Consultation');
@@ -1217,7 +1296,7 @@ export default function Home() {
               )}
               {/* BW-112 — Therapist hub: mode selection. Reached from a case ("New consultation"). */}
               {activePersona === 'therapist' && therapistView === 'hub' && (() => {
-                const HUB_THEORISTS: [string, string][] = [['freud', 'פרויד'], ['klein', 'קליין'], ['winnicott', 'ויניקוט'], ['ogden', 'אוגדן']];
+                const HUB_THEORISTS: [string, string][] = [['freud', isHe ? 'פרויד' : 'Freud'], ['klein', isHe ? 'קליין' : 'Klein'], ['winnicott', isHe ? 'ויניקוט' : 'Winnicott'], ['ogden', isHe ? 'אוגדן' : 'Ogden']];
                 const chipStyle = (on: boolean): React.CSSProperties => ({
                   border: '1px solid ' + (on ? 'var(--accent)' : 'var(--border)'),
                   borderRadius: 22, padding: '7px 16px', fontSize: 13, cursor: 'pointer',
@@ -1239,13 +1318,26 @@ export default function Home() {
                     <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', marginTop: 12 }}>{hubTheorists.length === 1 ? (isHe ? 'נבחר אחד — התייעצות ממוקדת.' : 'One selected — focused consultation.') : (isHe ? `נבחרו ${hubTheorists.length} — שולחן עגול.` : `${hubTheorists.length} selected — round table.`)}</div>
                   )}
                   {hubTheorists.length >= 1 && (() => {
-                    const canProceed = hubTheorists.length === 1;
-                    const label = canProceed ? (isHe ? 'המשך להתייעצות' : 'Continue to consultation') : (isHe ? 'שולחן עגול — בקרוב' : 'Round table — coming soon');
+                    const isRoundtable = hubTheorists.length >= 2;
+                    const label = isRoundtable ? (isHe ? 'שולחן עגול' : 'Round table') : (isHe ? 'המשך להתייעצות' : 'Continue to consultation');
+                    // Round table is a visual demo only — clicking opens the mockup overlay (no backend).
+                    const openRoundtableMockup = () => {
+                      document.getElementById('bw-rt-mockup')?.remove();
+                      const ov = document.createElement('div');
+                      ov.id = 'bw-rt-mockup';
+                      ov.style.cssText = 'position:fixed;inset:0;z-index:900;background:rgba(45,36,32,0.55);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);';
+                      ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
+                      ov.innerHTML = '<div style="position:relative;width:640px;max-width:94vw;height:88vh;background:var(--bg);border-radius:16px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.22);">'
+                        + '<button onclick="document.getElementById(\'bw-rt-mockup\').remove()" style="position:absolute;top:8px;left:12px;z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:50%;width:30px;height:30px;font-size:17px;color:var(--muted);cursor:pointer;line-height:1;">×</button>'
+                        + '<iframe src="/roundtable-mockup.html" style="width:100%;height:100%;border:none;"></iframe>'
+                        + '</div>';
+                      document.body.appendChild(ov);
+                    };
                     return (
                       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
-                        <button disabled={!canProceed}
-                          onClick={canProceed ? startConsultation : undefined}
-                          style={{ padding: '10px 28px', borderRadius: 22, border: 'none', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: canProceed ? 'var(--accent)' : 'var(--border)', color: canProceed ? '#fff' : 'var(--muted)', cursor: canProceed ? 'pointer' : 'default' }}>
+                        <button
+                          onClick={isRoundtable ? openRoundtableMockup : () => startConsultation()}
+                          style={{ padding: '10px 28px', borderRadius: 22, border: 'none', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--accent)', color: '#fff', cursor: 'pointer' }}>
                           {label}
                         </button>
                       </div>

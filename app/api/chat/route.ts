@@ -302,12 +302,18 @@ You are in EXPLORATION MODE. Before sending your response, check:
    "My therapist is in training" → respond about what psychoanalytic training involves, not about the user's feelings about their therapist.
 
 4. END WITH 3 FOLLOW-UP QUESTIONS (→ format, as defined in SITUATION C above).
+   THE QUESTIONS MUST STAY THEORETICAL — about the IDEAS, never about the user.
+   → FORBIDDEN: questions that address the user personally or clinically — "איך אתה חווה...", "מה קורה בך...", "המטופל שלך", "בחדר שלך", "בטיפול שלך", or anything that assumes the user has a patient or is in treatment.
+   → REQUIRED: conceptual questions only — comparisons between ideas, where a concept holds or breaks, how two theorists differ, the tension inside the concept. (e.g. "מה ההבדל בין X ל-Y?", "היכן המושג הזה נשבר?", "איך זה מתיישב עם Z?").
+   If a drafted question addresses the user or their patient — rewrite it as a question about the concept.
    If missing — add them now.
 
-5. OPTIONAL — KEY REFERENCES (📄):
-   If 1-2 papers or texts are directly relevant to the concept just discussed — list them at the very end:
+5. KEY REFERENCES (📄) — ATTRIBUTE YOUR SOURCES:
+   When you state a concept, claim, or idea that comes from a specific paper or book you can name — attribute it. List the source(s) at the very end:
    Format: 📄 Author (year). "Title." Journal or Book.
-   Only include works you are certain exist. Do NOT invent URLs. If none come to mind — omit entirely.
+   - Your own concept → name the text it appears in (e.g. the capacity to be alone → 📄 Winnicott, D.W. (1958). "The Capacity to Be Alone." Int. J. Psychoanal.).
+   - ANOTHER theorist's concept you referenced (e.g. Mahler's rapprochement) → name THEIR source.
+   - CRITICAL — NEVER fabricate: cite only works you are genuinely certain exist, with the author, year, and title as you actually know them. Do NOT invent a title, a year, or a URL. If you are not certain of the exact source, omit it rather than guess. A wrong citation is worse than none.
 ══════════════════════════════════════` : '';
 
     // ─── CONSULTATION MODE (BW-114) — therapist consulting about their patient ───
@@ -344,7 +350,14 @@ If any part of your response is in Hebrew, these two words are nearly identical 
 - מטפל = therapist / analyst (the clinician — the one giving treatment)
 - מטופל = patient / analysand (the person in treatment — the one receiving therapy)
 
-Before sending: scan every sentence containing מטפל or מטופל. If you wrote מטפל where you mean the patient — correct it to מטופל. This mistake makes the clinical meaning completely wrong.`;
+Before sending: scan every sentence containing מטפל or מטופל. If you wrote מטפל where you mean the patient — correct it to מטופל. This mistake makes the clinical meaning completely wrong.
+
+══════════════════════════════════════
+HEBREW GRAMMAR — re-read before sending
+══════════════════════════════════════
+Write natural, grammatically correct Hebrew. A common machine error to avoid:
+- The PAST tense of "להגיד" uses the root א־מ־ר: "אמרתי", "אמרת", "אמרה", "אמרנו" — NEVER "הגדתי / הגדת / הגדנו" (these are not words in modern Hebrew). The forms תגיד / להגיד / מגיד are fine; the past is אמר.
+Before sending any Hebrew text, re-read it once for grammar and conjugation.`;
 
     // ─── END SESSION CLOSING INSTRUCTION ─────────────────────────────────────
     const END_SESSION_SUFFIX = bw_end_session ? `
@@ -450,7 +463,7 @@ LANGUAGE — ABSOLUTE, OVERRIDES EVERYTHING BELOW
         try {
           const chunks = await searchKnowledgeHybrid(query, theorist, 4);
           console.log(`[RAG] ${theorist} — נמצאו ${chunks.length} קטעים:`, chunks.map(c => `${c.source_title} (${c.source_year}) — דמיון: ${c.similarity?.toFixed(2)}`));
-          const ragContext = formatChunksForPrompt(chunks);
+          const ragContext = formatChunksForPrompt(chunks, bw_mode !== 'explore');
           if (ragContext) dynamicSystem += ragContext;
           else dynamicSystem += safetyAddition + UNIVERSAL_SCOPE_INSTRUCTION;
         } catch (ragError) {
