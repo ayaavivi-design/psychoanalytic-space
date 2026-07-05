@@ -1,29 +1,30 @@
 # עדיפויות אסטרטגיות — מרחב פסיכואנליטי
 
-_עודכן לאחרונה: 2026-06-28 (Adam, CEO)_
+_עודכן לאחרונה: 2026-07-05 (Adam, CEO)_
 
 ---
 
 ## המצב הנוכחי
-MVP בפרודקשן. 4 תיאורטיקנים פעילים (פרויד, קליין, ויניקוט, אוגדן). RAG עובד. **QA לא רץ 10 ימים. Judge לא רץ 12 ימים.** `vercel.json` מכיל `"crons": []` — המערכת רצה עיוורת מאז 17.06. B2C — המטופל מגיע ישירות.
+MVP בפרודקשן. 4 תיאורטיקנים פעילים (פרויד, קליין, ויניקוט, אוגדן). RAG עובד. **QA לא רץ 18 ימים. Judge לא רץ 18 ימים.** `vercel.json` מכיל `"crons": []` — המערכת רצה עיוורת מאז 17.06. B2C — המטופל מגיע ישירות.
 
-**בלוק ביצוע:** אוליבר הוא ה-bottleneck. Klein VOICE IDENTITY ו-Freud STATEMENT REQUIREMENT ממתינים 17 ו-11 ימים. שלושה ממוים קראו לו בשמו. הוא לא ביצע. האסקלציה הבאה היא שיחה ישירה — לא ממו נוסף.
+**עדכון 05.07:** ב-03.07 נדחף קומיט ל-`lib/theorist-voices.ts` (Winnicott hardening, בדיקות 17–20). Klein VOICE IDENTITY ו-Freud item 12 נמצאים **באותו קובץ** ולא נוספו — 32 ו-26 יום בהתאמה. זה לא gap ידע — זה gap הנחיה. ליה הסלימה ל-Tier 1 מוחלט (01.07). Safety: 76 ימים ללא בדיקה — Tier 2 לפי ליה.
 
 ---
 
-## עדיפות ראשונה — שלוש פעולות אוליבר, עד 30.06
+## עדיפות ראשונה — שלוש פעולות, עד הערב 05.07
 
-כל שלוש מנוסחות, מאומתות, לא דורשות מחקר נוסף.
+כל שלוש מנוסחות, מאומתות, לא דורשות מחקר נוסף. **מי שכותב קוד** — זה הימים.
 
-### א. Judge cron — שורה אחת ב-vercel.json (היום)
-**אוליבר** מוסיף ל-`vercel.json` תחת `"crons"`:
+### א. crons — שתי שורות ב-vercel.json (היום)
+מוסיפים ל-`vercel.json` תחת `"crons"`:
 ```json
+{ "path": "/api/qa-full", "schedule": "0 6 * * *" },
 { "path": "/api/judge-full", "schedule": "0 8 */3 * *" }
 ```
-כרגע `"crons": []` — המערכת עיוורת 10 ימים.
+כרגע `"crons": []` — המערכת עיוורת 18 יום.
 
-### ב. Klein VOICE IDENTITY block (עד 30.06)
-**אוליבר** מוסיף ב-`lib/theorist-voices.ts`, לפני MANDATORY FINAL CHECK של קליין (סביב שורה 889):
+### ב. Klein VOICE IDENTITY block (היום — אותו קובץ שנגע בו 03.07)
+מוסיפים ב-`lib/theorist-voices.ts`, לפני MANDATORY FINAL CHECK של קליין (סביב שורה 889):
 
 ```
 VOICE IDENTITY — WHERE YOU START FROM
@@ -47,8 +48,8 @@ the patient did not use — rewrite.
 
 **איתן** מאמת בשיחה חיה אחרי יישום.
 
-### ג. Freud STATEMENT REQUIREMENT (עד 30.06)
-**אוליבר** מוסיף כ-item 12 ב-MANDATORY FINAL CHECK של פרויד ב-`lib/theorist-voices.ts`:
+### ג. Freud STATEMENT REQUIREMENT (היום — אותו קובץ שנגע בו 03.07)
+מוסיפים כ-item 12 ב-MANDATORY FINAL CHECK של פרויד ב-`lib/theorist-voices.ts`:
 
 ```
 STATEMENT REQUIREMENT — ALL TURNS:
@@ -77,7 +78,7 @@ In this session, you do not wait. You speak.
 **איתן** מתעד ב-MEMORY.md — בכתב — האם בדיקת "סימנים אובדניים" בוצעה:
 > "בדיקת סימנים אובדניים — בוצע ביום ___ / לא בוצע / חסום כי ___"
 
-70+ יום ללא תיעוד. 5 ממוים ציינו זאת. עדיין פתוח.
+76+ יום ללא תיעוד. ליה שדרגה ל-Tier 2 (01.07). אי-אפשר להרחיב קהל לפני שזה נסגר.
 
 ---
 
@@ -87,10 +88,11 @@ In this session, you do not wait. You speak.
 ---
 
 ## מה חשוב לבדוק עכשיו
-1. **Judge cron:** בקוד היום? כן/לא
-2. **Klein VOICE IDENTITY:** בקוד עד 30.06? כן/לא
-3. **Freud STATEMENT REQUIREMENT:** בקוד עד 30.06? כן/לא
-4. **BW-64 live test:** ליה אישרה? כן/לא
+1. **crons (QA + Judge):** הוכנסו ל-vercel.json? כן/לא
+2. **Klein VOICE IDENTITY:** נוסף לפני שורה 889? כן/לא
+3. **Freud STATEMENT REQUIREMENT:** item 12 נוסף? כן/לא
+4. **Safety test:** בוצע? תאריך: ___
+5. **BW-64 live test:** ליה אישרה? כן/לא
 
 ---
 
