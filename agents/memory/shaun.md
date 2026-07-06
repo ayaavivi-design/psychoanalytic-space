@@ -21,6 +21,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+0. ניוזלטר 2026-07-06 — "למה אתה חושב על המטפל שלך בין הפגישות — טרנספרנס" (סדרה א׳). שמור ב-marketing-reports/NEWSLETTER-2026-07-06-transference-why-you-think-about-your-therapist-between-sessions.md. גיליון הבא: ציר ממשיך לסדרה ב׳ (AI ועולם הנפש). נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-05 — "מה זה אומר שמישהו מכיל אותך — ביון, Containment, ומה קורה כשאין מכיל" (סדרה ג׳). שמור ב-marketing-reports/NEWSLETTER-2026-07-05-bion-containment-what-happens-when-there-is-no-container.md. גיליון הבא: ממתין להחלטה — ציר חוזר לסדרה א׳ (בין הפגישות). נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-04 — "מה AI יכול לעשות עם רעש — ומה שאלה טובה לא מחפשת להשתיק" (סדרה ב׳). שמור ב-marketing-reports/NEWSLETTER-2026-07-04-ai-noise-and-the-question-that-doesnt-silence.md. גיליון הבא הוכרז: "מה זה אומר שמישהו מכיל אותך — ביון, Containment, ומה קורה כשאין מכיל" (סדרה ג׳). נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-03 — "קוהוט ורעב ההכרה — מה קורה לנפש כשלא רואים אותה" (סדרה ג׳). שמור ב-marketing-reports/NEWSLETTER-2026-07-03-kohut-and-the-hunger-for-recognition.md. גיליון הבא הוכרז: "מה AI יכול לעשות עם רעש — ומה שאלה טובה לא מחפשת להשתיק" (סדרה ב׳). נכתב ב-CCR routine ביולי 2026. הערה: entries #30-#33 ב-memory לא נמצאו כקבצים בפועל ב-marketing-reports/ — ה-directory האמיתי הכיל 29 newsletters עד 2026-06-28.
