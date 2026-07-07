@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { searchKnowledgeHybrid, formatChunksForPrompt } from '@/lib/rag';
 import { requireAuth } from '@/lib/auth';
-import { THEORIST_VOICE, SAFETY_PROTOCOL } from '@/lib/theorist-voices';
+import { THEORIST_VOICE, SAFETY_PROTOCOL, CORE_GUARDRAILS } from '@/lib/theorist-voices';
 
 const MAX_USER_MESSAGE_CHARS = 4000;
 
@@ -415,8 +415,11 @@ LANGUAGE — ABSOLUTE, OVERRIDES EVERYTHING BELOW
     // in a conversation. Marked with cache_control so Anthropic caches it.
     // END_SESSION_SUFFIX is intentionally excluded — it changes on the final turn,
     // keeping the static block warm for all turns including the last one.
+    // CORE_GUARDRAILS (G9 + G11) is appended to the STATIC block on purpose:
+    // it must be present on EVERY turn regardless of RAG (UNIVERSAL_SCOPE_INSTRUCTION
+    // lives in the dynamic tail and is dropped when RAG succeeds — this block is not).
     const staticSystem = (theorist && THEORIST_VOICE[theorist])
-      ? LANGUAGE_ANCHOR + CONSULT_PREFIX + EXPLORE_PREFIX + THEORIST_VOICE[theorist] + EXPLORE_SUFFIX + CONSULT_SUFFIX + HEBREW_TERMINOLOGY + MEMORY_TAG_INSTRUCTION
+      ? LANGUAGE_ANCHOR + CONSULT_PREFIX + EXPLORE_PREFIX + THEORIST_VOICE[theorist] + EXPLORE_SUFFIX + CONSULT_SUFFIX + HEBREW_TERMINOLOGY + MEMORY_TAG_INSTRUCTION + CORE_GUARDRAILS
       : '';
     if (!staticSystem) {
       console.warn(`[SECURITY] theorist "${theorist}" not found in THEORIST_VOICE — empty base system`);
