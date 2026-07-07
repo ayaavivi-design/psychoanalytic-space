@@ -21,6 +21,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+0. ניוזלטר 2026-07-07 — "כשאתה לא רוצה שמכונה תבין אותך — אמביוולנטיות ו-AI" (סדרה ב׳). שמור ב-marketing-reports/NEWSLETTER-2026-07-07-ai-ambivalence-not-wanting-to-be-understood.md. גיליון הבא: היימן וקאונטרטרנספרנס (סדרה ג׳). נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-06 — "למה אתה חושב על המטפל שלך בין הפגישות — טרנספרנס" (סדרה א׳). שמור ב-marketing-reports/NEWSLETTER-2026-07-06-transference-why-you-think-about-your-therapist-between-sessions.md. גיליון הבא: ציר ממשיך לסדרה ב׳ (AI ועולם הנפש). נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-05 — "מה זה אומר שמישהו מכיל אותך — ביון, Containment, ומה קורה כשאין מכיל" (סדרה ג׳). שמור ב-marketing-reports/NEWSLETTER-2026-07-05-bion-containment-what-happens-when-there-is-no-container.md. גיליון הבא: ממתין להחלטה — ציר חוזר לסדרה א׳ (בין הפגישות). נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-04 — "מה AI יכול לעשות עם רעש — ומה שאלה טובה לא מחפשת להשתיק" (סדרה ב׳). שמור ב-marketing-reports/NEWSLETTER-2026-07-04-ai-noise-and-the-question-that-doesnt-silence.md. גיליון הבא הוכרז: "מה זה אומר שמישהו מכיל אותך — ביון, Containment, ומה קורה כשאין מכיל" (סדרה ג׳). נכתב ב-CCR routine יולי 2026.
