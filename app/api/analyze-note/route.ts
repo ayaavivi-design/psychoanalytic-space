@@ -4,10 +4,36 @@ import { requireAuth } from '@/lib/auth';
 import { THEORIST_VOICE } from '@/lib/theorist-voices';
 import { searchKnowledgeHybrid, formatChunksForPrompt } from '@/lib/rag';
 import { ANALYZE_SYSTEM_PROMPT, ANALYZE_USER_TEMPLATE } from '@/lib/analyze-note-prompt';
+import { enforceClosureContract } from '@/lib/closure-contract';
+
+// BW-130 — Eitan's independent QA (eval-reports/eitan-analyze-note-merged-qa-independent-2026-07-09.md)
+// found that on thin material the model occasionally (1/8 runs) opens the held-path prose with a
+// debug-style meta-line about its own mechanism, e.g. "**זה מקרה החזקה — הפרוזה במקום JSON.**"
+// followed by a "---" divider, before the real reflection. That's an implementation detail that
+// leaked into patient-facing output — never meant for the patient to see. This is a fast guard
+// while the underlying prompt fix is worked out, not a replacement for it: strip a leading bold
+// meta-line that references the hold mechanism and/or JSON, plus any divider right after it.
+function stripMetaPreamble(text: string): string {
+  const lines = text.split('\n');
+  const first = (lines[0] || '').trim();
+  const looksLikeMetaPreamble = /^\*{1,2}.*\*{1,2}$/.test(first) && /(מקרה החזקה|JSON)/i.test(first);
+  if (!looksLikeMetaPreamble) return text;
+
+  let rest = lines.slice(1).join('\n').replace(/^\s*\n+/, '');
+  rest = rest.replace(/^-{3,}\s*\n+/, '');
+  return rest.trimStart();
+}
 
 // POST /api/analyze-note
 // body: { text: string, mode?: 'patient' | 'therapist', gender?: string }
 // BW-116 — one Winnicott agent (full voice + RAG) analyzes a note. Branches by interface. Local only.
+//
+// BW-129 — this endpoint now also serves the patient-facing "Analyze" button (merged in from the
+// old write-summary tool). On charged material the model may refuse to compress into the patient
+// JSON shape and hold instead in free prose (see analyze-note-prompt.ts). That prose path gets the
+// SAME two-layer BW-126 closure-contract guarantee write-summary had — never ends on a question,
+// never surfaces a raw 500 to the patient. Therapist interface is UNCHANGED (still 500 on parse
+// failure) — this is an already-shipped, already-QA'd path (BW-116) and is out of scope for BW-129.
 
 export async function POST(req: NextRequest) {
   const auth = await requireAuth(req);
@@ -45,11 +71,26 @@ export async function POST(req: NextRequest) {
 
   const raw = res.content[0]?.type === 'text' ? res.content[0].text : '';
   const jsonMatch = raw.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) return NextResponse.json({ error: 'parse_failed', raw }, { status: 500 });
 
-  try {
-    return NextResponse.json(JSON.parse(jsonMatch[0]));
-  } catch {
+  if (jsonMatch) {
+    try {
+      return NextResponse.json(JSON.parse(jsonMatch[0]));
+    } catch {
+      // fall through — therapist mode errors below, patient mode holds below
+    }
+  }
+
+  // Therapist interface — unchanged BW-116 behavior. No graceful hold here: this path is
+  // already shipped and already QA'd; changing it is out of scope for BW-129.
+  if (interfaceMode === 'therapist') {
     return NextResponse.json({ error: 'parse_failed', raw }, { status: 500 });
   }
+
+  // Patient interface — no valid JSON means the voice is faithfully holding charged material
+  // instead of distilling it (see analyze-note-prompt.ts). Never a 500 here: apply the same
+  // two-layer BW-126 closure-contract guarantee write-summary had, and return the hold at 200.
+  // BW-130: strip a leaked meta-preamble line (if present) before it ever reaches the patient.
+  const cleaned = stripMetaPreamble(raw.trim());
+  const reflection = await enforceClosureContract(cleaned, anthropic);
+  return NextResponse.json({ held: true, reflection });
 }

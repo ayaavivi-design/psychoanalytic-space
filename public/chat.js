@@ -1006,10 +1006,16 @@ function showWriteInterface() {
           <span class="bw-hold-chip" data-key="winnicott" onclick="selectHoldTheorist('winnicott')">${isEn ? 'Winnicott' : 'ויניקוט'}</span>
           <span class="bw-hold-chip" data-key="ogden" onclick="selectHoldTheorist('ogden')">${isEn ? 'Ogden' : 'אוגדן'}</span>
         </div>
-        <button id="bw-hold-start-btn" disabled onclick="startHoldConversation()"
-          style="margin-top:12px;padding:10px 28px;border-radius:22px;border:none;font-size:13px;font-family:var(--font-rubik),sans-serif;background:var(--border);color:var(--muted);cursor:default;">
-          ${isEn ? 'Talk it through' : 'שיחה'}
-        </button>
+        <div style="display:flex;gap:10px;margin-top:12px;align-items:center;justify-content:center;flex-wrap:wrap;">
+          <button id="bw-hold-analyze-btn" onclick="openWriteSummary()"
+            style="padding:10px 28px;border-radius:22px;border:1px solid var(--accent);font-size:13px;font-family:var(--font-rubik),sans-serif;background:none;color:var(--accent);cursor:pointer;">
+            ${isEn ? 'Analyze' : 'לנתח'}
+          </button>
+          <button id="bw-hold-start-btn" disabled onclick="startHoldConversation()"
+            style="padding:10px 28px;border-radius:22px;border:none;font-size:13px;font-family:var(--font-rubik),sans-serif;background:var(--border);color:var(--muted);cursor:default;">
+            ${isEn ? 'Talk it through' : 'שיחה'}
+          </button>
+        </div>
       </div>
       <div id="bw-write-hint" style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:flex-end;align-items:center;">
         <span id="bw-write-hint-archive" onclick="openWriteArchive()" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;">${isEn ? 'What I wrote' : 'מה כתבתי'}</span>
@@ -1106,10 +1112,6 @@ function showWriteInterface() {
     });
   }
 
-  // Show sidebar button
-  const wBtn = document.getElementById('sb-write-summary-btn');
-  if (wBtn) wBtn.style.display = '';
-
   updateEndSessionBtn();
 }
 
@@ -1200,7 +1202,8 @@ function initHoldPrivateBubble() {
 })();
 
 function getAllWriteContent() {
-  return document.getElementById('bw-write-textarea')?.innerText || '';
+  const ta = document.getElementById('bw-write-textarea') || document.getElementById('bw-hold-textarea');
+  return ta?.innerText || '';
 }
 
 function getPublicWriteContent() {
@@ -1257,13 +1260,24 @@ function openWriteArchive() {
     html += `<div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--muted);padding:8px 0;">${emptyMsg}</div>`;
   } else {
     entries.forEach((entry, i) => {
-      const preview = ((entry.summary?.key_points?.[0])
+      // Backward-compat: entries saved before BW-129 carry the old key_points/bring_to_session
+      // shape; entries saved after carry what_came_up/core_insight/bring_to_session, or a
+      // held-path reflection. Render whichever fields are present.
+      const preview = ((entry.summary?.what_came_up)
+        || (entry.summary?.key_points?.[0])
+        || (entry.summary?.reflection)
         || (entry.publicText || entry.fullText || '').split('\n')[0]
         || '—').slice(0, 90);
       const kpHtml = entry.summary?.key_points?.length
-        ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'Key points:' : 'נקודות עיקריות:'}</div><ul style="margin:0;padding-${dir==='rtl'?'right':'left'}:16px;">${entry.summary.key_points.map(p=>`<li style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${p}</li>`).join('')}</ul></div>` : '';
+        ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'Key points:' : 'נקודות עיקריות:'}</div><ul style="margin:0;padding-${dir==='rtl'?'right':'left'}:16px;">${entry.summary.key_points.map(p=>`<li style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${p}</li>`).join('')}</ul></div>`
+        : (entry.summary?.what_came_up
+          ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'What came up:' : 'מה עלה:'}</div><div style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${entry.summary.what_came_up}</div></div>` : '');
+      const insightHtml = entry.summary?.core_insight
+        ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? "What's coming into focus:" : 'מה שמתבהר:'}</div><div style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${entry.summary.core_insight}</div></div>` : '';
       const bringHtml = entry.summary?.bring_to_session
-        ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'What I want to bring:' : 'מה אני רוצה להביא:'}</div><div style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${entry.summary.bring_to_session}</div></div>` : '';
+        ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'What I want to bring:' : 'מה אני רוצה להביא:'}</div><div style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${entry.summary.bring_to_session}</div></div>`
+        : (entry.summary?.reflection
+          ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'Holding:' : 'החזקה:'}</div><div style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;white-space:pre-wrap;">${entry.summary.reflection}</div></div>` : '');
       html += `
         <div class="bw-archive-entry" style="border-bottom:1px solid var(--border);padding:14px 0;cursor:pointer;">
           <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;">
@@ -1274,7 +1288,7 @@ function openWriteArchive() {
             </div>
           </div>
           <div class="bw-archive-body" style="display:none;margin-top:14px;">
-            ${kpHtml}${bringHtml}
+            ${kpHtml}${insightHtml}${bringHtml}
             <div style="margin-top:4px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:6px;">${isEn ? 'Full text (including private):' : 'הטקסט המלא (כולל פרטי):'}</div><div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--text);line-height:1.75;white-space:pre-wrap;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;">${(entry.fullText || '').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>
           </div>
         </div>`;
@@ -1337,10 +1351,11 @@ async function openWriteSummary() {
 
   try {
     const authHeaders = await getAuthHeaders();
-    const res = await fetch('/api/write-summary', {
+    const gender = (JSON.parse(localStorage.getItem('intake_completed') || '{}').gender) || '';
+    const res = await fetch('/api/analyze-note', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeaders },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, mode: 'patient', gender }),
     });
     const data = await res.json();
     const el = document.getElementById('write-summary-results');
@@ -1349,12 +1364,31 @@ async function openWriteSummary() {
       el.innerHTML = `<div style="color:var(--accent);">${isEn ? 'Could not generate summary.' : 'לא הצלחנו לייצר סיכום.'}</div>`;
       return;
     }
-    const kpHtml = (data.key_points || []).map(p => `<li style="margin-bottom:6px;">${p}</li>`).join('');
+    // Graceful hold (BW-126, inherited via lib/closure-contract.ts): on charged material the
+    // voice refuses to distill and holds instead. Render the holding words themselves — no
+    // section breakdown, no send/save footer.
+    if (data.held) {
+      const reflection = (data.reflection || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      el.innerHTML = `
+        <div style="background:rgba(196,96,122,0.06);border-radius:10px;padding:16px 18px;">
+          <div style="color:var(--text);line-height:1.8;white-space:pre-wrap;">${reflection || (isEn ? "What you wrote is still alive — it's waiting for the room." : 'מה שכתבת עוד חי — הוא מחכה לחדר.')}</div>
+        </div>`;
+      return;
+    }
+    // BW-129 merged shape — three sections: what came up / core insight / bring to session.
+    const cameUpHtml = data.what_came_up
+      ? `<div style="margin-bottom:14px;">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'What came up' : 'מה עלה'}</div>
+          <div style="color:var(--text);line-height:1.75;">${data.what_came_up}</div>
+        </div>` : '';
+    const insightHtml = data.core_insight
+      ? `<div style="margin-bottom:18px;">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? "What's coming into focus" : 'מה שמתבהר'}</div>
+          <div style="color:var(--text);line-height:1.75;">${data.core_insight}</div>
+        </div>` : '';
     el.innerHTML = `
-      ${kpHtml ? `<div style="margin-bottom:18px;">
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Key points' : 'נקודות עיקריות'}</div>
-        <ul style="margin:0;padding-${isEn ? 'left' : 'right'}:18px;">${kpHtml}</ul>
-      </div>` : ''}
+      ${cameUpHtml}
+      ${insightHtml}
       <div style="background:rgba(196,96,122,0.06);border-radius:10px;padding:14px 16px;">
         <div style="font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Bring to session' : 'להביא לפגישה'}</div>
         <div style="color:var(--text);line-height:1.75;">${data.bring_to_session || ''}</div>
@@ -1396,7 +1430,7 @@ async function openWriteSummary() {
     });
 
     // Send to therapist — summary only, or summary + full letter based on toggle
-    const summaryHtml = `${kpHtml ? `<p><strong>${isEn ? 'Key points' : 'נקודות עיקריות'}:</strong></p><ul>${(data.key_points||[]).map(p=>`<li>${p}</li>`).join('')}</ul>` : ''}<p><strong>${isEn ? 'What I want to bring' : 'מה אני רוצה להביא'}:</strong> ${data.bring_to_session || ''}</p>`;
+    const summaryHtml = `${data.what_came_up ? `<p><strong>${isEn ? 'What came up' : 'מה עלה'}:</strong> ${data.what_came_up}</p>` : ''}${data.core_insight ? `<p><strong>${isEn ? "What's coming into focus" : 'מה שמתבהר'}:</strong> ${data.core_insight}</p>` : ''}<p><strong>${isEn ? 'What I want to bring' : 'מה אני רוצה להביא'}:</strong> ${data.bring_to_session || ''}</p>`;
     const letterHtml = `<hr style="margin:20px 0;border:none;border-top:1px solid #eee;"><p style="font-size:12px;color:#999;margin-bottom:8px;">${isEn ? 'My writing:' : 'הכתיבה:'}</p><p style="white-space:pre-wrap;line-height:1.7;">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
     document.getElementById('ws-send-btn')?.addEventListener('click', () => {
       const attachLetter = document.getElementById('ws-attach-letter')?.checked;
@@ -1445,6 +1479,9 @@ function selectHoldTheorist(key) {
   document.querySelectorAll('#bw-write-hold-picker .bw-hold-chip').forEach(chip => {
     chip.classList.toggle('active', chip.dataset.key === key);
   });
+  // Sync the sidebar theorist-tag highlight to the picker selection (React-safe path;
+  // also updates activeTheorists and dispatches holdtheoristchange → React holdTheorist state).
+  if (window.bwSetActiveTheorist) window.bwSetActiveTheorist(key);
   const isEn = (window.selectedLang?.code === 'en');
   const heNames = { freud: 'פרויד', klein: 'קליין', winnicott: 'ויניקוט', ogden: 'אוגדן' };
   const enNames = { freud: 'Freud', klein: 'Klein', winnicott: 'Winnicott', ogden: 'Ogden' };
@@ -1542,8 +1579,6 @@ function showModeSelect() {
   document.body.classList.remove('bw-write-mode');
   window._bwWriteContent = null;
   window._bwWriteSessionContext = null;
-  const _wBtn = document.getElementById('sb-write-summary-btn');
-  if (_wBtn) _wBtn.style.display = 'none';
   // Mark correct pill as selected
   const savedMode = localStorage.getItem('bw_mode') || 'session';
   document.querySelector('.bw-mode-primary')?.classList.toggle('bw-mode-selected', savedMode === 'session');
@@ -1572,8 +1607,6 @@ function bwUpdateModeLabels() {
   if (exploreLabel) exploreLabel.textContent = isEn ? 'Explore' : 'לחקור';
   const writeLabel = document.getElementById('bw-label-write');
   if (writeLabel) writeLabel.textContent = isEn ? 'Write' : 'כתיבה';
-  const writeSummaryLabel = document.getElementById('sb-write-summary-label');
-  if (writeSummaryLabel) writeSummaryLabel.textContent = isEn ? 'Session notes' : 'סיכום כתיבה';
   // Update write area texts if currently shown
   const _writeArea = document.getElementById('bw-write-area');
   if (_writeArea) {
@@ -1582,7 +1615,7 @@ function bwUpdateModeLabels() {
     const _wTa = document.getElementById('bw-write-textarea');
     if (_wTa) _wTa.dataset.placeholder = isEn ? 'Something you want your therapist to know.' : 'משהו שתרצה שהמטפל שלך ידע.';
     const _wHintText = document.getElementById('bw-write-hint-text');
-    if (_wHintText) _wHintText.textContent = isEn ? "Use the sidebar to generate session notes when you're ready." : 'השתמש ב"סיכום כתיבה" בסייד-בר כשסיימת.';
+    if (_wHintText) _wHintText.textContent = isEn ? 'When you\'re ready, use "Analyze" below to hold what you wrote.' : 'כשתסיימי/תסיים — השתמשו ב"לנתח" למטה כדי להחזיק את מה שכתבתם.';
     const _wHintArchive = document.getElementById('bw-write-hint-archive');
     if (_wHintArchive) { _wHintArchive.textContent = isEn ? 'What I wrote' : 'מה כתבתי'; _wHintArchive.style.marginLeft = isEn ? '12px' : ''; _wHintArchive.style.marginRight = isEn ? '' : '12px'; }
     _writeArea.style.direction = isEn ? 'ltr' : 'rtl';

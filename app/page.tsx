@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { PenLine, Globe, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, NotebookPen, Mic, ScrollText } from 'lucide-react';
+import { PenLine, Globe, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, Mic, ScrollText } from 'lucide-react';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -210,6 +210,18 @@ export default function Home() {
   const isDev = process.env.NODE_ENV !== 'production';
   // Local preview uses the dev tabs; production follows the login choice.
   const activePersona = isLocalhost ? devPersona : prodPersona;
+
+  // Mirror holdTheorist onto the sidebar highlight — but only once the patient has actually
+  // written something (same gate as the continue button: holdText.trim()). Before any writing
+  // the sidebar stays neutral. Set-on-only: we never actively clear here, to avoid flicker when
+  // entering a conversation (handleEnterConversation blanks holdText for a tick before the
+  // opening text fills it). Uses the existing .active mechanism (bwSetActiveTheorist). No loop —
+  // it re-dispatches holdtheoristchange with the same key, so setHoldTheorist is a no-op.
+  useEffect(() => {
+    if (mounted && activePersona === 'patient' && holdText.trim()) {
+      (window as any).bwSetActiveTheorist?.(holdTheorist);
+    }
+  }, [holdTheorist, activePersona, mounted, holdText]);
 
   // Restore a locally-saved writing draft when the patient writing screen mounts.
   // Runs once (holdDraftRestoredRef) so it never clobbers live edits. Stored as
@@ -809,10 +821,6 @@ export default function Home() {
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
               <span className="sb-label" id="sb-summary-label">סיכום התייעצות</span>
             </div>
-            <div id="sb-write-summary-btn" className="sb-item" data-persona="patient" onClick={() => (window as any).openWriteSummary()} style={{ display: 'none' }}>
-              <span className="sb-icon"><NotebookPen size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label" id="sb-write-summary-label">סיכום כתיבה</span>
-            </div>
             {/* BW-113 — מחקר חזר לסייד-בר כפריט עצמאי (לא קשור למקרה). */}
             {isLocalhost && (
               <div id="sb-explore-btn" className="sb-item" data-persona="therapist" onClick={() => (window as any).enterExploreModeFromSidebar?.()}>
@@ -1022,6 +1030,29 @@ export default function Home() {
                       <Mic size={15} />
                     </button>
                     <div style={{ flex: 1 }} />
+                    {/* Secondary action — analyze the writing. Gated on written text (BW-122:
+                        no fixed discharge-button from frame one; the gesture appears only
+                        after the patient has written). Calls chat.js's openWriteSummary(),
+                        which since BW-129 hits /api/analyze-note in patient mode (merged with
+                        the old write-summary tool — see lib/analyze-note-prompt.ts). */}
+                    {holdText.trim() && (
+                      <button
+                        onClick={() => (window as any).openWriteSummary?.()}
+                        style={{
+                          background: 'transparent', border: 'none', padding: 0, height: 44,
+                          cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+                          transition: 'opacity 0.15s', flexShrink: 0, marginInlineEnd: 8,
+                        }}
+                      >
+                        <span style={{
+                          background: 'transparent', border: '1px solid var(--accent)', borderRadius: 16, height: 30, padding: '0 14px',
+                          fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)',
+                          display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
+                        }}>
+                          {isHe ? 'לנתח' : 'Analyze'}
+                        </span>
+                      </button>
+                    )}
                     {/* Primary action — continue into a held conversation with the theorist.
                         Label follows the sidebar selection via holdTheorist (holdtheoristchange). */}
                     <button
