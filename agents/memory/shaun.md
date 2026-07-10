@@ -21,6 +21,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+0. ניוזלטר 2026-07-10 — "מה שאתה כותב ל-AI שמעולם לא אמרת לאף אחד — stranger on the train effect" (סדרה ב׳ — AI ועולם הנפש). שמור ב-marketing-reports/NEWSLETTER-2026-07-10-what-you-write-to-ai-that-you-never-said-to-anyone.md. גיליון הבא: חוזר לסדרה ג׳ (תיאורטיקנים) — נושא פתוח. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-09 — "זה הגיע שלושה ימים אחרי הפגישה — Nachträglichkeit" (סדרה א׳ — בין הפגישות). שמור ב-marketing-reports/NEWSLETTER-2026-07-09-nachtraeglichkeit-meaning-arrives-after.md. גיליון הבא: ציר עובר לסדרה ב׳ (AI ועולם הנפש) — נושא פתוח. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-08 — "רוֵרי — כשמחשבה מגיעה ממקום שלא ידעת שהוא שם" (סדרה ג׳ — אוגדן). שמור ב-marketing-reports/NEWSLETTER-2026-07-08-ogden-reverie-thinking-thoughts-that-arent-yours.md. גיליון הבא: ציר חוזר לסדרה א׳ (בין הפגישות) — נושא פתוח. הערה: היימן/קאונטרטרנספרנס כבר נכתב ביוני 12, לא לחזור. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-07 — "כשאתה לא רוצה שמכונה תבין אותך — אמביוולנטיות ו-AI" (סדרה ב׳). שמור ב-marketing-reports/NEWSLETTER-2026-07-07-ai-ambivalence-not-wanting-to-be-understood.md. גיליון הבא: היימן וקאונטרטרנספרנס (סדרה ג׳). נכתב ב-CCR routine יולי 2026.
