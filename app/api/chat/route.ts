@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { searchKnowledgeHybrid, formatChunksForPrompt } from '@/lib/rag';
+import { paraphraseForRetrieval } from '@/lib/query-paraphrase';
 import { requireAuth } from '@/lib/auth';
 import { THEORIST_VOICE, SAFETY_PROTOCOL, CORE_GUARDRAILS } from '@/lib/theorist-voices';
 
@@ -40,6 +41,15 @@ const CRISIS_KEYWORDS_HE = [
   'לא רואה טעם להמשיך', 'אין לי טעם להמשיך',
   'יהיה יותר קל בלעדיי', 'הייתי עושה לכולם טובה אם לא',
   'אם לא הייתי כאן', 'עייף מלחיות', 'עייפה מלחיות',
+  // כוונה/תוכנית — נוספו 12.7.2026 אחרי בדיקת בטיחות 2-turn על קול ויניקוט (איתן, QA; אישור קליני ליה)
+  // הערה: 'איך זה יקרה' הוצא בכוונה — כ-substring גולמי היה נתפס בטקסט תמים ("איך זה יקרה בפגישה")
+  'חשבתי על זה ברצינות',
+  'תכננתי איך',
+  'יש לי תוכנית', 'יש לי תכנית',
+  'איך אעשה את זה',
+  'לא אחזיק עוד', 'לא אחזיק הרבה', 'לא אחזיק עוד הרבה',
+  'לא אצליח להחזיק',
+  'לא בטוחה שאחזיק', 'לא בטוח שאחזיק',
 ];
 
 const CRISIS_KEYWORDS_EN = [
@@ -48,6 +58,9 @@ const CRISIS_KEYWORDS_EN = [
   'don\'t want to live', 'want to die', 'want to disappear',
   'no reason to live', 'no point in living',
   'can\'t go on', 'can\'t take it anymore',
+  // intent/plan — added 12.7.2026 (symmetric with HE hardening)
+  'i have a plan', 'thought about how', 'how i would do it',
+  'won\'t last much longer', 'can\'t hold on much longer',
 ];
 
 const CRISIS_RESPONSE = `אני צריך לעצור כאן ולדבר איתך ישירות — לא כתיאורטיקן, אלא כ-Between.
@@ -62,6 +75,18 @@ const CRISIS_RESPONSE = `אני צריך לעצור כאן ולדבר איתך �
 
 Between לא מחליף תמיכה אנושית, ולא בנוי לרגעים כאלה. יש אנשים שמוכנים לענות לך עכשיו.`;
 
+// Regex layer — נוסף 12.7.2026. סוגר את מחלקת-החמיקה של substring גולמי:
+// פרפרזה שמכניסה מילת-ביניים ("אין לי *באמת* סיבה") או מנסחת מחדש ("קל *לכולם*",
+// "לא *אהיה* כאן") חמקה מרשימת המחרוזות. הביטויים המדויקים נתפסים; הפרפרזה חמקה.
+// עיקרון: לסבול מילת-ביניים בתוך ביטוי-סיכון, ולתפוס "עדיף בלעדיי" רק בהקשר —
+// לא עתיד-חשוף ("מחר לא אהיה כאן") שהוא תמים. אישור קליני: ליה.
+const CRISIS_REGEX_HE: RegExp[] = [
+  // "אין (לי) [מילת-ביניים] סיבה/טעם להמשיך/לחיות" — עמיד למילה מוכנסת
+  /אין\s+(?:לי\s+)?(?:באמת\s+|ממש\s+|כבר\s+|שום\s+|יותר\s+)?(?:סיבה|טעם)\s+(?:להמשיך|לחיות)/,
+  // "יהיה יותר קל ... אם לא אהיה/הייתי כאן / בלעדיי" — מבנה 'עדיף בלעדיי', בהקשר בלבד
+  /יהיה\s+יותר\s+קל\s+[^.?!]{0,20}?(?:בלעדי|אם\s+(?:פשוט\s+)?לא\s+(?:אהיה|הייתי)\s+(?:פה|כאן|קיים|קיימת))/,
+];
+
 function detectCrisis(text: string): boolean {
   const normalized = text.toLowerCase();
   for (const keyword of CRISIS_KEYWORDS_HE) {
@@ -69,6 +94,9 @@ function detectCrisis(text: string): boolean {
   }
   for (const keyword of CRISIS_KEYWORDS_EN) {
     if (normalized.includes(keyword)) return true;
+  }
+  for (const rx of CRISIS_REGEX_HE) {
+    if (rx.test(normalized)) return true;
   }
   return false;
 }
@@ -459,10 +487,24 @@ LANGUAGE — ABSOLUTE, OVERRIDES EVERYTHING BELOW
     let dynamicSystem = END_SESSION_SUFFIX;
 
     if (theorist && THEORISTS_WITH_RAG.has(theorist) && messages?.length > 0) {
-      const lastUserMessage = [...messages].reverse().find((m: { role: string }) => m.role === 'user');
-      const query = typeof lastUserMessage?.content === 'string'
-        ? lastUserMessage.content
-        : lastUserMessage?.content?.[0]?.text || '';
+      // Query expansion (register-gap fix, 12.07): a single colloquial patient turn
+      // retrieves sub-floor (0.34–0.54 < 0.59 health floor) against the theoretical
+      // English corpus. Accumulate the last few PATIENT turns (not theorist output —
+      // avoids grounding-on-own-voice) to give the multilingual embedder more semantic
+      // surface. Reversible: revert to lastUserMessage-only to restore prior behavior.
+      const getMsgText = (m: { content?: unknown }): string =>
+        typeof m?.content === 'string'
+          ? m.content
+          : (m?.content as { text?: string }[] | undefined)?.[0]?.text || '';
+      const recentUserTurns = [...messages].filter((m: { role: string }) => m.role === 'user').slice(-3);
+      const rawQuery = recentUserTurns.map(getMsgText).filter(Boolean).join('\n');
+
+      // Register bridge (layer 1(ב), 12.07): reframe the colloquial Hebrew turns
+      // into neutral theoretical English before embedding. Expansion (א) alone
+      // stayed sub-floor because query↔corpus differ in language AND register.
+      // Ephemeral: used only as the retrieval query, never shown, never blocks
+      // (paraphraseForRetrieval falls back to rawQuery on any failure).
+      const query = rawQuery ? await paraphraseForRetrieval(anthropic, rawQuery) : rawQuery;
 
       if (query) {
         try {
