@@ -21,6 +21,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+0. ניוזלטר 2026-07-13 — "כשפתחת את Between — ולא כתבת" (סדרה ב׳ — AI ועולם הנפש). נושא: ההתנגדות לכתיבה עצמה כחומר קליני — מה אומר הרגע שפותחים ולא כותבים. שמור ב-marketing-reports/NEWSLETTER-2026-07-13-ai-resistance-not-writing.md. גיליון הבא: סדרה ג׳ (תיאורטיקנים). נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-12 — "מה שלא אמרת — ולמה זה בדיוק מה שחשוב" (סדרה א׳ — בין הפגישות). נושא: החומר שמטופלים שומרים לעצמם בפגישה. שמור ב-marketing-reports/NEWSLETTER-2026-07-12-what-you-didnt-say-in-the-session.md. גיליון הבא: סדרה ב׳ (AI ועולם הנפש) — נושא פתוח. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-11 — "היכולת להיות לבד — ויניקוט על נוכחות שמחזיקה בלי לפלוש" (סדרה ג׳ — תיאורטיקנים). שמור ב-marketing-reports/NEWSLETTER-2026-07-11-winnicott-capacity-to-be-alone.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-10 — "מה שאתה כותב ל-AI שמעולם לא אמרת לאף אחד — stranger on the train effect" (סדרה ב׳ — AI ועולם הנפש). שמור ב-marketing-reports/NEWSLETTER-2026-07-10-what-you-write-to-ai-that-you-never-said-to-anyone.md. נכתב ב-CCR routine יולי 2026.
