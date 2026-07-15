@@ -117,7 +117,9 @@ async function runTheorist(theorist: string): Promise<{
       messages.push({ role: 'user', content: CONVERSATION_TURNS[i] });
       const res = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
-        max_tokens: 250,
+        // 1200 = זהה לפרודקשן (chat/route.ts). היה 250 → קטע תגובות באמצע משפט,
+        // מה שהפך את המייל היומי לבלתי-בר-שיפוט (קריאה-עיוורת של ליה על גדמים). 13.7.2026
+        max_tokens: 1200,
         system,
         messages,
       });

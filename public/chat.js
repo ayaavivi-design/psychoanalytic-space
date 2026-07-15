@@ -88,6 +88,7 @@ function proceedToApp() {
     // Ephemeral therapist: no mode-select screen, but still hide the bottom composer on the writing page.
     // It reappears only when a consult dialogue starts (startConsultation removes bw-selecting).
     if (!_hasRendered && _isTherapist) document.body.classList.add('bw-selecting');
+    bwRestoreDraft(); // BW-135 — bring back any unsent text after a reload
   }, 350);
   setTimeout(() => { initSidebarTips(); startOnboardingTour(); }, 800);
 }
@@ -2337,6 +2338,19 @@ function autoResize(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 140) + 'px';
 }
+
+// BW-135 — composer draft persistence. The textarea holds unsent text only in the DOM;
+// a page reload (dev fast-refresh, or a browser discarding a background tab) wiped it when
+// the user switched tabs mid-typing. Persist to localStorage so nothing typed is lost.
+function bwSaveDraft(v) { try { if (v) localStorage.setItem('bw_draft', v); else localStorage.removeItem('bw_draft'); } catch (e) { /* noop */ } }
+function bwClearDraft() { try { localStorage.removeItem('bw_draft'); } catch (e) { /* noop */ } }
+function bwRestoreDraft() {
+  let d = ''; try { d = localStorage.getItem('bw_draft') || ''; } catch (e) { d = ''; }
+  if (!d) return;
+  const ui = document.getElementById('user-input');
+  if (ui && !ui.value) { ui.value = d; if (typeof autoResize === 'function') autoResize(ui); }
+}
+window.bwClearDraft = bwClearDraft;
 
 function updateSessionTitle(forceNew = false) {
   const titleEl = document.getElementById('session-title');
@@ -6218,6 +6232,7 @@ async function sendMessage() {
   if (intakeMode) {
     input.value = '';
     input.style.height = 'auto';
+    bwClearDraft(); // BW-135
     submitIntakeAnswer(text);
     return;
   }
@@ -6245,6 +6260,7 @@ async function sendMessage() {
   document.getElementById('send-btn').disabled = true;
   input.value = '';
   input.style.height = 'auto';
+  bwClearDraft(); // BW-135 — message sent, drop the saved draft
 
   // Reset silence state — user sent a message
   clearTimeout(silenceTimer);
@@ -6571,8 +6587,13 @@ async function exportPDF() {
     topic = d.content?.[0]?.text?.trim().slice(0, 40) || '';
   } catch(e) { topic = ''; }
 
+  // BW-134: in research mode (bw_mode='explore') the export is a study of the theorist, not a conversation.
+  const _isResearch = localStorage.getItem('bw_mode') === 'explore';
+  const _isEnPdf = selectedLang?.code === 'en';
+  const _verb = _isResearch ? (_isEnPdf ? 'Research with' : 'מחקר עם') : (_isEnPdf ? 'Conversation with' : 'שיחה עם');
+  const _onWord = _isEnPdf ? ' on ' : ' על ';
   const sessionTitle = theoristLabel
-    ? (topic ? `שיחה עם ${theoristLabel} על ${topic}` : `שיחה עם ${theoristLabel} · ${date}`)
+    ? (topic ? `${_verb} ${theoristLabel}${_onWord}${topic}` : `${_verb} ${theoristLabel} · ${date}`)
     : `שיחה פסיכואנליטית · ${date}`;
 
   let html = `<!DOCTYPE html><html dir="rtl" lang="he"><head>
@@ -6963,6 +6984,7 @@ function performNewChat() {
   window.activeFlow = null;
   if (clinicalMode) toggleClinicalMode();
   document.getElementById('user-input').value = '';
+  bwClearDraft(); // BW-135 — new chat, clear draft
   updateEndSessionBtn();
   setTimeout(checkIntakeStatus, 50);
 }
@@ -7000,6 +7022,7 @@ function bwExitChatToHome() {
   document.body.classList.remove('bw-write-mode');
   window.activeFlow = null;
   const ui = document.getElementById('user-input'); if (ui) ui.value = '';
+  bwClearDraft(); // BW-135 — exited chat, clear draft
 }
 window.bwExitChatToHome = bwExitChatToHome;
 
@@ -7585,6 +7608,7 @@ function continueAfterEnd() {
 function initSilenceDetection() {
   document.addEventListener('input', (e) => {
     if (e.target.id !== 'user-input') return;
+    bwSaveDraft(e.target.value); // BW-135 — persist unsent draft across reloads/tab-discards
     // Clinical mode: full API silence response
     if (window.clinicalMode && !silenceResponseSent) {
       clearTimeout(silenceTimer);
