@@ -22,7 +22,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-0. ניוזלטר 2026-07-14 — "מה שלא הצלחת לומר בפגישה" (סדרה א׳ — resistance/unsaid). שמור ב-marketing-reports/NEWSLETTER-2026-07-14-what-you-couldnt-say-in-the-session.md. הערה: חפיפה חלקית עם 07-12 — לבדוק עם איה. גיליון הבא: סדרה ג׳ (תיאורטיקנים). נכתב ב-CCR routine יולי 2026.
+0. ניוזלטר 2026-07-15 — "המקום שאמרת שלא תחזור אליו — פרויד על חזרה כפייתית" (סדרה ג׳ — תיאורטיקנים). שמור ב-marketing-reports/NEWSLETTER-2026-07-15-freud-repetition-compulsion.md. גיליון הבא: סדרה א׳ (בין הפגישות) — לא חזרה/unsaid (כוסה פעמיים). נכתב ב-CCR routine יולי 2026.
+0. ניוזלטר 2026-07-14 — "מה שלא הצלחת לומר בפגישה" (סדרה א׳ — resistance/unsaid). שמור ב-marketing-reports/NEWSLETTER-2026-07-14-what-you-couldnt-say-in-the-session.md. הערה: חפיפה חלקית עם 07-12 — לבדוק עם איה. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-13 — "כשפתחת את Between — ולא כתבת" (סדרה ב׳ — AI ועולם הנפש). שמור ב-marketing-reports/NEWSLETTER-2026-07-13-ai-resistance-not-writing.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-12 — "מה שלא אמרת — ולמה זה בדיוק מה שחשוב" (סדרה א׳ — בין הפגישות). שמור ב-marketing-reports/NEWSLETTER-2026-07-12-what-you-didnt-say-in-the-session.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-11 — "היכולת להיות לבד — ויניקוט על נוכחות שמחזיקה בלי לפלוש" (סדרה ג׳ — תיאורטיקנים). שמור ב-marketing-reports/NEWSLETTER-2026-07-11-winnicott-capacity-to-be-alone.md. נכתב ב-CCR routine יולי 2026.
@@ -31,4 +32,3 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 0. ניוזלטר 2026-07-08 — "רוֵרי — כשמחשבה מגיעה ממקום שלא ידעת שהוא שם" (סדרה ג׳ — אוגדן). שמור ב-marketing-reports/NEWSLETTER-2026-07-08-ogden-reverie-thinking-thoughts-that-arent-yours.md. הערה: היימן/קאונטרטרנספרנס כבר נכתב ביוני 12, לא לחזור. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-07 — "כשאתה לא רוצה שמכונה תבין אותך — אמביוולנטיות ו-AI" (סדרה ב׳). שמור ב-marketing-reports/NEWSLETTER-2026-07-07-ai-ambivalence-not-wanting-to-be-understood.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-06 — "למה אתה חושב על המטפל שלך בין הפגישות — טרנספרנס" (סדרה א׳). שמור ב-marketing-reports/NEWSLETTER-2026-07-06-transference-why-you-think-about-your-therapist-between-sessions.md. נכתב ב-CCR routine יולי 2026.
-0. ניוזלטר 2026-07-05 — "מה זה אומר שמישהו מכיל אותך — ביון, Containment, ומה קורה כשאין מכיל" (סדרה ג׳). שמור ב-marketing-reports/NEWSLETTER-2026-07-05-bion-containment-what-happens-when-there-is-no-container.md. נכתב ב-CCR routine יולי 2026.
