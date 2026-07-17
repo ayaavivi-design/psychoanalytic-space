@@ -22,7 +22,8 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
-0. ניוזלטר 2026-07-16 — "הרגע שרצית להתקשר למטפל" (סדרה א׳ — בין הפגישות). שמור ב-marketing-reports/NEWSLETTER-2026-07-16-the-moment-you-wanted-to-call-your-therapist.md. גיליון הבא: סדרה ב׳ (AI ועולם הנפש). נכתב ב-CCR routine יולי 2026.
+0. ניוזלטר 2026-07-17 — "ה-AI לא צריך ממך כלום — ומה זה עושה לנפש" (סדרה ב׳ — AI ועולם הנפש). אסימטריית הקשר: AI ללא צרכים, ללא פגיעות — מול ויניקוט על "שימוש באובייקט". שמור ב-marketing-reports/NEWSLETTER-2026-07-17-ai-has-no-needs-object-without-stakes.md. גיליון הבא: סדרה ג׳ (תיאורטיקנים). נכתב ב-CCR routine יולי 2026.
+0. ניוזלטר 2026-07-16 — "הרגע שרצית להתקשר למטפל" (סדרה א׳ — בין הפגישות). שמור ב-marketing-reports/NEWSLETTER-2026-07-16-the-moment-you-wanted-to-call-your-therapist.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-15 — "המקום שאמרת שלא תחזור אליו — פרויד על חזרה כפייתית" (סדרה ג׳ — תיאורטיקנים). שמור ב-marketing-reports/NEWSLETTER-2026-07-15-freud-repetition-compulsion.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-14 — "מה שלא הצלחת לומר בפגישה" (סדרה א׳ — resistance/unsaid). שמור ב-marketing-reports/NEWSLETTER-2026-07-14-what-you-couldnt-say-in-the-session.md. הערה: חפיפה חלקית עם 07-12 — לבדוק עם איה. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-13 — "כשפתחת את Between — ולא כתבת" (סדרה ב׳ — AI ועולם הנפש). שמור ב-marketing-reports/NEWSLETTER-2026-07-13-ai-resistance-not-writing.md. נכתב ב-CCR routine יולי 2026.
