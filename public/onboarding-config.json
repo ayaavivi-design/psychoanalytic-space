@@ -1,5 +1,5 @@
 {
-  "version": "2026-07-10",
+  "version": "2026-07-17",
   "updated_by": "onboarding-agent",
   "tour": {
     "enabled": true,
@@ -29,7 +29,7 @@
         "target": ".theorist-tag",
         "position": "right",
         "title": "עם מי לשבת?",
-        "text": "פרויד, ויניקוט, קליין — כל אחד שומע את אותו חומר אחרת. אפשר לבחור בסרגל הצד ולהחליף בין שיחות.",
+        "text": "פרויד, ויניקוט, קליין — כל אחד ישמע את מה שכתבת אחרת. עם מי רוצה לשבת?",
         "title_en": "Who to sit with?",
         "text_en": "Freud, Winnicott, Klein — each hears the same material differently. Choose from the sidebar and switch between sessions.",
         "personas": ["patient", "therapist", "student"]
@@ -37,8 +37,8 @@
     ]
   },
   "sidebar_tips": {
-    "⚲": "פיקוח קליני — ניתוח שיחה שכבר קרתה",
-    "◎": "סיכום — מה עלה בשיחה הזו",
+    "⚲": "להסתכל על השיחה מבחוץ",
+    "◎": "מה עלה — לקחת איתך לפגישה הבאה",
     "◉": "מה לקחתי — לכתוב לעצמי מה נשאר",
     "⇌": "אותו חומר, עיניים שונות — פרויד, ויניקוט, קליין",
     "◌": "הסרת פרטים מזהים — לפני שמשתפים חומר"
