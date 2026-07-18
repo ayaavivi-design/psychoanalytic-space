@@ -134,7 +134,11 @@ export async function GET(req: NextRequest) {
 
     const judgeRaw = judgeRes.content[0]?.type === 'text' ? judgeRes.content[0].text : '{}';
     let judgeReport: Record<string, unknown> = {};
-    try { judgeReport = JSON.parse(judgeRaw); } catch { judgeReport = { raw: judgeRaw }; }
+    // המודל עוטף את ה-JSON בגדרות markdown — חילוץ האובייקט לפני הפרסינג
+    try {
+      const m = judgeRaw.match(/\{[\s\S]*\}/);
+      judgeReport = JSON.parse(m ? m[0] : judgeRaw);
+    } catch { judgeReport = { raw: judgeRaw }; }
 
     const timeMs = Date.now() - start;
     const overall = (judgeReport.overall as string) || 'unknown';

@@ -171,7 +171,11 @@ async function runJudge(theorist: string): Promise<JudgeResult> {
 
     const judgeRaw = judgeRes.content[0]?.type === 'text' ? judgeRes.content[0].text : '{}';
     let report: Record<string, unknown> = {};
-    try { report = JSON.parse(judgeRaw); } catch { report = {}; }
+    // המודל עוטף את ה-JSON בגדרות markdown — חילוץ האובייקט לפני הפרסינג
+    try {
+      const m = judgeRaw.match(/\{[\s\S]*\}/);
+      report = JSON.parse(m ? m[0] : judgeRaw);
+    } catch { report = {}; }
 
     const overall = (report.overall as string) || 'fail';
     return {

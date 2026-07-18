@@ -31,7 +31,9 @@ export async function POST(req: NextRequest) {
   const raw = response.content[0]?.type === 'text' ? response.content[0].text : '';
 
   try {
-    const report = JSON.parse(raw);
+    // המודל עוטף את ה-JSON בגדרות markdown — חילוץ האובייקט לפני הפרסינג
+    const match = raw.match(/\{[\s\S]*\}/);
+    const report = JSON.parse(match ? match[0] : raw);
     return NextResponse.json(report);
   } catch {
     // המודל לא החזיר JSON תקין — מחזירים את הטקסט הגולמי לדיבוג
