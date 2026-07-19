@@ -22,6 +22,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+0. ניוזלטר 2026-07-19 — "שבוע קשה אחרי פגישה טובה — למה ההתקדמות מפחידה" (סדרה א׳ — בין הפגישות). negative therapeutic reaction (פרויד) + עמדה דיכאונית (קליין): למה דווקא הפגישה הטובה מובילה לשבוע הקשה. שמור ב-marketing-reports/NEWSLETTER-2026-07-19-hard-week-after-good-session.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-18 — "מה שידעת לפני שיכולת לחשוב את זה — בולאס והידוע שלא חשבנו" (סדרה ג׳ — תיאורטיקנים). the unthought known: ידע שחי לפני שפה, ואיך Between מחזיקה אותו בין פגישות. שמור ב-marketing-reports/NEWSLETTER-2026-07-18-bollas-unthought-known.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-17 — "ה-AI לא צריך ממך כלום — ומה זה עושה לנפש" (סדרה ב׳ — AI ועולם הנפש). אסימטריית הקשר: AI ללא צרכים, ללא פגיעות — מול ויניקוט על "שימוש באובייקט". שמור ב-marketing-reports/NEWSLETTER-2026-07-17-ai-has-no-needs-object-without-stakes.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-16 — "הרגע שרצית להתקשר למטפל" (סדרה א׳ — בין הפגישות). שמור ב-marketing-reports/NEWSLETTER-2026-07-16-the-moment-you-wanted-to-call-your-therapist.md. נכתב ב-CCR routine יולי 2026.
@@ -32,4 +33,3 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 0. ניוזלטר 2026-07-11 — "היכולת להיות לבד — ויניקוט על נוכחות שמחזיקה בלי לפלוש" (סדרה ג׳ — תיאורטיקנים). שמור ב-marketing-reports/NEWSLETTER-2026-07-11-winnicott-capacity-to-be-alone.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-10 — "מה שאתה כותב ל-AI שמעולם לא אמרת לאף אחד — stranger on the train effect" (סדרה ב׳ — AI ועולם הנפש). שמור ב-marketing-reports/NEWSLETTER-2026-07-10-what-you-write-to-ai-that-you-never-said-to-anyone.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-09 — "זה הגיע שלושה ימים אחרי הפגישה — Nachträglichkeit" (סדרה א׳ — בין הפגישות). שמור ב-marketing-reports/NEWSLETTER-2026-07-09-nachtraeglichkeit-meaning-arrives-after.md. נכתב ב-CCR routine יולי 2026.
-0. ניוזלטר 2026-07-08 — "רוֵרי — כשמחשבה מגיעה ממקום שלא ידעת שהוא שם" (סדרה ג׳ — אוגדן). שמור ב-marketing-reports/NEWSLETTER-2026-07-08-ogden-reverie-thinking-thoughts-that-arent-yours.md. הערה: היימן/קאונטרטרנספרנס כבר נכתב ביוני 12, לא לחזור. נכתב ב-CCR routine יולי 2026.
