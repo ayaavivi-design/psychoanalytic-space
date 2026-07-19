@@ -1,17 +1,17 @@
 # עדיפויות אסטרטגיות — מרחב פסיכואנליטי
 
-_עודכן לאחרונה: 2026-07-12 (Adam, CEO)_
+_עודכן לאחרונה: 2026-07-19 (Adam, CEO)_
 
 ---
 
 ## המצב הנוכחי
-MVP בפרודקשן. 4 תיאורטיקנים פעילים (פרויד, קליין, ויניקוט, אוגדן). RAG עובד. **Crons פעילים** — QA יומי + Judge כל 3 ימים (אושר 10.07). CORE_GUARDRAILS Wave 1 נכנסה (G8/G9/G11, Hold-B anti-scripting, 07.07). B2C — המטופל מגיע ישירות.
+MVP בפרודקשן. 4 תיאורטיקנים פעילים (פרויד, קליין, ויניקוט, אוגדן). RAG עובד. **Crons פעילים** — QA יומי + Judge כל 3 ימים. Judge תוקן ב-18.07 (JSON parsing — commit 82a5149). CORE_GUARDRAILS Wave 1 נכנסה. B2C — המטופל מגיע ישירות.
 
-**Klein VOICE IDENTITY block — 37 יום, עדיין לא בקוד.** ליה אימתה ישירות (10.07, שורות 875-912). ×2 O-7 catches בפרודקשן. **Deadline: 14.07.**
+**Klein VOICE IDENTITY block — 42 יום, עדיין לא בקוד.** Deadline 14.07 עבר. ×3 O-7 catches בפרודקשן (כולל 17.07: "הרצון" + "מה"). **נדרש היום.**
 
 ---
 
-## עדיפות ראשונה — Klein VOICE IDENTITY block (deadline: 14.07)
+## עדיפות ראשונה — Klein VOICE IDENTITY block (עבר deadline — נדרש היום)
 
 **הניסוח מוכן. אין מחקר. זה copy-paste.**
 
@@ -39,7 +39,7 @@ the patient did not use — rewrite.
 
 **אחרי יישום:** איתן מאמת בשיחה חיה (O-7 pattern: opener מילת תוכן שלא הגיעה מהמטופל).
 
-**אם ב-14.07 הבלוק לא בקוד — אין commit נוסף ל-theorist-voices.ts.**
+**ה-deadline עבר. הבלוק לא בקוד. שום עדיפות אחרת לא נפתחת לפני שזה נסגר.**
 
 ---
 
@@ -100,11 +100,11 @@ In this session, you do not wait. You speak.
 ---
 
 ## מה חשוב לבדוק עכשיו
-1. **Klein VOICE IDENTITY:** נוסף לפני שורה 892? כן/לא — deadline 14.07
-2. **Safety test 8/8:** בוצע? תאריך: ___
-3. **מדידת ניוזלטר:** subscribers + click-through ידועים? כן/לא
-4. **Freud item 12:** רק אחרי Klein מאומת — לא לגעת לפני
-5. **BW-64 live test:** ליה אישרה? כן/לא
+1. **Klein VOICE IDENTITY:** נוסף לפני שורה 892? כן/לא — **deadline עבר, נדרש היום (19.07)**
+2. **Judge post-fix:** דוח 19.07 תקין? (ריצה ראשונה אחרי תיקון 82a5149)
+3. **Safety test 8/8:** בוצע? תאריך: ___
+4. **מדידת ניוזלטר:** subscribers + click-through ידועים? כן/לא
+5. **Freud item 12:** רק אחרי Klein מאומת ואיתן אישר — לא לגעת לפני
 
 ---
 
