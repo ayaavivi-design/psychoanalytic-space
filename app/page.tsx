@@ -5,7 +5,7 @@ import { PenLine, Globe, Settings, LogOut, Languages, Download, ChevronDown, Boo
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [isLocalhost, setIsLocalhost] = useState(false);
-  const [theoristsOpen, setTheoristsOpen] = useState(false);
+  const [theoristsOpen, setTheoristsOpen] = useState(true);
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
   const [hoveredMode, setHoveredMode] = useState<string>('session');
   const [currentLang, setCurrentLang] = useState('en');
@@ -893,6 +893,9 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Mobile drawer backdrop — same overlay pattern as #memory-panel. Mobile-only (CSS). */}
+      <div id="sidebar-backdrop" onClick={() => document.getElementById('sidebar')?.classList.remove('mobile-open')} />
+
       {/* Main content */}
       <div id="main-content">
         <header>
@@ -912,7 +915,7 @@ export default function Home() {
                   e.preventDefault();
                   (window as any).openSupportModal?.();
                 }}
-                style={{ color: 'var(--muted)', lineHeight: 1, textDecoration: 'none', fontSize: 16, padding: '2px 4px', borderRadius: 6, transition: 'color 0.15s' }}
+                style={{ color: 'var(--muted)', lineHeight: 1, textDecoration: 'none', fontSize: 16, padding: '2px 4px', borderRadius: 6, transition: 'color 0.15s', minWidth: 44, minHeight: 44, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)'; }}
               >
@@ -965,7 +968,7 @@ export default function Home() {
               {/* Hold entry — patient only (therapist lands on direct conversation, no Hold) */}
               {activePersona === 'patient' && (
               <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
-                <p id="bw-hold-heading" style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 19, fontWeight: 400, color: 'var(--text)', margin: 0, alignSelf: 'flex-start' }}>{isHe ? 'מה נשאר איתך?' : 'What stayed with you?'}</p>
+                <p id="bw-hold-heading" style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 'var(--fs-heading-card)', fontWeight: 400, color: 'var(--text)', margin: 0, alignSelf: 'flex-start' }}>{isHe ? 'מה נשאר איתך?' : 'What stayed with you?'}</p>
                 {/* Single card — everything inside (option ו) */}
                 <div style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                   {/* Textarea — contenteditable for private-marking support */}
@@ -1015,7 +1018,7 @@ export default function Home() {
                   </div>
                   {/* Footer: mic + continue. Parent is direction:rtl in Hebrew, so plain
                       'row' puts mic at the start (right) and the continue button at the end (left). */}
-                  <div style={{ borderTop: '1px solid var(--border)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, flexDirection: 'row' }}>
+                  <div style={{ borderTop: '1px solid var(--border)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, flexDirection: 'row', flexWrap: 'wrap' }}>
                     <button
                       onClick={handleToggleVoice}
                       className={isRecording ? 'bw-mic-recording' : ''}
@@ -1063,13 +1066,13 @@ export default function Home() {
                         cursor: holdText.trim() ? 'pointer' : 'default',
                         opacity: holdText.trim() ? 1 : 0.4,
                         display: 'inline-flex', alignItems: 'center',
-                        transition: 'opacity 0.15s', flexShrink: 0,
+                        transition: 'opacity 0.15s', flexShrink: 1, minWidth: 0,
                       }}
                     >
                       <span style={{
-                        background: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 16, height: 30, padding: '0 14px',
-                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: '#fff',
-                        display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
+                        background: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 16, minHeight: 30, height: 'auto', padding: '0 var(--space-md)',
+                        fontSize: 'var(--fs-body-md)', fontFamily: 'var(--font-rubik), sans-serif', color: '#fff',
+                        display: 'inline-flex', alignItems: 'center', whiteSpace: 'normal',
                       }}>
                         {isHe ? `המשך לשיחה עם ${getHoldTheoristName(holdTheorist)}` : `Continue with ${getHoldTheoristName(holdTheorist)}`}
                       </span>

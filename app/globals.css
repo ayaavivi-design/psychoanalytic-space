@@ -956,7 +956,48 @@ body.bw-selecting #flow-buttons {
   #bw-theorist-grid { grid-template-columns: repeat(2, 130px) !important; }
   #bw-theorist-grid.bw-companion-grid { grid-template-columns: repeat(2, 112px) !important; }
   .bw-companion-card { width: 112px; }
+
+  /* ── Header: h1 is absolutely positioned on desktop, so space-between
+     reserves no room for it and it overlaps the row. Return it to flow. ── */
+  header h1 { position: static; transform: none; order: 2; }
+  .header-psi { display: none; }
+  .header-top { padding: var(--space-md); }
+  .session-name { max-width: 100%; }
+
+  /* ── Content breathing room (desktop .welcome is 20px/40px) ── */
+  .welcome { padding: var(--space-lg) var(--space-md); }
+
+  /* ── Sidebar becomes an overlay drawer: at 375px it otherwise leaves the
+     content ~155px and crushes it. Out of flow, so #main-content gets it all. ── */
+  /* Physical left/translateX on purpose, NOT inset-inline-start: body is
+     direction:ltr (l.65) so the sidebar is the first flex child and sits on the
+     left in Hebrew and English alike, while #sidebar itself is direction:rtl —
+     a logical property would resolve to the right edge and slide it inward. */
+  #sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+  #sidebar.mobile-open { transform: none; }
+  #main-content { width: 100%; }
+
+  /* Backdrop — same values as #memory-panel (globals.css:427-436). */
+  #sidebar.mobile-open ~ #sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(45,36,32,0.3);
+    backdrop-filter: blur(4px);
+    z-index: 99;
+  }
 }
+
+/* Drawer backdrop is mobile-only; never rendered on desktop. */
+#sidebar-backdrop { display: none; }
 
 /* ═══════════════════════════════════════
    STATES SYSTEM

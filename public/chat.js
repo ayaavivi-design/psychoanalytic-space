@@ -7130,6 +7130,16 @@ function toggleSBRecent() {
 
 function toggleSidebar() {
   const sb = document.getElementById('sidebar');
+  // Mobile (≤600px): the sidebar is an overlay drawer, not a width state.
+  // Queried live (not cached at load) so rotation switches behaviour correctly.
+  if (window.matchMedia('(max-width: 600px)').matches) {
+    // '.collapsed' is a desktop-only width state that also hides every label.
+    // Clear it so a persisted desktop preference can never open an empty drawer.
+    sb.classList.remove('collapsed');
+    sb.classList.toggle('mobile-open');
+    // Deliberately not persisted — a drawer opens by intent, not by memory.
+    return;
+  }
   sb.classList.toggle('collapsed');
   localStorage.setItem('sidebar_collapsed', sb.classList.contains('collapsed'));
 }
