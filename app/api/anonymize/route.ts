@@ -58,7 +58,9 @@ export async function POST(req: NextRequest) {
   const raw = res.content[0]?.type === 'text' ? res.content[0].text : '{}';
 
   try {
-    const result = JSON.parse(raw);
+    // המודל עוטף את ה-JSON בגדרות markdown — חילוץ האובייקט לפני הפרסינג
+    const match = raw.match(/\{[\s\S]*\}/);
+    const result = JSON.parse(match ? match[0] : raw);
     return NextResponse.json(result);
   } catch {
     return NextResponse.json({ error: 'parse_failed', raw }, { status: 500 });
