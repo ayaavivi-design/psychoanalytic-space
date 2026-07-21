@@ -22,6 +22,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+0. ניוזלטר 2026-07-21 — "ביון — פונקציית האלפא: מה קורה לחוויה לפני שהיא הופכת למחשבה" (סדרה ג׳ — תיאורטיקנים). אלמנטים בטא, פונקציית אלפא, הכלה — ואיך Between מחזיקה את החוויה הגולמית בין הפגישות. שמור ב-marketing-reports/NEWSLETTER-2026-07-21-bion-alpha-function-before-thought.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-20 — "כשאתה פתאום שונא את הטיפול שלך — קליין על פיצול ואידיאליזציה" (סדרה ג׳ — תיאורטיקנים). splitting/idealization/devaluation: למה הרגש כלפי הטיפול מתהפך חדה, ומה קורה כשהפיצול מתחיל להיסגר. שמור ב-marketing-reports/NEWSLETTER-2026-07-20-klein-splitting-idealization-therapy.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-19 — "שבוע קשה אחרי פגישה טובה — למה ההתקדמות מפחידה" (סדרה א׳ — בין הפגישות). negative therapeutic reaction (פרויד) + עמדה דיכאונית (קליין): למה דווקא הפגישה הטובה מובילה לשבוע הקשה. שמור ב-marketing-reports/NEWSLETTER-2026-07-19-hard-week-after-good-session.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-18 — "מה שידעת לפני שיכולת לחשוב את זה — בולאס והידוע שלא חשבנו" (סדרה ג׳ — תיאורטיקנים). the unthought known: ידע שחי לפני שפה, ואיך Between מחזיקה אותו בין פגישות. שמור ב-marketing-reports/NEWSLETTER-2026-07-18-bollas-unthought-known.md. נכתב ב-CCR routine יולי 2026.
@@ -31,4 +32,3 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 0. ניוזלטר 2026-07-14 — "מה שלא הצלחת לומר בפגישה" (סדרה א׳ — resistance/unsaid). שמור ב-marketing-reports/NEWSLETTER-2026-07-14-what-you-couldnt-say-in-the-session.md. הערה: חפיפה חלקית עם 07-12 — לבדוק עם איה. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-13 — "כשפתחת את Between — ולא כתבת" (סדרה ב׳ — AI ועולם הנפש). שמור ב-marketing-reports/NEWSLETTER-2026-07-13-ai-resistance-not-writing.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-12 — "מה שלא אמרת — ולמה זה בדיוק מה שחשוב" (סדרה א׳ — בין הפגישות). שמור ב-marketing-reports/NEWSLETTER-2026-07-12-what-you-didnt-say-in-the-session.md. נכתב ב-CCR routine יולי 2026.
-0. ניוזלטר 2026-07-11 — "היכולת להיות לבד — ויניקוט על נוכחות שמחזיקה בלי לפלוש" (סדרה ג׳ — תיאורטיקנים). שמור ב-marketing-reports/NEWSLETTER-2026-07-11-winnicott-capacity-to-be-alone.md. נכתב ב-CCR routine יולי 2026.
