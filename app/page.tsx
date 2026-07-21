@@ -893,9 +893,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Mobile drawer backdrop — same overlay pattern as #memory-panel. Mobile-only (CSS). */}
-      <div id="sidebar-backdrop" onClick={() => document.getElementById('sidebar')?.classList.remove('mobile-open')} />
-
       {/* Main content */}
       <div id="main-content">
         <header>
