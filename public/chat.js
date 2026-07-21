@@ -9148,69 +9148,6 @@ function buildNavalCard(data) {
   });
 }
 
-function buildMichalCard(data) {
-  const ACC = '#4a2a5a';
-  return buildAgentCard({
-    icon: '◉', name: 'Karen', role: 'UX · משתמשת מדומה',
-    date: data?.date, accentColor: ACC,
-    emptyMsg: 'פידבק ראשון יגיע הבוקר',
-    renderContent: () => {
-      const fb = data?.feedback;
-      if (!fb) return null;
-      const div = document.createElement('div');
-      div.style.cssText = 'display:flex;flex-direction:column;gap:10px;font-size:13px;';
-
-      // badges: would_return + theorist + mode
-      const badges = document.createElement('div');
-      badges.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:2px;';
-      badges.innerHTML = `
-        <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
-          background:${fb.would_return ? '#e8f5e9' : '#ffeee8'};
-          color:${fb.would_return ? '#2d7a4a' : '#c04a2a'};">
-          ${fb.would_return ? '✓ תחזור' : '✗ לא תחזור'}
-        </span>
-        ${data.theorist ? `<span style="padding:2px 8px;border-radius:20px;font-size:10px;background:#f0e8f5;color:${ACC};">${data.theorist}</span>` : ''}
-        ${data.mode ? `<span style="padding:2px 8px;border-radius:20px;font-size:10px;background:#f5f0e8;color:#8a6020;">${data.mode === 'clinical' ? 'מצב סשן' : 'ללא סשן'}</span>` : ''}`;
-      div.appendChild(badges);
-
-      // key fields
-      [
-        ['הרגע הכי מתסכל',     fb.biggest_friction],
-        ['הרגע הכי טוב',       fb.best_moment],
-        ['דבר אחד שהיה משנה',  fb.one_change],
-        ['מה חסר לה',          fb.what_i_wish_existed],
-      ].forEach(([label, val]) => {
-        if (!val) return;
-        const row = document.createElement('div');
-        row.innerHTML = `<div style="font-size:10px;font-weight:700;color:${ACC};letter-spacing:.06em;margin-bottom:2px;">${label}</div>
-          <div style="color:var(--text);line-height:1.55;">${val}</div>`;
-        div.appendChild(row);
-      });
-
-      // buttons grid
-      const found  = fb.buttons_found  || [];
-      const missed = fb.buttons_missed || [];
-      if (found.length || missed.length) {
-        const grid = document.createElement('div');
-        grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:6px;border-top:1px solid var(--border);margin-top:4px;';
-        if (found.length) {
-          grid.innerHTML += `<div>
-            <div style="font-size:10px;font-weight:700;color:#2d7a4a;margin-bottom:4px;">מצאה ✓</div>
-            ${found.map(b => `<div style="font-size:11px;color:#2d7a4a;padding:1px 0;">${b}</div>`).join('')}
-          </div>`;
-        }
-        if (missed.length) {
-          grid.innerHTML += `<div>
-            <div style="font-size:10px;font-weight:700;color:#c04a2a;margin-bottom:4px;">פספסה ✗</div>
-            ${missed.map(b => `<div style="font-size:11px;color:#c04a2a;padding:1px 0;">${b}</div>`).join('')}
-          </div>`;
-        }
-        div.appendChild(grid);
-      }
-      return div;
-    },
-  });
-}
 
 function buildShiraCard(data) {
   const ACC = '#7a4a18';
@@ -9299,7 +9236,6 @@ async function openBoardRoom() {
     body.appendChild(buildRanCard(data.ran));
     body.appendChild(buildNavalCard(data.naval));
     body.appendChild(buildShiraCard(data.shira));
-    body.appendChild(buildMichalCard(data.michal));
   } catch (e) {
     document.getElementById('br-body').innerHTML =
       `<div style="color:#c00;text-align:center;padding:20px;">שגיאה: ${e.message}</div>`;
