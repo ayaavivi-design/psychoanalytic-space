@@ -60,6 +60,7 @@ body {
   font-family: var(--font-rubik), sans-serif;
   font-weight: 300;
   height: 100vh;
+  height: 100dvh; /* iOS: shrink with the browser's dynamic bottom bar. Old browsers ignore this and keep the 100vh above. */
   display: flex;
   flex-direction: row;
   direction: ltr;
@@ -75,6 +76,7 @@ body {
   width: 220px;
   min-width: 220px;
   height: 100vh;
+  height: 100dvh; /* iOS: shrink with the browser's dynamic bottom bar. Old browsers ignore this and keep the 100vh above. */
   background: var(--surface);
   box-shadow: 2px 0 12px rgba(45,36,32,0.06);
   display: flex;
@@ -96,6 +98,7 @@ body {
   flex-direction: column;
   overflow: hidden;
   height: 100vh;
+  height: 100dvh; /* iOS: shrink with the browser's dynamic bottom bar. Old browsers ignore this and keep the 100vh above. */
   direction: rtl;
 }
 .sb-item {
@@ -535,6 +538,8 @@ header span {
 .input-area-outer { border-top: 1px solid var(--border); display:flex; justify-content:center; }
 .input-area {
   padding: 20px 32px 24px;
+  /* Keep the existing 24px bottom, plus the iOS home-indicator inset (0 elsewhere). */
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
   flex-shrink: 0;
   max-width: 800px;
   width: 100%;
