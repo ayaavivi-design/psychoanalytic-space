@@ -5440,9 +5440,9 @@ function applyUITranslation(code) {
   if (userRow) userRow.style.flexDirection = (t.dir === 'rtl') ? 'row' : 'row-reverse';
   const sbUserSub = document.getElementById('sb-user-email');
   if (sbUserSub) sbUserSub.textContent = t.sbUserSub || 'Settings & profile';
-  const sbSettings = document.querySelector('#sb-user-menu .sb-item:nth-child(1) .sb-label');
+  const sbSettings = document.getElementById('sb-settings-label');
   if (sbSettings) sbSettings.textContent = t.settings || 'Settings';
-  const sbLogOut = document.querySelector('#sb-user-menu .sb-item:nth-child(2) .sb-label');
+  const sbLogOut = document.getElementById('sb-signout-label');
   if (sbLogOut) sbLogOut.textContent = t.logOut || 'Log out';
   // Web search label
   const wsLabel = document.getElementById('sb-websearch-label');
@@ -7110,12 +7110,14 @@ function selectLangSB(code, flag, name) {
 
 function toggleWebSearch() {
   window.webSearch = !window.webSearch;
-  const label = document.getElementById('sb-websearch-label');
   const btn = document.getElementById('sb-websearch-btn');
   const isHe = !selectedLang || selectedLang.code === 'he';
-  if (label) label.textContent = isHe
+  const text = isHe
     ? (window.webSearch ? 'חיפוש רשת: דלוק' : 'חיפוש רשת: כבוי')
     : (window.webSearch ? 'Web search: on' : 'Web search: off');
+  // Class, not ID: the mobile avatar menu will carry a second copy of this label,
+  // and two elements cannot share an ID — update every instance.
+  document.querySelectorAll('.js-websearch-label').forEach(el => { el.textContent = text; });
   if (btn) btn.style.color = window.webSearch ? 'var(--accent)' : '';
 }
 

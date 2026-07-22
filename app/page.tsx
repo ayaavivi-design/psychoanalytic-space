@@ -807,7 +807,7 @@ export default function Home() {
             </div>
             <div className="sb-item" data-persona="therapist" onClick={() => (window as any).toggleWebSearch()} id="sb-websearch-btn" title="חיפוש באינטרנט">
               <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label" id="sb-websearch-label">חיפוש רשת: כבוי</span>
+              <span className="sb-label js-websearch-label" id="sb-websearch-label">חיפוש רשת: כבוי</span>
             </div>
             <div className="sb-item" data-persona="patient" onClick={() => (window as any).openWriteArchive?.()}>
               <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
@@ -883,11 +883,11 @@ export default function Home() {
           <div id="sb-user-menu" style={{ display: 'none', padding: '2px 0' }}>
             <div className="sb-item" onClick={() => (window as any).openSettings()}>
               <span className="sb-icon"><Settings size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label">הגדרות</span>
+              <span className="sb-label" id="sb-settings-label">הגדרות</span>
             </div>
             <div className="sb-item" onClick={() => (window as any).signOut()}>
               <span className="sb-icon"><LogOut size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label">התנתק</span>
+              <span className="sb-label" id="sb-signout-label">התנתק</span>
             </div>
           </div>
         </div>
