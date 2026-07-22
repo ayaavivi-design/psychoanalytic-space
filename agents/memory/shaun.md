@@ -22,6 +22,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+0. ניוזלטר 2026-07-22 — "הבושה שאחרי הפגישה" (סדרה א׳ — בין הפגישות). הבחנה בין אשמה לבושה: בושה כאות שמשהו אמיתי עלה, ומה קורה כשהיא פועלת בין הפגישות ללא המטפל. שמור ב-marketing-reports/NEWSLETTER-2026-07-22-shame-after-the-session.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-21 — "ביון — פונקציית האלפא: מה קורה לחוויה לפני שהיא הופכת למחשבה" (סדרה ג׳ — תיאורטיקנים). אלמנטים בטא, פונקציית אלפא, הכלה — ואיך Between מחזיקה את החוויה הגולמית בין הפגישות. שמור ב-marketing-reports/NEWSLETTER-2026-07-21-bion-alpha-function-before-thought.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-20 — "כשאתה פתאום שונא את הטיפול שלך — קליין על פיצול ואידיאליזציה" (סדרה ג׳ — תיאורטיקנים). splitting/idealization/devaluation: למה הרגש כלפי הטיפול מתהפך חדה, ומה קורה כשהפיצול מתחיל להיסגר. שמור ב-marketing-reports/NEWSLETTER-2026-07-20-klein-splitting-idealization-therapy.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-19 — "שבוע קשה אחרי פגישה טובה — למה ההתקדמות מפחידה" (סדרה א׳ — בין הפגישות). negative therapeutic reaction (פרויד) + עמדה דיכאונית (קליין): למה דווקא הפגישה הטובה מובילה לשבוע הקשה. שמור ב-marketing-reports/NEWSLETTER-2026-07-19-hard-week-after-good-session.md. נכתב ב-CCR routine יולי 2026.
@@ -31,4 +32,3 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 0. ניוזלטר 2026-07-15 — "המקום שאמרת שלא תחזור אליו — פרויד על חזרה כפייתית" (סדרה ג׳ — תיאורטיקנים). שמור ב-marketing-reports/NEWSLETTER-2026-07-15-freud-repetition-compulsion.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-14 — "מה שלא הצלחת לומר בפגישה" (סדרה א׳ — resistance/unsaid). שמור ב-marketing-reports/NEWSLETTER-2026-07-14-what-you-couldnt-say-in-the-session.md. הערה: חפיפה חלקית עם 07-12 — לבדוק עם איה. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-13 — "כשפתחת את Between — ולא כתבת" (סדרה ב׳ — AI ועולם הנפש). שמור ב-marketing-reports/NEWSLETTER-2026-07-13-ai-resistance-not-writing.md. נכתב ב-CCR routine יולי 2026.
-0. ניוזלטר 2026-07-12 — "מה שלא אמרת — ולמה זה בדיוק מה שחשוב" (סדרה א׳ — בין הפגישות). שמור ב-marketing-reports/NEWSLETTER-2026-07-12-what-you-didnt-say-in-the-session.md. נכתב ב-CCR routine יולי 2026.
