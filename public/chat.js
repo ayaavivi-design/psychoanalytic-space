@@ -569,6 +569,10 @@ function formatResponse(text) {
   // BW-118 — in therapist consultation mode, → lines are reflective questions to sit with,
   // NOT clickable prompts. Render as a quiet block (label + plain text), never as buttons.
   const _isTherapist = document.getElementById('sidebar')?.classList.contains('persona-therapist');
+  // Clickable → follow-ups only make sense in explore/research, where they are questions the user
+  // may want to ASK NEXT. In session/hold the → line is the theorist's own question TO the patient,
+  // answered by typing — never a clickable chip that dumps it into the input. (Aya, 23.07)
+  const _isExplore = localStorage.getItem('bw_mode') === 'explore';
   const firstFollowupIdx = lines.findIndex(l => l.trim().startsWith('→'));
   let lastFollowupIdx = -1;
   lines.forEach((l, i) => { if (l.trim().startsWith('→')) lastFollowupIdx = i; });
@@ -584,7 +588,12 @@ function formatResponse(text) {
         const close = idx === lastFollowupIdx ? `</div>` : '';
         return `${open}<span class="followup-q" style="color:var(--text);font-size:13px;line-height:1.6;font-family:'Rubik',sans-serif;">${q}</span>${close}`;
       }
-      return `<span class="followup-q" onclick="useFollowup(this)" style="display:inline-block;cursor:pointer;color:var(--accent);font-size:13px;padding:5px 12px;margin:3px 0;font-family:'Rubik',sans-serif;background:var(--accent-soft);border:1px solid var(--accent-dim);border-radius:var(--radius-xl);transition:background 0.15s,border-color 0.15s;" onmouseover="this.style.background='rgba(196,96,122,0.14)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='var(--accent-soft)';this.style.borderColor='var(--accent-dim)'">${t}</span><br>`;
+      if (_isExplore) {
+        return `<span class="followup-q" onclick="useFollowup(this)" style="display:inline-block;cursor:pointer;color:var(--accent);font-size:13px;padding:5px 12px;margin:3px 0;font-family:'Rubik',sans-serif;background:var(--accent-soft);border:1px solid var(--accent-dim);border-radius:var(--radius-xl);transition:background 0.15s,border-color 0.15s;" onmouseover="this.style.background='rgba(196,96,122,0.14)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='var(--accent-soft)';this.style.borderColor='var(--accent-dim)'">${t}</span><br>`;
+      }
+      // Session/hold: the theorist's question to the patient — plain, non-clickable, part of the response.
+      const _sq = t.replace(/^→\s*/, '');
+      return `<span class="followup-q" style="display:block;color:var(--text);font-size:13px;line-height:1.6;font-family:'Rubik',sans-serif;margin:3px 0;">${_sq}</span>`;
     }
     if (t.startsWith('📄')) {
       return `<span style="display:block;font-size:11px;color:var(--muted);padding:2px 0;font-family:'Rubik',sans-serif;font-style:italic;">${t}</span>`;
