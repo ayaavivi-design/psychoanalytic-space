@@ -6617,6 +6617,21 @@ async function exportPDF() {
     <div class="meta">${topic ? `${sessionTitle} · ${date}` : sessionTitle}</div>
     <hr>`;
 
+  // BW: prepend the user's original written text — every hold conversation starts from it.
+  // It lives as the first user turn ("כתבתי:\n\n<text>" / "I wrote:\n\n<text>") and survives reload
+  // via localStorage, but is never drawn as a .message, so the loop below would drop it. (Aya, 22.07)
+  const _seedTurn = (Array.isArray(conversationHistory) && conversationHistory[0]
+    && conversationHistory[0].role === 'user') ? (conversationHistory[0].content || '') : '';
+  const _seedMatch = /^(?:כתבתי|I wrote)\s*:\s*\n+([\s\S]+)$/.exec(_seedTurn);
+  const _seedText = _seedMatch ? _seedMatch[1].trim() : '';
+  if (_seedText) {
+    const _escSeed = _seedText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const _seedLabel = _isEnPdf ? 'What I wrote' : 'מה כתבתי';
+    html += `<div class="role user">${_seedLabel}</div>`;
+    html += `<div class="body">${_escSeed}</div>`;
+    html += `<hr>`;
+  }
+
   messages.forEach(msg => {
     // BW-51: Render flow selection entry point in PDF
     if (msg.classList.contains('flow-selection')) {
