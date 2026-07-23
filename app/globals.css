@@ -158,6 +158,38 @@ body {
 #sidebar.persona-patient [data-persona="admin"],
 #sidebar.persona-therapist [data-persona="admin"] { display: none !important; }
 
+/* ── Mobile account menu — same persona scoping as the sidebar (the phone stand-in for it). ── */
+#bw-account-menu.persona-patient [data-persona="therapist"] { display: none !important; }
+#bw-account-menu.persona-therapist [data-persona="patient"] { display: none !important; }
+#bw-account-menu.persona-patient [data-persona="admin"],
+#bw-account-menu.persona-therapist [data-persona="admin"] { display: none !important; }
+
+/* Header entries that stand in for the (mobile-hidden) sidebar. Hidden on desktop; the @media
+   block below reveals them. #bw-account-menu itself is toggled inline by toggleAccountMenu(). */
+.bw-header-newchat,
+.bw-header-avatar { display: none; }
+#bw-account-menu {
+  position: absolute;
+  top: calc(100% - 4px);
+  right: var(--space-md);
+  left: auto;
+  min-width: 200px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 24px rgba(45,36,32,0.12);
+  padding: var(--space-sm);
+  z-index: 200;
+  direction: rtl;
+}
+[dir="ltr"] #bw-account-menu { direction: ltr; }
+#bw-account-menu .sb-item { min-height: 44px; }
+.bw-acct-section + .bw-acct-section {
+  border-top: 1px solid var(--border);
+  margin-top: var(--space-xs);
+  padding-top: var(--space-xs);
+}
+
 /* BW-112 — therapist hub: inline helper line (not a tooltip). Always visible, in-flow, never covers text. */
 .hub-helpcap { text-align: center; font-size: 11.5px; line-height: 1.7; color: var(--muted); max-width: 440px; margin: 8px auto 0; }
 .hub-helpcap b { color: var(--accent); font-weight: 500; }
@@ -978,6 +1010,10 @@ body.bw-selecting #flow-buttons {
   #sidebar { display: none; }
   #sb-toggle-btn { display: none; }
   #main-content { width: 100%; }
+
+  /* ── Sidebar is gone on mobile, so its "new chat" + account/tools move into the header. ── */
+  .bw-header-newchat { display: flex; }
+  .bw-header-avatar { display: flex; }
 }
 
 /* ═══════════════════════════════════════

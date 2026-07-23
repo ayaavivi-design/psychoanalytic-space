@@ -807,7 +807,7 @@ export default function Home() {
             </div>
             <div className="sb-item" data-persona="therapist" onClick={() => (window as any).toggleWebSearch()} id="sb-websearch-btn" title="חיפוש באינטרנט">
               <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label js-websearch-label" id="sb-websearch-label">חיפוש רשת: כבוי</span>
+              <span className="sb-label js-websearch-label">חיפוש רשת: כבוי</span>
             </div>
             <div className="sb-item" data-persona="patient" onClick={() => (window as any).openWriteArchive?.()}>
               <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
@@ -815,11 +815,11 @@ export default function Home() {
             </div>
             <div className="sb-item" data-persona="both" onClick={() => (window as any).exportPDF()}>
               <span className="sb-icon"><Download size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label" id="sb-pdf-label">הורד PDF</span>
+              <span className="sb-label js-pdf-label">הורד PDF</span>
             </div>
             <div className="sb-item" data-persona="therapist" onClick={() => (window as any).openSessionSummary()}>
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
-              <span className="sb-label" id="sb-summary-label">סיכום התייעצות</span>
+              <span className="sb-label js-summary-label">סיכום התייעצות</span>
             </div>
             {/* BW-113 — מחקר חזר לסייד-בר כפריט עצמאי (לא קשור למקרה). */}
             {isLocalhost && (
@@ -883,11 +883,11 @@ export default function Home() {
           <div id="sb-user-menu" style={{ display: 'none', padding: '2px 0' }}>
             <div className="sb-item" onClick={() => (window as any).openSettings()}>
               <span className="sb-icon"><Settings size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label" id="sb-settings-label">הגדרות</span>
+              <span className="sb-label js-settings-label">הגדרות</span>
             </div>
             <div className="sb-item" onClick={() => (window as any).signOut()}>
               <span className="sb-icon"><LogOut size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label" id="sb-signout-label">התנתק</span>
+              <span className="sb-label js-signout-label">התנתק</span>
             </div>
           </div>
         </div>
@@ -898,6 +898,17 @@ export default function Home() {
         <header>
           <div className="header-top" style={{ padding: '16px 24px', direction: 'ltr' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+              {/* Mobile-only: the sidebar (which holds "new chat") is hidden on phones — surface it in the header. */}
+              <div
+                className="bw-header-newchat"
+                onClick={() => (window as any).newChat()}
+                title="שיחה חדשה"
+                style={{ cursor: 'pointer', color: 'var(--muted)', padding: '2px 4px', borderRadius: 6, lineHeight: 1, minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)'; }}
+              >
+                <PenLine size={16} strokeWidth={1.75} />
+              </div>
               <div onClick={() => (window as any).toggleSidebar()} style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 18, padding: '2px 6px', borderRadius: 6, lineHeight: 1 }} id="sb-toggle-btn">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
                   <rect x="1" y="1" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="1.3" fill="none"/>
@@ -929,7 +940,7 @@ export default function Home() {
               </div>
             </div>
             <h1 dir="ltr" style={{ direction: 'ltr' }} suppressHydrationWarning>Between</h1>
-            <div style={{ flexShrink: 0, minWidth: 80, display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ flexShrink: 0, minWidth: 80, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
               {/* שיחת היכרות (intake) — patient onboarding only; not rendered for therapists (BW-112). */}
               {activePersona === 'patient' && (
               <div id="header-intake-btn" onClick={() => (window as any).startIntake()} style={{ display: 'none', cursor: 'pointer', fontSize: 12, color: '#fff', background: 'var(--accent-deep)', borderRadius: 20, padding: '6px 16px', fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 500, transition: 'opacity 0.2s', whiteSpace: 'nowrap' }}
@@ -938,6 +949,40 @@ export default function Home() {
                 שיחת היכרות
               </div>
               )}
+              {/* Mobile-only account entry — opens #bw-account-menu (tools + account), the phone stand-in for the hidden sidebar. */}
+              <div className="bw-header-avatar" onClick={(e) => { e.stopPropagation(); (window as any).toggleAccountMenu(); }} title="חשבון" style={{ cursor: 'pointer', minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}>
+                <div className="sb-avatar">A</div>
+              </div>
+            </div>
+            {/* Mobile account menu — mirrors the sidebar's tools + account, persona-scoped exactly like #sidebar.
+                Labels reuse the shared .js-*-label classes so applyUITranslation updates both copies. */}
+            <div id="bw-account-menu" className={`persona-${activePersona}`} style={{ display: 'none' }}>
+              <div className="bw-acct-section">
+                <div className="sb-section-label">כלים</div>
+                <div className="sb-item" data-persona="therapist" onClick={() => { (window as any).toggleWebSearch(); (window as any).closeAccountMenu?.(); }}>
+                  <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
+                  <span className="sb-label js-websearch-label">חיפוש רשת: כבוי</span>
+                </div>
+                <div className="sb-item" data-persona="therapist" onClick={() => { (window as any).openSessionSummary(); (window as any).closeAccountMenu?.(); }}>
+                  <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
+                  <span className="sb-label js-summary-label">סיכום התייעצות</span>
+                </div>
+                <div className="sb-item" id="bw-acct-pdf" data-persona="both" onClick={() => { (window as any).exportPDF(); (window as any).closeAccountMenu?.(); }}>
+                  <span className="sb-icon"><Download size={15} strokeWidth={1.75} /></span>
+                  <span className="sb-label js-pdf-label">הורד PDF</span>
+                </div>
+              </div>
+              <div className="bw-acct-section">
+                <div className="sb-section-label">חשבון</div>
+                <div className="sb-item" onClick={() => { (window as any).openSettings(); (window as any).closeAccountMenu?.(); }}>
+                  <span className="sb-icon"><Settings size={15} strokeWidth={1.75} /></span>
+                  <span className="sb-label js-settings-label">הגדרות</span>
+                </div>
+                <div className="sb-item" onClick={() => { (window as any).signOut(); (window as any).closeAccountMenu?.(); }}>
+                  <span className="sb-icon"><LogOut size={15} strokeWidth={1.75} /></span>
+                  <span className="sb-label js-signout-label">התנתק</span>
+                </div>
+              </div>
             </div>
           </div>
           <div className="header-session">

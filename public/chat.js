@@ -5440,24 +5440,27 @@ function applyUITranslation(code) {
   if (userRow) userRow.style.flexDirection = (t.dir === 'rtl') ? 'row' : 'row-reverse';
   const sbUserSub = document.getElementById('sb-user-email');
   if (sbUserSub) sbUserSub.textContent = t.sbUserSub || 'Settings & profile';
-  const sbSettings = document.getElementById('sb-settings-label');
-  if (sbSettings) sbSettings.textContent = t.settings || 'Settings';
-  const sbLogOut = document.getElementById('sb-signout-label');
-  if (sbLogOut) sbLogOut.textContent = t.logOut || 'Log out';
+  // These five labels appear twice each — once in the desktop sidebar, once in the mobile
+  // #bw-account-menu. Two elements cannot share an ID, so translation targets a shared class
+  // and updates every instance (same pattern as the web-search label from commit 0).
+  const settingsText = t.settings || 'Settings';
+  document.querySelectorAll('.js-settings-label').forEach(el => { el.textContent = settingsText; });
+  const logOutText = t.logOut || 'Log out';
+  document.querySelectorAll('.js-signout-label').forEach(el => { el.textContent = logOutText; });
   // Web search label
-  const wsLabel = document.getElementById('sb-websearch-label');
-  if (wsLabel) wsLabel.textContent = window.webSearch ? (t.webSearchOn || 'Web search: on') : (t.webSearchOff || 'Web search: off');
+  const wsText = window.webSearch ? (t.webSearchOn || 'Web search: on') : (t.webSearchOff || 'Web search: off');
+  document.querySelectorAll('.js-websearch-label').forEach(el => { el.textContent = wsText; });
   // PDF label
-  const pdfLabel = document.getElementById('sb-pdf-label');
-  if (pdfLabel) pdfLabel.textContent = t.downloadPDF || 'Download PDF';
+  const pdfText = t.downloadPDF || 'Download PDF';
+  document.querySelectorAll('.js-pdf-label').forEach(el => { el.textContent = pdfText; });
   // Theoretical approach label
   const theoristsLabel = document.getElementById('sb-theorists-label');
   if (theoristsLabel) theoristsLabel.textContent = t.theoreticalApproach || 'Theoretical approach';
   // Tool labels
   const sbSupervision = document.getElementById('sb-supervision-label');
   if (sbSupervision) sbSupervision.textContent = t.supervision || 'Clinical supervision';
-  const sbSummary = document.getElementById('sb-summary-label');
-  if (sbSummary) sbSummary.textContent = t.sessionSummary || 'Session summary';
+  const summaryText = t.sessionSummary || 'Session summary';
+  document.querySelectorAll('.js-summary-label').forEach(el => { el.textContent = summaryText; });
   const sbReflection = document.getElementById('sb-reflection-label');
   if (sbReflection) sbReflection.textContent = t.reflection || 'What I took from this';
   const sbAnon = document.getElementById('sb-anon-label');
@@ -7104,6 +7107,46 @@ function toggleUserMenu() {
   if (!menu) return;
   menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
 }
+
+// ── Mobile account menu (#bw-account-menu) — the phone stand-in for the hidden sidebar. ──
+function closeAccountMenu() {
+  const menu = document.getElementById('bw-account-menu');
+  if (menu) menu.style.display = 'none';
+}
+window.closeAccountMenu = closeAccountMenu;
+
+function toggleAccountMenu() {
+  const menu = document.getElementById('bw-account-menu');
+  if (!menu) return;
+  const opening = !menu.style.display || menu.style.display === 'none';
+  // Make it visible FIRST so getComputedStyle below reflects real per-item visibility
+  // (descendants of a display:none ancestor all report display:none).
+  menu.style.display = opening ? 'block' : 'none';
+  if (!opening) return;
+  // PDF gate: the download item only makes sense inside a rendered conversation.
+  // Use the DOM check, NOT conversationHistory.length (loadConversation fills it at init — see file-top note).
+  const chatEl = document.getElementById('chat');
+  const hasRendered = !!(chatEl && Array.from(chatEl.children)
+    .some(c => c.id !== 'welcome' && c.id !== 'bw-end-session-cta'));
+  const pdfItem = document.getElementById('bw-acct-pdf');
+  if (pdfItem) pdfItem.style.display = hasRendered ? '' : 'none';
+  // Drop any section whose items are all hidden (e.g. patient, no conversation → empty "Tools").
+  menu.querySelectorAll('.bw-acct-section').forEach(sec => {
+    const anyVisible = Array.from(sec.querySelectorAll('.sb-item'))
+      .some(it => getComputedStyle(it).display !== 'none');
+    sec.style.display = anyVisible ? '' : 'none';
+  });
+}
+window.toggleAccountMenu = toggleAccountMenu;
+
+// Close the account menu on any click outside it or its avatar trigger.
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('bw-account-menu');
+  if (!menu || menu.style.display === 'none') return;
+  const avatar = document.querySelector('.bw-header-avatar');
+  if (menu.contains(e.target) || (avatar && avatar.contains(e.target))) return;
+  menu.style.display = 'none';
+});
 
 function toggleLangMenuSB(e) {
   if (e) e.stopPropagation();
