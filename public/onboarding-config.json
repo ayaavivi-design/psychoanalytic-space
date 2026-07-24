@@ -1,5 +1,5 @@
 {
-  "version": "2026-07-17",
+  "version": "2026-07-24",
   "updated_by": "onboarding-agent",
   "tour": {
     "enabled": true,
@@ -9,7 +9,7 @@
         "target": "#header-intake-btn",
         "position": "left",
         "title": "רוצה שנכיר?",
-        "text": "כמה שאלות קצרות. אפשר לדלג ולהתחיל ישר.",
+        "text": "כדי שנדע מה להחזיק. אפשר לדלג.",
         "title_en": "A quick introduction?",
         "text_en": "A few short questions. Or skip and start right away.",
         "personas": ["patient", "therapist", "student"]
@@ -19,7 +19,7 @@
         "target": "#bw-hold-textarea",
         "position": "top",
         "title": "מה שנשאר מהפגישה",
-        "text": "כתוב מה שלא עוזב אותך — גם אם עדיין לא ברור. כשרוצה, אפשר לשבת עם זה עם אחד התיאורטיקנים.",
+        "text": "כתוב מה שלא עוזב אותך — גם אם עדיין לא ברור. פרויד, ויניקוט, קליין — עם מי לשבת?",
         "title_en": "What stayed from the session",
         "text_en": "Write what won't leave you — even if it isn't clear yet. When you're ready, you can sit with it with one of the theorists.",
         "personas": ["patient", "therapist", "student"]
@@ -39,7 +39,7 @@
   "sidebar_tips": {
     "⚲": "להסתכל על השיחה מבחוץ",
     "◎": "מה עלה — לקחת איתך לפגישה הבאה",
-    "◉": "מה לקחתי — לכתוב לעצמי מה נשאר",
+    "◉": "מה לקחתי — מה נשאר מהשיחה הזו",
     "⇌": "אותו חומר, עיניים שונות — פרויד, ויניקוט, קליין",
     "◌": "הסרת פרטים מזהים — לפני שמשתפים חומר"
   },
