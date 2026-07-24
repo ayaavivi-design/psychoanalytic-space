@@ -47,7 +47,10 @@ async function callGemini(system: string, user: string): Promise<string> {
     body: JSON.stringify({
       system_instruction: { parts: [{ text: system }] },
       contents: [{ role: 'user', parts: [{ text: user }] }],
-      generationConfig: { maxOutputTokens: 1500 },
+      // gemini-flash-latest is a THINKING model — it spends ~700-1100 tokens on internal thinking before
+      // the visible answer (confirmed: thoughtsTokenCount ~1124). A low cap truncates the read mid-sentence.
+      // thinkingConfig is rejected (400) on this alias, so we just budget generously above the thinking cost.
+      generationConfig: { maxOutputTokens: 4096 },
     }),
   });
   if (!res.ok) throw new Error(`Gemini ${res.status}: ${await res.text()}`);
