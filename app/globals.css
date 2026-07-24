@@ -33,6 +33,7 @@
   --layout-chat-max:          740px;  /* max-width of chat messages */
   --layout-input-max:         800px;  /* max-width of input area */
   --layout-content-max:       900px;  /* max-width of general content */
+  --layout-header-mobile:      56px;  /* mobile header height (Claude Design 24.07) */
 
   /* Breakpoints (use in @media — not as var() since CSS doesn't support that) */
   /* --bp-mobile:  600px  — phone portrait */
@@ -189,6 +190,32 @@ body {
   margin-top: var(--space-xs);
   padding-top: var(--space-xs);
 }
+/* Account row at the top of the dropdown (Claude Design 24.07): avatar + name + email. */
+.bw-acct-account-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+}
+.bw-acct-account-row .sb-avatar { width: 36px; height: 36px; min-width: 36px; }
+.bw-acct-name { font-size: var(--fs-body-md); font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bw-acct-email { font-size: var(--fs-caption); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Language toggle (HE / EN) — segmented pill. */
+.bw-acct-lang { display: flex; gap: var(--space-xs); padding: var(--space-xs) var(--space-sm); }
+.bw-acct-lang button {
+  flex: 1;
+  min-height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-rubik), sans-serif;
+  font-size: var(--fs-body-md);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.bw-acct-lang button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.bw-acct-lang button:not(.active):hover { background: var(--accent-soft); }
 
 /* BW-112 — therapist hub: inline helper line (not a tooltip). Always visible, in-flow, never covers text. */
 .hub-helpcap { text-align: center; font-size: 11.5px; line-height: 1.7; color: var(--muted); max-width: 440px; margin: 8px auto 0; }
@@ -994,11 +1021,17 @@ body.bw-selecting #flow-buttons {
   #bw-theorist-grid.bw-companion-grid { grid-template-columns: repeat(2, 112px) !important; }
   .bw-companion-card { width: 112px; }
 
-  /* ── Header: h1 is absolutely positioned on desktop, so space-between
-     reserves no room for it and it overlaps the row. Return it to flow. ── */
-  header h1 { position: static; transform: none; order: 2; }
+  /* ── Header (Claude Design 24.07): identity + two actions. h1 is absolute-centered on
+     desktop; on mobile return it to flow AND anchor it left (no order shuffle) so it never
+     clips. The left cluster (toggle/?/language) and intake drop out — the account dropdown
+     holds language/intake in a later stage; here the bar is just Between + bubble + avatar. ── */
+  header h1 { position: static; transform: none; }
+  .header-left { display: none; }
+  #header-intake-btn { display: none !important; }
   .header-psi { display: none; }
-  .header-top { padding: var(--space-md); }
+  .header-top { min-height: var(--layout-header-mobile); padding: 0 var(--space-md) 0 var(--space-lg); }
+  /* header avatar is 36px on mobile (Maya-approved layout override); the sidebar avatar stays 30px. */
+  .bw-header-avatar .sb-avatar { width: 36px; height: 36px; min-width: 36px; }
   .session-name { max-width: 100%; }
 
   /* ── Content breathing room (desktop .welcome is 20px/40px) ── */

@@ -7132,6 +7132,14 @@ function toggleAccountMenu() {
   // (descendants of a display:none ancestor all report display:none).
   menu.style.display = opening ? 'block' : 'none';
   if (!opening) return;
+  // Account row — copy name/email from the (hidden) sidebar rows at open, so we reuse the live values
+  // without duplicating their IDs or touching the several places that set them.
+  const acctName = menu.querySelector('.bw-acct-name');
+  const acctEmail = menu.querySelector('.bw-acct-email');
+  const srcName = document.getElementById('sb-user-name')?.textContent?.trim();
+  const srcEmail = document.getElementById('sb-user-email')?.textContent?.trim();
+  if (acctName && srcName) acctName.textContent = srcName;
+  if (acctEmail && srcEmail) acctEmail.textContent = srcEmail;
   // PDF gate: the download item only makes sense inside a rendered conversation.
   // Use the DOM check, NOT conversationHistory.length (loadConversation fills it at init — see file-top note).
   const chatEl = document.getElementById('chat');

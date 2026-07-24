@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { PenLine, Globe, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, Mic, ScrollText } from 'lucide-react';
+import { PenLine, Globe, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, Mic, ScrollText, MessageCirclePlus, Sparkles } from 'lucide-react';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -897,18 +897,7 @@ export default function Home() {
       <div id="main-content">
         <header>
           <div className="header-top" style={{ padding: '16px 24px', direction: 'ltr' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-              {/* Mobile-only: the sidebar (which holds "new chat") is hidden on phones — surface it in the header. */}
-              <div
-                className="bw-header-newchat"
-                onClick={() => (window as any).newChat()}
-                title="שיחה חדשה"
-                style={{ cursor: 'pointer', color: 'var(--muted)', padding: '2px 4px', borderRadius: 6, lineHeight: 1, minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)'; }}
-              >
-                <PenLine size={16} strokeWidth={1.75} />
-              </div>
+            <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
               <div onClick={() => (window as any).toggleSidebar()} style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 18, padding: '2px 6px', borderRadius: 6, lineHeight: 1 }} id="sb-toggle-btn">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
                   <rect x="1" y="1" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="1.3" fill="none"/>
@@ -941,6 +930,17 @@ export default function Home() {
             </div>
             <h1 dir="ltr" style={{ direction: 'ltr' }} suppressHydrationWarning>Between</h1>
             <div style={{ flexShrink: 0, minWidth: 80, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+              {/* Mobile-only: new conversation. Bubble+plus (Claude Design 24.07) — a pencil read as "edit", not "new conversation". */}
+              <div
+                className="bw-header-newchat"
+                onClick={() => (window as any).newChat()}
+                title="שיחה חדשה"
+                style={{ cursor: 'pointer', color: 'var(--text)', borderRadius: 'var(--radius-md)', lineHeight: 1, minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--accent-soft)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+              >
+                <MessageCirclePlus size={21} strokeWidth={1.75} />
+              </div>
               {/* שיחת היכרות (intake) — patient onboarding only; not rendered for therapists (BW-112). */}
               {activePersona === 'patient' && (
               <div id="header-intake-btn" onClick={() => (window as any).startIntake()} style={{ display: 'none', cursor: 'pointer', fontSize: 12, color: '#fff', background: 'var(--accent-deep)', borderRadius: 20, padding: '6px 16px', fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 500, transition: 'opacity 0.2s', whiteSpace: 'nowrap' }}
@@ -957,23 +957,21 @@ export default function Home() {
             {/* Mobile account menu — mirrors the sidebar's tools + account, persona-scoped exactly like #sidebar.
                 Labels reuse the shared .js-*-label classes so applyUITranslation updates both copies. */}
             <div id="bw-account-menu" className={`persona-${activePersona}`} style={{ display: 'none' }}>
-              <div className="bw-acct-section">
-                <div className="sb-section-label">כלים</div>
-                <div className="sb-item" data-persona="therapist" onClick={() => { (window as any).toggleWebSearch(); (window as any).closeAccountMenu?.(); }}>
-                  <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
-                  <span className="sb-label js-websearch-label">חיפוש רשת: כבוי</span>
-                </div>
-                <div className="sb-item" data-persona="therapist" onClick={() => { (window as any).openSessionSummary(); (window as any).closeAccountMenu?.(); }}>
-                  <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
-                  <span className="sb-label js-summary-label">סיכום התייעצות</span>
-                </div>
-                <div className="sb-item" id="bw-acct-pdf" data-persona="both" onClick={() => { (window as any).exportPDF(); (window as any).closeAccountMenu?.(); }}>
-                  <span className="sb-icon"><Download size={15} strokeWidth={1.75} /></span>
-                  <span className="sb-label js-pdf-label">הורד PDF</span>
+              {/* 1. Account row — avatar + name + email. Name/email copied from #sb-user-* at open (toggleAccountMenu). */}
+              <div className="bw-acct-account-row">
+                <div className="sb-avatar">A</div>
+                <div style={{ overflow: 'hidden' }}>
+                  <div className="bw-acct-name">{currentLang === 'he' ? 'משתמש' : 'User'}</div>
+                  <div className="bw-acct-email"></div>
                 </div>
               </div>
+              {/* 2. Language toggle HE/EN — was missing on mobile (Claude Design). Reuses selectLang. */}
+              <div className="bw-acct-lang">
+                <button className={currentLang === 'he' ? 'active' : ''} onClick={() => { if (currentLang !== 'he') { setCurrentLang('he'); (window as any).selectLang?.('he', '🇮🇱', 'עברית'); } }}>עברית</button>
+                <button className={currentLang === 'en' ? 'active' : ''} onClick={() => { if (currentLang !== 'en') { setCurrentLang('en'); (window as any).selectLang?.('en', '🇬🇧', 'English'); } }}>English</button>
+              </div>
+              {/* 3. Account — settings, signout (essentials the design omitted; a mobile user must be able to sign out). */}
               <div className="bw-acct-section">
-                <div className="sb-section-label">חשבון</div>
                 <div className="sb-item" onClick={() => { (window as any).openSettings(); (window as any).closeAccountMenu?.(); }}>
                   <span className="sb-icon"><Settings size={15} strokeWidth={1.75} /></span>
                   <span className="sb-label js-settings-label">הגדרות</span>
@@ -982,6 +980,28 @@ export default function Home() {
                   <span className="sb-icon"><LogOut size={15} strokeWidth={1.75} /></span>
                   <span className="sb-label js-signout-label">התנתק</span>
                 </div>
+              </div>
+              {/* 4. Tools (therapist) + PDF (gated) + intake (patient). */}
+              <div className="bw-acct-section">
+                <div className="sb-item" data-persona="therapist" onClick={() => { (window as any).toggleWebSearch(); (window as any).closeAccountMenu?.(); }}>
+                  <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
+                  <span className="sb-label js-websearch-label">חיפוש רשת: כבוי</span>
+                </div>
+                <div className="sb-item" data-persona="therapist" onClick={() => { (window as any).openSessionSummary(); (window as any).closeAccountMenu?.(); }}>
+                  <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
+                  <span className="sb-label js-summary-label">סיכום התייעצות</span>
+                </div>
+                {/* PDF stays here (gated to a live conversation) until stage 3 moves it to the conversation sub-header — don't drop mobile PDF access before its new home exists. */}
+                <div className="sb-item" id="bw-acct-pdf" data-persona="both" onClick={() => { (window as any).exportPDF(); (window as any).closeAccountMenu?.(); }}>
+                  <span className="sb-icon"><Download size={15} strokeWidth={1.75} /></span>
+                  <span className="sb-label js-pdf-label">הורד PDF</span>
+                </div>
+                {activePersona === 'patient' && (
+                <div className="sb-item" data-persona="patient" onClick={() => { (window as any).startIntake?.(); (window as any).closeAccountMenu?.(); }}>
+                  <span className="sb-icon"><Sparkles size={15} strokeWidth={1.75} /></span>
+                  <span className="sb-label">שיחת היכרות</span>
+                </div>
+                )}
               </div>
             </div>
           </div>
