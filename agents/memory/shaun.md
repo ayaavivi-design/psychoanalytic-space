@@ -22,6 +22,7 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 ---
 
 ## History (last 10)
+0. ניוזלטר 2026-07-24 — "לוואלד — מה קורה למטפל אחרי שיוצאים מהחדר" (סדרה ג׳ — תיאורטיקנים). אינטרנליזציה לפי לוואלד: הטיפול עובד כי המטפל הופך למבנה נפשי, לא לזיכרון — והבנייה מתרחשת בין הפגישות, לא בחדר. שמור ב-marketing-reports/NEWSLETTER-2026-07-24-loewald-internalization-therapist-inside-you.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-23 — "כשאתה כועס על המטפל שלך" (סדרה א׳ — בין הפגישות). כעס על המטפל בין פגישות: לגיטימיות הכעס, ויניקוט על שימוש באובייקט, ומה קורה כשהכעס פועל לבד ללא נוכחות. שמור ב-marketing-reports/NEWSLETTER-2026-07-23-anger-at-therapist-between-sessions.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-22 — "הבושה שאחרי הפגישה" (סדרה א׳ — בין הפגישות). הבחנה בין אשמה לבושה: בושה כאות שמשהו אמיתי עלה, ומה קורה כשהיא פועלת בין הפגישות ללא המטפל. שמור ב-marketing-reports/NEWSLETTER-2026-07-22-shame-after-the-session.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-21 — "ביון — פונקציית האלפא: מה קורה לחוויה לפני שהיא הופכת למחשבה" (סדרה ג׳ — תיאורטיקנים). אלמנטים בטא, פונקציית אלפא, הכלה — ואיך Between מחזיקה את החוויה הגולמית בין הפגישות. שמור ב-marketing-reports/NEWSLETTER-2026-07-21-bion-alpha-function-before-thought.md. נכתב ב-CCR routine יולי 2026.
@@ -31,5 +32,4 @@ _עדכן אוטומטית בסוף כל session. לא לערוך ידנית._
 0. ניוזלטר 2026-07-17 — "ה-AI לא צריך ממך כלום — ומה זה עושה לנפש" (סדרה ב׳ — AI ועולם הנפש). אסימטריית הקשר: AI ללא צרכים, ללא פגיעות — מול ויניקוט על "שימוש באובייקט". שמור ב-marketing-reports/NEWSLETTER-2026-07-17-ai-has-no-needs-object-without-stakes.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-16 — "הרגע שרצית להתקשר למטפל" (סדרה א׳ — בין הפגישות). שמור ב-marketing-reports/NEWSLETTER-2026-07-16-the-moment-you-wanted-to-call-your-therapist.md. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-15 — "המקום שאמרת שלא תחזור אליו — פרויד על חזרה כפייתית" (סדרה ג׳ — תיאורטיקנים). שמור ב-marketing-reports/NEWSLETTER-2026-07-15-freud-repetition-compulsion.md. נכתב ב-CCR routine יולי 2026.
-0. ניוזלטר 2026-07-14 — "מה שלא הצלחת לומר בפגישה" (סדרה א׳ — resistance/unsaid). שמור ב-marketing-reports/NEWSLETTER-2026-07-14-what-you-couldnt-say-in-the-session.md. הערה: חפיפה חלקית עם 07-12 — לבדוק עם איה. נכתב ב-CCR routine יולי 2026.
 0. ניוזלטר 2026-07-13 — "כשפתחת את Between — ולא כתבת" (סדרה ב׳ — AI ועולם הנפש). שמור ב-marketing-reports/NEWSLETTER-2026-07-13-ai-resistance-not-writing.md. נכתב ב-CCR routine יולי 2026.
