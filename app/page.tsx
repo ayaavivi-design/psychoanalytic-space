@@ -1014,11 +1014,12 @@ export default function Home() {
                 id="bw-session-pdf"
                 onClick={() => (window as any).exportPDF?.()}
                 title={isHe ? 'הורד PDF' : 'Download PDF'}
-                style={{ display: 'none', width: 44, height: 44, borderRadius: 'var(--radius-md)', border: 'none', padding: 0, background: 'transparent', color: 'var(--muted)', cursor: 'pointer', alignItems: 'center', justifyContent: 'center', transition: 'color 0.15s, background 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-soft)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.background = 'transparent'; }}
+                style={{ display: 'none', minHeight: 44, height: 44, borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', padding: '0 var(--space-md)', gap: 'var(--space-xs)', background: 'var(--accent-soft)', color: 'var(--accent)', cursor: 'pointer', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif', transition: 'color 0.15s, background 0.15s, border-color 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'var(--accent)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent-soft)'; e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
               >
                 <Download size={15} strokeWidth={1.75} />
+                <span>{isHe ? 'הורדה' : 'Download'}</span>
               </button>
             </div>
           </div>

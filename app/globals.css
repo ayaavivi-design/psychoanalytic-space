@@ -66,6 +66,7 @@ body {
   flex-direction: row;
   direction: ltr;
   overflow: hidden;
+  overscroll-behavior: none; /* mobile: block browser pull-to-refresh from reloading the page and wiping the conversation */
   background-image: radial-gradient(circle at 80% 10%, rgba(196,96,122,0.05) 0%, transparent 50%),
                     radial-gradient(circle at 10% 90%, rgba(196,96,122,0.03) 0%, transparent 40%);
 }
@@ -396,6 +397,7 @@ header span {
 #chat {
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior-y: contain; /* keep pull-to-refresh from firing when scrolling up at the top of the conversation */
   padding: var(--space-xl);
   display: flex;
   flex-direction: column;
