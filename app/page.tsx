@@ -14,6 +14,9 @@ export default function Home() {
   const [showHoldTheoristPicker, setShowHoldTheoristPicker] = useState(false);
   const [holdSaveStatus, setHoldSaveStatus] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  // Web Speech API is absent on iOS Safari — hide the mic there rather than show a dead button.
+  // Safe as a lazy initializer: the write card is client-only (mounted gate), so no SSR/hydration mismatch.
+  const [speechSupported] = useState(() => typeof window !== 'undefined' && !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition));
   const recognitionRef = useRef<any>(null);
   const baseHoldTextRef = useRef('');
   const holdTextareaRef = useRef<HTMLDivElement>(null);
@@ -991,11 +994,6 @@ export default function Home() {
                   <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
                   <span className="sb-label js-summary-label">סיכום התייעצות</span>
                 </div>
-                {/* PDF stays here (gated to a live conversation) until stage 3 moves it to the conversation sub-header — don't drop mobile PDF access before its new home exists. */}
-                <div className="sb-item" id="bw-acct-pdf" data-persona="both" onClick={() => { (window as any).exportPDF(); (window as any).closeAccountMenu?.(); }}>
-                  <span className="sb-icon"><Download size={15} strokeWidth={1.75} /></span>
-                  <span className="sb-label js-pdf-label">הורד PDF</span>
-                </div>
                 {activePersona === 'patient' && (
                 <div className="sb-item" data-persona="patient" onClick={() => { (window as any).startIntake?.(); (window as any).closeAccountMenu?.(); }}>
                   <span className="sb-icon"><Sparkles size={15} strokeWidth={1.75} /></span>
@@ -1010,6 +1008,18 @@ export default function Home() {
             <div style={{ flex: 1 }}></div>
             <div className="session-actions">
               {/* intake btn moved to header-top right slot; clinical-btn accessible via sidebar only */}
+              {/* PDF — mobile lost its account-menu PDF item; it lives here now, shown only
+                  during a live conversation (chat.js updatePdfBtn toggles display via conversationHistory). */}
+              <button
+                id="bw-session-pdf"
+                onClick={() => (window as any).exportPDF?.()}
+                title={isHe ? 'הורד PDF' : 'Download PDF'}
+                style={{ display: 'none', width: 44, height: 44, borderRadius: 'var(--radius-md)', border: 'none', padding: 0, background: 'transparent', color: 'var(--muted)', cursor: 'pointer', alignItems: 'center', justifyContent: 'center', transition: 'color 0.15s, background 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-soft)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.background = 'transparent'; }}
+              >
+                <Download size={15} strokeWidth={1.75} />
+              </button>
             </div>
           </div>
         </header>
@@ -1069,6 +1079,7 @@ export default function Home() {
                         style={{
                           position: 'absolute', top: 20,
                           right: isHe ? 20 : undefined, left: isHe ? undefined : 20,
+                          textAlign: isHe ? 'right' : 'left',
                           color: 'var(--muted)', fontSize: 15,
                           fontFamily: 'var(--font-rubik), sans-serif',
                           pointerEvents: 'none', userSelect: 'none', lineHeight: 1.6,
@@ -1078,9 +1089,25 @@ export default function Home() {
                       </span>
                     )}
                   </div>
+                  {/* Voice picker — mobile has no sidebar, so switching the theorist's voice
+                      happens here. Exactly one chip is always active (default winnicott); reuses
+                      .theorist-tag. Its own row above the footer, so it never joins the footer
+                      flex line (that would worsen the primary-button jump, bug 6). */}
+                  <div style={{ borderTop: '1px solid var(--border)', display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap', padding: 'var(--space-sm) var(--space-md)', minHeight: 44, alignItems: 'center' }}>
+                    {(['freud', 'klein', 'winnicott', 'ogden'] as const).map(key => (
+                      <span
+                        key={key}
+                        className={`theorist-tag${holdTheorist === key ? ' active' : ''}`}
+                        onClick={() => setHoldTheorist(key)}
+                      >
+                        {getHoldTheoristName(key)}
+                      </span>
+                    ))}
+                  </div>
                   {/* Footer: mic + continue. Parent is direction:rtl in Hebrew, so plain
                       'row' puts mic at the start (right) and the continue button at the end (left). */}
                   <div style={{ borderTop: '1px solid var(--border)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, flexDirection: 'row', flexWrap: 'wrap' }}>
+                    {speechSupported && (
                     <button
                       onClick={handleToggleVoice}
                       className={isRecording ? 'bw-mic-recording' : ''}
@@ -1094,6 +1121,7 @@ export default function Home() {
                     >
                       <Mic size={15} />
                     </button>
+                    )}
                     <div style={{ flex: 1 }} />
                     {/* Secondary action — analyze the writing. Gated on written text (BW-122:
                         no fixed discharge-button from frame one; the gesture appears only

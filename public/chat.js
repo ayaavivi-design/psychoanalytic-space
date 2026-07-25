@@ -8600,11 +8600,22 @@ function buildPatientReflectionTranscript() {
 }
 
 function updateReflectionBtn() {
+  updatePdfBtn();
   const btn = document.getElementById('patient-reflection-btn');
   if (!btn) return;
   const show = window.isAdmin && conversationHistory.length >= 2;
   btn.style.display = show ? 'flex' : 'none';
 }
+
+// Mobile PDF (#bw-session-pdf) lives in the conversation sub-header — shown only during a
+// live conversation. Called from updateReflectionBtn, which already fires at every
+// conversation lifecycle point (after each response, restore, new chat, init).
+function updatePdfBtn() {
+  const btn = document.getElementById('bw-session-pdf');
+  if (!btn) return;
+  btn.style.display = conversationHistory.length > 0 ? 'flex' : 'none';
+}
+window.updatePdfBtn = updatePdfBtn;
 
 function updateEndSessionBtn() {
   if (conversationHistory.length >= 4) showEndSessionButton();
