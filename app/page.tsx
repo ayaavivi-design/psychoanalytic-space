@@ -1019,8 +1019,11 @@ export default function Home() {
             <div style={{ flex: 1 }}></div>
             <div className="session-actions">
               {/* intake btn moved to header-top right slot; clinical-btn accessible via sidebar only */}
-              {/* PDF — mobile lost its account-menu PDF item; it lives here now, shown only
-                  during a live conversation (chat.js updatePdfBtn toggles display via conversationHistory). */}
+              {/* PDF — mobile-only: the sidebar already carries "הורד PDF" (page.tsx:830), so on
+                  desktop this button is redundant (UX-RULE 9). Gated to mobile like the voice chips.
+                  Shown only during a live conversation (chat.js updatePdfBtn toggles via conversationHistory;
+                  it guards on a missing element, so on desktop it simply no-ops). */}
+              {isMobile && (
               <button
                 id="bw-session-pdf"
                 onClick={() => (window as any).exportPDF?.()}
@@ -1032,6 +1035,7 @@ export default function Home() {
                 <Download size={15} strokeWidth={1.75} />
                 <span>{isHe ? 'הורדה' : 'Download'}</span>
               </button>
+              )}
             </div>
           </div>
         </header>
