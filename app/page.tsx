@@ -14,6 +14,10 @@ export default function Home() {
   const [showHoldTheoristPicker, setShowHoldTheoristPicker] = useState(false);
   const [holdSaveStatus, setHoldSaveStatus] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  // Mobile gate for the voice-picker chips: the sidebar (the desktop voice switcher)
+  // hides at max-width:600px (globals.css), so the chips only earn their place below 600.
+  // Set in useEffect, never at render — a render-time width read desyncs SSR/client (hydration).
+  const [isMobile, setIsMobile] = useState(false);
   // Web Speech API is absent on iOS Safari — hide the mic there rather than show a dead button.
   // Safe as a lazy initializer: the write card is client-only (mounted gate), so no SSR/hydration mismatch.
   const [speechSupported] = useState(() => typeof window !== 'undefined' && !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition));
@@ -152,6 +156,13 @@ export default function Home() {
   const [openMenuCaseId, setOpenMenuCaseId] = useState<string | null>(null);
   const [renamingCaseId, setRenamingCaseId] = useState<string | null>(null);
   const [renamingLabel, setRenamingLabel] = useState('');
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 600px)');
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
   useEffect(() => {
     setMounted(true);
     setTheoristsOpen(true);
@@ -1091,9 +1102,12 @@ export default function Home() {
                     )}
                   </div>
                   {/* Voice picker — mobile has no sidebar, so switching the theorist's voice
-                      happens here. Exactly one chip is always active (default winnicott); reuses
-                      .theorist-tag. Its own row above the footer, so it never joins the footer
-                      flex line (that would worsen the primary-button jump, bug 6). */}
+                      happens here. Mobile-only: on desktop the sidebar already switches voice,
+                      and duplicating it below the writing card breaks hierarchy (UX-RULE 9).
+                      Exactly one chip is always active (default winnicott); reuses .theorist-tag.
+                      Its own row above the footer, so it never joins the footer flex line
+                      (that would worsen the primary-button jump, bug 6). */}
+                  {isMobile && (
                   <div style={{ borderTop: '1px solid var(--border)', display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap', padding: 'var(--space-sm) var(--space-md)', minHeight: 44, alignItems: 'center' }}>
                     {(['freud', 'klein', 'winnicott', 'ogden'] as const).map(key => (
                       <span
@@ -1105,6 +1119,7 @@ export default function Home() {
                       </span>
                     ))}
                   </div>
+                  )}
                   {/* Footer: mic + continue. Parent is direction:rtl in Hebrew, so plain
                       'row' puts mic at the start (right) and the continue button at the end (left). */}
                   <div style={{ borderTop: '1px solid var(--border)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, flexDirection: 'row', flexWrap: 'wrap' }}>
