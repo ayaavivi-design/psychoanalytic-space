@@ -237,6 +237,21 @@ export default function Home() {
     }
   }, [holdTheorist, activePersona, mounted, holdText]);
 
+  // Analytics (event-only, anonymous). app_opened = retention anchor; fires once per load.
+  const appOpenedRef = useRef(false);
+  useEffect(() => {
+    if (!mounted || appOpenedRef.current) return;
+    appOpenedRef.current = true;
+    window.bwTrack?.('app_opened', { persona: activePersona });
+  }, [mounted, activePersona]);
+
+  // theorist_selected — fires on every real change; skips the initial default value.
+  const theoristSelRef = useRef(false);
+  useEffect(() => {
+    if (!theoristSelRef.current) { theoristSelRef.current = true; return; }
+    window.bwTrack?.('theorist_selected', { theorist: holdTheorist });
+  }, [holdTheorist]);
+
   // Restore a locally-saved writing draft when the patient writing screen mounts.
   // Runs once (holdDraftRestoredRef) so it never clobbers live edits. Stored as
   // HTML to preserve .bw-private marks.
@@ -627,6 +642,7 @@ export default function Home() {
     // Default save: commit the writing to the local archive once, on continue.
     if (full) (window as any).saveWriteEntry?.(full, pub);
     (window as any).enterHoldConversation?.(theorist, pub);
+    window.bwTrack?.('conversation_entered', { theorist });
     if (holdTextareaRef.current) holdTextareaRef.current.innerHTML = '';
     setHoldText('');
     setHoldSaveStatus('');

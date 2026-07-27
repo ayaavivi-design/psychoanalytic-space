@@ -6264,6 +6264,7 @@ async function sendMessage() {
 
   // בדיקת מגבלת שיחות — רק בהודעה הראשונה בשיחה חדשה
   if (conversationHistory.length === 0) {
+    window.bwTrack?.('first_message_sent', { theorist: activeTheorists[0] || null });
     const allowed = await checkConversationLimit();
     if (!allowed) return;
   }
