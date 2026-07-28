@@ -491,7 +491,13 @@ async function signUp() {
   if (!email || !password) { errEl.textContent = _at.authErrFillAll || 'Please fill in both email and password'; errEl.style.display = 'block'; return; }
   if (password.length < 6) { errEl.textContent = _at.authErrPassword || 'Password must be at least 6 characters'; errEl.style.display = 'block'; return; }
   const { data, error } = await supabaseClient.auth.signUp({ email, password });
-  if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
+  if (error) {
+    const _signupClosed = error.code === 'signup_disabled' || /signup.*not allowed|signups? not allowed/i.test(error.message || '');
+    errEl.textContent = _signupClosed
+      ? (_at.authErrSignupDisabled || 'Sign-ups are currently closed. To request access, email hello@getbetween.app')
+      : error.message;
+    errEl.style.display = 'block';
+  }
   else if (data.session) { hideAuthScreen(); loadUserProfile(data.session.user); }
   else { errEl.style.color = 'var(--accent)'; errEl.textContent = _at.authErrEmailSent || 'Verification email sent — check your inbox'; errEl.style.display = 'block'; }
 }
@@ -5257,6 +5263,7 @@ const UI_TRANSLATIONS = {
     lensSkip: 'דלג',
     lensEndBtn: 'סיים שיחה',
     contactUs: 'יש שאלה? כתוב/י לנו',
+    authErrSignupDisabled: 'ההרשמה ל-Between סגורה כרגע. כדי לבקש גישה, כתבו לנו למייל hello@getbetween.app ונחזור אליכם.',
     dir: 'rtl'
   },
   en: {
@@ -5339,6 +5346,7 @@ const UI_TRANSLATIONS = {
     authErrEmailSent: 'Verification email sent — check your inbox',
     authErrResetSent: 'Password reset link sent to your email',
     authErrEmailOnly: 'Enter your email address and click "Forgot password"',
+    authErrSignupDisabled: 'Sign-ups for Between are currently closed. To request access, email us at hello@getbetween.app and we\'ll get back to you.',
     noMemories: 'No memories yet',
     conversation: 'Conversation',
     errGeneric: 'Something went wrong — please try again.',
