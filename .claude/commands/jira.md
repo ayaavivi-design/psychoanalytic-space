@@ -2,7 +2,9 @@
 
 **פרויקט ברירת מחדל:** BW (שם: "Team Between" | Board ID: 1)
 **סוכנים עם גישה:** הילי, סם, אדם, איתן
-**שרת MCP:** Atlassian (https://mcp.atlassian.com/v1/sse)
+**שרת MCP פעיל:** **Atlassian Rovo** (connector ב-claude.ai) — כלים בקידומת `mcp__0bdec50d-5853-453a-bed0-10e2dfaa800c__*` (createJiraIssue, getJiraIssue, searchJiraIssuesUsingJql, createIssueLink, getVisibleJiraProjects, getAccessibleAtlassianResources).
+**cloudId:** `03a5ff06-2b5e-41f3-ab73-14914bd6b3ca` (ayaavivi.atlassian.net)
+**⚠️ אל תשתמש ב-`mcp__atlassian__*` הישן** (mcp.atlassian.com/v1/sse) — הוא מחזיר רשימה ריקה / אין גישה לפרויקט. אם חיפוש Jira חוזר `total: -1` או `[]` — אתה על השרת הלא נכון, עבור ל-Rovo.
 
 ---
 
