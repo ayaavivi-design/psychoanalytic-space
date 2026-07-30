@@ -225,7 +225,6 @@ const layer2 = layerBox('LAYER 2 — API ROUTES  (Vercel Edge)', C.l2, [
     [
       { label: '/api/qa-quick', border: C.l2.chip },
       { label: '/api/judge-report', border: C.l2.chip },
-      { label: '/api/karen-ux', border: C.l2.chip },
       { label: '/api/ceo-report', border: C.l2.chip },
     ],
     C.l2.bg
@@ -265,7 +264,6 @@ const layer4 = layerBox('LAYER 4 — DATA', C.l4, [
 const layer5 = layerBox('LAYER 5 — AUTOMATION', C.l5, [
   chipsRow(
     [
-      { label: 'Karen UX — daily 08:00', border: C.l5.chip },
       { label: 'Eitan QA — daily 10:00', border: C.l5.chip },
       { label: 'Lia Judge — every 3 days', border: C.l5.chip },
       { label: 'Adam CEO memo — weekly', border: C.l5.chip },

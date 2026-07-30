@@ -208,7 +208,7 @@ _עודכן: מאי 2026_
 
 ### ❌ מה אסור
 - לא לדרוס את צבע `.sb-icon` inline — ה-CSS מנהל אותו (default → hover → active)
-- יוצא מן הכלל: סמלים שמייצגים state פעיל (Karen, Naval) מקבלים `color: var(--accent)` ישירות
+- יוצא מן הכלל: סמלים שמייצגים state פעיל (Naval) מקבלים `color: var(--accent)` ישירות
 
 ---
 

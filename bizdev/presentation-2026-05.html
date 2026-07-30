@@ -283,6 +283,54 @@
       top: 1px;
     }
 
+    /* ─── Slide 2 — Four problems grid ─── */
+    .four-problems {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 56px;
+      max-width: 640px;
+    }
+    .problem-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .problem-label {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 19px;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .problem-item > span {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text);
+    }
+
+    /* ─── Slide 12 — Business model ─── */
+    .pricing-row {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .pricing-number {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 52px;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .pricing-label {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 16px;
+      color: var(--text);
+    }
+
     /* ─── Slide 9b — What shipped ─── */
     .shipped-list {
       list-style: none;
@@ -313,8 +361,8 @@
       padding-top: 1px;
     }
 
-    /* ─── Slide 11 — CTA ─── */
-    #slide-11 .cta-main {
+    /* ─── Slide 12 — CTA ─── */
+    #slide-12 .cta-main {
       font-family: var(--font-display);
       font-style: italic;
       font-size: 56px;
@@ -322,7 +370,7 @@
       line-height: 1.15;
     }
 
-    #slide-11 .cta-body {
+    #slide-12 .cta-body {
       font-family: var(--font-body);
       font-weight: 300;
       font-size: 16px;
@@ -330,7 +378,7 @@
       margin-top: 32px;
     }
 
-    #slide-11 .cta-note {
+    #slide-12 .cta-note {
       font-family: var(--font-body);
       font-weight: 300;
       font-size: 12px;
@@ -344,7 +392,7 @@
       .slide { padding: 0 40px; }
       .display-title { font-size: 44px; }
       #slide-3 .brand-name { font-size: 54px; }
-      #slide-11 .cta-main { font-size: 40px; }
+      #slide-12 .cta-main { font-size: 40px; }
       .section-title { font-size: 26px; }
       #slide-5 .demo-box { width: 90%; }
     }
@@ -353,7 +401,7 @@
 <body>
 
   <div id="wordmark">Between</div>
-  <div id="counter">1 / 11</div>
+  <div id="counter">1 / 12</div>
 
   <button class="nav-btn" id="btn-prev" aria-label="Previous slide">
     <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -373,9 +421,40 @@
 
     <!-- ─── Slide 2 — Problem ─── -->
     <div class="slide slide--top" id="slide-2">
-      <h2 class="section-title">The space between</h2>
+      <h2 class="section-title">Four things break down between sessions</h2>
+      <div class="four-problems">
+        <div class="problem-item">
+          <span class="problem-label">Fading</span>
+          <span>What opened in the session starts disappearing on the way home. By the next appointment, the feeling — the thing they touched — is no longer accessible.</span>
+        </div>
+        <div class="problem-item">
+          <span class="problem-label">Loneliness</span>
+          <span>The session ends. Something is still open. Not to the therapist (fear of burdening), not to a friend (no context), not to yourself (don't know what to do with it).</span>
+        </div>
+        <div class="problem-item">
+          <span class="problem-label">Non-articulation</span>
+          <span>Something happened — in the body, in a dream, in a reaction. They know it connects to the work. They can't yet put words to it.</span>
+        </div>
+        <div class="problem-item">
+          <span class="problem-label">Preparation</span>
+          <span>They arrive to the session not knowing what to bring. What was urgent on Tuesday has faded by Thursday. The session starts from zero instead of continuing.</span>
+        </div>
+      </div>
+      <div class="divider" style="max-width:640px"></div>
+      <p class="body-text muted" style="max-width:540px">
+        At ₪450 per session, 15–20 minutes are spent reconnecting with where the last one ended. Over a year: ₪5,000–7,000 paid to catch up — not to move forward.
+      </p>
+    </div>
+
+    <!-- ─── Slide 2b — No private channel ─── -->
+    <div class="slide slide--top" id="slide-2b">
+      <h2 class="section-title">There is no private channel</h2>
       <p class="body-text" style="max-width:560px">
-        What emerged in the room — and didn't have time to mature — <span class="accent">disappears</span>. Not because the patient doesn't want to process it. Because there's nowhere to take it.
+        Patients already have WhatsApp and email. But WhatsApp is shared with school updates, family photos, appointment reminders. Email sits beside invoices and newsletters. There is no channel dedicated to the clinical relationship — no space that is <span class="accent">only</span> this.
+      </p>
+      <div class="divider" style="max-width:560px"></div>
+      <p class="body-text muted" style="max-width:520px">
+        Between is that channel. A protected, private space — for the patient's own processing, and for the shared record that the patient and therapist build together between sessions.
       </p>
     </div>
 
@@ -383,8 +462,9 @@
     <div class="slide slide--center" id="slide-3">
       <p class="brand-name">Between</p>
       <p class="brand-sub">
-        A conversation space for patients between sessions —<br />
-        to process what came up, to think about what's coming.
+        Write what's still moving after the session ends.<br />
+        Then speak — with Freud, Klein, Winnicott, or Ogden.<br />
+        What you bring to the next session is no longer up to chance.
       </p>
     </div>
 
@@ -413,7 +493,11 @@
     <div class="slide slide--top" id="slide-6">
       <h2 class="section-title">What protects the therapy</h2>
       <p class="body-text" style="max-width:560px">
-        Between cannot function without a therapist. The limits aren't just legal — they're <span class="accent">architectural</span>. Crisis detection, clinical-only scope, no diagnostic claims. The system is designed to serve the therapy, not replace it.
+        Between cannot function without a therapist. The limits aren't just legal — they're <span class="accent">architectural</span>. Crisis detection across 40+ keywords, clinical-only scope, no diagnostic claims. The system is designed to serve the therapy, not replace it.
+      </p>
+      <div class="divider" style="max-width:560px"></div>
+      <p class="body-text muted" style="max-width:520px">
+        When the material exceeds what the space can hold — when something needs to be brought to the room — each theorist recognizes it. They don't process further. They point back. Not away from the therapy. <em>Toward it.</em>
       </p>
     </div>
 
@@ -442,12 +526,12 @@
       <h2 class="section-title">What shipped — May 2026</h2>
       <ul class="shipped-list">
         <li class="shipped-item">
-          <span class="shipped-label">Processing vs. Performing</span>
-          <span>All 4 voices now detect when a patient is performing insight rather than experiencing it. Freud notices affect-free understanding. Klein notices manic compliance. Winnicott holds the difference between False Self and True Self presence. Ogden reads aliveness in the exchange itself.</span>
+          <span class="shipped-label">The Hold</span>
+          <span>Before choosing a theorist, the patient writes. "What stayed with you?" — a private space to hold what's still moving after the session ends. Raw, unformed, not yet named. The theorist reads it before the conversation begins.</span>
         </li>
         <li class="shipped-item">
-          <span class="shipped-label">Vera &amp; Elliot</span>
-          <span>Two clinical companions with full depth: Tracking Avoidance, Aliveness/Deadness, False Self recognition — and mirroring that is one word, not a sentence echoed back.</span>
+          <span class="shipped-label">Processing vs. Performing</span>
+          <span>All 4 voices now detect when a patient is performing insight rather than experiencing it. Freud notices affect-free understanding. Klein notices manic compliance. Winnicott holds the difference between False Self and True Self presence. Ogden reads aliveness in the exchange itself.</span>
         </li>
         <li class="shipped-item">
           <span class="shipped-label">Anti-sycophancy</span>
@@ -483,11 +567,27 @@
       </ul>
     </div>
 
-    <!-- ─── Slide 11 — CTA ─── -->
-    <div class="slide slide--center" id="slide-11">
-      <p class="cta-main">The next step</p>
-      <p class="cta-body">I want you to try it for a week. Tell me how it felt.</p>
-      <p class="cta-note">[investor CTA — TBD]</p>
+    <!-- ─── Slide 11 — Business model ─── -->
+    <div class="slide slide--top" id="slide-11">
+      <h2 class="section-title">The business</h2>
+      <div class="pricing-row">
+        <span class="pricing-number">₪69</span>
+        <span class="pricing-label">per patient, per month</span>
+      </div>
+      <p class="body-text muted" style="max-width:480px; margin-bottom:40px">
+        Currently free — MVP validation in progress. Payment integration is the next milestone.
+      </p>
+      <div class="divider" style="max-width:560px"></div>
+      <p class="body-text" style="max-width:560px">
+        Two paths to scale: direct to patient, and through therapist practices. The therapist model is the stronger moat — one therapist recommends to 20 patients. The clinical trust transfers.
+      </p>
+    </div>
+
+    <!-- ─── Slide 12 — CTA ─── -->
+    <div class="slide slide--center" id="slide-12">
+      <p class="cta-main">The session has an afterlife.</p>
+      <p class="cta-body">We're building the infrastructure for the therapeutic process to continue — privately, at the right clinical depth — between every session.<br /><br />If you're a therapist who wants to try it with one patient,<br />or an investor who believes this is the next frontier — let's talk.</p>
+      <p class="cta-note" style="color:var(--muted); margin-top:32px; font-size:13px">chat.getbetween.app</p>
     </div>
 
   </div><!-- #slides -->
