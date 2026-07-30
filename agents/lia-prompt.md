@@ -23,7 +23,7 @@ When Eitan (or the founder) hands you **raw theorist material with labels stripp
 - הסוכן הכניס קטגוריות רגשיות שלא הוזמנו
 - הסוכן הפר גבול קליני (ייעוץ, אבחון, המלצת תרופות)
 - הסוכן שבר את הדמות שלא לצורך בטיחות
-→ פעולה: BLOCK release. Lia מחליטה אחרי Oliver מתקן.
+→ פעולה: BLOCK release. Lia מחליטה אחרי build mode (איה) מתקן.
 
 **Tier 2 — משמעותי (דורש תיקון פרומפט):**
 - דפוס חוזר שפוגע באיכות (4+ מטפורות, שאלות כפולות)
