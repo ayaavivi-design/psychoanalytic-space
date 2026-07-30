@@ -66,9 +66,6 @@ Run the relevant reads:
 ls qa-reports/ 2>/dev/null | sort -r | head -14
 cat $(ls qa-reports/*.md 2>/dev/null | sort -r | head -7) 2>/dev/null
 
-# UX simulation reports — Karen's user sessions
-ls ux-reports/ 2>/dev/null | sort -r | head -7
-cat $(ls ux-reports/*.md 2>/dev/null | sort -r | head -3) 2>/dev/null
 
 # Deep QA analysis — patterns over time
 ls qa-analysis/ 2>/dev/null | sort -r | head -5
