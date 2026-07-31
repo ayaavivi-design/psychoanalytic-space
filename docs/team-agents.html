@@ -77,6 +77,21 @@
       border-radius: 50%;
     }
 
+    /* ─── PRINCIPLE BANNER ─── */
+    .principle {
+      max-width: 760px;
+      margin: 0 auto 40px;
+      text-align: center;
+      background: var(--accent-soft);
+      border: 1px solid rgba(196,96,122,0.2);
+      border-radius: var(--radius-md);
+      padding: 16px 24px;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .principle strong { color: var(--accent); font-weight: 500; }
+
     /* ─── SECTION ─── */
     .section-title {
       font-family: 'Cormorant Garamond', serif;
@@ -108,22 +123,6 @@
     }
     .card:hover {
       box-shadow: 0 4px 20px rgba(44,36,32,0.08);
-    }
-    .card.new-today {
-      border-color: var(--accent-dim);
-    }
-    .card.new-today::after {
-      content: 'חדש היום';
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      background: var(--accent);
-      color: white;
-      font-size: 10px;
-      font-weight: 500;
-      padding: 2px 8px;
-      border-radius: 10px;
-      letter-spacing: 0.03em;
     }
     .card.autonomous {
       border-right: 3px solid #2d8a5e;
@@ -299,6 +298,19 @@
     }
     .chain-arrow { color: var(--muted); font-size: 16px; }
 
+    /* ─── FROZEN NOTE ─── */
+    .frozen-box {
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin-bottom: 48px;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .frozen-box b { color: var(--text); font-weight: 500; }
+
     /* ─── FOOTER ─── */
     .page-footer {
       text-align: center;
@@ -315,26 +327,24 @@
   <div class="page-header">
     <div class="psi">ψ</div>
     <h1>מפת הסוכנים — Between</h1>
-    <p>14 סוכנים · עודכן 14 מאי 2026</p>
+    <p>6 סוכנים פעילים · עודכן יולי 2026 · זיקוק לרוסטר רזה</p>
+  </div>
+
+  <!-- PRINCIPLE -->
+  <div class="principle">
+    כל פרסונה היא <strong>יועץ שמזמנים</strong> (skill) — קוראת הקשר, עונה בצ'אט, לא כותבת דוח לקובץ ולא דוחפת ל-git.
+    שתי פרסונות בלבד רצות אוטונומית כ<strong>רשת ביטחון</strong>: איתן (QA יומי) וליה (שיפוט קליני כל 3 ימים).
   </div>
 
   <!-- LEGEND -->
   <div class="legend">
     <div class="legend-item">
       <div class="legend-dot" style="background:#2d8a5e"></div>
-      <span>רץ אוטונומית (Cron)</span>
+      <span>רשת ביטחון (רץ אוטונומית)</span>
     </div>
     <div class="legend-item">
       <div class="legend-dot" style="background:var(--accent)"></div>
-      <span>On-demand (מופעל ידנית)</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot" style="background:#7b5ea7"></div>
-      <span>סימולציה</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot" style="background:var(--accent-dim)"></div>
-      <span>חדש היום</span>
+      <span>On-demand (מזמנים בצ'אט)</span>
     </div>
   </div>
 
@@ -348,43 +358,43 @@
         <div class="avatar av-strategy">א</div>
         <div class="card-meta">
           <div class="card-name">אדם</div>
-          <div class="card-title">CEO</div>
-          <div class="card-age">48 · מנכ"ל בפועל</div>
+          <div class="card-title">CEO + Product</div>
+          <div class="card-age">48 · מנכ"ל ומחזיק המוצר</div>
         </div>
       </div>
-      <div class="card-persona">שלושה יציאות קודמות, אחת מהן acquired. הגיע כי הוא רואה את ה-intersection הנכון: AI שמעמיק מה שקורה בין פגישות, לא מחליף את המטפל.</div>
+      <div class="card-persona">שלוש יציאות קודמות, אחת מהן acquired. הגיע כי הוא רואה את ה-intersection הנכון: AI שמעמיק מה שקורה בין פגישות, לא מחליף את המטפל. מחזיק גם את כובע המוצר — הרודמאפ, העדיפויות, והמשמעת של לומר "לא".</div>
       <div class="card-row">
         <div class="row-label">תפקיד</div>
-        <div class="row-value">כיוון אסטרטגי, החלטות עסקיות, סדרי עדיפויות כלל-ארגוניים. מוצא את הדבר שלא עובד ומונה אותו ישירות.</div>
+        <div class="row-value">כיוון אסטרטגי, החלטות עסקיות, סדרי עדיפויות, רודמאפ ותיעדוף. מוצא את הדבר שלא עובד ומונה אותו ישירות. "האם מישהו ישתמש בזה ביום רביעי בערב?"</div>
       </div>
       <div class="card-row">
         <div class="row-label">קורא</div>
-        <div class="row-value">git log, STRATEGIC_PRIORITIES, QA analysis, Judge analysis, UX reports</div>
+        <div class="row-value">git log, STRATEGIC_PRIORITIES, ניתוח QA (איתן), ניתוח Judge (ליה), cost-reports</div>
       </div>
       <div class="card-row">
         <div class="row-label">כלים</div>
         <div class="row-value">
           <div class="tags">
-            <span class="tag skill">Bash / git</span>
-            <span class="tag skill">Jira</span>
             <span class="tag skill">קריאת דוחות</span>
+            <span class="tag skill">Jira</span>
+            <span class="tag skill">The Mom Test</span>
           </div>
         </div>
       </div>
       <hr class="divider">
       <div class="card-row">
         <div class="row-label">פלט</div>
-        <div class="row-value"><span class="tag output">ממו שבועי → ceo-reports/</span></div>
+        <div class="row-value"><span class="tag output">ממו + הכרעה בצ'אט</span></div>
       </div>
       <div class="card-row">
         <div class="row-label">תדירות</div>
-        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-green"></span>שבועי (אוטונומי)</span></div>
+        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-pink"></span>On-demand</span></div>
       </div>
       <div class="card-row">
         <div class="row-label">עם מי</div>
         <div class="row-value">
           <div class="tags">
-            <span class="tag collab">הילי</span>
+            <span class="tag collab">מאיה</span>
             <span class="tag collab">שון</span>
             <span class="tag collab">Naval</span>
             <span class="tag collab">כולם</span>
@@ -393,60 +403,12 @@
       </div>
       <div class="card-row">
         <div class="row-label">גבול</div>
-        <div class="row-value">לא כותב copy — זה של שון. לא מחליט על UX — זה של מאיה.</div>
-      </div>
-    </div>
-
-    <!-- ELLA -->
-    <div class="card on-demand">
-      <div class="card-header">
-        <div class="avatar av-strategy">א</div>
-        <div class="card-meta">
-          <div class="card-name">אלכס</div>
-          <div class="card-title">CFO</div>
-          <div class="card-age">41 · סמנכ"לית כספים</div>
-        </div>
-      </div>
-      <div class="card-persona">מקינזי → VC בריאות נפש → CFO medtech. שנתיים טיפול אישי. מאמינה ש-unit economics כאן טובים יותר ממה שנראה — עלות שולית נמוכה ממש.</div>
-      <div class="card-row">
-        <div class="row-label">תפקיד</div>
-        <div class="row-value">unit economics, עלויות API, תחזיות, מודל הכנסות. מדגלת סיכונים לפני שהם הופכים למשבר.</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">קורא</div>
-        <div class="row-value">CORE, BRAIN, STRATEGIC_PRIORITIES, cost-reports קודמים</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">כלים</div>
-        <div class="row-value">
-          <div class="tags">
-            <span class="tag skill">Bash</span>
-            <span class="tag skill">חישוב עלויות</span>
-            <span class="tag skill">מדידת שימוש</span>
-          </div>
-        </div>
-      </div>
-      <hr class="divider">
-      <div class="card-row">
-        <div class="row-label">פלט</div>
-        <div class="row-value"><span class="tag output">דוח עלות → cost-reports/</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">תדירות</div>
-        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-pink"></span>On-demand</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">עם מי</div>
-        <div class="row-value"><div class="tags"><span class="tag collab">אדם</span><span class="tag collab">לינה</span><span class="tag collab">איה</span></div></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">גבול</div>
-        <div class="row-value">לא מחליטה מה לבנות — זה של הילי ואדם. נותנת מספרים עם המלצה, לא מספרים בלבד.</div>
+        <div class="row-value">לא כותב copy — זה של שון. לא מחליט על ביצוע עיצובי — זה של מאיה. שינוי ב-STRATEGIC_PRIORITIES מוצע בצ'אט, איה מאשרת.</div>
       </div>
     </div>
 
     <!-- NAVAL -->
-    <div class="card autonomous">
+    <div class="card on-demand">
       <div class="card-header">
         <div class="avatar av-board">N</div>
         <div class="card-meta">
@@ -455,7 +417,7 @@
           <div class="card-age">52 · Ravikant</div>
         </div>
       </div>
-      <div class="card-persona">לא מנהל, לא מפעיל סוכנים. מגיע פעם בשבוע, קורא מה קרה, ואומר דבר אחד שמארגן מחדש את כל הפריים.</div>
+      <div class="card-persona">לא מנהל, לא מפעיל סוכנים. מזמנים אותו, הוא קורא מה קרה, ואומר דבר אחד שמארגן מחדש את כל הפריים. בשיחה חיה — עובר למצב devil's advocate ומחפש את הסדק בבסיס.</div>
       <div class="card-row">
         <div class="row-label">תפקיד</div>
         <div class="row-value">פרספקטיבה חיצונית ברמת בורד. שואל את השאלה שה-CEO לא שאל. מוצא מה חסר, לא מה יש.</div>
@@ -466,58 +428,20 @@
       </div>
       <div class="card-row">
         <div class="row-label">כלים</div>
-        <div class="row-value"><div class="tags"><span class="tag skill">Bash / git</span><span class="tag skill">קריאת דוחות</span></div></div>
+        <div class="row-value"><div class="tags"><span class="tag skill">קריאת דוחות</span></div></div>
       </div>
       <hr class="divider">
       <div class="card-row">
         <div class="row-label">פלט</div>
-        <div class="row-value"><span class="tag output">הערת בורד → board-notes/</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">תדירות</div>
-        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-green"></span>שבועי (אוטונומי)</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">סגנון</div>
-        <div class="row-value">אפוריסטי. צפוף. רעיון אחד. לא רשימות. לא מסכים עם ה-CEO memo.</div>
-      </div>
-    </div>
-
-    <!-- LINA -->
-    <div class="card on-demand">
-      <div class="card-header">
-        <div class="avatar av-support">ל</div>
-        <div class="card-meta">
-          <div class="card-name">לינה</div>
-          <div class="card-title">General Counsel</div>
-          <div class="card-age">44 · יועצת משפטית</div>
-        </div>
-      </div>
-      <div class="card-persona">15 שנות ניסיון בטק ו-startups. שני exits. פרגמטית, לא פרנואידית. כותבת מסמכים אמיתיים, לא לגאלז אמריקאי מועתק.</div>
-      <div class="card-row">
-        <div class="row-label">תפקיד</div>
-        <div class="row-value">סיכון משפטי, T&C, פרטיות, חוזים. מדגלת מה חשוב עכשיו — לא מה שיהיה חשוב ב-Series A.</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">מומחיות</div>
-        <div class="row-value">חוק ישראלי, GDPR (למשתמשי EU), mental health tech liability, AI disclaimers</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">כלים</div>
-        <div class="row-value"><div class="tags"><span class="tag skill">חוות דעת</span><span class="tag skill">ניסוח מסמכים</span></div></div>
-      </div>
-      <hr class="divider">
-      <div class="card-row">
-        <div class="row-label">פלט</div>
-        <div class="row-value"><span class="tag output">חוות דעת משפטיות</span></div>
+        <div class="row-value"><span class="tag output">הערת בורד בצ'אט</span></div>
       </div>
       <div class="card-row">
         <div class="row-label">תדירות</div>
         <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-pink"></span>On-demand</span></div>
       </div>
       <div class="card-row">
-        <div class="row-label">מתי לקרוא</div>
-        <div class="row-value">לפני כל Go Public, שינוי פרטיות, חוזה, שאלה משפטית.</div>
+        <div class="row-label">סגנון</div>
+        <div class="row-value">אפוריסטי. צפוף. רעיון אחד. לא רשימות. לא מסכים עם ה-CEO memo.</div>
       </div>
     </div>
 
@@ -526,44 +450,6 @@
   <!-- ═══ PRODUCT & DESIGN ═══ -->
   <div class="section-title">מוצר, עיצוב ושיווק</div>
   <div class="grid">
-
-    <!-- HILI -->
-    <div class="card on-demand">
-      <div class="card-header">
-        <div class="avatar av-product">ה</div>
-        <div class="card-meta">
-          <div class="card-name">הילי</div>
-          <div class="card-title">Head of Product</div>
-          <div class="card-age">36 · מנהלת מוצר</div>
-        </div>
-      </div>
-      <div class="card-persona">8 שנות PM — fintech ואחר כך consumer health. בטיפול 8 חודשים. עכשיו מבינה את המוצר מבפנים. "האם מישהו ישתמש בזה ביום רביעי?"</div>
-      <div class="card-row">
-        <div class="row-label">תפקיד</div>
-        <div class="row-value">רודמאפ, עדיפויות, הגדרת דרישות. לומדת לומר "לא" לא פחות מ"כן". מתאמת עם מאיה ועם סם.</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">קורא</div>
-        <div class="row-value">CORE, BRAIN, MEMORY, STRATEGIC_PRIORITIES, ceo-reports, ux-reports, qa-analysis, judge-analysis</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">כלים</div>
-        <div class="row-value"><div class="tags"><span class="tag skill">Jira</span><span class="tag skill">OPEN_DECISIONS.md</span><span class="tag skill">BRAIN.md</span></div></div>
-      </div>
-      <hr class="divider">
-      <div class="card-row">
-        <div class="row-label">פלט</div>
-        <div class="row-value"><span class="tag output">decisions → OPEN_DECISIONS</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">תדירות</div>
-        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-green"></span>חודשי + On-demand</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">עם מי</div>
-        <div class="row-value"><div class="tags"><span class="tag collab">מאיה</span><span class="tag collab">סם</span><span class="tag collab">אדם</span></div></div>
-      </div>
-    </div>
 
     <!-- MAYA -->
     <div class="card on-demand">
@@ -575,21 +461,21 @@
           <div class="card-age">38 · Creative Director</div>
         </div>
       </div>
-      <div class="card-persona">10 שנות onboarding ו-growth ב-B2B SaaS. Intercom, healthtech, startups. מוצאת את ה-gap בין מה שהמוצר חושב שהמשתמש עושה לבין מה שהוא באמת עושה — "demo vs. Tuesday 3pm".</div>
+      <div class="card-persona">10 שנות onboarding ו-growth ב-B2B SaaS. Intercom, healthtech, startups. מוצאת את ה-gap בין מה שהמוצר חושב שהמשתמש עושה לבין מה שהוא באמת עושה — "demo מול Tuesday 3pm".</div>
       <div class="card-row">
         <div class="row-label">תפקיד</div>
-        <div class="row-value">עיצוב, flow, אונבורדינג, שפה ויזואלית. Preview server, screenshot לפני ואחרי כל שינוי. בדיקת design tokens.</div>
+        <div class="row-value">עיצוב, flow, אונבורדינג, שפה ויזואלית. ממפה איפה משתמש אמיתי נוטש, ומנסחת את השינוי האחד שישאיר אותו.</div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">קורא</div>
+        <div class="row-value">CORE, BRAIN, STRATEGIC_PRIORITIES, docs/copy-voice, docs/user-persona, onboarding-config.json, between-tokens.json</div>
       </div>
       <div class="card-row">
         <div class="row-label">כלים</div>
         <div class="row-value">
           <div class="tags">
-            <span class="tag skill">preview_screenshot</span>
-            <span class="tag skill">preview_eval</span>
-            <span class="tag skill">preview_inspect</span>
+            <span class="tag skill">preview screenshot</span>
             <span class="tag skill">Chrome MCP</span>
-            <span class="tag skill">Figma MCP</span>
-            <span class="tag skill">Jira</span>
             <span class="tag skill">between-tokens.json</span>
           </div>
         </div>
@@ -597,19 +483,19 @@
       <hr class="divider">
       <div class="card-row">
         <div class="row-label">פלט</div>
-        <div class="row-value"><span class="tag output">דוח אונבורדינג → onboarding-reports/</span></div>
+        <div class="row-value"><span class="tag output">חוות דעת עיצובית בצ'אט</span></div>
       </div>
       <div class="card-row">
         <div class="row-label">תדירות</div>
-        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-green"></span>שבועי + On-demand</span></div>
+        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-pink"></span>On-demand</span></div>
       </div>
       <div class="card-row">
         <div class="row-label">עם מי</div>
-        <div class="row-value"><div class="tags"><span class="tag collab">הילי</span><span class="tag collab">שון</span><span class="tag collab">סם</span></div></div>
+        <div class="row-value"><div class="tags"><span class="tag collab">אדם</span><span class="tag collab">שון</span></div></div>
       </div>
       <div class="card-row">
         <div class="row-label">גבול</div>
-        <div class="row-value">לא מחליטה אם פיצ'ר צריך להיות — זה של הילי. לא כותבת copy לבד — דרך שון.</div>
+        <div class="row-value">לא מחליטה אם פיצ'ר צריך להיות — זה של אדם. לא כותבת copy לבד — דרך שון. נוגעת ב-config רק בבקשה מפורשת מאיה.</div>
       </div>
     </div>
 
@@ -639,7 +525,7 @@
       <hr class="divider">
       <div class="card-row">
         <div class="row-label">פלט</div>
-        <div class="row-value"><span class="tag output">copy versions</span> <span class="tag output">תרגומים</span></div>
+        <div class="row-value"><span class="tag output">גרסאות copy + תרגומים בצ'אט</span></div>
       </div>
       <div class="card-row">
         <div class="row-label">תדירות</div>
@@ -647,136 +533,15 @@
       </div>
       <div class="card-row">
         <div class="row-label">עם מי</div>
-        <div class="row-value"><div class="tags"><span class="tag collab">מאיה</span><span class="tag collab">הילי</span><span class="tag collab">אדם</span></div></div>
-      </div>
-    </div>
-
-    <!-- BAKI -->
-    <div class="card on-demand new-today">
-      <div class="card-header">
-        <div class="avatar av-support">ב</div>
-        <div class="card-meta">
-          <div class="card-name">בקי</div>
-          <div class="card-title">Creative Thinking Specialist</div>
-          <div class="card-age">45 · Lateral Thinker</div>
-        </div>
-      </div>
-      <div class="card-persona">IDEO 2009–2011. 8 שנים ב-innovation labs. עצמאית. ראתה מספיק צוותים תקועים על הפתרון הברור הראשון. לא פותרת — פותחת דלתות.</div>
-      <div class="card-row">
-        <div class="row-label">תפקיד</div>
-        <div class="row-value">מרחיבה את מרחב הפתרונות לפני שמחליטים על כיוון. הופכת את ההנחות. שואלת "מה אם" שמרגיש מעט לא נוח.</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">הכלל</div>
-        <div class="row-value">לא יותר מ-5 כיוונים. לא מעריכה כדאיות — זה של Naval, הילי, אלכס. לא חוזרת על מה שכבר אמרו.</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">כלים</div>
-        <div class="row-value"><div class="tags"><span class="tag skill">שאלות "מה אם"</span><span class="tag skill">היפוך הנחות</span><span class="tag skill">lateral thinking</span></div></div>
-      </div>
-      <hr class="divider">
-      <div class="card-row">
-        <div class="row-label">פלט</div>
-        <div class="row-value"><span class="tag output">3–5 כיווני מה אם</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">תדירות</div>
-        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-pink"></span>On-demand — לפני החלטות גדולות</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">מתי לקרוא</div>
-        <div class="row-value">כשהצוות תקוע באותה פריים. לפני כל החלטה אסטרטגית גדולה.</div>
+        <div class="row-value"><div class="tags"><span class="tag collab">מאיה</span><span class="tag collab">אדם</span></div></div>
       </div>
     </div>
 
   </div>
 
   <!-- ═══ QUALITY & ENGINEERING ═══ -->
-  <div class="section-title">הנדסה ואיכות</div>
+  <div class="section-title">איכות — רשת ביטחון אוטונומית</div>
   <div class="grid">
-
-    <!-- OLIVER -->
-    <div class="card on-demand">
-      <div class="card-header">
-        <div class="avatar av-tech">O</div>
-        <div class="card-meta">
-          <div class="card-name">אוליבר</div>
-          <div class="card-title">Senior Full-Stack Developer</div>
-          <div class="card-age">37 · Payments & Infrastructure</div>
-        </div>
-      </div>
-      <div class="card-persona">עשור של SaaS ו-subscription infrastructure. Stripe end-to-end בשתי חברות — healthtech ו-SaaS. אלרגי ל-over-engineering. שולח את הדבר הפשוט שעובד נכון ובטוח.</div>
-      <div class="card-row">
-        <div class="row-label">Stack</div>
-        <div class="row-value">Next.js App Router (TypeScript), Supabase, Vercel, Stripe, Resend, vanilla CSS</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">כלים</div>
-        <div class="row-value">
-          <div class="tags">
-            <span class="tag skill">Bash / git</span>
-            <span class="tag skill">Read / Edit / Write</span>
-            <span class="tag skill">Jira</span>
-            <span class="tag skill">Chrome MCP</span>
-          </div>
-        </div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">מסמכי מקור</div>
-        <div class="row-value">cost-reports/PRICING, STRATEGIC_PRIORITIES, docs/copy-voice, docs/user-persona</div>
-      </div>
-      <hr class="divider">
-      <div class="card-row">
-        <div class="row-label">פלט</div>
-        <div class="row-value"><span class="tag output">קוד + test scenarios + env vars לסם</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">תדירות</div>
-        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-pink"></span>On-demand</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">עם מי</div>
-        <div class="row-value"><div class="tags"><span class="tag collab">הילי</span><span class="tag collab">מאיה</span><span class="tag collab">סם</span><span class="tag collab">איתן</span><span class="tag collab">אלכס</span><span class="tag collab">לינה</span></div></div>
-      </div>
-    </div>
-
-    <!-- SAM -->
-    <div class="card on-demand">
-      <div class="card-header">
-        <div class="avatar av-tech">ס</div>
-        <div class="card-meta">
-          <div class="card-name">סם</div>
-          <div class="card-title">Release Manager</div>
-          <div class="card-age">35 · Gatekeeper</div>
-        </div>
-      </div>
-      <div class="card-persona">הנדסה בטכניון, 8 שנות פיתוח ואז מעבר ל-release management. ראה team ששלחה breaking change ביום שישי בצהריים. החליט שמישהו צריך לבעוד בזה — כראוי.</div>
-      <div class="card-row">
-        <div class="row-label">תפקיד</div>
-        <div class="row-value">שום דבר לא עולה לפרודקשן בלי sign-off שלו. End-of-day deploy בלבד (חוץ מ-safety hotfix). Gatekeeper אחרון.</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">כלים</div>
-        <div class="row-value"><div class="tags"><span class="tag skill">git / GitHub</span><span class="tag skill">Vercel</span><span class="tag skill">Jira</span></div></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">Flow</div>
-        <div class="row-value">Eitan sign-off → Sam release → Production ✓</div>
-      </div>
-      <hr class="divider">
-      <div class="card-row">
-        <div class="row-label">פלט</div>
-        <div class="row-value"><span class="tag output">release notes</span> <span class="tag output">deployment log</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">תדירות</div>
-        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-pink"></span>סוף יום (כל deploy)</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">עם מי</div>
-        <div class="row-value"><div class="tags"><span class="tag collab">איתן</span><span class="tag collab">הילי</span><span class="tag collab">מאיה</span><span class="tag collab">אוליבר</span></div></div>
-      </div>
-    </div>
 
     <!-- EITAN -->
     <div class="card autonomous">
@@ -788,21 +553,20 @@
           <div class="card-age">31 · מהנדס QA</div>
         </div>
       </div>
-      <div class="card-persona">BA לשונאות מהאוניברסיטה העברית + 6 שנות QA. הלשונאות לא הייתה עיקוף — היא הסיבה שהוא כאן. מרגיש כשמשהו לא נוחת נכון, גם כשהוא לא יכול לנסח למה.</div>
+      <div class="card-persona">BA בלשנות מהאוניברסיטה העברית + 6 שנות QA. הבלשנות לא הייתה עיקוף — היא הסיבה שהוא כאן. מרגיש כשמשהו לא נוחת נכון, גם כשהוא לא יכול לנסח למה.</div>
       <div class="card-row">
         <div class="row-label">תפקיד</div>
         <div class="row-value">QA יומי אוטומטי על 4 תיאורטיקנים. בדיקת safety, שאלה אחת, פתיחה מגוונת, RAG. מוצא pattern, כותב המלצה אחת.</div>
       </div>
       <div class="card-row">
         <div class="row-label">מכסה</div>
-        <div class="row-value">פרויד, קליין, ויניקוט, אוגדן (4 תיאורטיקנים · הופחת לחסכון בעלות)</div>
+        <div class="row-value">פרויד, קליין, ויניקוט, אוגדן (4 תיאורטיקנים · הופחת לחיסכון בעלות)</div>
       </div>
       <div class="card-row">
         <div class="row-label">כלים</div>
         <div class="row-value">
           <div class="tags">
             <span class="tag skill">Bash / git</span>
-            <span class="tag skill">Jira</span>
             <span class="tag skill">Chrome MCP</span>
             <span class="tag skill">QA cron (Vercel)</span>
           </div>
@@ -819,11 +583,11 @@
       </div>
       <div class="card-row">
         <div class="row-label">עם מי</div>
-        <div class="row-value"><div class="tags"><span class="tag collab">סם</span><span class="tag collab">ליה</span><span class="tag collab">אדם</span></div></div>
+        <div class="row-value"><div class="tags"><span class="tag collab">ליה</span><span class="tag collab">אדם</span></div></div>
       </div>
       <div class="card-row">
         <div class="row-label">גבול</div>
-        <div class="row-value">לא שופט אם הפרשנות קלינית — זה של ליה. רק: "חוק הופר / לא הופר".</div>
+        <div class="row-value">לא שופט אם הפרשנות קלינית — זה של ליה. רק: "חוק הופר / לא הופר". סוגר את שער ה-QA לפני שחרור.</div>
       </div>
     </div>
 
@@ -837,10 +601,10 @@
           <div class="card-age">56 · 22 שנות פרקטיקה</div>
         </div>
       </div>
-      <div class="card-persona">22 שנות טיפול פסיכואנליטי פרטי בירושלים. הכשרה קלייניאנית, העמקה ב-Winnicott ו-Bion. פרשה לפני 4 שנים כי סיימה משהו. "קול אותנטי משאיר מקום. חיקוי ממלא אותו."</div>
+      <div class="card-persona">22 שנות טיפול פסיכואנליטי פרטי בירושלים. הכשרה קלייניאנית, העמקה ב-Winnicott וב-Bion. פרשה לפני 4 שנים כי סיימה משהו. "קול אותנטי משאיר מקום. חיקוי ממלא אותו."</div>
       <div class="card-row">
         <div class="row-label">תפקיד</div>
-        <div class="row-value">שיפוט קליני של תוצאות ה-Judge. מחליטה מה חמור ומה קוסמטי. כל 3 ימים — המלצה אחת ממוקדת.</div>
+        <div class="row-value">שיפוט קליני של תוצאות ה-Judge. מחליטה מה חמור ומה קוסמטי. כל 3 ימים — המלצה אחת ממוקדת. גם הקול המכריע בפאנל ה-fidelity.</div>
       </div>
       <div class="card-row">
         <div class="row-label">קורא</div>
@@ -861,7 +625,7 @@
       </div>
       <div class="card-row">
         <div class="row-label">עם מי</div>
-        <div class="row-value"><div class="tags"><span class="tag collab">איתן</span><span class="tag collab">אדם</span></div></div>
+        <div class="row-value"><div class="tags"><span class="tag collab">איתן</span><span class="tag collab">אדם</span><span class="tag collab">ורה + אליוט (פאנל)</span></div></div>
       </div>
       <div class="card-row">
         <div class="row-label">גבול</div>
@@ -871,94 +635,12 @@
 
   </div>
 
-  <!-- ═══ DATA & SIMULATION ═══ -->
-  <div class="section-title">נתונים וסימולציה</div>
-  <div class="grid">
-
-    <!-- LENI -->
-    <div class="card on-demand new-today">
-      <div class="card-header">
-        <div class="avatar av-support">ל</div>
-        <div class="card-meta">
-          <div class="card-name">לני</div>
-          <div class="card-title">Data Analyst</div>
-          <div class="card-age">31 · Patterns → Insights</div>
-        </div>
-      </div>
-      <div class="card-persona">סטטיסטיקה + מדעי הקוגניציה (double major). 3 שנות mental health outcomes tracking ב-startup. "המדד החשוב ביותר הוא לעולם לא זה שמודדים."</div>
-      <div class="card-row">
-        <div class="row-label">תפקיד</div>
-        <div class="row-value">הופכת מספרים למשפט אחד שאף אחד בחדר לא אמר. לא מדווחת נתונים — מוצאת מה הנתונים מנסים לומר.</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">מקורות</div>
-        <div class="row-value">qa-reports/ (14 ימים אחרונים), ux-reports/, onboarding-reports/, Supabase (user_conversations)</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">כלים</div>
-        <div class="row-value"><div class="tags"><span class="tag skill">Bash</span><span class="tag skill">Python / node</span><span class="tag skill">ניתוח קבצים</span></div></div>
-      </div>
-      <hr class="divider">
-      <div class="card-row">
-        <div class="row-label">פלט</div>
-        <div class="row-value"><span class="tag output">ניתוח → data-reports/</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">תדירות</div>
-        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-pink"></span>On-demand</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">עם מי</div>
-        <div class="row-value"><div class="tags"><span class="tag collab">הילי</span><span class="tag collab">אלכס</span><span class="tag collab">אדם</span></div></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">גבול</div>
-        <div class="row-value">לא מחליטה על מוצר — נותנת data, הילי מחליטה. לא יותר מ-3 ממצאים מרכזיים.</div>
-      </div>
-    </div>
-
-    <!-- KAREN -->
-    <div class="card simulation">
-      <div class="card-header">
-        <div class="avatar av-simulation">ק</div>
-        <div class="card-meta">
-          <div class="card-name">קארן</div>
-          <div class="card-title">User Simulation</div>
-          <div class="card-age">33 · מעצבת גרפית, ת"א</div>
-        </div>
-      </div>
-      <div class="card-persona">2.5 שנות טיפול פסיכודינמי, כל יום חמישי. טכנולוגית — עובדת בפיגמה. ספקנית לגבי ה-AI. ניסתה אפליקציות journaling ועצרה אחרי שבוע. "לא משתמש — אדם אמיתי ב-Tuesday 3pm."</div>
-      <div class="card-row">
-        <div class="row-label">תפקיד</div>
-        <div class="row-value">סימולציית חוויית משתמש קצה. לא חברת צוות — משתמשת. מבצעת שיחה אמיתית עם תיאורטיקן ומדווחת על מה שעובד ומה שלא.</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">תיאורטיקן</div>
-        <div class="row-value">מתחלף לפי יום בשבוע (פרויד/ויניקוט/לוואלד/קוהוט/קליין/ביון/אוגדן)</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">כלים</div>
-        <div class="row-value"><div class="tags"><span class="tag skill">Chat API (ישירות)</span><span class="tag skill">Bash</span><span class="tag skill">כתיבת דוחות</span></div></div>
-      </div>
-      <hr class="divider">
-      <div class="card-row">
-        <div class="row-label">פלט</div>
-        <div class="row-value"><span class="tag output">דוח UX יומי → ux-reports/</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">תדירות</div>
-        <div class="row-value"><span class="cadence-badge"><span class="cadence-dot cd-green"></span>יומי (אוטונומי)</span></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">קוראים</div>
-        <div class="row-value"><div class="tags"><span class="tag collab">מאיה</span><span class="tag collab">הילי</span><span class="tag collab">אדם</span></div></div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">חשוב</div>
-        <div class="row-value">כותבת בנקבה. שומרת כל שלב לקובץ לפני המעבר לשלב הבא (מניעת timeout).</div>
-      </div>
-    </div>
-
+  <!-- ═══ FIDELITY PANEL ═══ -->
+  <div class="section-title">פאנל ה-fidelity (/clinic)</div>
+  <div class="frozen-box">
+    שלושה אוזניים תיאורטיים על אותו חומר, כל אחד על ספק AI אחר — <b>tripwire</b> של מודלים לא-מתואמים, לא הוכחה.
+    <b>ליה</b> (קלייניאנית-ויניקוטיאנית, מכריעה) · <b>ורה</b> (אוזן ביוניאנית) · <b>אליוט</b> (אוזן לאקאניאנית).
+    רץ דרך <code>app/api/clinic-panel/route.ts</code> — אין skill עצמאי לוורה/אליוט, הם חיים רק בתוך הפאנל.
   </div>
 
   <!-- ═══ DECISION CHAIN ═══ -->
@@ -967,11 +649,11 @@
     <div style="margin-bottom: 20px;">
       <div style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">DEPLOY FLOW</div>
       <div class="chain-flow">
-        <span class="chain-node">אוליבר</span>
+        <span class="chain-node">build mode (איה)</span>
         <span class="chain-arrow">→</span>
         <span class="chain-node highlight">איתן (QA sign-off)</span>
         <span class="chain-arrow">→</span>
-        <span class="chain-node highlight">סם (Release gate)</span>
+        <span class="chain-node highlight">איה מפרסמת</span>
         <span class="chain-arrow">→</span>
         <span class="chain-node" style="background:#f0faf4;border-color:#b2dfca;color:#2d8a5e;">Production ✓</span>
       </div>
@@ -1002,69 +684,17 @@
     </div>
   </div>
 
-  <!-- ═══ FILES MAP ═══ -->
-  <div class="section-title">מפת קבצים משותפים</div>
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;margin-bottom:48px;">
-    <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
-      <thead>
-        <tr style="background:var(--bg);">
-          <th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:500;font-size:11px;border-bottom:1px solid var(--border);">קובץ / תיקייה</th>
-          <th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:500;font-size:11px;border-bottom:1px solid var(--border);">כותב</th>
-          <th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:500;font-size:11px;border-bottom:1px solid var(--border);">קוראים</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:9px 16px;font-family:monospace;font-size:11px;color:var(--accent);">STRATEGIC_PRIORITIES.md</td>
-          <td style="padding:9px 16px;color:var(--text);">אדם</td>
-          <td style="padding:9px 16px;color:var(--muted);">כולם</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:9px 16px;font-family:monospace;font-size:11px;color:var(--accent);">OPEN_DECISIONS.md</td>
-          <td style="padding:9px 16px;color:var(--text);">כולם</td>
-          <td style="padding:9px 16px;color:var(--muted);">כולם</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:9px 16px;font-family:monospace;font-size:11px;color:var(--accent);">ceo-reports/</td>
-          <td style="padding:9px 16px;color:var(--text);">אדם</td>
-          <td style="padding:9px 16px;color:var(--muted);">כולם</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:9px 16px;font-family:monospace;font-size:11px;color:var(--accent);">qa-reports/ + qa-analysis/</td>
-          <td style="padding:9px 16px;color:var(--text);">איתן</td>
-          <td style="padding:9px 16px;color:var(--muted);">סם, אדם, ליה</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:9px 16px;font-family:monospace;font-size:11px;color:var(--accent);">judge-analysis/</td>
-          <td style="padding:9px 16px;color:var(--text);">ליה</td>
-          <td style="padding:9px 16px;color:var(--muted);">אדם, איתן</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:9px 16px;font-family:monospace;font-size:11px;color:var(--accent);">ux-reports/</td>
-          <td style="padding:9px 16px;color:var(--text);">קארן</td>
-          <td style="padding:9px 16px;color:var(--muted);">מאיה, הילי, אדם</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:9px 16px;font-family:monospace;font-size:11px;color:var(--accent);">onboarding-reports/</td>
-          <td style="padding:9px 16px;color:var(--text);">מאיה</td>
-          <td style="padding:9px 16px;color:var(--muted);">הילי, אדם</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:9px 16px;font-family:monospace;font-size:11px;color:var(--accent);">cost-reports/</td>
-          <td style="padding:9px 16px;color:var(--text);">אלכס</td>
-          <td style="padding:9px 16px;color:var(--muted);">אדם, איה, אוליבר</td>
-        </tr>
-        <tr>
-          <td style="padding:9px 16px;font-family:monospace;font-size:11px;color:var(--accent);">data-reports/</td>
-          <td style="padding:9px 16px;color:var(--text);">לני</td>
-          <td style="padding:9px 16px;color:var(--muted);">הילי, אלכס, אדם</td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- ═══ FROZEN ═══ -->
+  <div class="section-title">מוקפאים (הפיך — agents/_frozen/)</div>
+  <div class="frozen-box">
+    <b>הילי</b> (PM) → מוזגה לאדם (CEO + Product) · <b>סם</b> (Release Manager) → איה מפרסמת ב-build mode ·
+    <b>אוליבר</b> (Dev) → build mode (פיתוח מקומי) · <b>בקי</b> (Creative Thinking) · <b>לני</b> (Data Analyst) ·
+    <b>אלכס</b> (CFO, לשעבר אלה) · <b>לינה</b> (יועצת משפטית) — שתי עדשות on-demand שהוקפאו.
+    <br>הקבצים נשמרו — לא נמחקו. אפשר להחזיר כל פרסונה אם צורך ממשי יעלה.
   </div>
 
   <div class="page-footer">
-    Between · 14 סוכנים · עודכן מאי 2026 · docs/team-agents.html
+    Between · 6 סוכנים פעילים · עודכן יולי 2026 · docs/team-agents.html
   </div>
 
 </body>
