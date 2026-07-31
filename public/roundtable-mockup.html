@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Between · שולחן עגול</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300&family=Frank+Ruhl+Libre:wght@300;400;500&family=Rubik:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#fdf8f6; --surface:#ffffff; --text:#2d2420; --muted:#a8948e; --accent:#c4607a; --accentSoft:rgba(196,96,122,0.08); --border:#ede4e0; --thinking:#fdf0f3; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Rubik','Segoe UI',sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 36px 20px 56px; -webkit-font-smoothing: antialiased; }
+
+  .brand { display: inline-flex; align-items: baseline; gap: 8px; direction: ltr; margin-bottom: 2px; }
+  .brand h1 { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: 28px; color: var(--accent); }
+  .mode { font-family: 'Frank Ruhl Libre', serif; font-size: 18px; color: var(--text); margin-bottom: 4px; }
+  .tag { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--border); border-radius: 22px; padding: 3px 11px; background: var(--surface); margin-bottom: 26px; }
+
+  .wrap { width: 100%; max-width: 580px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* Case material */
+  .case { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; }
+  .case-label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .case-text { font-family: 'Frank Ruhl Libre', serif; font-size: 15px; line-height: 1.85; color: var(--text); }
+
+  .phase-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 14px 0 2px; text-align: center; }
+
+  /* Phase 1 — initial voices */
+  .bubble { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 15px 18px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: .05em; color: var(--accent); background: var(--accentSoft); padding: 3px 11px; border-radius: 22px; margin-bottom: 9px; }
+  .bubble-text { font-size: 14.5px; line-height: 1.7; }
+
+  /* Separator */
+  .sep { display: flex; align-items: center; gap: 12px; margin: 10px 0 2px; }
+  .sep-line { flex: 1; height: 1px; background: var(--border); }
+  .sep-label { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+  /* Phase 2 — cross-reactions */
+  .reaction { background: var(--thinking); border: 1px solid var(--border); border-radius: 16px; padding: 13px 18px; margin-right: 22px; position: relative; }
+  .reaction::before { content: ''; position: absolute; top: 18px; right: -15px; width: 11px; height: 1px; background: var(--border); }
+  .reaction-head { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; flex-wrap: wrap; }
+  .r-from { font-size: 11px; font-weight: 500; color: var(--accent); background: var(--accentSoft); padding: 3px 10px; border-radius: 22px; }
+  .r-arrow { font-size: 12px; color: var(--muted); }
+  .r-to { font-size: 11px; color: var(--muted); background: #f5eeeb; padding: 3px 9px; border-radius: 22px; }
+  .reaction-text { font-size: 14px; line-height: 1.65; }
+
+  /* Therapist's own voice at the table — warm taupe, distinct from the rose voices */
+  .therapist { background: rgba(116,100,94,0.10); border: 1px solid rgba(116,100,94,0.32); border-radius: 16px; padding: 14px 18px; margin-left: 46px; }
+  .t-label { font-size: 11px; font-weight: 500; letter-spacing: .05em; color: #74645e; margin-bottom: 7px; }
+  .t-text { font-family: 'Frank Ruhl Libre', serif; font-size: 14.5px; line-height: 1.7; color: var(--text); }
+
+  /* Interaction input (mocked) */
+  .input-mock { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; padding: 12px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 22px; font-size: 14px; color: var(--muted); }
+  .input-send { color: var(--accent); font-size: 16px; }
+  .cta-hint { font-size: 12px; color: var(--muted); margin: 18px 0 12px; }
+
+  /* CTA — choose a voice */
+  .cta { margin-top: 24px; text-align: center; }
+  .cta-title { font-family: 'Frank Ruhl Libre', serif; font-size: 15px; color: var(--text); margin-bottom: 14px; }
+  .chips { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .chip { font-size: 13px; font-family: 'Rubik',sans-serif; color: var(--accent); background: var(--surface); border: 1px solid var(--accent); border-radius: 22px; padding: 8px 20px; cursor: pointer; transition: all .15s; }
+  .chip:hover { background: var(--accent); color: #fff; }
+</style>
+</head>
+<body>
+  <div class="brand"><h1>Between</h1></div>
+  <div class="mode">שולחן עגול</div>
+  <div class="tag">מוקאפ · המחשה</div>
+
+  <div class="wrap">
+
+    <!-- Case -->
+    <div class="case">
+      <div class="case-label">החומר שהובא לשולחן</div>
+      <div class="case-text">מטופלת, בת 38, שנתיים בטיפול. בשבועיים האחרונים היא מגיעה, מתיישבת ואומרת "אין לי מה להגיד היום" — ואז שותקת. מצאתי את עצמי ממהרת למלא את השקט. אחרי הפגישה אני מותשת וכועסת על עצמי. אני לא יודעת אם השתיקה שלה היא התנגדות, או שאני זו שלא מסוגלת לשאת אותה.</div>
+    </div>
+
+    <div class="phase-label">הקולות — כל אחד מהמקום שלו</div>
+
+    <!-- Phase 1 -->
+    <div class="bubble">
+      <span class="badge">פרויד</span>
+      <div class="bubble-text">השתיקה הזו אינה ריקה — היא עמדה. משהו נאבק לא לעלות, ו"אין לי מה להגיד" הוא בדיוק הרגע שבו ההתנגדות מדברת בקול הברור ביותר. ומה שאת ממהרת למלא — שווה לשאול את מי זה משרת: אותה, או את אי-הנוחות שהשתיקה מעוררת בך.</div>
+    </div>
+
+    <div class="bubble">
+      <span class="badge">ויניקוט</span>
+      <div class="bubble-text">לפני שנקרא לזה התנגדות — אולי זו הפעם הראשונה שהיא מנסה פשוט להיות כאן, בלי להפיק, בלי לרצות. היכולת להיות לבד בנוכחות מישהו היא הישג, לא בריחה. השאלה היא אם המרחב מחזיק את השקט — או שהבהלה שלך מהריק ממלאת אותו לפני שהוא מספיק להתקיים.</div>
+    </div>
+
+    <div class="bubble">
+      <span class="badge">ביון</span>
+      <div class="bubble-text">אני פחות מסתכל על השתיקה ויותר על מה שהיא עושה בך. התשישות והכעס שאת חוזרת איתם הביתה — אולי אלה בדיוק הדברים שהיא לא מסוגלת לחשוב בעצמה, והיא מניחה אותם בתוכך. הנגד-העברה כאן אינה כשל שלך — היא מידע על מה שעדיין לא ניתן לחשיבה.</div>
+    </div>
+
+    <!-- Separator -->
+    <div class="sep"><div class="sep-line"></div><span class="sep-label">הקולות מגיבים זה לזה</span><div class="sep-line"></div></div>
+
+    <!-- Phase 2 -->
+    <div class="reaction">
+      <div class="reaction-head"><span class="r-from">ויניקוט</span><span class="r-arrow">↳</span><span class="r-to">בתגובה לפרויד</span></div>
+      <div class="reaction-text">אתה קורא לזה התנגדות — אבל אם נפרש מהר מדי, נהרוס בדיוק את הדבר שמנסה להיוולד. לפעמים השקט אינו מסתיר משהו; הוא עצמו הדבר.</div>
+    </div>
+
+    <div class="reaction">
+      <div class="reaction-head"><span class="r-from">פרויד</span><span class="r-arrow">↳</span><span class="r-to">בתגובה לויניקוט</span></div>
+      <div class="reaction-text">להיות לבד זה יפה. אבל מה נמנע מלעלות ברגע שהיא משתתקת? המנוחה שאתה מתאר עשויה להיות עצמה הימנעות — שקט שמגן מפני מה שמאיים להופיע.</div>
+    </div>
+
+    <div class="reaction">
+      <div class="reaction-head"><span class="r-from">ביון</span><span class="r-arrow">↳</span><span class="r-to">בתגובה לשניהם</span></div>
+      <div class="reaction-text">שניכם מדברים עליה — על מה שהיא מסתירה, על מה שהיא משיגה. אבל מה עם מה שהיא הכניסה לתוך המטפלת? התשובה אינה רק בה. היא בשדה שביניהן.</div>
+    </div>
+
+    <!-- Therapist's voice — she sits at the table -->
+    <div class="sep"><div class="sep-line"></div><span class="sep-label">ואת, בשולחן</span><div class="sep-line"></div></div>
+
+    <div class="therapist">
+      <div class="t-label">המטפלת</div>
+      <div class="t-text">אז אם השתיקה היא גם התנגדות וגם הישג — איך אני יודעת, ברגע אמת בחדר, מתי לחכות בשקט ומתי להגיד משהו?</div>
+    </div>
+
+    <div class="reaction">
+      <div class="reaction-head"><span class="r-from">ויניקוט</span><span class="r-arrow">↳</span><span class="r-to">בתגובה למטפלת</span></div>
+      <div class="reaction-text">אל תחליטי מראש. שבי עם השקט שלה עוד נשימה אחת לפני שאת ממלאת — ושימי לב מה קורה בך. הגוף שלך יֵדע לפני המילים אם זו נוכחות או נטישה.</div>
+    </div>
+
+    <!-- Interaction + choose a voice -->
+    <div class="cta">
+      <div class="input-mock"><span>שאלי את השולחן, או הוסיפי מהמקרה…</span><span class="input-send">↑</span></div>
+      <div class="cta-hint">או בחרי קול אחד לצלול איתו לעומק:</div>
+      <div class="chips">
+        <span class="chip">פרויד</span>
+        <span class="chip">ויניקוט</span>
+        <span class="chip">ביון</span>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
