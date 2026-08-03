@@ -1,8 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { THEORIST_VOICE, SAFETY_PROTOCOL } from '@/lib/theorist-voices';
-import { searchKnowledge, formatChunksForPrompt } from '@/lib/rag';
+import { THEORIST_VOICE } from '@/lib/theorist-voices';
+import { searchKnowledge } from '@/lib/rag';
 import { saveReportToGithub } from '@/lib/github-report';
 import { classifyIssues, severityOf } from '@/lib/qa-fixer-map';
 
@@ -89,7 +89,7 @@ function checkTurn(text: string, turnIndex: number, prevOpener: string | null): 
   return { issues, opener };
 }
 
-async function runTheorist(theorist: string): Promise<{
+async function runTheorist(theorist: string, APP_URL: string): Promise<{
   theorist: string; name: string; ok: boolean;
   severity: 'pass' | 'warning' | 'fail';
   realFails: string[]; caught: string[]; unknownCodes: string[];
@@ -100,30 +100,35 @@ async function runTheorist(theorist: string): Promise<{
 }> {
   const start = Date.now();
   const name = THEORIST_NAMES[theorist];
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const allIssues: string[] = [];
   const turns: { turn: number; patient: string; therapist: string; issues: string[] }[] = [];
 
   try {
-    const systemBase = THEORIST_VOICE[theorist] + SAFETY_PROTOCOL;
-    const chunks = await searchKnowledge(CONVERSATION_TURNS[0], theorist, 3);
-    const ragContext = formatChunksForPrompt(chunks);
-    const system = ragContext ? systemBase + ragContext : systemBase;
+    // שיחה דרך נתיב הפרודקשן /api/chat — כך הלולאת-האימות והפיקסרים רצים כמו למשתמש אמיתי.
+    // כך "נתפס בפרודקשן" הופך למוכח במקום מונח (במקום ייצור גולמי ב-anthropic.messages.create).
+    const baseSystem = THEORIST_VOICE[theorist] || `You are ${name}, a psychoanalytic therapist.`;
+    const chunks = await searchKnowledge(CONVERSATION_TURNS[0], theorist, 3); // לספירת RAG בדוח בלבד
 
     const messages: Anthropic.MessageParam[] = [];
     let prevOpener: string | null = null;
 
     for (let i = 0; i < CONVERSATION_TURNS.length; i++) {
       messages.push({ role: 'user', content: CONVERSATION_TURNS[i] });
-      const res = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
-        // 1200 = זהה לפרודקשן (chat/route.ts). היה 250 → קטע תגובות באמצע משפט,
-        // מה שהפך את המייל היומי לבלתי-בר-שיפוט (קריאה-עיוורת של ליה על גדמים). 13.7.2026
-        max_tokens: 1200,
-        system,
-        messages,
+      const chatResponse = await fetch(`${APP_URL}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-QA-Secret': process.env.QA_SECRET || '' },
+        body: JSON.stringify({
+          messages,
+          system: baseSystem,
+          theorist,
+          webSearch: false,
+        }),
       });
-      const text = res.content[0]?.type === 'text' ? res.content[0].text : '';
+      const chatData = await chatResponse.json();
+      const text = chatData.content?.[0]?.type === 'text' ? chatData.content[0].text : '';
+      if (!text && chatData.error) {
+        throw new Error(chatData.error.message || 'chat API error');
+      }
       const { issues, opener } = checkTurn(text, i, prevOpener);
       prevOpener = opener;
       allIssues.push(...issues.map(iss => `[תור ${i + 1}] ${iss}`));
@@ -174,7 +179,10 @@ export async function GET(req: NextRequest) {
 
   const start = Date.now();
 
-  const results = await Promise.all(THEORISTS.map(runTheorist));
+  const host = req.headers.get('host') || 'localhost:3000';
+  const APP_URL = host.includes('localhost') ? `http://${host}` : `https://${host}`;
+
+  const results = await Promise.all(THEORISTS.map(t => runTheorist(t, APP_URL)));
 
   const passed = results.filter(r => r.ok).length; // ok = אין כשל שהמשתמש רואה
   const allOk = passed === results.length;

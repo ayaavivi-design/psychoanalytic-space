@@ -1,9 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { THEORIST_VOICE, SAFETY_PROTOCOL } from '@/lib/theorist-voices';
+import { THEORIST_VOICE } from '@/lib/theorist-voices';
 import { JUDGE_SYSTEM_PROMPT, JUDGE_RULES, JUDGE_USER_TEMPLATE } from '@/lib/judge-prompt';
-import { searchKnowledge, formatChunksForPrompt } from '@/lib/rag';
+import { searchKnowledge } from '@/lib/rag';
 import { saveReportToGithub } from '@/lib/github-report';
 
 // /api/judge-full — Vercel-native cron endpoint
@@ -97,13 +97,13 @@ const SEVERITY_LABEL: Record<string, string> = {
   critical: 'קריטי', major: 'חמור', minor: 'קל',
 };
 const OVERALL_COLOR: Record<string, string> = {
-  pass: '#2d8a5e', warn: '#d97706', fail: '#b91c1c',
+  pass: '#2d8a5e', warn: '#d97706', fail: '#b91c1c', error: '#6b7280',
 };
 const OVERALL_BG: Record<string, string> = {
-  pass: '#f0faf4', warn: '#fffbeb', fail: '#fef2f2',
+  pass: '#f0faf4', warn: '#fffbeb', fail: '#fef2f2', error: '#f3f4f6',
 };
 const OVERALL_LABEL: Record<string, string> = {
-  pass: '✅ עבר', warn: '⚠️ אזהרה', fail: '❌ נכשל',
+  pass: '✅ עבר', warn: '⚠️ אזהרה', fail: '❌ נכשל', error: '⚙️ שגיאת-כלי',
 };
 
 interface Violation {
@@ -128,31 +128,39 @@ interface JudgeResult {
   ragChunks: number;
 }
 
-async function runJudge(theorist: string): Promise<JudgeResult> {
+async function runJudge(theorist: string, APP_URL: string): Promise<JudgeResult> {
   const start = Date.now();
   const name = THEORIST_NAMES[theorist];
   const scenario = SCENARIOS[theorist];
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   try {
-    // שלב 1 — שיחה
-    const systemBase = THEORIST_VOICE[theorist] + SAFETY_PROTOCOL;
-    const chunks = await searchKnowledge(scenario.turns[0], theorist, 3);
-    const ragContext = formatChunksForPrompt(chunks);
-    const system = ragContext ? systemBase + ragContext : systemBase;
+    // שלב 1 — שיחה דרך נתיב הפרודקשן /api/chat
+    // כך כל הוולידציות, הפיקסרים, ה-RAG וה-UNIVERSAL_SCOPE רצים בדיוק כמו למשתמש אמיתי
+    // (במקום ייצור גולמי ב-anthropic.messages.create שדילג על לולאת-האימות)
+    const baseSystem = THEORIST_VOICE[theorist] || `You are ${name}, a psychoanalytic therapist.`;
+    const chunks = await searchKnowledge(scenario.turns[0], theorist, 3); // לספירת RAG בדוח בלבד
 
     const messages: Anthropic.MessageParam[] = [];
     const turns: JudgeResult['turns'] = [];
 
     for (let i = 0; i < scenario.turns.length; i++) {
       messages.push({ role: 'user', content: scenario.turns[i] });
-      const res = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 300,
-        system,
-        messages,
+      const chatResponse = await fetch(`${APP_URL}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-QA-Secret': process.env.QA_SECRET || '' },
+        body: JSON.stringify({
+          messages,
+          system: baseSystem,
+          theorist,
+          webSearch: false,
+        }),
       });
-      const text = res.content[0]?.type === 'text' ? res.content[0].text : '';
+      const chatData = await chatResponse.json();
+      const text = chatData.content?.[0]?.type === 'text' ? chatData.content[0].text : '';
+      if (!text && chatData.error) {
+        throw new Error(chatData.error.message || 'chat API error');
+      }
       turns.push({ turn: i + 1, patient: scenario.turns[i], therapist: text });
       messages.push({ role: 'assistant', content: text });
     }
@@ -171,20 +179,24 @@ async function runJudge(theorist: string): Promise<JudgeResult> {
 
     const judgeRaw = judgeRes.content[0]?.type === 'text' ? judgeRes.content[0].text : '{}';
     let report: Record<string, unknown> = {};
+    let parseError = false;
     // המודל עוטף את ה-JSON בגדרות markdown — חילוץ האובייקט לפני הפרסינג
     try {
       const m = judgeRaw.match(/\{[\s\S]*\}/);
       report = JSON.parse(m ? m[0] : judgeRaw);
-    } catch { report = {}; }
+    } catch { parseError = true; }
 
-    const overall = (report.overall as string) || 'fail';
+    // כשל-פרסינג הוא שגיאת-כלי (JSON פגום מה-judge) — לא כשל-קול. לא נספר כ-fail.
+    const overall = parseError ? 'error' : ((report.overall as string) || 'error');
     return {
       theorist, name, scenarioLabel: scenario.label,
       overall,
       ok: overall === 'pass',
       violations: (report.violations as Violation[]) || [],
       strengths: (report.strengths as string[]) || [],
-      summary: (report.summary as string) || '',
+      summary: parseError
+        ? 'שיפוט לא נותח — JSON פגום מה-judge (שגיאת-כלי, לא כשל-קול)'
+        : (report.summary as string) || '',
       turns, timeMs: Date.now() - start, ragChunks: chunks.length,
     };
 
@@ -192,9 +204,9 @@ async function runJudge(theorist: string): Promise<JudgeResult> {
     const msg = err instanceof Error ? err.message : 'unknown';
     return {
       theorist, name, scenarioLabel: scenario.label,
-      overall: 'fail', ok: false,
-      violations: [{ rule: 'ERROR', severity: 'critical', quote: '', explanation: msg, fix: '' }],
-      strengths: [], summary: `שגיאה: ${msg}`,
+      overall: 'error', ok: false,
+      violations: [{ rule: 'ERROR', severity: 'major', quote: '', explanation: msg, fix: '' }],
+      strengths: [], summary: `שגיאת-כלי: ${msg}`,
       turns: [], timeMs: Date.now() - start, ragChunks: 0,
     };
   }
@@ -208,13 +220,17 @@ export async function GET(req: NextRequest) {
 
   const globalStart = Date.now();
 
-  const batch1 = await Promise.all(THEORISTS.slice(0, 4).map(runJudge));
-  const batch2 = await Promise.all(THEORISTS.slice(4).map(runJudge));
+  const host = req.headers.get('host') || 'localhost:3000';
+  const APP_URL = host.includes('localhost') ? `http://${host}` : `https://${host}`;
+
+  const batch1 = await Promise.all(THEORISTS.slice(0, 4).map(t => runJudge(t, APP_URL)));
+  const batch2 = await Promise.all(THEORISTS.slice(4).map(t => runJudge(t, APP_URL)));
   const results = [...batch1, ...batch2];
 
   const passed = results.filter(r => r.ok).length;
   const warned = results.filter(r => r.overall === 'warn').length;
   const failed = results.filter(r => r.overall === 'fail').length;
+  const errored = results.filter(r => r.overall === 'error').length;
   const allPass = passed === results.length;
 
   const now = new Date();
@@ -357,7 +373,9 @@ export async function GET(req: NextRequest) {
 
   const subject = allPass
     ? `שיפוט — ${passed}/${results.length} עברו ✅ — ${date}`
-    : `שיפוט — ${failed} נכשלו${criticalCount > 0 ? ` · ${criticalCount} קריטיות` : ''} — ${date}`;
+    : failed > 0
+      ? `שיפוט — ${failed} נכשלו${criticalCount > 0 ? ` · ${criticalCount} קריטיות` : ''}${errored > 0 ? ` · ${errored} שגיאות-כלי` : ''} — ${date}`
+      : `שיפוט — ${errored} שגיאות-כלי (לא כשל-קול) — ${date}`;
 
   // --- שמירת דוח markdown ל-GitHub (לרן) ---
   const isoDate = now.toISOString().slice(0, 10);
@@ -373,7 +391,7 @@ export async function GET(req: NextRequest) {
   const judgeMarkdown = `# דוח שיפוט — ${date}
 
 ## תוצאה כוללת
-**${passed} עברו | ${warned} אזהרות | ${failed} נכשלו**
+**${passed} עברו | ${warned} אזהרות | ${failed} נכשלו${errored > 0 ? ` | ${errored} שגיאות-כלי` : ''}**
 
 ## לפי תיאורטיקן
 | תיאורטיקן | תוצאה | הפרות | סיכום |
@@ -394,7 +412,7 @@ ${criticalViolations.length ? criticalViolations.join('\n') : 'אין הפרות
   });
 
   return NextResponse.json({
-    passed, warned, failed,
+    passed, warned, failed, errored,
     total: results.length,
     ok: allPass,
     timeMs: Date.now() - globalStart,
