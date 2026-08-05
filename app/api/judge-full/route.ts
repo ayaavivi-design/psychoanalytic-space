@@ -161,10 +161,13 @@ async function runJudge(theorist: string, APP_URL: string): Promise<JudgeResult>
         }),
       });
       const chatData = await chatResponse.json();
-      const text = chatData.content?.[0]?.type === 'text' ? chatData.content[0].text : '';
-      if (!text && chatData.error) {
+      const rawText = chatData.content?.[0]?.type === 'text' ? chatData.content[0].text : '';
+      if (!rawText && chatData.error) {
         throw new Error(chatData.error.message || 'chat API error');
       }
+      // נקה את תג [MEMORY: ...] הנסתר — המשתמש האמיתי לא רואה אותו (chat.js מנקה זהה),
+      // אחרת בדיקות התוכן קוראות אותו כ-stage directions ומסמנות false-positive.
+      const text = rawText.split('\n').filter((line: string) => !/\[MEMORY/i.test(line)).join('\n').trim();
       turns.push({ turn: i + 1, patient: scenario.turns[i], therapist: text });
       messages.push({ role: 'assistant', content: text });
     }

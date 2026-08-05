@@ -129,10 +129,13 @@ async function runTheorist(theorist: string, APP_URL: string): Promise<{
         }),
       });
       const chatData = await chatResponse.json();
-      const text = chatData.content?.[0]?.type === 'text' ? chatData.content[0].text : '';
-      if (!text && chatData.error) {
+      const rawText = chatData.content?.[0]?.type === 'text' ? chatData.content[0].text : '';
+      if (!rawText && chatData.error) {
         throw new Error(chatData.error.message || 'chat API error');
       }
+      // נקה את תג [MEMORY: ...] הנסתר — המשתמש האמיתי לא רואה אותו (chat.js מנקה זהה),
+      // אחרת בדיקת S-1 קוראת אותו כ-stage directions ומסמנת false-positive.
+      const text = rawText.split('\n').filter((line: string) => !/\[MEMORY/i.test(line)).join('\n').trim();
       const { issues, opener } = checkTurn(text, i, prevOpener);
       prevOpener = opener;
       allIssues.push(...issues.map(iss => `[תור ${i + 1}] ${iss}`));
