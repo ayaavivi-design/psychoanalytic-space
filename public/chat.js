@@ -6225,9 +6225,11 @@ function showCrisisBanner() {
       <div style="font-size:14px;color:#e8c4c4;line-height:2;direction:rtl">
         <div style="font-weight:600;margin-bottom:6px;color:#f0d0d0">אם אתה במשבר — יש מי שיקשיב</div>
         <div style="margin-bottom:8px;color:#dbb8b8">אם יש לך מטפל או מטפלת — עכשיו הוא הזמן לפנות אליהם.</div>
-        <div>📞 <strong>ער"ן</strong> — 1201 &nbsp;(24/7, חינם)</div>
-        <div>💬 <strong>סהר</strong> — <a href="https://www.sahar.org.il" target="_blank" style="color:#c09090">sahar.org.il</a></div>
-        <div>🚑 <strong>מד"א</strong> — 101</div>
+        <div>📞 <strong>ער"ן</strong> — <a href="tel:1201" style="color:#c09090">1201</a> (24/7) · <a href="https://www.eran.org.il/online-emotional-help/" target="_blank" style="color:#c09090">צ'אט</a></div>
+        <div>💜 <strong>מש"ה</strong> (אובדנות) — <a href="https://wa.me/97223819999" target="_blank" style="color:#c09090">וואטסאפ</a></div>
+        <div>🚑 <strong>מד"א</strong> — <a href="tel:101" style="color:#c09090">101</a></div>
+        <div>💬 <strong>סה"ר</strong> — <a href="https://wa.me/972559571399" target="_blank" style="color:#c09090">וואטסאפ</a> · <a href="https://sahar.org.il/" target="_blank" style="color:#c09090">אתר</a></div>
+        <div>📞 <strong>אוזן ללב</strong> — <a href="tel:*9639" dir="ltr" style="color:#c09090;direction:ltr;unicode-bidi:embed;display:inline-block">&lrm;*9639&lrm;</a></div>
       </div>`;
   } else {
     banner.innerHTML = `
@@ -6242,7 +6244,6 @@ function showCrisisBanner() {
       </div>`;
   }
   document.body.appendChild(banner);
-  setTimeout(() => { const b = document.getElementById('crisis-banner'); if(b) b.remove(); }, 45000);
 }
 
 async function sendMessage() {

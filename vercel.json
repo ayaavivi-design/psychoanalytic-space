@@ -1,6 +1,6 @@
 {
   "crons": [
-    { "path": "/api/qa-full?secret=psycho-qa-2026", "schedule": "0 7 * * *" },
+    { "path": "/api/qa-full?secret=psycho-qa-2026", "schedule": "0 7 */3 * *" },
     { "path": "/api/judge-full?secret=psycho-qa-2026", "schedule": "0 7 */3 * *" }
   ],
   "functions": {

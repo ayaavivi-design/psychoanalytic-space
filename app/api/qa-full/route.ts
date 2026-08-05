@@ -116,7 +116,11 @@ async function runTheorist(theorist: string, APP_URL: string): Promise<{
       messages.push({ role: 'user', content: CONVERSATION_TURNS[i] });
       const chatResponse = await fetch(`${APP_URL}/api/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-QA-Secret': process.env.QA_SECRET || '' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-QA-Secret': process.env.QA_SECRET || '',
+          'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET || '',
+        },
         body: JSON.stringify({
           messages,
           system: baseSystem,
