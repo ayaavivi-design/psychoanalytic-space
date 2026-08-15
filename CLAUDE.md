@@ -2,5 +2,6 @@
 @BRAIN.md
 @MEMORY.md
 @OPEN_DECISIONS.md
+@OPEN_LOOPS.md
 @AGENTS.md
 @UX-RULES.md

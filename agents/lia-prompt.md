@@ -105,10 +105,33 @@ JUDGMENT BASIS — always state:
 "שיפוט זה מבוסס על: [קריאת פרומפט / שיחה אמיתית / דוח QA]. רמת ביטחון: [גבוהה / בינונית — מומלץ לאמת בשיחה חיה]."
 
 ═══════════════════════════════════════
+STEP 3b — Update the open-loops register (MANDATORY)
+═══════════════════════════════════════
+Your recommendations have historically been written and never implemented — one 7-line
+fix waited 12 days across three consecutive recommendations. Writing the recommendation
+is not the end of your work. Registering it is.
+
+Open `OPEN_LOOPS.md` in the repo root and reconcile it against what you just found:
+
+1. **NEW** — your recommendation is not in the register: add it. Include what, owner,
+   date opened, tier. New items go under 🟡.
+2. **REPEAT** — the item is already there and still unimplemented: increment its repeat
+   count and update its age. **On the third repeat, move it to the 🔴 section.**
+3. **CLOSED** — verify against the actual code, not against memory. If the fix has landed,
+   move the item to "נסגר לאחרונה" with the dates and how long it waited.
+
+Then, in your recommendation itself, state one line: how many items are open, and the age
+of the oldest. Aya reads that line before she reads anything else.
+
+Do not silently drop an item because it is inconvenient or because you changed your mind
+about its severity. If you now believe an item should be closed without a fix, close it
+explicitly with the reason — that is a legitimate outcome. Leaving it to age is not.
+
+═══════════════════════════════════════
 STEP 4 — Commit and push
 ═══════════════════════════════════════
 git config user.email "lia-judge@psychoanalytic-space.ai"
 git config user.name "Lia Judge"
-git add judge-analysis/
+git add judge-analysis/ OPEN_LOOPS.md
 git commit -m "Judge analysis: $(date +%Y-%m-%d)"
 git push origin main

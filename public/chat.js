@@ -5197,7 +5197,7 @@ const UI_TRANSLATIONS = {
     authPersonaLabel: 'מי אתה/את?', authTherapist: 'מטפל/ת', authPatient: 'בטיפול',
     authEmail: 'כתובת מייל', authPassword: 'סיסמה',
     authSignIn: 'כניסה', authSignUp: 'הרשמה', authForgot: 'שכחתי סיסמה',
-    authSecurity: 'השיחות נשמרות רק על המכשיר שלך ולא מועלות לשרת.',
+    authSecurity: 'השיחות נשמרות רק על המכשיר שלך. אנחנו לא שומרים אותן אצלנו.',
     authDisclaimer: 'Between נבנה לזמן שבין פגישות הטיפול — לא במקומן. טיפול מתרחש בין שני בני אדם: בנוכחות, בקשר, ובזמן. הממשק נועד לצד המטפל, לא במקומו.',
     settingsTitle: 'הגדרות משתמש', settingsSubtitle: 'המידע שתשתפי ישפיע על האופן שבו התיאורטיקאים פונים אלייך',
     settingsName: 'שם / כינוי', settingsNamePlaceholder: 'איך לפנות אלייך?',
@@ -5330,7 +5330,7 @@ const UI_TRANSLATIONS = {
     authPersonaLabel: 'Who are you?', authTherapist: 'Therapist', authPatient: 'In therapy',
     authEmail: 'Email address', authPassword: 'Password',
     authSignIn: 'Sign in', authSignUp: 'Register', authForgot: 'Forgot password',
-    authSecurity: 'Conversations are stored only on your device and never uploaded.',
+    authSecurity: 'Conversations are stored only on your device. We keep no copy.',
     authDisclaimer: 'Between is built for the time between therapy sessions — not instead of them. Therapy takes place between two people: in presence, in relationship, in time. This interface is meant to stand beside the therapist, not in place of one.',
     intakePlaceholder: 'Write here...',
     placeholderGeneral: "What's coming up for you?",
@@ -7320,7 +7320,7 @@ function openSettings() {
             </div>
             <button onclick="clearInterpretiveMemory()" id="st-interpret-clear" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">מחק</button>
           </div>
-          <p style="font-size:11px;color:var(--muted);line-height:1.7;margin:0;">אחרי כל שיחה, Between מנתח בשקט דפוסים, הגנות ונושאים שעלו — ומשתמש בהם כהקשר עמוק בשיחה הבאה. המידע נשמר בדפדפן שלך בלבד ואינו נשלח אלינו.</p>
+          <p style="font-size:11px;color:var(--muted);line-height:1.7;margin:0;">אחרי כל שיחה, Between מנתח בשקט דפוסים, הגנות ונושאים שעלו, ומשתמש בהם כהקשר עמוק בשיחה הבאה. המידע נשמר בדפדפן שלך בלבד ואנחנו לא שומרים אותו אצלנו.</p>
         </div>
 
       <div style="display:flex;justify-content:space-between;margin-top:24px;">
@@ -7392,7 +7392,7 @@ function loadSettingsForm() {
     } else {
       interpretCountEl.textContent = isEn
         ? `${interpretMemories.length} session${interpretMemories.length !== 1 ? 's' : ''} analyzed`
-        : `${interpretMemories.length} שיחות נותחו`;
+        : (interpretMemories.length === 1 ? 'שיחה אחת נותחה' : `${interpretMemories.length} שיחות נותחו`);
     }
   }
 }
