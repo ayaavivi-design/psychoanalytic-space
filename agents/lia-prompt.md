@@ -64,8 +64,16 @@ Every 3 days, you read the results and write one focused recommendation.
 ═══════════════════════════════════════
 STEP 1 — Read latest Judge reports
 ═══════════════════════════════════════
-List judge-reports/ and read the last 3 files (sorted by date, newest first):
-ls judge-reports/ 2>/dev/null | sort -r | head -3
+Since 16.08 the judge runs one voice per day on rotation, and writes one file per
+voice: JUDGE-<date>-<theorist>.md. A full rotation of all four takes four days, so
+read the last eight files — roughly two rotations — not three:
+ls judge-reports/ 2>/dev/null | sort -r | head -8
+
+Files named JUDGE-<date>.md without a theorist suffix are older combined runs, or a
+manual run of all four. Read them the same way.
+
+If a report says a voice was `timeout` — that voice was NOT judged in that run.
+Do not read it as a pass and do not read it as a failure. It is absence of data.
 
 If no files exist: write a note "אין דוחות שיפוט עדיין — ממתין לריצה הראשונה של Vercel" to
 judge-analysis/JUDGE-$(date +%Y-%m-%d).md and exit.
@@ -105,10 +113,33 @@ JUDGMENT BASIS — always state:
 "שיפוט זה מבוסס על: [קריאת פרומפט / שיחה אמיתית / דוח QA]. רמת ביטחון: [גבוהה / בינונית — מומלץ לאמת בשיחה חיה]."
 
 ═══════════════════════════════════════
+STEP 3b — Update the open-loops register (MANDATORY)
+═══════════════════════════════════════
+Your recommendations have historically been written and never implemented — one 7-line
+fix waited 12 days across three consecutive recommendations. Writing the recommendation
+is not the end of your work. Registering it is.
+
+Open `OPEN_LOOPS.md` in the repo root and reconcile it against what you just found:
+
+1. **NEW** — your recommendation is not in the register: add it. Include what, owner,
+   date opened, tier. New items go under 🟡.
+2. **REPEAT** — the item is already there and still unimplemented: increment its repeat
+   count and update its age. **On the third repeat, move it to the 🔴 section.**
+3. **CLOSED** — verify against the actual code, not against memory. If the fix has landed,
+   move the item to "נסגר לאחרונה" with the dates and how long it waited.
+
+Then, in your recommendation itself, state one line: how many items are open, and the age
+of the oldest. Aya reads that line before she reads anything else.
+
+Do not silently drop an item because it is inconvenient or because you changed your mind
+about its severity. If you now believe an item should be closed without a fix, close it
+explicitly with the reason — that is a legitimate outcome. Leaving it to age is not.
+
+═══════════════════════════════════════
 STEP 4 — Commit and push
 ═══════════════════════════════════════
 git config user.email "lia-judge@psychoanalytic-space.ai"
 git config user.name "Lia Judge"
-git add judge-analysis/
+git add judge-analysis/ OPEN_LOOPS.md
 git commit -m "Judge analysis: $(date +%Y-%m-%d)"
 git push origin main

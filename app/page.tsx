@@ -788,7 +788,7 @@ export default function Home() {
             <span id="auth-forgot" onClick={() => (window as any).resetPassword?.()} style={{ fontSize: 12, color: 'var(--muted)', cursor: 'pointer', textDecoration: 'underline' }}>שכחתי סיסמה</span>
           </div>
           <p id="auth-security" style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.8, marginTop: 17, opacity: 0.7 }}>
-            השיחות נשמרות רק על המכשיר שלך ולא מועלות לשרת.
+            השיחות נשמרות רק על המכשיר שלך. אנחנו לא שומרים אותן אצלנו.
             <br />
             פרטי הכניסה מוצפנים ומאובטחים.
           </p>
@@ -1207,7 +1207,7 @@ export default function Home() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 12, flexDirection: isHe ? 'row-reverse' : 'row' }}>
                   <p style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', margin: 0, textAlign: isHe ? 'right' : 'left' }}>
-                    {isHe ? 'סמן טקסט כדי לסמן פרטי — לפני שמשתפים.' : 'Highlight text to mark private — before sharing.'}
+                    {isHe ? 'סמן טקסט כדי לסמן פרטי, לפני שמשתפים.' : 'Highlight text to mark private, before sharing.'}
                   </p>
                   <button
                     onClick={() => (window as any).openWriteArchive?.()}
@@ -1216,6 +1216,15 @@ export default function Home() {
                     {isHe ? 'מה כתבתי' : 'What I wrote'}
                   </button>
                 </div>
+                {/* Ephemerality — stated as a value, not read as a failure. Content is never
+                    persisted server-side by design (MEMORY.md, "תוכן שיחות לא נשמר בשרת").
+                    Left unsaid it reads as "my history got deleted"; PDF is the only keeping.
+                    <bdi> isolates the Latin run so the bidi algorithm can't break the RTL line. */}
+                <p style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', margin: 0, textAlign: isHe ? 'right' : 'left', lineHeight: 1.7 }}>
+                  {isHe
+                    ? <>מה שנכתב כאן לא נשמר אצלנו. זה מרחב לכתוב בו בחופשיות. אם משהו חשוב לך לשמור, אפשר להוריד קובץ (<bdi>PDF</bdi>) ולשמור אותו אצלך.</>
+                    : 'Nothing written here is kept by us. This is a space to write freely. If you want to keep something, download it as a PDF.'}
+                </p>
                 {holdSaveStatus === 'saved' && (
                   <p style={{ fontSize: 13, color: 'var(--muted)', fontFamily: 'var(--font-cormorant), serif', fontStyle: 'italic', margin: 0 }}>{isHe ? 'נשמר.' : 'Saved.'}</p>
                 )}

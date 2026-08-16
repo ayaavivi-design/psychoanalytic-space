@@ -97,13 +97,16 @@ const SEVERITY_LABEL: Record<string, string> = {
   critical: 'קריטי', major: 'חמור', minor: 'קל',
 };
 const OVERALL_COLOR: Record<string, string> = {
-  pass: '#2d8a5e', warn: '#d97706', fail: '#b91c1c', error: '#6b7280',
+  pass: '#2d8a5e', warn: '#d97706', fail: '#b91c1c', error: '#6b7280', timeout: '#6b7280',
 };
 const OVERALL_BG: Record<string, string> = {
-  pass: '#f0faf4', warn: '#fffbeb', fail: '#fef2f2', error: '#f3f4f6',
+  pass: '#f0faf4', warn: '#fffbeb', fail: '#fef2f2', error: '#f3f4f6', timeout: '#f3f4f6',
 };
 const OVERALL_LABEL: Record<string, string> = {
   pass: '✅ עבר', warn: '⚠️ אזהרה', fail: '❌ נכשל', error: '⚙️ שגיאת-כלי',
+  // נבדל מ-fail בכוונה: "לא הספיק" אינו "נכשל". ליה שאלה ארבע פעמים למה יש ❌
+  // בלי הפרות מפורטות — זו התשובה, וכעת היא מסומנת ולא מוסווית ככשל-קול.
+  timeout: '⏱ לא הושלם — נקטע בזמן',
 };
 
 interface Violation {
@@ -230,14 +233,52 @@ export async function GET(req: NextRequest) {
   const host = req.headers.get('host') || 'localhost:3000';
   const APP_URL = host.includes('localhost') ? `http://${host}` : `https://${host}`;
 
-  const batch1 = await Promise.all(THEORISTS.slice(0, 4).map(t => runJudge(t, APP_URL)));
-  const batch2 = await Promise.all(THEORISTS.slice(4).map(t => runJudge(t, APP_URL)));
-  const results = [...batch1, ...batch2];
+  // דדליין לפני תקרת maxDuration — הריצה כבדה מ-QA (שיחה מלאה דרך /api/chat *וגם*
+  // קריאת שיפוט לכל תיאורטיקן) ותחת אותה תקרת 60ש' נקטעה לפני saveReportToGithub
+  // שבסוף הפונקציה. התוצאה: judge-reports/ ריק מ-01.08 וליה עיוורת קלינית.
+  // עכשיו מובטחת שמירה: מי שהספיק מדווח, מי שלא — מסומן timeout במפורש.
+  // (ה-batch1/batch2 שהיה כאן היה שריד מתקופת 8 התיאורטיקנים — slice(4) תמיד ריק.)
+  const DEADLINE_MS = 45_000;
+  const withDeadline = (t: string): Promise<JudgeResult> => {
+    const started = Date.now();
+    let timer: ReturnType<typeof setTimeout>;
+    const cutoff = new Promise<JudgeResult>(resolve => {
+      timer = setTimeout(() => resolve({
+        theorist: t, name: THEORIST_NAMES[t], scenarioLabel: SCENARIOS[t].label,
+        overall: 'timeout', ok: false, violations: [], strengths: [],
+        summary: 'הריצה נקטעה לפני שהשיפוט הושלם — אין נתוני קול לתיאורטיקן הזה בריצה זו.',
+        turns: [], timeMs: Date.now() - started, ragChunks: 0,
+      }), Math.max(0, DEADLINE_MS - (Date.now() - globalStart)));
+    });
+    return Promise.race([runJudge(t, APP_URL), cutoff]).finally(() => clearTimeout(timer));
+  };
+  // קול אחד לכל ריצה. ריצה משותפת דחפה 24 קריאות ל-/api/chat בבת אחת, הן חנקו
+  // זו את זו, וכל הארבעה חצו את הדדליין (אומת בדוח 16.08 — 4/4 timeout). קול
+  // בודד = 6 קריאות ו-60 שניות שלמות לעצמו.
+  //   ?theorist=winnicott — קול מפורש (ריצה ידנית)
+  //   ?rotate=1           — הקרון: קול אחד ליום, מחזור מלא כל 4 ימים. מחזור ולא
+  //                         ארבעה קרונים כי מספר משבצות הקרון מוגבל בתוכנית.
+  //   בלי פרמטר          — כל הארבעה, כמו קודם.
+  const only = req.nextUrl.searchParams.get('theorist');
+  const rotate = req.nextUrl.searchParams.get('rotate');
+  let toRun = THEORISTS;
+  if (only && THEORISTS.includes(only)) {
+    toRun = [only];
+  } else if (rotate) {
+    const d = new Date();
+    const dayOfYear = Math.floor(
+      (d.getTime() - new Date(d.getFullYear(), 0, 0).getTime()) / 86_400_000,
+    );
+    toRun = [THEORISTS[dayOfYear % THEORISTS.length]];
+  }
+  const single = toRun.length === 1;
+  const results = await Promise.all(toRun.map(withDeadline));
 
   const passed = results.filter(r => r.ok).length;
   const warned = results.filter(r => r.overall === 'warn').length;
   const failed = results.filter(r => r.overall === 'fail').length;
   const errored = results.filter(r => r.overall === 'error').length;
+  const timedOut = results.filter(r => r.overall === 'timeout').length;
   const allPass = passed === results.length;
 
   const now = new Date();
@@ -378,11 +419,15 @@ export async function GET(req: NextRequest) {
     </div>
   </div>`;
 
-  const subject = allPass
+  // שם הקול בנושא המייל — בריצה מפוצלת מגיעים ארבעה מיילים ביום, וצריך להבחין ביניהם
+  const scope = single ? `${THEORIST_NAMES[toRun[0]]} · ` : '';
+  const subject = scope + (allPass
     ? `שיפוט — ${passed}/${results.length} עברו ✅ — ${date}`
     : failed > 0
-      ? `שיפוט — ${failed} נכשלו${criticalCount > 0 ? ` · ${criticalCount} קריטיות` : ''}${errored > 0 ? ` · ${errored} שגיאות-כלי` : ''} — ${date}`
-      : `שיפוט — ${errored} שגיאות-כלי (לא כשל-קול) — ${date}`;
+      ? `שיפוט — ${failed} נכשלו${criticalCount > 0 ? ` · ${criticalCount} קריטיות` : ''}${errored > 0 ? ` · ${errored} שגיאות-כלי` : ''}${timedOut > 0 ? ` · ${timedOut} לא הושלמו` : ''} — ${date}`
+      : timedOut > 0
+        ? `שיפוט — ${timedOut} לא הושלמו (ריצה נקטעה) — ${date}`
+        : `שיפוט — ${errored} שגיאות-כלי (לא כשל-קול) — ${date}`);
 
   // --- שמירת דוח markdown ל-GitHub (לרן) ---
   const isoDate = now.toISOString().slice(0, 10);
@@ -398,8 +443,8 @@ export async function GET(req: NextRequest) {
   const judgeMarkdown = `# דוח שיפוט — ${date}
 
 ## תוצאה כוללת
-**${passed} עברו | ${warned} אזהרות | ${failed} נכשלו${errored > 0 ? ` | ${errored} שגיאות-כלי` : ''}**
-
+**${passed} עברו | ${warned} אזהרות | ${failed} נכשלו${errored > 0 ? ` | ${errored} שגיאות-כלי` : ''}${timedOut > 0 ? ` | ${timedOut} לא הושלמו` : ''}**
+${timedOut > 0 ? `\n⏱ **${timedOut} תיאורטיקנים לא הספיקו להישפט בריצה הזו** — הריצה נקטעה לפני שהסתיימה. זו אינה עדות על הקול שלהם, לא לטובה ולא לרעה.\n` : ''}
 ## לפי תיאורטיקן
 | תיאורטיקן | תוצאה | הפרות | סיכום |
 |---|---|---|---|
@@ -409,7 +454,11 @@ ${judgeTableRows}
 ${criticalViolations.length ? criticalViolations.join('\n') : 'אין הפרות חמורות ✅'}
 `;
 
-  await saveReportToGithub('judge-reports', `JUDGE-${isoDate}.md`, judgeMarkdown);
+  // קובץ נפרד לכל קול — ארבע ריצות באותו יום היו דורסות זו את זו בשם אחד
+  const reportName = single
+    ? `JUDGE-${isoDate}-${toRun[0]}.md`
+    : `JUDGE-${isoDate}.md`;
+  await saveReportToGithub('judge-reports', reportName, judgeMarkdown);
 
   await resend.emails.send({
     from: 'שיפוט מרחב פסיכואנליטי <onboarding@resend.dev>',
