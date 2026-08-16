@@ -252,7 +252,27 @@ export async function GET(req: NextRequest) {
     });
     return Promise.race([runJudge(t, APP_URL), cutoff]).finally(() => clearTimeout(timer));
   };
-  const results = await Promise.all(THEORISTS.map(withDeadline));
+  // קול אחד לכל ריצה. ריצה משותפת דחפה 24 קריאות ל-/api/chat בבת אחת, הן חנקו
+  // זו את זו, וכל הארבעה חצו את הדדליין (אומת בדוח 16.08 — 4/4 timeout). קול
+  // בודד = 6 קריאות ו-60 שניות שלמות לעצמו.
+  //   ?theorist=winnicott — קול מפורש (ריצה ידנית)
+  //   ?rotate=1           — הקרון: קול אחד ליום, מחזור מלא כל 4 ימים. מחזור ולא
+  //                         ארבעה קרונים כי מספר משבצות הקרון מוגבל בתוכנית.
+  //   בלי פרמטר          — כל הארבעה, כמו קודם.
+  const only = req.nextUrl.searchParams.get('theorist');
+  const rotate = req.nextUrl.searchParams.get('rotate');
+  let toRun = THEORISTS;
+  if (only && THEORISTS.includes(only)) {
+    toRun = [only];
+  } else if (rotate) {
+    const d = new Date();
+    const dayOfYear = Math.floor(
+      (d.getTime() - new Date(d.getFullYear(), 0, 0).getTime()) / 86_400_000,
+    );
+    toRun = [THEORISTS[dayOfYear % THEORISTS.length]];
+  }
+  const single = toRun.length === 1;
+  const results = await Promise.all(toRun.map(withDeadline));
 
   const passed = results.filter(r => r.ok).length;
   const warned = results.filter(r => r.overall === 'warn').length;
@@ -399,13 +419,15 @@ export async function GET(req: NextRequest) {
     </div>
   </div>`;
 
-  const subject = allPass
+  // שם הקול בנושא המייל — בריצה מפוצלת מגיעים ארבעה מיילים ביום, וצריך להבחין ביניהם
+  const scope = single ? `${THEORIST_NAMES[toRun[0]]} · ` : '';
+  const subject = scope + (allPass
     ? `שיפוט — ${passed}/${results.length} עברו ✅ — ${date}`
     : failed > 0
       ? `שיפוט — ${failed} נכשלו${criticalCount > 0 ? ` · ${criticalCount} קריטיות` : ''}${errored > 0 ? ` · ${errored} שגיאות-כלי` : ''}${timedOut > 0 ? ` · ${timedOut} לא הושלמו` : ''} — ${date}`
       : timedOut > 0
         ? `שיפוט — ${timedOut} לא הושלמו (ריצה נקטעה) — ${date}`
-        : `שיפוט — ${errored} שגיאות-כלי (לא כשל-קול) — ${date}`;
+        : `שיפוט — ${errored} שגיאות-כלי (לא כשל-קול) — ${date}`);
 
   // --- שמירת דוח markdown ל-GitHub (לרן) ---
   const isoDate = now.toISOString().slice(0, 10);
@@ -432,7 +454,11 @@ ${judgeTableRows}
 ${criticalViolations.length ? criticalViolations.join('\n') : 'אין הפרות חמורות ✅'}
 `;
 
-  await saveReportToGithub('judge-reports', `JUDGE-${isoDate}.md`, judgeMarkdown);
+  // קובץ נפרד לכל קול — ארבע ריצות באותו יום היו דורסות זו את זו בשם אחד
+  const reportName = single
+    ? `JUDGE-${isoDate}-${toRun[0]}.md`
+    : `JUDGE-${isoDate}.md`;
+  await saveReportToGithub('judge-reports', reportName, judgeMarkdown);
 
   await resend.emails.send({
     from: 'שיפוט מרחב פסיכואנליטי <onboarding@resend.dev>',

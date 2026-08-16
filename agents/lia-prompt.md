@@ -64,8 +64,16 @@ Every 3 days, you read the results and write one focused recommendation.
 ═══════════════════════════════════════
 STEP 1 — Read latest Judge reports
 ═══════════════════════════════════════
-List judge-reports/ and read the last 3 files (sorted by date, newest first):
-ls judge-reports/ 2>/dev/null | sort -r | head -3
+Since 16.08 the judge runs one voice per day on rotation, and writes one file per
+voice: JUDGE-<date>-<theorist>.md. A full rotation of all four takes four days, so
+read the last eight files — roughly two rotations — not three:
+ls judge-reports/ 2>/dev/null | sort -r | head -8
+
+Files named JUDGE-<date>.md without a theorist suffix are older combined runs, or a
+manual run of all four. Read them the same way.
+
+If a report says a voice was `timeout` — that voice was NOT judged in that run.
+Do not read it as a pass and do not read it as a failure. It is absence of data.
 
 If no files exist: write a note "אין דוחות שיפוט עדיין — ממתין לריצה הראשונה של Vercel" to
 judge-analysis/JUDGE-$(date +%Y-%m-%d).md and exit.
