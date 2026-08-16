@@ -131,6 +131,107 @@ interface JudgeResult {
   ragChunks: number;
 }
 
+// שלב א — השיחה בלבד (~40ש'). מופרד משלב השיפוט כי שניהם יחד הם ~54ש' בקופסה
+// של 60, ולכן נקטעו תמיד (אומת חי 16.08: קול יחיד, בלי תחרות, 46ש' ועדיין timeout).
+async function runConversation(
+  theorist: string,
+  APP_URL: string,
+): Promise<{ turns: JudgeResult['turns']; ragChunks: number }> {
+  const name = THEORIST_NAMES[theorist];
+  const scenario = SCENARIOS[theorist];
+
+  // שיחה דרך נתיב הפרודקשן /api/chat
+  // כך כל הוולידציות, הפיקסרים, ה-RAG וה-UNIVERSAL_SCOPE רצים בדיוק כמו למשתמש אמיתי
+  // (במקום ייצור גולמי ב-anthropic.messages.create שדילג על לולאת-האימות)
+  const baseSystem = THEORIST_VOICE[theorist] || `You are ${name}, a psychoanalytic therapist.`;
+  const chunks = await searchKnowledge(scenario.turns[0], theorist, 3); // לספירת RAG בדוח בלבד
+
+  const messages: Anthropic.MessageParam[] = [];
+  const turns: JudgeResult['turns'] = [];
+
+  for (let i = 0; i < scenario.turns.length; i++) {
+    messages.push({ role: 'user', content: scenario.turns[i] });
+    const chatResponse = await fetch(`${APP_URL}/api/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-QA-Secret': process.env.QA_SECRET || '',
+        'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET || '',
+      },
+      body: JSON.stringify({ messages, system: baseSystem, theorist, webSearch: false }),
+    });
+    const chatData = await chatResponse.json();
+    const rawText = chatData.content?.[0]?.type === 'text' ? chatData.content[0].text : '';
+    if (!rawText && chatData.error) {
+      throw new Error(chatData.error.message || 'chat API error');
+    }
+    // נקה את תג [MEMORY: ...] הנסתר — המשתמש האמיתי לא רואה אותו (chat.js מנקה זהה),
+    // אחרת בדיקות התוכן קוראות אותו כ-stage directions ומסמנות false-positive.
+    const text = rawText.split('\n').filter((line: string) => !/\[MEMORY/i.test(line)).join('\n').trim();
+    turns.push({ turn: i + 1, patient: scenario.turns[i], therapist: text });
+    messages.push({ role: 'assistant', content: text });
+  }
+
+  return { turns, ragChunks: chunks.length };
+}
+
+// שלב ב — שיפוט תמליל קיים (~15ש'). לא נוגע ב-/api/chat.
+async function runJudgment(
+  theorist: string,
+  turns: JudgeResult['turns'],
+  ragChunks: number,
+  start: number,
+): Promise<JudgeResult> {
+  const name = THEORIST_NAMES[theorist];
+  const scenario = SCENARIOS[theorist];
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+  const transcript = turns.map(t =>
+    `[תור ${t.turn}]\nמטופל: ${t.patient}\nמטפל: ${t.therapist}`
+  ).join('\n\n');
+
+  const judgeRes = await anthropic.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 1500,
+    system: JUDGE_SYSTEM_PROMPT + '\n\nRULESET:\n' + JUDGE_RULES,
+    messages: [{ role: 'user', content: JUDGE_USER_TEMPLATE(transcript, theorist) }],
+  });
+
+  const judgeRaw = judgeRes.content[0]?.type === 'text' ? judgeRes.content[0].text : '{}';
+  let report: Record<string, unknown> = {};
+  let parseError = false;
+  // המודל עוטף את ה-JSON בגדרות markdown — חילוץ האובייקט לפני הפרסינג
+  try {
+    const m = judgeRaw.match(/\{[\s\S]*\}/);
+    report = JSON.parse(m ? m[0] : judgeRaw);
+  } catch { parseError = true; }
+
+  // כשל-פרסינג הוא שגיאת-כלי (JSON פגום מה-judge) — לא כשל-קול. לא נספר כ-fail.
+  const overall = parseError ? 'error' : ((report.overall as string) || 'error');
+  return {
+    theorist, name, scenarioLabel: scenario.label,
+    overall,
+    ok: overall === 'pass',
+    violations: (report.violations as Violation[]) || [],
+    strengths: (report.strengths as string[]) || [],
+    summary: parseError
+      ? 'שיפוט לא נותח — JSON פגום מה-judge (שגיאת-כלי, לא כשל-קול)'
+      : (report.summary as string) || '',
+    turns, timeMs: Date.now() - start, ragChunks,
+  };
+}
+
+function errorResult(theorist: string, msg: string, start: number): JudgeResult {
+  return {
+    theorist, name: THEORIST_NAMES[theorist], scenarioLabel: SCENARIOS[theorist].label,
+    overall: 'error', ok: false,
+    violations: [{ rule: 'ERROR', severity: 'major', quote: '', explanation: msg, fix: '' }],
+    strengths: [], summary: `שגיאת-כלי: ${msg}`,
+    turns: [], timeMs: Date.now() - start, ragChunks: 0,
+  };
+}
+
+// שני השלבים ברצף — לריצה ידנית של כל הארבעה. הקרון לא משתמש בזה.
 async function runJudge(theorist: string, APP_URL: string): Promise<JudgeResult> {
   const start = Date.now();
   const name = THEORIST_NAMES[theorist];
@@ -138,11 +239,8 @@ async function runJudge(theorist: string, APP_URL: string): Promise<JudgeResult>
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   try {
-    // שלב 1 — שיחה דרך נתיב הפרודקשן /api/chat
-    // כך כל הוולידציות, הפיקסרים, ה-RAG וה-UNIVERSAL_SCOPE רצים בדיוק כמו למשתמש אמיתי
-    // (במקום ייצור גולמי ב-anthropic.messages.create שדילג על לולאת-האימות)
     const baseSystem = THEORIST_VOICE[theorist] || `You are ${name}, a psychoanalytic therapist.`;
-    const chunks = await searchKnowledge(scenario.turns[0], theorist, 3); // לספירת RAG בדוח בלבד
+    const chunks = await searchKnowledge(scenario.turns[0], theorist, 3);
 
     const messages: Anthropic.MessageParam[] = [];
     const turns: JudgeResult['turns'] = [];
@@ -261,18 +359,64 @@ export async function GET(req: NextRequest) {
   //   בלי פרמטר          — כל הארבעה, כמו קודם.
   const only = req.nextUrl.searchParams.get('theorist');
   const rotate = req.nextUrl.searchParams.get('rotate');
+  let phase = req.nextUrl.searchParams.get('phase'); // converse | judge
   let toRun = THEORISTS;
-  if (only && THEORISTS.includes(only)) {
-    toRun = [only];
-  } else if (rotate) {
+
+  if (rotate) {
+    // מחזור בן 8 ימים: יום זוגי מדבר עם קול, יום אי-זוגי שופט את מה שהוקלט אתמול.
+    // כל קול נשפט אחת ל-8 ימים. איטי — אבל עובד בקופסה של 60ש' בלי לשלם על Pro.
     const d = new Date();
     const dayOfYear = Math.floor(
       (d.getTime() - new Date(d.getFullYear(), 0, 0).getTime()) / 86_400_000,
     );
-    toRun = [THEORISTS[dayOfYear % THEORISTS.length]];
+    const slot = dayOfYear % (THEORISTS.length * 2);
+    toRun = [THEORISTS[Math.floor(slot / 2)]];
+    phase = slot % 2 === 0 ? 'converse' : 'judge';
+  } else if (only && THEORISTS.includes(only)) {
+    toRun = [only];
   }
   const single = toRun.length === 1;
-  const results = await Promise.all(toRun.map(withDeadline));
+
+  // ── שלב א — שיחה בלבד. התמליל נשמר לריפו, והריצה הבאה שופטת אותו. ──
+  if (phase === 'converse' && single) {
+    const t = toRun[0];
+    try {
+      const convo = await runConversation(t, APP_URL);
+      await saveReportToGithub(
+        'judge-transcripts',
+        `${t}.json`,
+        JSON.stringify({ theorist: t, savedAt: new Date().toISOString(), ...convo }, null, 2),
+      );
+      return NextResponse.json({
+        phase: 'converse', theorist: t, turns: convo.turns.length,
+        timeMs: Date.now() - globalStart,
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'unknown';
+      return NextResponse.json({ phase: 'converse', theorist: t, error: msg }, { status: 500 });
+    }
+  }
+
+  let results: JudgeResult[];
+
+  // ── שלב ב — שיפוט התמליל שנשמר. הריפו ציבורי, ולכן raw בלי טוקן. ──
+  if (phase === 'judge' && single) {
+    const t = toRun[0];
+    const start = Date.now();
+    try {
+      const raw = await fetch(
+        `https://raw.githubusercontent.com/ayaavivi-design/psychoanalytic-space/main/judge-transcripts/${t}.json`,
+        { cache: 'no-store' },
+      );
+      if (!raw.ok) throw new Error(`אין תמליל שמור ל-${t} (${raw.status})`);
+      const saved = await raw.json();
+      results = [await runJudgment(t, saved.turns, saved.ragChunks ?? 0, start)];
+    } catch (err) {
+      results = [errorResult(t, err instanceof Error ? err.message : 'unknown', start)];
+    }
+  } else {
+    results = await Promise.all(toRun.map(withDeadline));
+  }
 
   const passed = results.filter(r => r.ok).length;
   const warned = results.filter(r => r.overall === 'warn').length;
