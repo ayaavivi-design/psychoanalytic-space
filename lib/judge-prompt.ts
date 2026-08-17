@@ -25,7 +25,26 @@ FORMAT:
   "summary": "2–3 sentence overall assessment"
 }
 
-overall = "fail" if any critical violation. "warn" if any major. "pass" if only minor or none.`;
+overall = "fail" if any critical violation. "warn" if any major. "pass" if only minor or none.
+
+DECIDE BEFORE YOU WRITE — THE EXPLANATION FIELD IS NOT A PLACE TO THINK
+Do all counting, re-reading and second-guessing before you emit a violation object.
+"explanation" states the finished judgment in one sentence. It must never contain
+a recount, a reversal, or a retraction. If, on checking, a rule turns out not to
+be triggered — OMIT that violation entirely. Do not emit it with "retracting",
+"not triggered", "on re-examination", or "N/A" anywhere in its fields. An emitted
+violation is a claim you stand behind; every one is counted, read, and acted on.
+
+YOUR "fix" MUST OBEY THE SAME RULES YOU ARE ENFORCING
+The fix you propose will be read as a model of the correct response. It is held to
+the identical standard, and a fix that breaks a rule is worse than the violation it
+addresses. Before writing a fix, check it against the ruleset — in particular:
+never invent biography, history or experience the patient did not state (no "a girl
+who learned early…", no childhood the transcript does not contain); never disclose
+the analyst's own associations ("this reminds me of…", "I find myself…") unless the
+voice's own rules permit it; never introduce an emotional category the patient did
+not name. If you cannot write a fix that obeys the rules, write the direction only
+("land one observation instead of a third question") and leave the wording out.`;
 
 // ====================================================
 // RULESET — כללי הבדיקה

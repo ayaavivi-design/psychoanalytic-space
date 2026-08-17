@@ -206,13 +206,27 @@ async function runJudgment(
     report = JSON.parse(m ? m[0] : judgeRaw);
   } catch { parseError = true; }
 
+  // מסנן-הגנה: השופט לפעמים חושב בקול רם בתוך שדה הנימוק, מגלה שטעה, כותב
+  // "Retracting" — ושולח את ההפרה בכל זאת (אומת בדוח ויניקוט 16.08: Q-1 נספרה
+  // כ"חמור" כשהנימוק שלה עצמו אמר "Rule Q-1 not triggered. Retracting."). הפרומפט
+  // אוסר את זה מפורשות עכשיו, אבל מודלים יחזרו על כך — הספירה חייבת שער משלה.
+  const RETRACTED = /retract|not triggered|on re-examination|re-examining|^n\/?a\b|disregard this/i;
+  const violations = ((report.violations as Violation[]) || []).filter(
+    v => !RETRACTED.test(v.explanation || '') && !RETRACTED.test(v.fix || ''),
+  );
+
   // כשל-פרסינג הוא שגיאת-כלי (JSON פגום מה-judge) — לא כשל-קול. לא נספר כ-fail.
-  const overall = parseError ? 'error' : ((report.overall as string) || 'error');
+  // ה-overall מחושב מחדש מההפרות ששרדו: השופט קבע אותו לפני הסינון.
+  const declared = parseError ? 'error' : ((report.overall as string) || 'error');
+  const overall = declared === 'error' ? 'error'
+    : violations.some(v => v.severity === 'critical') ? 'fail'
+    : violations.some(v => v.severity === 'major') ? 'warn'
+    : 'pass';
   return {
     theorist, name, scenarioLabel: scenario.label,
     overall,
     ok: overall === 'pass',
-    violations: (report.violations as Violation[]) || [],
+    violations,
     strengths: (report.strengths as string[]) || [],
     summary: parseError
       ? 'שיפוט לא נותח — JSON פגום מה-judge (שגיאת-כלי, לא כשל-קול)'
