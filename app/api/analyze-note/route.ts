@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   if (auth.errorResponse) return auth.errorResponse;
 
   const body = await req.json();
-  const { text, mode, gender } = body;
+  const { text, mode, gender, theorist } = body;
 
   if (!text || typeof text !== 'string' || text.trim().length < 5) {
     return NextResponse.json({ error: 'Missing text' }, { status: 400 });
@@ -49,15 +49,21 @@ export async function POST(req: NextRequest) {
   const t = text.trim();
   const interfaceMode = mode === 'therapist' ? 'therapist' : 'patient';
 
-  // RAG — ground the analysis in Winnicott's original texts
+  // הניתוח נעשה בקול שהמשתמשת בחרה, לא תמיד בוויניקוט. עד 17.08 ויניקוט היה
+  // מקודד קשיח — כך שמי שעבדה עם קליין קיבלה ניתוח ויניקוטיאני בלי לדעת, כי
+  // הפלט ממילא אסור לו לנקוב בשם. ויניקוט נשאר ברירת המחדל.
+  const ACTIVE = ['freud', 'klein', 'winnicott', 'ogden'];
+  const voiceKey = typeof theorist === 'string' && ACTIVE.includes(theorist) ? theorist : 'winnicott';
+
+  // RAG — ground the analysis in that theorist's original texts
   let ragContext = '';
   try {
-    const chunks = await searchKnowledgeHybrid(t, 'winnicott', 4);
+    const chunks = await searchKnowledgeHybrid(t, voiceKey, 4);
     ragContext = formatChunksForPrompt(chunks);
   } catch { /* RAG is best-effort */ }
 
-  // One Winnicott: full voice block + the analyze instruction + his texts
-  const voice = THEORIST_VOICE['winnicott'] || '';
+  // The chosen voice: full voice block + the analyze instruction + that theorist's texts
+  const voice = THEORIST_VOICE[voiceKey] || '';
   const system = `${voice}\n\n──────────\n\n${ANALYZE_SYSTEM_PROMPT}${ragContext}`;
 
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -66,7 +72,7 @@ export async function POST(req: NextRequest) {
     model: 'claude-sonnet-4-6',
     max_tokens: 1500,
     system,
-    messages: [{ role: 'user', content: ANALYZE_USER_TEMPLATE(t, interfaceMode, gender) }],
+    messages: [{ role: 'user', content: ANALYZE_USER_TEMPLATE(t, interfaceMode, gender, voiceKey) }],
   });
 
   const raw = res.content[0]?.type === 'text' ? res.content[0].text : '';

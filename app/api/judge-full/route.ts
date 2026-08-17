@@ -424,6 +424,15 @@ export async function GET(req: NextRequest) {
       );
       if (!raw.ok) throw new Error(`אין תמליל שמור ל-${t} (${raw.status})`);
       const saved = await raw.json();
+      // שומר-רעננות: התמליל נשמר בקובץ אחד לכל קול. אם שלב-השיפוט רץ בלי ששלב-השיחה
+      // רץ לפניו, הוא שופט מחדש חומר ישן ומדווח עליו כממצא של היום — קרה ב-17.08,
+      // דוח זהה מילה במילה לזה של 16.08. דוח שנראה כנתון טרי ואינו הוא הכשל הגרוע
+      // ביותר במערכת מדידה, ולכן זו שגיאה מפורשת ולא שיפוט שקט.
+      const ageMs = Date.now() - Date.parse(saved.savedAt || 0);
+      if (!saved.savedAt || !(ageMs < 36 * 3600_000)) {
+        const age = saved.savedAt ? `${Math.round(ageMs / 3600_000)} שעות` : 'ללא חותמת זמן';
+        throw new Error(`התמליל של ${t} ישן מדי (${age}) — שלב השיחה לא רץ לפני שלב השיפוט. לא נשפט.`);
+      }
       results = [await runJudgment(t, saved.turns, saved.ragChunks ?? 0, start)];
     } catch (err) {
       results = [errorResult(t, err instanceof Error ? err.message : 'unknown', start)];

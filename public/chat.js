@@ -1371,7 +1371,7 @@ async function openWriteSummary() {
     const res = await fetch('/api/analyze-note', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeaders },
-      body: JSON.stringify({ text, mode: 'patient', gender }),
+      body: JSON.stringify({ text, mode: 'patient', gender, theorist: (Array.isArray(activeTheorists) && activeTheorists[0]) || 'winnicott' }),
     });
     const data = await res.json();
     const el = document.getElementById('write-summary-results');
@@ -1405,10 +1405,10 @@ async function openWriteSummary() {
     el.innerHTML = `
       ${cameUpHtml}
       ${insightHtml}
-      <div style="background:rgba(196,96,122,0.06);border-radius:10px;padding:14px 16px;">
+      ${data.bring_to_session ? `<div style="background:rgba(196,96,122,0.06);border-radius:10px;padding:14px 16px;">
         <div style="font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Bring to session' : 'להביא לפגישה'}</div>
-        <div style="color:var(--text);line-height:1.75;">${data.bring_to_session || ''}</div>
-      </div>`;
+        <div style="color:var(--text);line-height:1.75;">${data.bring_to_session}</div>
+      </div>` : ''}`;
 
     // Footer actions
     const modalInner = el.parentElement;
@@ -1446,7 +1446,7 @@ async function openWriteSummary() {
     });
 
     // Send to therapist — summary only, or summary + full letter based on toggle
-    const summaryHtml = `${data.what_came_up ? `<p><strong>${isEn ? 'What came up' : 'מה עלה'}:</strong> ${data.what_came_up}</p>` : ''}${data.core_insight ? `<p><strong>${isEn ? "What's coming into focus" : 'מה שמתבהר'}:</strong> ${data.core_insight}</p>` : ''}<p><strong>${isEn ? 'What I want to bring' : 'מה אני רוצה להביא'}:</strong> ${data.bring_to_session || ''}</p>`;
+    const summaryHtml = `${data.what_came_up ? `<p><strong>${isEn ? 'What came up' : 'מה עלה'}:</strong> ${data.what_came_up}</p>` : ''}${data.core_insight ? `<p><strong>${isEn ? "What's coming into focus" : 'מה שמתבהר'}:</strong> ${data.core_insight}</p>` : ''}${data.bring_to_session ? `<p><strong>${isEn ? 'What I want to bring' : 'מה אני רוצה להביא'}:</strong> ${data.bring_to_session}</p>` : ''}`;
     const letterHtml = `<hr style="margin:20px 0;border:none;border-top:1px solid #eee;"><p style="font-size:12px;color:#999;margin-bottom:8px;">${isEn ? 'My writing:' : 'הכתיבה:'}</p><p style="white-space:pre-wrap;line-height:1.7;">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
     document.getElementById('ws-send-btn')?.addEventListener('click', () => {
       const attachLetter = document.getElementById('ws-attach-letter')?.checked;

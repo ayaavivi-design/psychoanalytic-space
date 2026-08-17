@@ -523,7 +523,7 @@ export default function Home() {
       const headers = { 'Content-Type': 'application/json', ...(gh ? await gh() : {}) };
       let gender = '';
       try { gender = JSON.parse(localStorage.getItem('intake_completed') || '{}').gender || ''; } catch { /* none */ }
-      const r = await fetch('/api/analyze-note', { method: 'POST', headers, body: JSON.stringify({ text: t, mode: activePersona, gender }) });
+      const r = await fetch('/api/analyze-note', { method: 'POST', headers, body: JSON.stringify({ text: t, mode: activePersona, gender, theorist: holdTheorist }) });
       const data = await r.json();
       if (data && !data.error) {
         setNoteAnalysis(prev => ({ ...prev, [key]: data }));
