@@ -1386,28 +1386,32 @@ async function openWriteSummary() {
     if (data.held) {
       const reflection = (data.reflection || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       el.innerHTML = `
-        <div style="background:rgba(196,96,122,0.06);border-radius:10px;padding:16px 18px;">
+        <div style="background:var(--accent-soft);border-radius:10px;padding:16px 18px;">
           <div style="color:var(--text);line-height:1.8;white-space:pre-wrap;">${reflection || (isEn ? "What you wrote is still alive — it's waiting for the room." : 'מה שכתבת עוד חי — הוא מחכה לחדר.')}</div>
         </div>`;
       return;
     }
-    // BW-129 merged shape — three sections: what came up / core insight / bring to session.
-    const cameUpHtml = data.what_came_up
-      ? `<div style="margin-bottom:14px;">
-          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'What came up' : 'מה עלה'}</div>
-          <div style="color:var(--text);line-height:1.75;">${data.what_came_up}</div>
-        </div>` : '';
-    const insightHtml = data.core_insight
-      ? `<div style="margin-bottom:18px;">
-          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? "What's coming into focus" : 'מה שמתבהר'}</div>
-          <div style="color:var(--text);line-height:1.75;">${data.core_insight}</div>
-        </div>` : '';
+    // מאיה 17.08 — הכותרות ירדו. כותרת מצדיקה את עצמה רק כשהיא מבדילה בין דבר לדבר,
+    // ומאז ש-core_insight ו-bring_to_session מותנים, כרטיס עם פריט אחד ותווית מרחפת
+    // מעליו נקרא "הניתוח נכשל" ולא "קצר". הצורה משתנה לפי מה שחזר: בלוק אחד עד ארבעה.
+    // "להביא לפגישה" שומר על טיפול נפרד — הוא סוג אחר של דבר, פעולה במקום אחר.
+    const esc = v => String(v == null ? '' : v).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const block = txt => `<div style="color:var(--text);line-height:1.75;margin-bottom:16px;">${esc(txt)}</div>`;
+    // חוטים — רק כשהכתיבה מפוזרת. הכותרת היא ביטוי שהיא עצמה כתבה, לא קטגוריה שהמצאנו.
+    const threadsHtml = Array.isArray(data.threads)
+      ? data.threads.slice(0, 4).map(t => `
+        <div style="margin-bottom:16px;">
+          <div style="font-family:var(--font-cormorant),Georgia,serif;font-size:15px;color:var(--accent);margin-bottom:4px;">${esc(t.name)}</div>
+          <div style="color:var(--text);line-height:1.75;">${esc(t.what)}</div>
+        </div>`).join('')
+      : '';
     el.innerHTML = `
-      ${cameUpHtml}
-      ${insightHtml}
-      ${data.bring_to_session ? `<div style="background:rgba(196,96,122,0.06);border-radius:10px;padding:14px 16px;">
+      ${data.what_came_up ? block(data.what_came_up) : ''}
+      ${threadsHtml}
+      ${data.core_insight ? block(data.core_insight) : ''}
+      ${data.bring_to_session ? `<div style="background:var(--accent-soft);border-radius:10px;padding:14px 16px;">
         <div style="font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Bring to session' : 'להביא לפגישה'}</div>
-        <div style="color:var(--text);line-height:1.75;">${data.bring_to_session}</div>
+        <div style="color:var(--text);line-height:1.75;">${esc(data.bring_to_session)}</div>
       </div>` : ''}`;
 
     // Footer actions
