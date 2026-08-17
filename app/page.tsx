@@ -1178,7 +1178,7 @@ export default function Home() {
                           fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)',
                           display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
                         }}>
-                          {isHe ? 'לנתח' : 'Analyze'}
+                          {isHe ? 'מה יש כאן' : "What's here"}
                         </span>
                       </button>
                     )}

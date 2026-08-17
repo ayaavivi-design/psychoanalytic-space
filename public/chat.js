@@ -1025,7 +1025,7 @@ function showWriteInterface() {
         <div style="display:flex;gap:10px;margin-top:12px;align-items:center;justify-content:center;flex-wrap:wrap;">
           <button id="bw-hold-analyze-btn" onclick="openWriteSummary()"
             style="padding:10px 28px;border-radius:22px;border:1px solid var(--accent);font-size:13px;font-family:var(--font-rubik),sans-serif;background:none;color:var(--accent);cursor:pointer;">
-            ${isEn ? 'Analyze' : 'לנתח'}
+            ${isEn ? "What's here" : 'מה יש כאן'}
           </button>
           <button id="bw-hold-start-btn" disabled onclick="startHoldConversation()"
             style="padding:10px 28px;border-radius:22px;border:none;font-size:13px;font-family:var(--font-rubik),sans-serif;background:var(--border);color:var(--muted);cursor:default;">
@@ -1635,7 +1635,7 @@ function bwUpdateModeLabels() {
     const _wTa = document.getElementById('bw-write-textarea');
     if (_wTa) _wTa.dataset.placeholder = isEn ? 'Something you want your therapist to know.' : 'משהו שתרצה שהמטפל שלך ידע.';
     const _wHintText = document.getElementById('bw-write-hint-text');
-    if (_wHintText) _wHintText.textContent = isEn ? 'When you\'re ready, use "Analyze" below to hold what you wrote.' : 'כשתסיימי/תסיים — השתמשו ב"לנתח" למטה כדי להחזיק את מה שכתבתם.';
+    if (_wHintText) _wHintText.textContent = isEn ? 'When you\'re ready, "What\'s here" below holds what you wrote.' : 'כשתסיימי/תסיים — "מה יש כאן" למטה מחזיק את מה שכתבתם.';
     const _wHintArchive = document.getElementById('bw-write-hint-archive');
     if (_wHintArchive) { _wHintArchive.textContent = isEn ? 'What I wrote' : 'מה כתבתי'; _wHintArchive.style.marginLeft = isEn ? '12px' : ''; _wHintArchive.style.marginRight = isEn ? '' : '12px'; }
     _writeArea.style.direction = isEn ? 'ltr' : 'rtl';
