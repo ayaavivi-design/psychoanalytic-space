@@ -7320,7 +7320,7 @@ function openSettings() {
             </div>
             <button onclick="clearInterpretiveMemory()" id="st-interpret-clear" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">מחק</button>
           </div>
-          <p style="font-size:11px;color:var(--muted);line-height:1.7;margin:0;">אחרי כל שיחה, Between מנתח בשקט דפוסים, הגנות ונושאים שעלו, ומשתמש בהם כהקשר עמוק בשיחה הבאה. המידע נשמר בדפדפן שלך בלבד ואנחנו לא שומרים אותו אצלנו.</p>
+          <p style="font-size:11px;color:var(--muted);line-height:1.7;margin:0;">אחרי כל שיחה נרשמות שתי שורות: מה נגע, ומה כדאי להמשיך ממנו. הן משמשות הקשר בשיחה הבאה, כדי שלא תתחילי מאפס. המידע נשמר בדפדפן שלך בלבד ואנחנו לא שומרים אותו אצלנו.</p>
         </div>
 
       <div style="display:flex;justify-content:space-between;margin-top:24px;">
