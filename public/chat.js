@@ -1355,7 +1355,7 @@ async function openWriteSummary() {
   overlay.innerHTML = `
     <div style="background:var(--bg);border-radius:16px;width:520px;max-width:92vw;max-height:82vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:${dir};padding:28px 28px 24px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <span style="font-family:var(--font-cormorant),serif;font-size:20px;font-weight:400;color:var(--text);">${isEn ? 'Session notes' : 'סיכום כתיבה'}</span>
+        <span style="font-family:var(--font-cormorant),serif;font-size:20px;font-weight:400;color:var(--text);">${isEn ? "What's here" : 'מה יש כאן'}</span>
         <button onclick="document.getElementById('write-summary-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted);line-height:1;">×</button>
       </div>
       <div id="write-summary-results" style="font-family:var(--font-rubik),sans-serif;font-size:14px;color:var(--text);line-height:1.7;">
@@ -1408,7 +1408,7 @@ async function openWriteSummary() {
     el.innerHTML = `
       ${data.what_came_up ? block(data.what_came_up) : ''}
       ${threadsHtml}
-      ${data.core_insight ? block(data.core_insight) : ''}
+      ${data.core_insight ? `<div style="border-top:1px solid var(--border);padding-top:14px;margin-top:2px;">${block(data.core_insight)}</div>` : ''}
       ${data.bring_to_session ? `<div style="background:var(--accent-soft);border-radius:10px;padding:14px 16px;">
         <div style="font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Bring to session' : 'להביא לפגישה'}</div>
         <div style="color:var(--text);line-height:1.75;">${esc(data.bring_to_session)}</div>

@@ -88,13 +88,13 @@ const SCENARIOS: Record<string, { label: string; turns: string[] }> = {
 };
 
 const SEVERITY_COLOR: Record<string, string> = {
-  critical: '#b91c1c', major: '#c4607a', minor: '#888',
+  critical: '#b91c1c', major: '#c4607a', minor: '#888', tool: '#6b7280',
 };
 const SEVERITY_BG: Record<string, string> = {
-  critical: '#fef2f2', major: '#fff5f5', minor: '#faf7f5',
+  critical: '#fef2f2', major: '#fff5f5', minor: '#faf7f5', tool: '#f3f4f6',
 };
 const SEVERITY_LABEL: Record<string, string> = {
-  critical: 'קריטי', major: 'חמור', minor: 'קל',
+  critical: 'קריטי', major: 'חמור', minor: 'קל', tool: 'שגיאת-כלי',
 };
 const OVERALL_COLOR: Record<string, string> = {
   pass: '#2d8a5e', warn: '#d97706', fail: '#b91c1c', error: '#6b7280', timeout: '#6b7280',
@@ -239,7 +239,9 @@ function errorResult(theorist: string, msg: string, start: number): JudgeResult 
   return {
     theorist, name: THEORIST_NAMES[theorist], scenarioLabel: SCENARIOS[theorist].label,
     overall: 'error', ok: false,
-    violations: [{ rule: 'ERROR', severity: 'major', quote: '', explanation: msg, fix: '' }],
+    // 'tool' ולא 'major': 404 של קובץ אינו כשל-קול. ליה — שגיאה טכנית שמתחזה
+    // להפרה קלינית מזהמת את הספירה שהיא עובדת לפיה.
+    violations: [{ rule: 'TOOL', severity: 'tool', quote: '', explanation: msg, fix: '' }],
     strengths: [], summary: `שגיאת-כלי: ${msg}`,
     turns: [], timeMs: Date.now() - start, ragChunks: 0,
   };
@@ -327,7 +329,9 @@ async function runJudge(theorist: string, APP_URL: string): Promise<JudgeResult>
     return {
       theorist, name, scenarioLabel: scenario.label,
       overall: 'error', ok: false,
-      violations: [{ rule: 'ERROR', severity: 'major', quote: '', explanation: msg, fix: '' }],
+      // 'tool' ולא 'major': 404 של קובץ אינו כשל-קול. ליה — שגיאה טכנית שמתחזה
+    // להפרה קלינית מזהמת את הספירה שהיא עובדת לפיה.
+    violations: [{ rule: 'TOOL', severity: 'tool', quote: '', explanation: msg, fix: '' }],
       strengths: [], summary: `שגיאת-כלי: ${msg}`,
       turns: [], timeMs: Date.now() - start, ragChunks: 0,
     };
@@ -422,17 +426,30 @@ export async function GET(req: NextRequest) {
         `https://raw.githubusercontent.com/ayaavivi-design/psychoanalytic-space/main/judge-transcripts/${t}.json`,
         { cache: 'no-store' },
       );
-      if (!raw.ok) throw new Error(`אין תמליל שמור ל-${t} (${raw.status})`);
-      const saved = await raw.json();
-      // שומר-רעננות: התמליל נשמר בקובץ אחד לכל קול. אם שלב-השיפוט רץ בלי ששלב-השיחה
-      // רץ לפניו, הוא שופט מחדש חומר ישן ומדווח עליו כממצא של היום — קרה ב-17.08,
-      // דוח זהה מילה במילה לזה של 16.08. דוח שנראה כנתון טרי ואינו הוא הכשל הגרוע
-      // ביותר במערכת מדידה, ולכן זו שגיאה מפורשת ולא שיפוט שקט.
-      const ageMs = Date.now() - Date.parse(saved.savedAt || 0);
-      if (!saved.savedAt || !(ageMs < 36 * 3600_000)) {
-        const age = saved.savedAt ? `${Math.round(ageMs / 3600_000)} שעות` : 'ללא חותמת זמן';
-        throw new Error(`התמליל של ${t} ישן מדי (${age}) — שלב השיחה לא רץ לפני שלב השיפוט. לא נשפט.`);
+      // אין תמליל, או שהוא ישן — הריצה מתקנת את עצמה ומריצה את שלב השיחה במקום ליפול.
+      // הסיבוב בן 8 המשבצות מתחיל באמצע, אז קול יכול להגיע לתור השיפוט לפני שדיבר
+      // אי פעם (קרה לאוגדן ב-18.08: 404). כך המשבצת הבאה שלו תמצא חומר טרי.
+      const stale = raw.ok
+        ? await raw.json().then((j: { savedAt?: string }) =>
+            !j.savedAt || Date.now() - Date.parse(j.savedAt) >= 36 * 3600_000)
+        : true;
+      if (stale) {
+        const convo = await runConversation(t, APP_URL);
+        await saveReportToGithub(
+          'judge-transcripts', `${t}.json`,
+          JSON.stringify({ theorist: t, savedAt: new Date().toISOString(), ...convo }, null, 2),
+        );
+        return NextResponse.json({
+          phase: 'converse', theorist: t, turns: convo.turns.length,
+          note: 'לא היה תמליל טרי לשיפוט — הורץ שלב השיחה במקומו. השיפוט יגיע במשבצת הבאה.',
+          timeMs: Date.now() - globalStart,
+        });
       }
+      const raw2 = await fetch(
+        `https://raw.githubusercontent.com/ayaavivi-design/psychoanalytic-space/main/judge-transcripts/${t}.json`,
+        { cache: 'no-store' },
+      );
+      const saved = await raw2.json();
       results = [await runJudgment(t, saved.turns, saved.ragChunks ?? 0, start)];
     } catch (err) {
       results = [errorResult(t, err instanceof Error ? err.message : 'unknown', start)];

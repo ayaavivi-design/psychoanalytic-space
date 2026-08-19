@@ -80,7 +80,20 @@ export async function POST(req: NextRequest) {
 
   if (jsonMatch) {
     try {
-      return NextResponse.json(JSON.parse(jsonMatch[0]));
+      const parsed = JSON.parse(jsonMatch[0]);
+      // שער דטרמיניסטי לשמות החוטים. הכלל היה בפרומפט ולא החזיק: המודל לא המציא
+      // קטגוריה — הוא חיבר משפט בגוף ראשון שנשמע כמוה ("אני צריכה לשמור על עצמי",
+      // שלא הופיע בפתק). ליה: ציטוט מפוברק בתוך סט ציטוטים אמיתיים מזהם גם אותם,
+      // כי אין לה דרך לדעת מי משלושתם היא כתבה. Tier 1. שם שאינו מופיע בפתק נופל.
+      if (Array.isArray(parsed.threads)) {
+        const norm = (v: string) => v.replace(/["'“”׳״]/g, '').replace(/\s+/g, ' ').trim();
+        const haystack = norm(t);
+        parsed.threads = parsed.threads.filter(
+          (th: { name?: string }) => th?.name && haystack.includes(norm(th.name)),
+        );
+        if (!parsed.threads.length) parsed.threads = null;
+      }
+      return NextResponse.json(parsed);
     } catch {
       // fall through — therapist mode errors below, patient mode holds below
     }
