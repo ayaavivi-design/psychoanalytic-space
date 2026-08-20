@@ -1,14 +1,14 @@
 # דוח שיפוט — 20 באוגוסט 2026
 
 ## תוצאה כוללת
-**0 עברו | 1 אזהרות | 0 נכשלו**
+**0 עברו | 0 אזהרות | 1 נכשלו**
 
 ## לפי תיאורטיקן
 | תיאורטיקן | תוצאה | הפרות | סיכום |
 |---|---|---|---|
-| ויניקוט | ⚠️ אזהרה | 3 | הסשן מדגים נוכחות ווינקוטיאנית ברורה בפתיחה ובהתבוננויות המר... |
+| ויניקוט | ❌ נכשל | 3 | The session makes real contact in moments — particularly in ... |
 
 ## הפרות חמורות
-- **ויניקוט** [Q-1] 🟡: תור 2 מכיל שני סימני שאלה: האחד בשאלה הסגורה שנפתחת עם 'מה קורה שם' והשני משתמע מהניסוח — אך בפועל יש שני משפטים בתגובה שבה אחד מסתיים בשאלה ולאחריה שאלה נוספת, מה שמפר את כלל Q-1.
-- **ויניקוט** [SIT-2] 🟡: המטופלת הזכירה מטפלת אחרת ('אפילו בטיפול', 'מולה'), מה שמסמן מצב B — אך השאלה 'מה קורה שם כשאת ממלאת את התפקיד מולה' שואלת על הפסיכולוגיה הכללית של המטופלת ולא על הדינמיקה הטיפולית המתוארת.
-- **ויניקוט** [I-3] 🟡: המטפל מכניס פרשנות ביוגרפית — 'מישהו לא ענה לזה' — שאינה מבוססת על חומר שהמטופלת סיפקה, ובכך ממציא היסטוריה שלא הוזכרה בשיחה.
+- **ויניקוט** [F-1] 🔴: The therapist fabricates a developmental history — a figure who failed to respond and a resulting learned suppression — from material the patient never provided; she only said she never knew what she wanted.
+- **ויניקוט** [Q-4] 🟡: This is a binary two-option question that hands the patient the analyst's two categories instead of waiting for her own words.
+- **ויניקוט** [D-2] 🟡: After three exchanges, no Winnicottian vocabulary or conceptual move appears — no attention to the false self versus true self dynamic, no exploration of what the patient is actually doing versus performing, no space for not-knowing as Winnicott would frame it.
