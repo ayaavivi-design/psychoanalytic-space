@@ -211,9 +211,22 @@ async function runJudgment(
   // כ"חמור" כשהנימוק שלה עצמו אמר "Rule Q-1 not triggered. Retracting."). הפרומפט
   // אוסר את זה מפורשות עכשיו, אבל מודלים יחזרו על כך — הספירה חייבת שער משלה.
   const RETRACTED = /retract|not triggered|on re-examination|re-examining|^n\/?a\b|disregard this/i;
-  const violations = ((report.violations as Violation[]) || []).filter(
-    v => !RETRACTED.test(v.explanation || '') && !RETRACTED.test(v.fix || ''),
-  );
+
+  // אימות דטרמיניסטי לכללי-הספירה. Q-1 ו-Q-3 הם ספירת תווים, ואת זה הקוד עושה
+  // מושלם והמודל לא: בדוח 20.08 הוא טען ל-Q-1 בתור עם סימן שאלה אחד, ונימוקו סתר
+  // את עצמו באמצע ("...אך בפועל..."). זו אותה חשיבה-בקול-רם שהמסנן תופס רק כשהיא
+  // אומרת "retracting". טענה שאפשר לספור — נספרת, ונופלת אם אינה נכונה.
+  const marks = turns.map(t => (t.therapist.match(/\?/g) || []).length);
+  const countChecks: Record<string, () => boolean> = {
+    'Q-1': () => marks.some(n => n >= 2),
+    'Q-3': () => turns.length > 0 && turns.every(t => t.therapist.trim().endsWith('?')),
+  };
+
+  const violations = ((report.violations as Violation[]) || []).filter(v => {
+    if (RETRACTED.test(v.explanation || '') || RETRACTED.test(v.fix || '')) return false;
+    const check = countChecks[(v.rule || '').toUpperCase()];
+    return check ? check() : true;
+  });
 
   // כשל-פרסינג הוא שגיאת-כלי (JSON פגום מה-judge) — לא כשל-קול. לא נספר כ-fail.
   // ה-overall מחושב מחדש מההפרות ששרדו: השופט קבע אותו לפני הסינון.

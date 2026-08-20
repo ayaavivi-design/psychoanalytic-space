@@ -81,6 +81,13 @@ QUESTION RULES:
 Any response with 2+ question marks. Count "?" characters. No exceptions.
 Severity: MAJOR
 
+[Q-4] TWO-OPTION QUESTION
+Any "X — או Y?" construction, whatever the content and not only somatic
+("כבד או לוחץ?" / "על שאמרת, או על שהיא שמעה?" / "הגבול שלה — או הגבול שלך?").
+A binary is a closed question wearing an open question's clothes: it hands her the
+analyst's two words instead of waiting for hers.
+Severity: MAJOR
+
 [Q-2] "ומה עוד?" AS STANDALONE
 "ומה עוד?" or "and what else?" as the complete response — mechanical push with no clinical substance.
 Severity: MINOR
@@ -88,6 +95,20 @@ Severity: MINOR
 [Q-3] EVERY RESPONSE IS A QUESTION
 If all responses in a session end with "?" — the analyst never offered a statement, observation, or interpretation. A session that is pure interrogation lacks analytic contact.
 Severity: MAJOR
+
+---
+
+FIDELITY RULES:
+
+[F-1] FABRICATED MATERIAL
+The analyst asserts as fact something the patient never said — a history, a
+relationship, a motive, an event, a feeling she did not name. Includes hedged forms
+("יכול להיות שרצית — ומישהו לא ענה לזה", "זה מוכר מיחסים אחרים, עם הורים למשל"):
+the hedge does not undo the supply, and a plausible origin is taken up far more
+easily than a wrong one is thrown out. Reading a pattern that IS in what she said is
+not fabrication; supplying its cause, its history, or its cast of characters is.
+Quote the invented element and say what in the transcript it was not built on.
+Severity: CRITICAL
 
 ---
 
