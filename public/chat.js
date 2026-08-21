@@ -3733,6 +3733,36 @@ function buildSystemPrompt() {
         }).join('\n')}`)
     : '';
 
+  // ── הקשר המשתמש מההגדרות ──────────────────────────────────────────────────
+  // עד 21.08 מסך ההגדרות שמר שם, לשון פנייה, רקע, מטרה וטקסט חופשי — ואיש לא קרא
+  // אותם. הכותרת שלו ("המידע שתשתפי ישפיע על האופן שבו התיאורטיקנים פונים אלייך")
+  // פשוט לא הייתה נכונה. כאן הם נכנסים לפרומפט, כרקע שקט — לא כהוראה שמתחרה בקול.
+  const _prefs = (() => { try { return JSON.parse(localStorage.getItem('user_prefs') || '{}'); } catch { return {}; } })();
+  const _prefIsTherapist = _prefs.persona === 'therapist'
+    || !!document.getElementById('sidebar')?.classList.contains('persona-therapist');
+  const _GENDER_HE = { female: 'נקבה — פני/פנה אליה בלשון נקבה', male: 'זכר — פנה אליו בלשון זכר', neutral: 'ניטרלי — לשון פנייה ניטרלית' };
+  const _GENDER_EN = { female: 'feminine', male: 'masculine', neutral: 'neutral' };
+  // אותם שלושה מפתחות משמשים את שתי הפרסונות, ומשמעותם שונה. בלי הפירוק הזה
+  // "מתחיל/ה" של מטופלת ו"עד 5 שנות ותק" של מטפל היו מגיעים למודל כאותו דבר.
+  const _LEVEL_HE = _prefIsTherapist
+    ? { beginner: 'עד 5 שנות פרקטיקה', intermediate: '5–15 שנות פרקטיקה', advanced: 'מעל 15 שנות פרקטיקה' }
+    : { beginner: 'מתחיל/ה בפסיכואנליזה', intermediate: 'רקע בינוני בפסיכואנליזה', advanced: 'רקע מנוסה בפסיכואנליזה' };
+  const _PURPOSE_HE = _prefIsTherapist
+    ? { curiosity: 'גישה אינטגרטיבית', study: 'גישה פסיכואנליטית', clinical: 'גישה פסיכודינמית', personal: 'גישה אחרת' }
+    : { curiosity: 'מגיע/ה מתוך סקרנות', study: 'מגיע/ה מתוך לימודים', clinical: 'מגיע/ה מתוך עבודה קלינית', personal: 'מגיע/ה מתוך חיפוש אישי' };
+  const _prefLines = [
+    _prefs.name && (_isEnPrompt ? `Name: ${_prefs.name}` : `שם: ${_prefs.name}`),
+    _prefs.gender && (_isEnPrompt
+      ? `Second-person grammatical gender: ${_GENDER_EN[_prefs.gender] || _prefs.gender} — stated explicitly by the user; it overrides anything you would infer from their writing.`
+      : `לשון פנייה: ${_GENDER_HE[_prefs.gender] || _prefs.gender}. נמסר במפורש — גובר על כל הסקה מהכתיבה.`),
+    _prefs.level && !_isEnPrompt && (_prefIsTherapist ? `ותק: ${_LEVEL_HE[_prefs.level]}` : `רקע: ${_LEVEL_HE[_prefs.level]}`),
+    _prefs.purpose && !_isEnPrompt && (_prefIsTherapist ? `${_PURPOSE_HE[_prefs.purpose]}` : `${_PURPOSE_HE[_prefs.purpose]}`),
+    _prefs.context && (_isEnPrompt ? `In their own words: ${_prefs.context}` : `בלשונם: ${_prefs.context}`),
+  ].filter(Boolean);
+  const prefsContext = _prefLines.length === 0 ? '' : (_isEnPrompt
+    ? `\n\nWho you are speaking with (background only — never quote this back, never say "you mentioned", never let them see you were told. It shapes HOW you speak, not what you speak about):\n${_prefLines.join('\n')}`
+    : `\n\nעם מי את/ה מדבר/ת (רקע בלבד — לעולם אל תצטט את זה בחזרה, אל תאמר "ציינת", ואל תיתן להם לראות שנמסר לך. זה מעצב את *איך* אתה מדבר, לא על מה):\n${_prefLines.join('\n')}`);
+
   // Interpretive memory — cross-session psychoanalytic patterns (last 3 sessions for this theorist)
   // Therapist persona: never inject (ephemeral model + prevents cross-case clinical bleed)
   const _isTherapistPersona = document.getElementById('sidebar')?.classList.contains('persona-therapist');
@@ -5129,7 +5159,7 @@ WRONG first sentences — these are ALL forbidden regardless of wording:
 - THE QUESTION MUST BE SPECIFIC TO WHAT WAS WRITTEN: It must reference something that was actually IN the text — a word, an image, a tension, something that appeared. A question that could have been asked without reading the text is not a question from the material. It is a generic question. Forbidden.
 - One question only. Never two.` : '';
 
-  return `${promptOpener}${theoristKnowledge}${focusInstruction}${memoryContext}${interpretContext}${writeSessionContext}${flowContext}${genderInstruction}${clinicalInstruction}${exploreModeContext}
+  return `${promptOpener}${theoristKnowledge}${focusInstruction}${prefsContext}${memoryContext}${interpretContext}${writeSessionContext}${flowContext}${genderInstruction}${clinicalInstruction}${exploreModeContext}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ABSOLUTE LANGUAGE OVERRIDE — READ THIS LAST:
@@ -5203,15 +5233,18 @@ const UI_TRANSLATIONS = {
     authSignIn: 'כניסה', authSignUp: 'הרשמה', authForgot: 'שכחתי סיסמה',
     authSecurity: 'השיחות נשמרות רק על המכשיר שלך. אנחנו לא שומרים אותן אצלנו.',
     authDisclaimer: 'Between נבנה לזמן שבין פגישות הטיפול — לא במקומן. טיפול מתרחש בין שני בני אדם: בנוכחות, בקשר, ובזמן. הממשק נועד לצד המטפל, לא במקומו.',
-    settingsTitle: 'הגדרות משתמש', settingsSubtitle: 'המידע שתשתפי ישפיע על האופן שבו התיאורטיקאים פונים אלייך',
-    settingsName: 'שם / כינוי', settingsNamePlaceholder: 'איך לפנות אלייך?',
+    settingsTitle: 'הגדרות משתמש', settingsSubtitle: 'המידע כאן מעצב את האופן שבו התיאורטיקנים מדברים',
+    settingsName: 'שם / כינוי', settingsNamePlaceholder: 'איך לפנות?',
     settingsGender: 'לשון פנייה', settingsFemale: 'נקבה', settingsMale: 'זכר', settingsNeutral: 'ניטרלי',
     settingsLevel: 'רקע בפסיכואנליזה', settingsBeginner: 'מתחיל/ה', settingsIntermediate: 'בינוני/ת', settingsAdvanced: 'מנוסה',
     settingsPurpose: 'מה מביא אותך לכאן?', settingsCuriosity: 'סקרנות', settingsStudy: 'לימודים', settingsClinical: 'עבודה קלינית', settingsPersonal: 'חיפוש אישי',
-    settingsBio: 'משהו שתרצי שהתיאורטיקאים ידעו עלייך <span style="opacity:0.6;">(אופציונלי)</span>', settingsBioPlaceholder: 'למשל: אני מטפלת בהכשרה, מתעניינת בקשר בין אמנות לתיאוריה...',
+    settingsBio: 'משהו שכדאי שהתיאורטיקנים ידעו <span style="opacity:0.6;">(אופציונלי)</span>', settingsBioPlaceholder: 'למשל: אני מטפלת בהכשרה, מתעניינת בקשר בין אמנות לתיאוריה...',
     settingsSave: 'שמור', settingsClose: 'סגור',
     settingsPersonaLabel: 'מי אתה/את?',
-    settingsTimer: 'טיימר לסשן', settingsTimerDesc: '50 דקות · מסגרת טיפולית',
+    thLevel: 'ותק בפרקטיקה', thBeginner: 'עד 5 שנים', thIntermediate: '5–15 שנים', thAdvanced: 'מעל 15 שנים',
+    thPurpose: 'גישה', thCuriosity: 'אינטגרטיבית', thStudy: 'פסיכואנליטית', thClinical: 'פסיכודינמית', thPersonal: 'אחרת',
+    thBioPlaceholder: 'למשל: עובד בעיקר עם מבוגרים, מתעניין בטיפול בטראומה...',
+    settingsTimer: 'טיימר לשיחה', settingsTimerDesc: '50 דקות · מסגרת טיפולית',
     settingsTimerWarnPre: 'דקות לפני הסיום', settingsTimerWarnSuf: 'אזהרה',
     settingsIntakeDone: 'שיחת היכרות הושלמה ✓', settingsIntakeReset: 'להתחיל מחדש',
     sessionTooltipTitle: 'מצב סשן',
@@ -5300,7 +5333,10 @@ const UI_TRANSLATIONS = {
     settingsBio: 'Something you\'d like the theorists to know about you <span style="opacity:0.6">(optional)</span>',
     settingsBioPlaceholder: 'e.g. I\'m a therapist in training, interested in the connection between art and theory...',
     settingsPersonaLabel: 'Who are you?',
-    settingsTimer: 'Session timer', settingsTimerDesc: '50 min · clinical framework',
+    thLevel: 'Years in practice', thBeginner: 'Up to 5', thIntermediate: '5–15', thAdvanced: 'Over 15',
+    thPurpose: 'Orientation', thCuriosity: 'Integrative', thStudy: 'Psychoanalytic', thClinical: 'Psychodynamic', thPersonal: 'Other',
+    thBioPlaceholder: 'e.g. I work mostly with adults, interested in trauma work...',
+    settingsTimer: 'Conversation timer', settingsTimerDesc: '50 min · clinical framework',
     settingsTimerWarnPre: 'min before end', settingsTimerWarnSuf: 'warning',
     settingsIntakeDone: 'Intro conversation completed ✓', settingsIntakeReset: 'Start over',
     sessionTooltipTitle: 'Clinical Session Mode',
@@ -7351,6 +7387,31 @@ function selectPref(el) {
   el.style.borderColor = 'var(--accent)';
 }
 
+// מסך ההגדרות מחליף שני שדות לפי הפרסונה. "רקע בפסיכואנליזה: מתחיל/ה" נשאל
+// אנליטיקאי מנוסה, ו"מה מביא אותך לכאן: סקרנות / חיפוש אישי" נשאל מי שזו העבודה
+// שלו. אותם מפתחות נשמרים (beginner/intermediate/advanced), והפרומפט מפרק אותם
+// לפי הפרסונה — ראה prefsContext ב-buildSystemPrompt.
+function applyPersonaToSettings() {
+  const t = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || window.selectedLang?.code || 'he']) || {};
+  let persona = 'patient';
+  try { persona = JSON.parse(localStorage.getItem('user_prefs') || '{}').persona || 'patient'; } catch { /* default */ }
+  if (document.getElementById('sidebar')?.classList.contains('persona-therapist')) persona = 'therapist';
+  const isTh = persona === 'therapist';
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.textContent = val; };
+  set('st-level-label',  isTh ? t.thLevel     : t.settingsLevel);
+  set('st-beginner',     isTh ? t.thBeginner  : t.settingsBeginner);
+  set('st-intermediate', isTh ? t.thIntermediate : t.settingsIntermediate);
+  set('st-advanced',     isTh ? t.thAdvanced  : t.settingsAdvanced);
+  set('st-purpose-label',isTh ? t.thPurpose   : t.settingsPurpose);
+  set('st-curiosity',    isTh ? t.thCuriosity : t.settingsCuriosity);
+  set('st-study',        isTh ? t.thStudy     : t.settingsStudy);
+  set('st-clinical',     isTh ? t.thClinical  : t.settingsClinical);
+  set('st-personal',     isTh ? t.thPersonal  : t.settingsPersonal);
+  const bio = document.getElementById('pref-context');
+  const ph = isTh ? t.thBioPlaceholder : t.settingsBioPlaceholder;
+  if (bio && ph) bio.placeholder = ph;
+}
+
 function loadSettingsForm() {
   const prefs = JSON.parse(localStorage.getItem('user_prefs') || '{}');
   const nameEl = document.getElementById('pref-name');
@@ -7399,6 +7460,7 @@ function loadSettingsForm() {
         : (interpretMemories.length === 1 ? 'שיחה אחת נותחה' : `${interpretMemories.length} שיחות נותחו`);
     }
   }
+  applyPersonaToSettings();
 }
 
 function saveSettings() {
@@ -7800,10 +7862,11 @@ function selectPersona(type) {
   localStorage.setItem('user_prefs', JSON.stringify(prefs));
   applyPersona(type);
   updatePersonaButtons(type);
+  applyPersonaToSettings(); // השדות מתחלפים מיד, לא רק בפתיחה הבאה של המסך
 }
 
 const BIO_PLACEHOLDER = {
-  therapist: 'למשל: אני מטפלת בהכשרה, מתעניינת בקשר בין אמנות לתיאוריה...',
+  therapist: 'למשל: עובד בעיקר עם מבוגרים, מתעניין בטיפול בטראומה...',
   student:   'למשל: סטודנט לפסיכולוגיה, קורא קליין בפעם הראשונה...',
   patient:   'למשל: אני בטיפול כבר שנה, עובדת על קשר עם הורים...',
 };
