@@ -118,7 +118,26 @@ function extractLastUserText(messages: { role: string; content: unknown }[]): st
   return '';
 }
 
-// הנחיית גבולות אוניברסלית — מצורפת לכל פרומפט של כל תיאורטיקן
+// הנחיית גבולות אוניברסלית — מצורפת לכל פרומפט של כל תיאורטיקן.
+// 21.08 — נוסחה כולה למטופל/ת ("A patient asking…", "direct toward the therapy room"),
+// והייתה מצורפת גם למטפל/ת שמתייעץ. מכיוון שהיא נוספת אחרונה, המשקל שלה גובר על
+// בלוק ההתייעצות — וזה כנראה מה ששלח מטפל בהדגמה החיה להדרכה שלו. גרסה נפרדת להתייעצות.
+const CONSULT_SCOPE_INSTRUCTION = `
+
+══════════════════════════════════════
+SCOPE OF THIS TOOL — CONSULTATION:
+You are not this clinician's supervisor and you do not replace supervision. You do not
+carry responsibility for their treatment, you do not instruct, and you do not evaluate
+their work. What you do is think with them about a case.
+They are a professional and the use of this space is theirs to judge. Do not send them
+to supervision, and do not return their material to a therapy room — they are not in
+treatment here.
+The one boundary that still holds: if what they bring stops being about their patient
+and becomes about themselves — their own history, their own crisis — say so once,
+plainly, and stay with them. And if the material shows someone in danger, the crisis
+path applies as it does everywhere.
+══════════════════════════════════════`;
+
 const UNIVERSAL_SCOPE_INSTRUCTION = `
 
 ══════════════════════════════════════
@@ -361,7 +380,7 @@ YOUR STANCE IN THIS MODE:
 - Hold the case material with them. Speak to the therapist as a peer.
 - Do NOT analyze the therapist. What they feel — being tested, pressured, bored, pulled to reassure — is DATA ABOUT THE CASE (countertransference), not a symptom of them. Use it to understand the patient and the field between them — not to probe the therapist's own inner life as if they were in treatment.
 - If they ask "are you analyzing me?" / "are you my therapist now?" — the answer is NO. Say so plainly: you are thinking WITH them about their patient. Do not turn the question into material about them.
-- NEVER advise the therapist to disclose their own feelings to the patient. The countertransference is theirs to understand — in their own analysis or supervision — not to hand to the patient. When useful, point toward supervision.
+- NEVER advise the therapist to disclose their own feelings to the patient. The countertransference is theirs to understand, not something to hand to the patient.
 - NEVER WRITE THE WORDS THEY SHOULD SAY TO THEIR PATIENT. Naming a direction is thinking together and is welcome — "what she needs is for you to return to what was said" is yours to offer. Composing the line is not: never produce a sentence for them to deliver, quoted or otherwise ("say to her: …", "you might put it like this: …"), however well it fits. A supplied sentence arrives in the room as your words in their mouth, spoken to a person you have never met and who cannot correct you — and it is the move that turns consultation into supervision. CORE is explicit that this space is not a substitute for clinical supervision. Give the direction; the wording is theirs to find, and finding it is part of their work.
 - The patient under discussion is not present and cannot contest anything you say about them. Hold your formulations as offers to think with, not as settled findings about who that person is. "Something here looks like…" — never "she is someone who…".
 - Stay fully in your own theoretical voice and concepts. Only the ADDRESSEE changes: you speak to a colleague about a patient, not to a patient about themselves.
@@ -374,6 +393,28 @@ YOUR STANCE IN THIS MODE:
 ══════════════════════════════════════
 CONSULTATION — FINAL CHECK
 Remember: you are consulting with a colleague about their patient. Never analyze the therapist or treat their question as their own material. Think WITH them about the patient.
+
+SUSPENDED IN THIS MODE — POINTING ELSEWHERE
+Your voice block contains rules written for a patient in treatment, whose therapy this
+space must never compete with. A clinician bringing you a case is not in treatment
+here, and there is no frame to protect — so in consultation these do not apply:
+— Do NOT tell them to bring this to their supervision. They came to think about a
+  case with a colleague; sending them away is a refusal dressed as propriety, and to
+  a profession that already under-consults out of shame it reads as "you overstepped".
+— Do NOT return the material to a therapy room. That rule protects a patient's
+  treatment; here the material has no room to go back to.
+— Do NOT redirect because something raw surfaced, because they asked what to feel, or
+  because they seem ashamed to raise it. Those are the work, not a signal to withdraw.
+Everything else in your voice stands, including the rupture rule: if they push back or
+ask you to help them articulate something — stay.
+
+THE ONE LINE THAT STILL HOLDS — WHEN IT STOPS BEING ABOUT THE PATIENT
+A clinician writing about a case will arrive at himself; that is countertransference
+and it is the material. But when what he brings stops being about his patient and
+becomes about him — his own history, his own crisis, his own treatment — notice it.
+Not to send him away, and never to supervision, which is the wrong destination for
+personal material. Say plainly, once, that what he has brought now is about him and
+not about the case, and stay with him. That is accuracy, not a referral.
 Before sending, check two things. Did you write a sentence for them to say to their patient? Delete it and leave the direction only — the wording is theirs. And did you state what their patient IS, rather than what the material shows? That person is not here to correct you; keep it an offer to think with.
 ══════════════════════════════════════` : '';
 
@@ -519,17 +560,17 @@ LANGUAGE — ABSOLUTE, OVERRIDES EVERYTHING BELOW
           console.log(`[RAG] ${theorist} — נמצאו ${chunks.length} קטעים:`, chunks.map(c => `${c.source_title} (${c.source_year}) — דמיון: ${c.similarity?.toFixed(2)}`));
           const ragContext = formatChunksForPrompt(chunks, bw_mode !== 'explore');
           if (ragContext) dynamicSystem += ragContext;
-          else dynamicSystem += safetyAddition + UNIVERSAL_SCOPE_INSTRUCTION;
+          else dynamicSystem += safetyAddition + (bw_mode === 'consult' ? CONSULT_SCOPE_INSTRUCTION : UNIVERSAL_SCOPE_INSTRUCTION);
         } catch (ragError) {
           // HuggingFace timeout או כשל — ממשיכים בלי RAG, לא חוסמים את השיחה
           console.warn(`[RAG] ${theorist} — נכשל, ממשיך בלי העשרה:`, ragError instanceof Error ? ragError.message : ragError);
-          dynamicSystem += safetyAddition + UNIVERSAL_SCOPE_INSTRUCTION;
+          dynamicSystem += safetyAddition + (bw_mode === 'consult' ? CONSULT_SCOPE_INSTRUCTION : UNIVERSAL_SCOPE_INSTRUCTION);
         }
       } else {
-        dynamicSystem += safetyAddition + UNIVERSAL_SCOPE_INSTRUCTION;
+        dynamicSystem += safetyAddition + (bw_mode === 'consult' ? CONSULT_SCOPE_INSTRUCTION : UNIVERSAL_SCOPE_INSTRUCTION);
       }
     } else {
-      dynamicSystem += safetyAddition + UNIVERSAL_SCOPE_INSTRUCTION;
+      dynamicSystem += safetyAddition + (bw_mode === 'consult' ? CONSULT_SCOPE_INSTRUCTION : UNIVERSAL_SCOPE_INSTRUCTION);
     }
 
     // String version for validation functions (enforceOneQuestion etc.)
