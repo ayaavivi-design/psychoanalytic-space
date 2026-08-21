@@ -11,6 +11,11 @@ export default function Home() {
   const [currentLang, setCurrentLang] = useState('en');
   const [holdText, setHoldText] = useState('');
   const [holdTheorist, setHoldTheorist] = useState('winnicott');
+  // לשון פנייה לפי ההגדרה של המשתמש/ת. עד 21.08 המסכים האלה היו בלשון נקבה קבועה,
+  // כך שמטפל גבר נפגש ב"כתבי" ו"בחרי" כבר במסך הראשון. כשאין הגדרה — צורת הלוכסן.
+  const [userGender, setUserGender] = useState('');
+  const gv = (fem: string, masc: string, both: string) =>
+    userGender === 'male' ? masc : userGender === 'female' ? fem : both;
   const [showHoldTheoristPicker, setShowHoldTheoristPicker] = useState(false);
   const [holdSaveStatus, setHoldSaveStatus] = useState('');
   const [isRecording, setIsRecording] = useState(false);
@@ -172,6 +177,7 @@ export default function Home() {
     (window as any).__resolvePersona = async () => {
       let choice = 'patient';
       try { choice = localStorage.getItem('bw_persona_choice') || 'patient'; } catch {}
+      try { setUserGender(JSON.parse(localStorage.getItem('user_prefs') || '{}').gender || ''); } catch {}
       try {
         const gh = (window as any).getAuthHeaders;
         const headers = gh ? await gh() : {};
@@ -1295,7 +1301,7 @@ export default function Home() {
                   <textarea
                     value={dailyText}
                     onChange={e => setDailyText(e.target.value)}
-                    placeholder={isHe ? 'מה עלה היום? כתבי עדכון על המקרה…' : "What came up today? Write a case update…"}
+                    placeholder={isHe ? `מה עלה היום? ${gv('כתבי', 'כתוב', 'כתוב/י')} עדכון על המקרה…` : "What came up today? Write a case update…"}
                     style={{ width: '100%', minHeight: 240, maxHeight: '50vh', overflowY: 'auto', boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--bg)', color: 'var(--text)', resize: 'vertical', outline: 'none' }}
                   />
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 8 }}>{isHe ? 'נשמר על המכשיר שלך. לא אצלנו.' : 'Saved on your device. Not with us.'}</div>
@@ -1475,7 +1481,7 @@ export default function Home() {
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                   <button onClick={() => setTherapistView(selectedCase ? 'caseDetail' : 'cases')} style={{ alignSelf: 'flex-start', background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '6px 14px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)', cursor: 'pointer', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ color: 'var(--accent)' }}>←</span>{selectedCase ? selectedCase.label : (isHe ? 'המקרים שלי' : 'My cases')}</button>
                   <p style={{ fontFamily: 'var(--font-cormorant), Georgia, serif', fontSize: 24, color: 'var(--text)', margin: '0 0 16px' }}>{isHe ? 'נחשוב על זה יחד.' : "Let's think this through together."}</p>
-                  <textarea value={consultText} onChange={e => setConsultText(e.target.value)} placeholder={isHe ? 'מה עלה בפגישה? כתבי את החומר להתייעצות (יאונמז לפני שמירה)…' : 'What came up in the session? Write the material to consult on…'} style={{ width: '100%', maxWidth: 560, minHeight: 90, boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 16, padding: '12px 16px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--surface)', color: 'var(--text)', resize: 'vertical', marginBottom: 20 }} />
+                  <textarea value={consultText} onChange={e => setConsultText(e.target.value)} placeholder={isHe ? `מה עלה בפגישה? ${gv('כתבי','כתוב','כתוב/י')} את החומר להתייעצות (יאונמז לפני שמירה)…` : 'What came up in the session? Write the material to consult on…'} style={{ width: '100%', maxWidth: 560, minHeight: 90, boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 16, padding: '12px 16px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--surface)', color: 'var(--text)', resize: 'vertical', marginBottom: 20 }} />
                   <div className="hub-helpcap">{isHe ? <>תיאורטיקן <b>אחד</b> — קול אחד, לעומק.<br/>כמה תיאורטיקנים — שולחן עגול, כל אחד מהמקום שלו.</> : <>One theorist — one voice, in depth.<br/>Several — a round table, each from their own place.</>}</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 20, maxWidth: 560 }}>
                     {HUB_THEORISTS.map(([k, name]) => {
@@ -1645,7 +1651,7 @@ export default function Home() {
         {/* Choose theorist popup */}
         <div id="choose-popup" style={{ position: 'fixed', inset: 0, zIndex: 150, background: 'rgba(45,36,32,0.35)', display: 'none', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(3px)' }}>
           <div style={{ background: 'var(--surface, #fffaf8)', border: '1px solid var(--border, #e6d6cf)', borderRadius: 16, padding: 32, maxWidth: 380, width: '90%', textAlign: 'center', boxShadow: '0 8px 32px rgba(196,96,122,0.12)' }}>
-            <h3 style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 20, fontWeight: 300, fontStyle: 'italic', color: '#c4607a', marginBottom: 10 }}>בחרי תיאורטיקאי</h3>
+            <h3 style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 20, fontWeight: 300, fontStyle: 'italic', color: '#c4607a', marginBottom: 10 }}>{gv('בחרי','בחר','בחר/י')} תיאורטיקן</h3>
             <p style={{ fontSize: 13, color: 'var(--muted, #74645e)', lineHeight: 1.8, marginBottom: 24 }}>לחצי על אחד מהשמות למעלה כדי להפעיל את הסוכן עם הידע המעמיק של אותה גישה.</p>
             <button onClick={() => { const p = document.getElementById('choose-popup'); if(p) p.style.display='none'; }}
               style={{ background: '#c4607a', border: 'none', color: '#fff', padding: '10px 28px', borderRadius: 20, fontSize: 14, fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer' }}>הבנתי</button>

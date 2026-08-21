@@ -5596,10 +5596,6 @@ function applyUITranslation(code) {
     const stCls = document.getElementById('st-close'); if (stCls) stCls.textContent = t.settingsClose || 'סגור';
     const stBioL = document.getElementById('st-bio-label'); if (stBioL && t.settingsBio) stBioL.innerHTML = t.settingsBio;
     const stBioTA = document.getElementById('pref-context'); if (stBioTA && t.settingsBioPlaceholder) stBioTA.placeholder = t.settingsBioPlaceholder;
-    const stPersonaL = document.getElementById('st-persona-label'); if (stPersonaL && t.settingsPersonaLabel) stPersonaL.textContent = t.settingsPersonaLabel;
-    const pTherapist = document.getElementById('persona-st-therapist'); if (pTherapist && t.authTherapist) pTherapist.textContent = t.authTherapist;
-    const pStudent = document.getElementById('persona-st-student'); if (pStudent && t.authStudent) pStudent.textContent = t.authStudent;
-    const pPatient = document.getElementById('persona-st-patient'); if (pPatient && t.authPatient) pPatient.textContent = t.authPatient;
     const stTimerL = document.getElementById('st-timer-label'); if (stTimerL && t.settingsTimer) stTimerL.textContent = t.settingsTimer;
     const stTimerD = document.getElementById('st-timer-desc'); if (stTimerD && t.settingsTimerDesc) stTimerD.textContent = t.settingsTimerDesc;
     const stTimerPre = document.getElementById('st-timer-warn-pre'); if (stTimerPre && t.settingsTimerWarnPre) stTimerPre.textContent = t.settingsTimerWarnPre;
@@ -7315,16 +7311,12 @@ function openSettings() {
           <textarea id="pref-context" placeholder="למשל: אני מטפלת בהכשרה, מתעניינת בקשר בין אמנות לתיאוריה..." style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none;resize:vertical;min-height:80px;box-sizing:border-box;"></textarea>
         </div>
 
-        <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;">
-          <label id="st-persona-label" style="font-size:12px;color:var(--muted);display:block;margin-bottom:8px;">מי אתה/את?</label>
-          <div style="display:flex;gap:8px;margin-bottom:4px;">
-            ${['therapist','patient'].map(k => `
-              <div id="persona-st-${k}" onclick="selectPersona('${k}')"
-                style="flex:1;text-align:center;padding:7px 4px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;color:var(--muted);background:none;transition:all 0.15s;">
-                ${PERSONA_CONFIG[k].label}
-              </div>`).join('')}
-          </div>
-        </div>
+        <!-- "מי אתה/את?" הוסר 21.08. למטפל/ת הוא מיותר — הפרסונה נקבעה בכניסה ואושרה
+             מול הרשימה בשרת. ולמטופל/ת הוא היה עקיפה: selectPersona קורא ל-
+             __setSidebarPersona שמחליף מצב בלי לבדוק שוב את הרשימה, כך שלחיצה כאן
+             העבירה מטופלת לממשק המטפלת — וגם ל-bw_mode:'consult', כלומר לקול
+             שמתוכנן לחשוב על מטופל שלישי במקום להחזיק אותה. לוקאלית יש מתג פיתוח
+             נפרד (BW-104), אז לא אבד כלום. -->
 
         <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
@@ -7890,20 +7882,6 @@ function updatePersonaButtons(type) {
   // Auth screen buttons
   ['therapist','patient'].forEach(k => {
     const btn = document.getElementById(`persona-auth-${k}`);
-    if (!btn) return;
-    if (k === type) {
-      btn.style.background = 'var(--accent-soft)';
-      btn.style.borderColor = 'var(--accent)';
-      btn.style.color = 'var(--accent)';
-    } else {
-      btn.style.background = 'none';
-      btn.style.borderColor = 'var(--border)';
-      btn.style.color = 'var(--muted)';
-    }
-  });
-  // Settings buttons
-  ['therapist','patient'].forEach(k => {
-    const btn = document.getElementById(`persona-st-${k}`);
     if (!btn) return;
     if (k === type) {
       btn.style.background = 'var(--accent-soft)';
