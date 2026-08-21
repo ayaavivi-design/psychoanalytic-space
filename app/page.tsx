@@ -864,7 +864,7 @@ export default function Home() {
                 מציג מקרים, וההתייעצויות נשארות בתוך המקרה; רשימה מקוננת בסייד-בר צר
                 היא מלכודת. ומרונדר רק כשיש מקרה — דרופדאון שנפתחת אל כלום אומרת
                 למשתמש חדש שהוא פספס משהו. אותו רכיב של "גישה תיאורטית". */}
-            {activePersona === 'therapist' && cases.length > 0 && (
+            {false && activePersona === 'therapist' && cases.length > 0 && (
               <>
                 <div className="sb-item" onClick={() => setCasesOpen(o => !o)}>
                   <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
@@ -1442,10 +1442,10 @@ export default function Home() {
                     </div>
                   </div>
                 )}
-                {/* מאיה 21.08 — לא רשימה פתוחה, רק המספר. מטפל שכותב על מטופל שראה
-                    אתמול צריך לדעת שכתב עליו כבר, ברגע הכתיבה; אם הידיעה רחוקה הוא
-                    יסתמך על הזיכרון. ההתנגדות הייתה לתוכן שעל המסך, לא לידיעה. */}
-                {consultations.length > 0 && (
+                {/* בהחלטת איה 21.08 — הזיכרון יורד מהממשק של המטפל/ת. הקוד נשאר, הפיצ'ר עתידי.
+                    הכלל המנחה: מסך הכתיבה מציג את מה שנכתב עכשיו, לא היסטוריה.
+                    להחזרה — לשנות false ל-consultations.length > 0 בשני הבלוקים. */}
+                {false && consultations.length > 0 && (
                   <div className="sb-item" onClick={() => setConsultsOpen(o => !o)}
                     style={{ alignSelf: 'flex-start', padding: '6px 0', cursor: 'pointer', background: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ fontSize: 11, color: 'var(--muted)' }}>
@@ -1454,7 +1454,7 @@ export default function Home() {
                     <ChevronDown size={12} strokeWidth={1.75} style={{ color: 'var(--muted)', transition: 'transform 0.2s', transform: consultsOpen ? 'rotate(180deg)' : 'none' }} />
                   </div>
                 )}
-                {consultations.length > 0 && consultsOpen && (
+                {false && consultations.length > 0 && consultsOpen && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {consultations.map(co => {
                       const modeLabel = co.mode === 'roundtable' ? (isHe ? 'שולחן עגול' : 'Round table') : co.mode === 'research' ? (isHe ? 'מחקר' : 'Research') : co.mode === 'note' ? (isHe ? 'עדכון ידני' : 'Manual note') : (isHe ? 'התייעצות' : 'Consultation');
