@@ -6,6 +6,8 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [isLocalhost, setIsLocalhost] = useState(false);
   const [theoristsOpen, setTheoristsOpen] = useState(true);
+  const [casesOpen, setCasesOpen] = useState(false);
+  const [consultsOpen, setConsultsOpen] = useState(false);
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
   const [hoveredMode, setHoveredMode] = useState<string>('session');
   const [currentLang, setCurrentLang] = useState('en');
@@ -857,6 +859,26 @@ export default function Home() {
               <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
               <span className="sb-label js-summary-label">סיכום התייעצות</span>
             </div>
+            {/* המקרים עברו לסייד-בר 21.08 (הכרעת מאיה). קודם ההתייעצויות הקודמות ישבו
+                פתוחות בתחתית מסך הכתיבה והתחרו בעבודה עצמה. רמה אחת בלבד — הדרופדאון
+                מציג מקרים, וההתייעצויות נשארות בתוך המקרה; רשימה מקוננת בסייד-בר צר
+                היא מלכודת. ומרונדר רק כשיש מקרה — דרופדאון שנפתחת אל כלום אומרת
+                למשתמש חדש שהוא פספס משהו. אותו רכיב של "גישה תיאורטית". */}
+            {activePersona === 'therapist' && cases.length > 0 && (
+              <>
+                <div className="sb-item" onClick={() => setCasesOpen(o => !o)}>
+                  <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
+                  <span className="sb-label" style={{ flex: 1 }}>{isHe ? 'המקרים שלי' : 'My cases'}</span>
+                  <ChevronDown size={13} strokeWidth={1.75} style={{ color: 'var(--muted)', flexShrink: 0, transition: 'transform 0.2s', transform: casesOpen ? 'rotate(180deg)' : 'none' }} />
+                </div>
+                {casesOpen && cases.map(c => (
+                  <div key={c.id} className="sb-item" style={{ paddingRight: 10, fontSize: 13 }}
+                    onClick={() => openCase(c)}>
+                    <span className="sb-label">{c.label}</span>
+                  </div>
+                ))}
+              </>
+            )}
             {/* BW-113 — מחקר חזר לסייד-בר כפריט עצמאי (לא קשור למקרה). */}
             {isLocalhost && (
               <div id="sb-explore-btn" className="sb-item" data-persona="therapist" onClick={() => (window as any).enterExploreModeFromSidebar?.()}>
@@ -1250,7 +1272,7 @@ export default function Home() {
                   </div>
                 )}
                 {cases.length === 0 ? (
-                  <p style={{ fontSize: 13, color: 'var(--muted)', textAlign: 'center', padding: '40px 0', lineHeight: 1.7 }}>{isHe ? 'עדיין אין מקרים. צרי מקרה ראשון כדי להתחיל לארגן התייעצויות.' : 'No cases yet. Create your first case to start organizing consultations.'}</p>
+                  <p style={{ fontSize: 13, color: 'var(--muted)', textAlign: 'center', padding: '40px 0', lineHeight: 1.7 }}>{isHe ? `עדיין אין מקרים. ${gv('צרי','צור','צור/י')} מקרה ראשון כדי להתחיל לארגן התייעצויות.` : 'No cases yet. Create your first case to start organizing consultations.'}</p>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {cases.map(c => (
@@ -1420,7 +1442,19 @@ export default function Home() {
                     </div>
                   </div>
                 )}
+                {/* מאיה 21.08 — לא רשימה פתוחה, רק המספר. מטפל שכותב על מטופל שראה
+                    אתמול צריך לדעת שכתב עליו כבר, ברגע הכתיבה; אם הידיעה רחוקה הוא
+                    יסתמך על הזיכרון. ההתנגדות הייתה לתוכן שעל המסך, לא לידיעה. */}
                 {consultations.length > 0 && (
+                  <div className="sb-item" onClick={() => setConsultsOpen(o => !o)}
+                    style={{ alignSelf: 'flex-start', padding: '6px 0', cursor: 'pointer', background: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 11, color: 'var(--muted)' }}>
+                      {isHe ? `התייעצויות קודמות · ${consultations.length}` : `Previous consultations · ${consultations.length}`}
+                    </span>
+                    <ChevronDown size={12} strokeWidth={1.75} style={{ color: 'var(--muted)', transition: 'transform 0.2s', transform: consultsOpen ? 'rotate(180deg)' : 'none' }} />
+                  </div>
+                )}
+                {consultations.length > 0 && consultsOpen && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {consultations.map(co => {
                       const modeLabel = co.mode === 'roundtable' ? (isHe ? 'שולחן עגול' : 'Round table') : co.mode === 'research' ? (isHe ? 'מחקר' : 'Research') : co.mode === 'note' ? (isHe ? 'עדכון ידני' : 'Manual note') : (isHe ? 'התייעצות' : 'Consultation');
