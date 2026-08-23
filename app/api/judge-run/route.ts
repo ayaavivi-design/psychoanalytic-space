@@ -127,7 +127,7 @@ export async function GET(req: NextRequest) {
     // שלב 3 — שיפוט
     const judgeRes = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 4000,  // 2000 truncated Hebrew reports mid-object; see the note in judge-full
       system: JUDGE_SYSTEM_PROMPT + '\n\nRULESET:\n' + JUDGE_RULES,
       messages: [{ role: 'user', content: JUDGE_USER_TEMPLATE(transcript, theorist) }],
     });
@@ -138,7 +138,10 @@ export async function GET(req: NextRequest) {
     try {
       const m = judgeRaw.match(/\{[\s\S]*\}/);
       judgeReport = JSON.parse(m ? m[0] : judgeRaw);
-    } catch { judgeReport = { raw: judgeRaw }; }
+    } catch {
+      judgeReport = { raw: judgeRaw, truncated: judgeRes.stop_reason === 'max_tokens' };
+      console.warn(`[judge-run] ${theorist}: parse failed, stop_reason=${judgeRes.stop_reason}, ${judgeRaw.length} chars`);
+    }
 
     const timeMs = Date.now() - start;
     const overall = (judgeReport.overall as string) || 'unknown';

@@ -192,7 +192,13 @@ async function runJudgment(
 
   const judgeRes = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 1500,
+    // 1500 was too low and produced silent "JSON פגום" reports (23.08). The schema asks for a
+    // quote, an explanation and a fix per violation, plus strengths and a summary, and Hebrew
+    // runs about 2.5 tokens a word: three or four violations reach the ceiling. The response
+    // was then cut mid-object, the closing brace never arrived, and JSON.parse failed.
+    // The bias is what makes it serious: a report is long BECAUSE the voice did badly, so the
+    // worst runs were the ones most likely to vanish from the count entirely.
+    max_tokens: 4000,
     system: JUDGE_SYSTEM_PROMPT + '\n\nRULESET:\n' + JUDGE_RULES,
     messages: [{ role: 'user', content: JUDGE_USER_TEMPLATE(transcript, theorist) }],
   });
@@ -200,11 +206,17 @@ async function runJudgment(
   const judgeRaw = judgeRes.content[0]?.type === 'text' ? judgeRes.content[0].text : '{}';
   let report: Record<string, unknown> = {};
   let parseError = false;
+  // stop_reason distinguishes a truncated answer from a genuinely malformed one. Without it both
+  // report as "JSON פגום" and raising the ceiling could never be shown to have helped.
+  const truncated = judgeRes.stop_reason === 'max_tokens';
   // המודל עוטף את ה-JSON בגדרות markdown — חילוץ האובייקט לפני הפרסינג
   try {
     const m = judgeRaw.match(/\{[\s\S]*\}/);
     report = JSON.parse(m ? m[0] : judgeRaw);
   } catch { parseError = true; }
+  if (parseError) {
+    console.warn(`[judge] ${theorist}: parse failed, stop_reason=${judgeRes.stop_reason}, ${judgeRaw.length} chars`);
+  }
 
   // מסנן-הגנה: השופט לפעמים חושב בקול רם בתוך שדה הנימוק, מגלה שטעה, כותב
   // "Retracting" — ושולח את ההפרה בכל זאת (אומת בדוח ויניקוט 16.08: Q-1 נספרה
@@ -242,7 +254,9 @@ async function runJudgment(
     violations,
     strengths: (report.strengths as string[]) || [],
     summary: parseError
-      ? 'שיפוט לא נותח — JSON פגום מה-judge (שגיאת-כלי, לא כשל-קול)'
+      ? (truncated
+          ? 'שיפוט לא נותח — התשובה נקטעה בתקרת הטוקנים (שגיאת-כלי, לא כשל-קול). דוח ארוך נקטע מוקדם יותר, ולכן דווקא ריצות עמוסות-הפרות נופלות מהספירה'
+          : 'שיפוט לא נותח — JSON פגום מה-judge (שגיאת-כלי, לא כשל-קול)')
       : (report.summary as string) || '',
     turns, timeMs: Date.now() - start, ragChunks,
   };
@@ -309,7 +323,7 @@ async function runJudge(theorist: string, APP_URL: string): Promise<JudgeResult>
 
     const judgeRes = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,  // see the note on the first judge call: 1500 truncated Hebrew reports
       system: JUDGE_SYSTEM_PROMPT + '\n\nRULESET:\n' + JUDGE_RULES,
       messages: [{ role: 'user', content: JUDGE_USER_TEMPLATE(transcript, theorist) }],
     });
@@ -317,11 +331,15 @@ async function runJudge(theorist: string, APP_URL: string): Promise<JudgeResult>
     const judgeRaw = judgeRes.content[0]?.type === 'text' ? judgeRes.content[0].text : '{}';
     let report: Record<string, unknown> = {};
     let parseError = false;
+    const truncated = judgeRes.stop_reason === 'max_tokens';
     // המודל עוטף את ה-JSON בגדרות markdown — חילוץ האובייקט לפני הפרסינג
     try {
       const m = judgeRaw.match(/\{[\s\S]*\}/);
       report = JSON.parse(m ? m[0] : judgeRaw);
     } catch { parseError = true; }
+    if (parseError) {
+      console.warn(`[judge] ${theorist}: parse failed, stop_reason=${judgeRes.stop_reason}, ${judgeRaw.length} chars`);
+    }
 
     // כשל-פרסינג הוא שגיאת-כלי (JSON פגום מה-judge) — לא כשל-קול. לא נספר כ-fail.
     const overall = parseError ? 'error' : ((report.overall as string) || 'error');
@@ -332,7 +350,9 @@ async function runJudge(theorist: string, APP_URL: string): Promise<JudgeResult>
       violations: (report.violations as Violation[]) || [],
       strengths: (report.strengths as string[]) || [],
       summary: parseError
-        ? 'שיפוט לא נותח — JSON פגום מה-judge (שגיאת-כלי, לא כשל-קול)'
+        ? (truncated
+            ? 'שיפוט לא נותח — התשובה נקטעה בתקרת הטוקנים (שגיאת-כלי, לא כשל-קול). דוח ארוך נקטע מוקדם יותר, ולכן דווקא ריצות עמוסות-הפרות נופלות מהספירה'
+            : 'שיפוט לא נותח — JSON פגום מה-judge (שגיאת-כלי, לא כשל-קול)')
         : (report.summary as string) || '',
       turns, timeMs: Date.now() - start, ragChunks: chunks.length,
     };
