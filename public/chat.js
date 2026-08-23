@@ -835,6 +835,7 @@ async function startFlow(flowKey) {
         webSearch: false,
         theorist: theoristKey,
         bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
+        persona: document.getElementById('sidebar')?.classList.contains('persona-therapist') ? 'therapist' : 'patient',
         uiLang: (window.selectedLang?.code || 'he')
       })
     });
@@ -912,6 +913,7 @@ async function startAfterSessionConversation(text, theoristKey) {
         webSearch: false,
         theorist: theoristKey,
         bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
+        persona: document.getElementById('sidebar')?.classList.contains('persona-therapist') ? 'therapist' : 'patient',
         uiLang: (window.selectedLang?.code || 'he')
       })
     });
@@ -1381,14 +1383,61 @@ async function openWriteSummary() {
       return;
     }
     // Graceful hold (BW-126, inherited via lib/closure-contract.ts): on charged material the
-    // voice refuses to distill and holds instead. Render the holding words themselves — no
-    // section breakdown, no send/save footer.
+    // voice refuses to distill and holds instead. Render the holding words themselves, with no
+    // section breakdown.
+    //
+    // The footer used to be suppressed here entirely. That was wrong (Lia, 23.08): closure-contract.ts
+    // spends three enforcement stages making this reflection END on "אני רוצה להביא את זה לפגישה",
+    // and the screen then removed every means of doing it. The most charged material was the only
+    // material with no way out, against CORE's "כל מה שמתבהר עולה לטיפול".
+    // What does NOT come back is the packaging: no checkboxes, no journal toggle, no attach option.
+    // Configuration turns a live moment into a product with settings. One quiet line instead.
+    // What is sent is HER WRITING, never the reflection. Two reasons: there are no summary fields
+    // in this path (the normal sender would mail an empty envelope), and the reflection was written
+    // for her, in that moment. Landing in the therapist's inbox it would shape the listening before
+    // the patient has spoken, which is exactly the third space CORE says we do not build.
     if (data.held) {
       const reflection = (data.reflection || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       el.innerHTML = `
         <div style="background:var(--accent-soft);border-radius:10px;padding:16px 18px;">
           <div style="color:var(--text);line-height:1.8;white-space:pre-wrap;">${reflection || (isEn ? "What you wrote is still alive — it's waiting for the room." : 'מה שכתבת עוד חי — הוא מחכה לחדר.')}</div>
         </div>`;
+      const heldInner = el.parentElement;
+      if (heldInner) {
+        const heldFooter = document.createElement('div');
+        heldFooter.id = 'write-summary-footer';
+        heldFooter.style.cssText = 'margin-top:18px;padding-top:14px;border-top:1px solid var(--border);';
+        // "שמור ביומן" belongs here too. The holding words live only inside this modal: her own
+        // text survives in the write box, the reflection does not, so this checkbox is the only
+        // way to keep the most meaningful thing the system produced for her. openWriteArchive()
+        // already renders summary.reflection under a "החזקה" heading — the storage side was built
+        // for this case and only the control was missing.
+        // "צרף את הכתיבה" is the one option that stays out, for a structural reason and not a
+        // stylistic one: in this path her writing IS the message, so there is nothing to attach.
+        heldFooter.innerHTML = `
+          <label id="ws-held-save-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;direction:${isEn ? 'ltr' : 'rtl'};font-family:var(--font-rubik),sans-serif;font-size:12px;color:var(--muted);user-select:none;margin-bottom:12px;">
+            <input type="checkbox" id="ws-held-save" style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer;">
+            <span id="ws-held-save-label">${isEn ? 'Save to journal' : 'שמור ביומן'}</span>
+          </label>
+          <span id="ws-held-send" style="font-family:var(--font-rubik),sans-serif;font-size:13px;color:var(--accent);cursor:pointer;">
+            ${isEn ? 'Send my writing to my therapist' : 'לשלוח את מה שכתבתי למטפל/ת'}
+          </span>`;
+        heldInner.appendChild(heldFooter);
+        let _heldSaved = false;
+        document.getElementById('ws-held-save')?.addEventListener('change', function() {
+          if (this.checked && !_heldSaved) {
+            saveWriteEntry(getAllWriteContent(), text, data);
+            _heldSaved = true;
+            const lbl = document.getElementById('ws-held-save-label');
+            if (lbl) { lbl.textContent = isEn ? 'Saved to journal ✓' : 'נשמר ביומן ✓'; lbl.style.color = 'var(--accent)'; }
+            this.disabled = true;
+          }
+        });
+        const heldLetterHtml = `<p style="white-space:pre-wrap;line-height:1.7;">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`;
+        document.getElementById('ws-held-send')?.addEventListener('click', () => {
+          openSendToTherapistForm(heldFooter, heldLetterHtml, isEn ? 'Something I wrote' : 'משהו שכתבתי');
+        });
+      }
       return;
     }
     // מאיה 17.08 — הכותרות ירדו. כותרת מצדיקה את עצמה רק כשהיא מבדילה בין דבר לדבר,
@@ -1549,6 +1598,15 @@ window.syncExploreIndicator = syncExploreIndicator;
 
 function enterExploreModeFromSidebar() {
   window._bwWriteSessionContext = null;
+  // Toggle, not a one-way switch (23.08). This used to only ever write 'explore', and since the
+  // therapist path wrote nothing at all, a single click here fixed the voice permanently with no
+  // way back except entering a hold conversation, which is a patient-side function. Pressing it
+  // again now returns to consultation, and the sidebar tint tells you which state you are in.
+  if (localStorage.getItem('bw_mode') === 'explore') {
+    localStorage.setItem('bw_mode', 'consult');
+    syncExploreIndicator();
+    return;
+  }
   localStorage.setItem('bw_mode', 'explore');
   syncExploreIndicator();
   // Resolve the theorist to research with — honor the LIVE sidebar selection first (any of the 8;
@@ -5904,7 +5962,8 @@ async function showTheoristOpening(theoristKey, showContext = true) {
           webSearch: false,
           theorist: theoristKey,
           bw_mode: 'session',
-          uiLang: (window.selectedLang?.code || 'he')
+          persona: document.getElementById('sidebar')?.classList.contains('persona-therapist') ? 'therapist' : 'patient',
+        uiLang: (window.selectedLang?.code || 'he')
         })
       });
       const data = await res.json();
@@ -6384,6 +6443,7 @@ async function sendMessage() {
         webSearch: window.webSearch && !window.clinicalMode,
         theorist: activeTheorists.length === 1 ? activeTheorists[0] : null,
         bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
+        persona: document.getElementById('sidebar')?.classList.contains('persona-therapist') ? 'therapist' : 'patient',
         uiLang: (window.selectedLang?.code || 'he')
       })
     });
@@ -8717,6 +8777,7 @@ async function triggerEndSession() {
         system: buildSystemPrompt(),
         theorist: activeTheorists.length === 1 ? activeTheorists[0] : null,
         bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
+        persona: document.getElementById('sidebar')?.classList.contains('persona-therapist') ? 'therapist' : 'patient',
         uiLang: (window.selectedLang?.code || 'he'),
         bw_end_session: true
       })

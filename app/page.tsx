@@ -120,6 +120,9 @@ export default function Home() {
   // BW-112 — therapist hub: mode selection + theorist selection (UI state; send-wiring is step 1b).
   const [hubMode, setHubMode] = useState<'consult' | 'research' | null>(null);
   const [hubTheorists, setHubTheorists] = useState<string[]>([]);
+  // After "נתח" the analysis is the destination (mode 2א) — the theorist picker collapses
+  // behind one quiet line and reopens only on request, so it stops competing with the output.
+  const [consultPickerOpen, setConsultPickerOpen] = useState(false);
   // BW-113 — therapist case-first flow.
   type TherapistCase = { id: string; label: string; created_at: string };
   type Consultation = { id: string; mode: string; theorists: string[]; anonymized_text: string; created_at: string };
@@ -376,6 +379,15 @@ export default function Home() {
   const startConsultation = async (materialOverride?: string) => {
     const key = hubTheorists[0];
     if (!key) return;
+    // Declare the mode instead of inheriting it (23.08). Until now only ONE line in the whole
+    // codebase ever wrote bw_mode for a therapist: the localhost "מחקר" button writing 'explore'.
+    // Consultation wrote nothing, so it was not a chosen state at all — it was whatever happened
+    // when nobody had chosen research, decided by a negative default at send time. One silent
+    // click, at any point in the past, then fixed the voice permanently: the key is shared with
+    // the patient persona and nothing ever cleared it. Writing it here is what makes the system
+    // self-healing — any stale value, from a source we found or one we did not, is corrected the
+    // moment a consultation starts. Two modes, two moments of intent, two explicit writes.
+    try { localStorage.setItem('bw_mode', 'consult'); } catch { /* private mode */ }
     const material = (typeof materialOverride === 'string' ? materialOverride : consultText).trim();
     let seed = material;
     try {
@@ -555,14 +567,14 @@ export default function Home() {
     const a = noteAnalysis[key];
     if (!a) return null;
     const section = (label: string, body: React.ReactNode) => (
-      <div style={{ marginTop: 10 }}>
-        <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{label}</div>
+      <div style={{ marginTop: 12 }}>
+        <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{label}</div>
         {body}
       </div>
     );
     const txt = (s: string) => <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6 }}>{s}</div>;
     return (
-      <div style={{ marginTop: 12, padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 12 }}>
+      <div style={{ marginTop: 12, padding: 12, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
         {a.countertransference && section(isHe ? 'מה עלה בך' : 'What moved in you', txt(a.countertransference))}
         {a.what_opened && section(isHe ? 'מה נפתח' : 'What opened', txt(a.what_opened))}
         {a.what_remained && section(isHe ? 'מה נותר פתוח' : 'What remained', txt(a.what_remained))}
@@ -1326,37 +1338,64 @@ export default function Home() {
                     placeholder={isHe ? `מה עלה היום? ${gv('כתבי', 'כתוב', 'כתוב/י')} עדכון על המקרה…` : "What came up today? Write a case update…"}
                     style={{ width: '100%', minHeight: 240, maxHeight: '50vh', overflowY: 'auto', boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--bg)', color: 'var(--text)', resize: 'vertical', outline: 'none' }}
                   />
-                  <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 8 }}>{isHe ? 'נשמר על המכשיר שלך. לא אצלנו.' : 'Saved on your device. Not with us.'}</div>
-                  {/* Single aligned action row — mic + buttons flush to the start side (mirrors patient footer) */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, flexWrap: 'wrap', flexDirection: isHe ? 'row-reverse' : 'row' }}>
+                  {/* The "saved on your device" line came down with "שמור" (Aya, 22.08). dailyText is
+                      state only — with no save action nothing is stored anywhere, so the sentence
+                      would have claimed a save that no longer happens. Replacement copy: Shaun. */}
+                  {/* Single aligned action row — mic + buttons flush to the start side (mirrors patient footer).
+                      Hidden once an analysis exists: the analysis is the destination, not a step. */}
+                  {!noteAnalysis['draft'] && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, flexWrap: 'wrap', flexDirection: isHe ? 'row-reverse' : 'row' }}>
                     <button
                       onClick={handleDailyVoice}
                       title={isDailyRecording ? (isHe ? 'עצור הקלטה' : 'Stop recording') : (isHe ? 'הקלט קול' : 'Record voice')}
                       style={{ flexShrink: 0, width: 44, height: 44, borderRadius: '50%', border: 'none', padding: 0, background: 'transparent', color: isDailyRecording ? 'var(--accent)' : 'var(--muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'color 0.15s' }}>
                       <Mic size={16} />
                     </button>
+                    {/* Gating is appear/disappear, never disabled-and-greyed — a visible-but-dimmed
+                        control reads as "you are not enough for this yet". Decision 09.07. */}
+                    {/* "שמור" removed from the UI (Aya, 22.08) — an archive contradicts the ephemeral
+                        promise this space makes. The two ways out are: analyze, or go on to a
+                        conversation. saveDailyUpdate() is kept in the code, unwired — reversible. */}
+                    {!!dailyText.trim() && analyzingNoteId !== 'draft' && (
                     <button
-                      disabled={!dailyText.trim()}
-                      onClick={saveDailyUpdate}
-                      style={{ flexShrink: 0, background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '7px 16px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: dailyText.trim() ? 'var(--text)' : 'var(--muted)', cursor: dailyText.trim() ? 'pointer' : 'default', opacity: dailyText.trim() ? 1 : 0.5 }}>
-                      {isHe ? 'שמור' : 'Save'}
-                    </button>
-                    <button
-                      disabled={!dailyText.trim() || analyzingNoteId === 'draft'}
                       onClick={() => analyzeNote(dailyText, 'draft')}
-                      style={{ flexShrink: 0, background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '7px 16px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: dailyText.trim() ? 'var(--accent)' : 'var(--muted)', cursor: dailyText.trim() ? 'pointer' : 'default', opacity: dailyText.trim() ? 1 : 0.5 }}>
+                      style={{ flexShrink: 0, background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: '8px 12px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)', cursor: 'pointer' }}>
                       {isHe ? 'נתח' : 'Analyze'}
                     </button>
+                    )}
                     <div style={{ flex: 1 }} />
                   </div>
+                  )}
                   {renderNoteAnalysis('draft')}
-                </div>
-                {/* Ephemeral consultation — theorist pills always below the writing field */}
-                {(() => {
+                  {/* Mode 2א — the analysis landed. Two quiet, equal actions behind a hairline;
+                      neither is accent-filled, so the analysis stays the strongest thing here. */}
+                  {!!noteAnalysis['draft'] && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)', flexDirection: isHe ? 'row-reverse' : 'row' }}>
+                    <span
+                      onClick={() => setConsultPickerOpen(o => !o)}
+                      style={{ fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)', cursor: 'pointer' }}>
+                      {isHe ? 'לחשוב על זה עם מישהו' : 'Think it through with someone'} {consultPickerOpen ? '⌃' : '⌄'}
+                    </span>
+                    <div style={{ flex: 1 }} />
+                    <span
+                      onClick={() => { setNoteAnalysis(prev => { const n = { ...prev }; delete n['draft']; return n; }); setConsultPickerOpen(false); }}
+                      style={{ fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)', cursor: 'pointer' }}>
+                      {isHe ? 'חזרה לכתיבה' : 'Back to writing'}
+                    </span>
+                  </div>
+                  )}
+                  {/* Ephemeral consultation — theorist pills live INSIDE the writing card and are
+                      gated on its text, because that is what they act on (startConsultation(dailyText)).
+                      As a floating sibling they survived "שמור" — which empties dailyText — and sat
+                      wedged between an empty box and the saved note, inert, while the note below
+                      carried its own working נתח/התייעץ. Anchored to the text, they leave with it.
+                      Once an analysis exists they collapse behind the "think it through" line above,
+                      so the output is not immediately followed by a second, unasked-for decision. */}
+                  {!!dailyText.trim() && (!noteAnalysis['draft'] || consultPickerOpen) && (() => {
                   const HUB_THEORISTS: [string, string][] = [['freud', isHe ? 'פרויד' : 'Freud'], ['klein', isHe ? 'קליין' : 'Klein'], ['winnicott', isHe ? 'ויניקוט' : 'Winnicott'], ['ogden', isHe ? 'אוגדן' : 'Ogden']];
                   const chipStyle = (on: boolean): React.CSSProperties => ({
                     border: '1px solid ' + (on ? 'var(--accent)' : 'var(--border)'),
-                    borderRadius: 22, padding: '7px 16px', fontSize: 13, cursor: 'pointer',
+                    borderRadius: 'var(--radius-xl)', padding: '8px 12px', fontSize: 13, cursor: 'pointer',
                     color: on ? '#fff' : 'var(--text)', background: on ? 'var(--accent)' : 'var(--surface)',
                   });
                   const openRoundtableMockup = () => {
@@ -1373,9 +1412,9 @@ export default function Home() {
                   };
                   const isRoundtable = hubTheorists.length >= 2;
                   return (
-                    <div style={{ marginBottom: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 12, paddingBottom: 12 }}>
+                    <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <div className="hub-helpcap">{isHe ? <>תיאורטיקן <b>אחד</b> — קול אחד, לעומק.<br/>כמה תיאורטיקנים — שולחן עגול, כל אחד מהמקום שלו.</> : <>One theorist — one voice, in depth.<br/>Several — a round table, each from their own place.</>}</div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 16, maxWidth: 560 }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 12, maxWidth: 560 }}>
                         {HUB_THEORISTS.map(([k, name]) => {
                           const on = hubTheorists.includes(k);
                           return <span key={k} onClick={() => setHubTheorists(on ? hubTheorists.filter(x => x !== k) : [...hubTheorists, k])} style={chipStyle(on)}>{name}{on ? ' ✓' : ''}</span>;
@@ -1385,20 +1424,24 @@ export default function Home() {
                         <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', marginTop: 12 }}>{hubTheorists.length === 1 ? (isHe ? 'נבחר אחד — התייעצות ממוקדת.' : 'One selected — focused consultation.') : (isHe ? `נבחרו ${hubTheorists.length} — שולחן עגול.` : `${hubTheorists.length} selected — round table.`)}</div>
                       )}
                       {hubTheorists.length >= 1 && (
-                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
                           <button
-                            disabled={!dailyText.trim()}
                             onClick={isRoundtable ? openRoundtableMockup : () => startConsultation(dailyText)}
-                            style={{ padding: '10px 28px', borderRadius: 22, border: 'none', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: dailyText.trim() ? 'var(--accent)' : 'var(--border)', color: dailyText.trim() ? '#fff' : 'var(--muted)', cursor: dailyText.trim() ? 'pointer' : 'default' }}>
+                            style={{ padding: '12px 20px', borderRadius: 'var(--radius-xl)', border: 'none', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--accent)', color: '#fff', cursor: 'pointer' }}>
                             {isRoundtable ? (isHe ? 'שולחן עגול' : 'Round table') : (isHe ? 'המשך להתייעצות' : 'Continue to consultation')}
                           </button>
                         </div>
                       )}
                     </div>
                   );
-                })()}
-                {/* BW-116 — past updates from localStorage */}
-                {caseUpdates.length > 0 && (
+                  })()}
+                </div>
+                {/* BW-116 — past updates from localStorage.
+                    REMOVED FROM THE UI (Aya, 22.08): an archive of clinical writing contradicts the
+                    ephemeral promise. The reading/writing code and the localStorage keys are left
+                    intact — flip `false` back to `caseUpdates.length > 0` to restore. Existing
+                    entries on a device are not deleted, only no longer shown. */}
+                {false && caseUpdates.length > 0 && (
                   <div style={{ marginBottom: 24 }}>
                     <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{isHe ? 'עדכונים קודמים' : 'Past updates'}</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
