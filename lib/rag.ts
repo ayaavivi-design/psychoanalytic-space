@@ -135,7 +135,12 @@ export function formatChunksForPrompt(
     })
     .join('\n\n---\n\n');
 
-  const intro = `\n\nRELEVANT PASSAGES FROM ORIGINAL TEXTS — these are direct excerpts. Use them as ground for your response. You may quote directly with attribution:\n\n${passages}`;
+  // "with attribution" used to sit here bare, over passages headed with the theorist's OWN
+  // titles — so the natural way to obey it was "Winnicott wrote in Hate in the Counter-
+  // Transference…", i.e. the theorist citing himself in the third person. These are HIS
+  // texts; he speaks from them, he does not quote them at arm's length. The source belongs
+  // in the citation tag at the end, never in the body. See SELF_REFERENCE_GUARD in the route.
+  const intro = `\n\nRELEVANT PASSAGES FROM YOUR OWN TEXTS — these are direct excerpts from what you yourself wrote. Use them as ground for your response, and speak from them in the first person, as things you think. Do NOT introduce them as another man's work and do NOT name yourself in the body of your answer ("Winnicott wrote…", "as Klein showed…"). The source is named only in the citation line at the very end:\n\n${passages}`;
 
   // Explore/research mode handles attribution with its own 📄 reference format — skip the [מקור:] tag there to avoid a double citation.
   if (!withCitationTag) return `${intro}\n`;
