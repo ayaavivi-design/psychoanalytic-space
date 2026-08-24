@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { searchKnowledgeHybrid, formatChunksForPrompt } from '@/lib/rag';
 import { paraphraseForRetrieval } from '@/lib/query-paraphrase';
 import { requireAuth } from '@/lib/auth';
+import { isFirstTurn, recordConversationStart } from '@/lib/usage';
 import { THEORIST_VOICE, SAFETY_PROTOCOL, CORE_GUARDRAILS } from '@/lib/theorist-voices';
 
 const MAX_USER_MESSAGE_CHARS = 4000;
@@ -301,9 +302,11 @@ export async function POST(req: NextRequest) {
     // קריאות פנימיות מ-QA עוקפות JWT — מאומתות ע"י X-QA-Secret header
     const internalSecret = req.headers.get('x-qa-secret');
     const isInternalQA = internalSecret && internalSecret === process.env.QA_SECRET;
+    let authedUserId: string | null = null;
     if (!isInternalQA) {
       const auth = await requireAuth(req);
       if (auth.errorResponse) return auth.errorResponse;
+      authedUserId = auth.user.id;  // kept for usage recording below
     }
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -312,6 +315,14 @@ export async function POST(req: NextRequest) {
     // ⚠ SECURITY: body.system is intentionally ignored.
     // System prompt is built server-side from THEORIST_VOICE to prevent client override.
     const { messages, webSearch, theorist, bw_mode, bw_end_session, uiLang, persona } = body;
+
+    // Register the conversation from here, where it cannot be skipped. The client-side
+    // caller was gated on an empty conversationHistory and so never fired for a returning
+    // user; the table sat frozen from 24.06 to 24.08. Metadata only, never content, and
+    // fire-and-forget so a failed stats write can never cost someone their answer.
+    if (authedUserId && isFirstTurn(messages)) {
+      recordConversationStart(authedUserId, typeof theorist === 'string' ? theorist : null);
+    }
 
     // ─── EXPLORATION MODE PREFIX + SUFFIX ────────────────────────────────────
     // כשהמשתמש ב"לחקור" — התיאורטיקן מלמד, לא מנהל סשן קליני.
