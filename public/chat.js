@@ -832,6 +832,7 @@ async function startFlow(flowKey) {
       body: JSON.stringify({
         messages: [{ role: 'user', content: '__FLOW_OPEN__' }],
         system: buildSystemPrompt(),
+        userContext: buildUserContext(),
         webSearch: false,
         theorist: theoristKey,
         bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
@@ -910,6 +911,7 @@ async function startAfterSessionConversation(text, theoristKey) {
       body: JSON.stringify({
         messages: conversationHistory,
         system: buildSystemPrompt(),
+        userContext: buildUserContext(),
         webSearch: false,
         theorist: theoristKey,
         bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
@@ -3768,6 +3770,44 @@ Only mention works you are certain exist. Do NOT invent URLs or fabricate refere
 If no directly relevant texts come to mind — omit this section entirely.
 `;
 
+// Structured per-user context for the server. body.system is discarded by /api/chat by
+// design, so everything buildSystemPrompt() assembles about the person — gender, the
+// settings she filled in, memories of earlier conversations — was silently dropped on
+// every request. This sends the VALUES; lib/user-context.ts writes the sentences there.
+// Interpretive memory is deliberately not included: OPEN_LOOPS item 2 flags its leakage
+// as Tier 1, it has never actually reached a model because of this same bug, and turning
+// it on is a clinical decision rather than a plumbing one.
+function buildUserContext() {
+  try {
+    const intake = JSON.parse(localStorage.getItem('intake_completed') || '{}');
+    const g = intake.gender || '';
+    const gender =
+      ['נקבה','She/her','Weiblich','Féminin','Женский','Femminile','Ella'].includes(g) ? 'f' :
+      ['זכר','He/him','Männlich','Masculin','Мужской','Maschile','Él'].includes(g) ? 'm' :
+      ['ניטרלי','They/them','Neutral','Neutre','Нейтральный','Neutro'].includes(g) ? 'n' : undefined;
+
+    const isTherapist = !!document.getElementById('sidebar')?.classList.contains('persona-therapist');
+    const mode = localStorage.getItem('bw_mode') || 'session';
+
+    // Memories are per-theorist and never carried in research mode or the therapist persona
+    // (ephemeral model, and no cross-case bleed).
+    let memories = [];
+    if (mode !== 'explore' && !isTherapist) {
+      const activeT = (Array.isArray(activeTheorists) && activeTheorists.length === 1) ? activeTheorists[0] : null;
+      const all = (typeof loadMemory === 'function' ? loadMemory() : []) || [];
+      memories = (activeT ? all.filter(m => m.theorist === activeT) : all.filter(m => !m.theorist))
+        .slice(-5).map(m => m.summary).filter(Boolean);
+    }
+
+    const prefs = (() => { try { return JSON.parse(localStorage.getItem('user_prefs') || '{}'); } catch { return {}; } })();
+    const prefLines = [prefs.background, prefs.goal, prefs.freeText].filter(v => typeof v === 'string' && v.trim());
+
+    return { gender, memories, prefs: prefLines.join(' · ') || undefined };
+  } catch (e) {
+    return {};
+  }
+}
+
 function buildSystemPrompt() {
   const _bsLang = window._lang || 'he';
   const _isEnPrompt = _bsLang === 'en';
@@ -5959,6 +5999,7 @@ async function showTheoristOpening(theoristKey, showContext = true) {
         body: JSON.stringify({
           messages: [{ role: 'user', content: triggerMsg }],
           system: buildSystemPrompt(),
+        userContext: buildUserContext(),
           webSearch: false,
           theorist: theoristKey,
           bw_mode: 'session',
@@ -6440,6 +6481,7 @@ async function sendMessage() {
       body: JSON.stringify({
         messages,
         system: buildSystemPrompt(),
+        userContext: buildUserContext(),
         webSearch: window.webSearch && !window.clinicalMode,
         theorist: activeTheorists.length === 1 ? activeTheorists[0] : null,
         bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
@@ -7857,7 +7899,8 @@ async function handleSilence() {
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-      body: JSON.stringify({ messages, system: buildSystemPrompt(), webSearch: false, bw_mode: localStorage.getItem('bw_mode') || 'session', uiLang: (window.selectedLang?.code || 'he') })
+      body: JSON.stringify({ messages, system: buildSystemPrompt(),
+        userContext: buildUserContext(), webSearch: false, bw_mode: localStorage.getItem('bw_mode') || 'session', uiLang: (window.selectedLang?.code || 'he') })
     });
 
     const data = await response.json();
@@ -8783,6 +8826,7 @@ async function triggerEndSession() {
       body: JSON.stringify({
         messages,
         system: buildSystemPrompt(),
+        userContext: buildUserContext(),
         theorist: activeTheorists.length === 1 ? activeTheorists[0] : null,
         bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
         persona: document.getElementById('sidebar')?.classList.contains('persona-therapist') ? 'therapist' : 'patient',

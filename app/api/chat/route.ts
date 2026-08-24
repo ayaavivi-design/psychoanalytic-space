@@ -4,6 +4,7 @@ import { searchKnowledgeHybrid, formatChunksForPrompt } from '@/lib/rag';
 import { paraphraseForRetrieval } from '@/lib/query-paraphrase';
 import { requireAuth } from '@/lib/auth';
 import { isFirstTurn, recordConversationStart } from '@/lib/usage';
+import { buildUserContextBlock } from '@/lib/user-context';
 import { THEORIST_VOICE, SAFETY_PROTOCOL, CORE_GUARDRAILS } from '@/lib/theorist-voices';
 
 const MAX_USER_MESSAGE_CHARS = 4000;
@@ -316,7 +317,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     // ⚠ SECURITY: body.system is intentionally ignored.
     // System prompt is built server-side from THEORIST_VOICE to prevent client override.
-    const { messages, webSearch, theorist, bw_mode, bw_end_session, uiLang, persona } = body;
+    const { messages, webSearch, theorist, bw_mode, bw_end_session, uiLang, persona, userContext } = body;
 
     // Register the conversation from here, where it cannot be skipped. The client-side
     // caller was gated on an empty conversationHistory and so never fired for a returning
@@ -593,7 +594,10 @@ LANGUAGE — ABSOLUTE, OVERRIDES EVERYTHING BELOW
     // RAG + dynamic tail
     // Companions get SAFETY_PROTOCOL added at the model level (theorists rely on keyword intercept + UNIVERSAL_SCOPE_INSTRUCTION)
     const safetyAddition = (theorist && COMPANIONS.has(theorist)) ? SAFETY_PROTOCOL : '';
-    let dynamicSystem = END_SESSION_SUFFIX;
+    // Per-user context, built HERE from structured data. body.system stays discarded — the
+    // client sends values, the server writes the sentences. See lib/user-context.ts for what
+    // is carried and what is deliberately left out.
+    let dynamicSystem = END_SESSION_SUFFIX + buildUserContextBlock(userContext);
 
     if (theorist && THEORISTS_WITH_RAG.has(theorist) && messages?.length > 0) {
       // Query expansion (register-gap fix, 12.07): a single colloquial patient turn
