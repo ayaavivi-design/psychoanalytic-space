@@ -7078,6 +7078,13 @@ async function checkConversationLimit() {
 }
 
 function performNewChat() {
+  // FIRST, before anything else can throw. The therapist writing card is React state in page.tsx
+  // and no vanilla code here can reach it, so it needs an event. Placing that event at the END of
+  // this function (first attempt, 23.08) never fired: showModeSelect() and renderAnalystBadge()
+  // below are patient-flow functions that collide with the React therapist tree, and the
+  // #user-input line had no null guard, so in therapist mode the function threw before reaching it.
+  // Clearing the writing surface depends on nothing here, so it goes first and always runs.
+  window.dispatchEvent(new Event('bwnewchat'));
   stopSessionTimer();
   clearTimeout(silenceTimer);
   silenceResponseSent = false;
@@ -7116,11 +7123,8 @@ function performNewChat() {
   renderAnalystBadge();
   window.activeFlow = null;
   if (clinicalMode) toggleClinicalMode();
-  document.getElementById('user-input').value = '';
+  const _uiNew = document.getElementById('user-input'); if (_uiNew) _uiNew.value = '';
   bwClearDraft(); // BW-135 — new chat, clear draft
-  // The therapist writing card is React state in page.tsx and nothing here can reach it, so the
-  // text used to survive "שיחה חדשה" and a new conversation opened on the previous case's writing.
-  window.dispatchEvent(new Event('bwnewchat'));
   updateEndSessionBtn();
   setTimeout(checkIntakeStatus, 50);
 }
