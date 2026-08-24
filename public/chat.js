@@ -3802,7 +3802,16 @@ function buildUserContext() {
     const prefs = (() => { try { return JSON.parse(localStorage.getItem('user_prefs') || '{}'); } catch { return {}; } })();
     const prefLines = [prefs.background, prefs.goal, prefs.freeText].filter(v => typeof v === 'string' && v.trim());
 
-    return { gender, memories, prefs: prefLines.join(' · ') || undefined };
+    // Interpretive memory — same gating as regular memories, plus the diagnostic-term gate
+    // applied server-side when it was created. Enabled 24.08 (Lia's ruling, Aya's decision).
+    let interpret = [];
+    if (mode !== 'explore' && !isTherapist) {
+      const activeT = (Array.isArray(activeTheorists) && activeTheorists.length === 1) ? activeTheorists[0] : null;
+      const all = (typeof loadInterpretiveMemories === 'function' ? loadInterpretiveMemories() : []) || [];
+      interpret = (activeT ? all.filter(m => m.theorist === activeT) : []).slice(-3).map(m => m.summary).filter(Boolean);
+    }
+
+    return { gender, memories, interpret, prefs: prefLines.join(' · ') || undefined };
   } catch (e) {
     return {};
   }

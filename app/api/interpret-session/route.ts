@@ -71,9 +71,33 @@ ${conversationText}`,
       ],
     });
 
-    const summary =
+    const raw =
       response.content[0].type === 'text' ? response.content[0].text.trim() : null;
 
+    // Deterministic gate on the way out (Lia, 24.08). The prompt above already asks for
+    // description rather than classification, and asking is not enough: this summary is the
+    // one piece of text that comes BACK to shape how the voice speaks to her, so a single
+    // diagnostic noun in it teaches the voice a vocabulary she never used. Her example: a
+    // summary reading "הגנה: הימנעות" makes the next opening speak avoidance at someone who
+    // never said the word.
+    // The distinction being enforced is not length or field count — the reduction from five
+    // fields to two on 16.08 addressed neither — it is naming a mechanism versus describing
+    // what happened. "נסוגה כשדיברנו על אמה" passes. "הימנעות" does not.
+    // A blocked summary is simply not returned: nothing is stored, and the next conversation
+    // starts without it. That is the safe failure.
+    const DIAGNOSTIC_TERMS = [
+      'הימנעות', 'נמנעת', 'הגנה', 'הגנות', 'התנגדות', 'מתנגדת',
+      'הזדהות השלכתית', 'השלכה', 'הכחשה', 'פיצול', 'הדחקה',
+      'עצמי כוזב', 'false self', 'העברה נגדית', 'התנגדותה',
+      'מנגנון', 'דפוס הגנתי', 'אמביוולנטיות', 'רגרסיה',
+    ];
+    const hit = raw ? DIAGNOSTIC_TERMS.find(t => raw.includes(t)) : undefined;
+    if (hit) {
+      console.warn(`[interpret-session] ${theorist} — summary rejected, diagnostic term "${hit}"`);
+      return NextResponse.json({ summary: null, rejected: 'diagnostic-term' });
+    }
+
+    const summary = raw;
     console.log(`[interpret-session] ${theorist} — summary generated (${summary?.length || 0} chars)`);
     return NextResponse.json({ summary });
   } catch (err) {
