@@ -231,6 +231,23 @@ export default function Home() {
     return () => window.removeEventListener('holdtheoristchange', handleTheoristChange);
   }, []);
 
+  // "שיחה חדשה" left the therapist writing box full (23.08). performNewChat() lives in chat.js and
+  // clears everything it can reach — conversationHistory, #user-input, the draft, the DOM — but the
+  // therapist card is React state here, and vanilla code cannot reach it. Nothing bridged the two:
+  // holdtheoristchange was the only event crossing the boundary. So the text simply stayed, and a
+  // new conversation opened on top of the previous case's writing.
+  useEffect(() => {
+    const clearWritingSurface = () => {
+      setDailyText('');
+      setConsultText('');
+      setHubTheorists([]);
+      setConsultPickerOpen(false);
+      setNoteAnalysis(prev => { const n = { ...prev }; delete n['draft']; return n; });
+    };
+    window.addEventListener('bwnewchat', clearWritingSurface);
+    return () => window.removeEventListener('bwnewchat', clearWritingSurface);
+  }, []);
+
   const isHe = currentLang === 'he';
   const isDev = process.env.NODE_ENV !== 'production';
   // Local preview uses the dev tabs; production follows the login choice.

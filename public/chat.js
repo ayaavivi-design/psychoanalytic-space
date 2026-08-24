@@ -7118,6 +7118,9 @@ function performNewChat() {
   if (clinicalMode) toggleClinicalMode();
   document.getElementById('user-input').value = '';
   bwClearDraft(); // BW-135 — new chat, clear draft
+  // The therapist writing card is React state in page.tsx and nothing here can reach it, so the
+  // text used to survive "שיחה חדשה" and a new conversation opened on the previous case's writing.
+  window.dispatchEvent(new Event('bwnewchat'));
   updateEndSessionBtn();
   setTimeout(checkIntakeStatus, 50);
 }
@@ -7156,6 +7159,7 @@ function bwExitChatToHome() {
   window.activeFlow = null;
   const ui = document.getElementById('user-input'); if (ui) ui.value = '';
   bwClearDraft(); // BW-135 — exited chat, clear draft
+  window.dispatchEvent(new Event('bwnewchat')); // same React-state gap as performNewChat
 }
 window.bwExitChatToHome = bwExitChatToHome;
 
