@@ -845,10 +845,25 @@ export default function Home() {
       {/* Sidebar */}
       <div id="sidebar" className={`persona-${activePersona}`}>
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          {/* כיווץ הסייד-בר — אייקון בלבד בראש התפריט, מעל הכל (הכרעת איה 25.08). עבר לכאן
+              מהכותרת, שם ישב מעל אזור הכתיבה בלי קשר לשיחה. נשאר ‎.sb-item כדי שיתיישר עם
+              עמודת האייקונים שמתחתיו ויקבל את אותו ריחוף, רק בלי ‎.sb-label. בטוח במצב מכווץ:
+              הסייד-בר מתכווץ ל-52px ואינו נעלם, ולכן האייקון נשאר גלוי ולחיץ. */}
+          <div style={{ padding: '8px 8px 0' }}>
+            <div className="sb-item" data-persona="both" id="sb-toggle-btn" onClick={() => (window as any).toggleSidebar()} title={currentLang === 'he' ? 'כיווץ התפריט' : 'Collapse menu'}>
+              <span className="sb-icon">
+                <svg width="15" height="15" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                  <rect x="1" y="1" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+                  <line x1="6" y1="1" x2="6" y2="17" stroke="currentColor" strokeWidth="1.3"/>
+                </svg>
+              </span>
+            </div>
+          </div>
           {/* BW-104 — dev-only persona preview tabs. Never rendered in production.
-              height matches the main header (67px) so the tab underline shares the header's baseline. */}
+              הגובה היה 67px כדי שקו התוויות יישב על קו הבסיס של הכותרת. מאז שהמתג עלה לראש
+              התפריט (25.08) ההתיישרות הזו לא מתקיימת, וזו רהיטות לוקאל בלבד. */}
           {isLocalhost && (
-            <div style={{ height: 67, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+            <div style={{ marginTop: 6, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
               <div style={{ fontSize: 9, color: 'var(--muted)', opacity: 0.6, letterSpacing: 0.3, padding: '0 10px 4px' }}>{isHe ? 'תצוגת פיתוח' : 'Dev preview'}</div>
               <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
                 {([['patient', isHe ? 'בטיפול' : 'In therapy'], ['therapist', isHe ? 'מטפל/ת' : 'Therapist']] as ['patient' | 'therapist', string][]).map(([key, label]) => (
@@ -866,18 +881,7 @@ export default function Home() {
               </div>
             </div>
           )}
-          <div style={{ padding: '10px 8px 6px', display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {/* כיווץ הסייד-בר — עבר לכאן מהכותרת (הכרעת איה, פריט 5). הסייד-בר מתכווץ ל-52px
-                ולא נעלם, ולכן המתג נשאר לחיץ גם כשהוא סגור: ‎.collapsed מסתיר את ה-sb-label בלבד. */}
-            <div className="sb-item" data-persona="both" onClick={() => (window as any).toggleSidebar()} id="sb-toggle-btn" title="כיווץ התפריט">
-              <span className="sb-icon">
-                <svg width="15" height="15" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
-                  <rect x="1" y="1" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                  <line x1="6" y1="1" x2="6" y2="17" stroke="currentColor" strokeWidth="1.3"/>
-                </svg>
-              </span>
-              <span className="sb-label">{currentLang === 'he' ? 'כיווץ התפריט' : 'Collapse menu'}</span>
-            </div>
+          <div style={{ padding: '16px 8px 6px', display: 'flex', flexDirection: 'column', gap: 1 }}>
             {/* end-session moved out of sidebar — appears inline at bottom of chat */}
             <div className="sb-item" data-persona="both" onClick={() => (window as any).newChat()}>
               <span className="sb-icon"><PenLine size={15} strokeWidth={1.75} /></span>
