@@ -240,6 +240,35 @@ async function runJudgment(
     return check ? check() : true;
   });
 
+  // The countable checks above only ever SUBTRACT: they verify a violation the judge already
+  // claimed, so a rule the judge simply did not notice is never counted. Klein, 24.08, marked
+  // ✅ with five turns out of five ending in a question — Q-3 was true the whole time and no
+  // one asked it. Code that can count perfectly should not wait to be invited.
+  // These run on every report and inject what the judge missed. Form, not content: none of
+  // them requires clinical judgment, which is why they belong in code and not in a prompt.
+  const already = new Set(violations.map(v => (v.rule || '').toUpperCase()));
+  const inject = (rule: string, severity: string, explanation: string, fix: string) => {
+    if (already.has(rule)) return;
+    violations.push({ rule, severity, quote: '', explanation, fix });
+  };
+
+  if (turns.length >= 3 && countChecks['Q-3']()) {
+    inject('Q-3', 'major',
+      `כל ${turns.length} התורים נגמרים בסימן שאלה. שיחה שכל תגובה בה נשאלת היא תחקיר, יהיו השאלות אשר יהיו.`,
+      'לפחות אחת משלוש תגובות נגמרת בנקודה ועוצרת. לומר את הדבר ולחכות.');
+  }
+
+  // The dash template: [her words] + em dash + [short completion]. A closing shape that states
+  // a two-part equation and stops, leaving nothing to take hold of. Diagnosed in Winnicott 23.08
+  // (11 of 17 turns) and found again in Klein 24.08 (4 of 5) — it is the model's tic, not a
+  // voice's. Threshold at 60%: one or two is a sentence, most of the turns is a formula.
+  const dashTurns = turns.filter(t => /—/.test(t.therapist)).length;
+  if (turns.length >= 3 && dashTurns / turns.length >= 0.6) {
+    inject('F-1', 'major',
+      `${dashTurns} מתוך ${turns.length} תורים בנויים בתבנית המקף. זו צורה סוגרת, ובחזרה היא מפסיקה להיות שיחה.`,
+      'לגוון את מבנה המשפט באותה מידה שמגוונים את מילת הפתיחה. להיזהר במיוחד מצורת השלילה "לא X — אלא Y".');
+  }
+
   // כשל-פרסינג הוא שגיאת-כלי (JSON פגום מה-judge) — לא כשל-קול. לא נספר כ-fail.
   // ה-overall מחושב מחדש מההפרות ששרדו: השופט קבע אותו לפני הסינון.
   const declared = parseError ? 'error' : ((report.overall as string) || 'error');

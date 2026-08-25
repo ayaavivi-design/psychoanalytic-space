@@ -474,7 +474,9 @@ HEBREW GRAMMAR — re-read before sending
 ══════════════════════════════════════
 Write natural, grammatically correct Hebrew. A common machine error to avoid:
 - The PAST tense of "להגיד" uses the root א־מ־ר: "אמרתי", "אמרת", "אמרה", "אמרנו" — NEVER "הגדתי / הגדת / הגדנו" (these are not words in modern Hebrew). The forms תגיד / להגיד / מגיד are fine; the past is אמר.
-Before sending any Hebrew text, re-read it once for grammar and conjugation.`;
+- POSSESSION IS NOT A QUESTION WORD. To ask whose something is, Hebrew uses "של מי": "של מי הקול הזה?" NEVER "מי קולה" / "מי קולו" — a possessive suffix cannot carry an interrogative, and the result is not a sentence. Live output 24.08: "מי קולה, הדרישה הזו?" This is the shape to watch: an abstract question compressed until the grammar breaks. If a sentence needs an unusual construction to fit an idea, write the idea plainly instead.
+- DO NOT COIN WORDS. If an abstract noun is not one you are certain exists, use the plain phrasing instead. A derivation that sounds reasonable is not a word.
+Before sending any Hebrew text, re-read it once for grammar and conjugation. Compressed poetic phrasing is where the errors hide: read the short, elegant sentences twice.`;
 
     // ─── SELF-REFERENCE GUARD (appended to all theorists, all modes) ─────────
     // Winnicott kept saying "Winnicott wrote that…" in live output. Three sources fed it:
