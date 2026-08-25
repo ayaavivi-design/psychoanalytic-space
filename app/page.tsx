@@ -1373,13 +1373,6 @@ export default function Home() {
                     {/* "שמור" removed from the UI (Aya, 22.08) — an archive contradicts the ephemeral
                         promise this space makes. The two ways out are: analyze, or go on to a
                         conversation. saveDailyUpdate() is kept in the code, unwired — reversible. */}
-                    {!!dailyText.trim() && analyzingNoteId !== 'draft' && (
-                    <button
-                      onClick={() => analyzeNote(dailyText, 'draft')}
-                      style={{ flexShrink: 0, background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: '8px 12px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)', cursor: 'pointer' }}>
-                      {isHe ? 'נתח' : 'Analyze'}
-                    </button>
-                    )}
                     <div style={{ flex: 1 }} />
                   </div>
                   )}
@@ -1430,7 +1423,7 @@ export default function Home() {
                   const isRoundtable = hubTheorists.length >= 2;
                   return (
                     <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <div className="hub-helpcap">{isHe ? <>תיאורטיקן <b>אחד</b> — קול אחד, לעומק.<br/>כמה תיאורטיקנים — שולחן עגול, כל אחד מהמקום שלו.</> : <>One theorist — one voice, in depth.<br/>Several — a round table, each from their own place.</>}</div>
+                      <div className="hub-helpcap">{isHe ? <>מאיזו גישה?<br/>אחד לעומק, או כמה יחד לשולחן עגול.</> : <>From which approach?<br/>One in depth, or several at a round table.</>}</div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 12, maxWidth: 560 }}>
                         {HUB_THEORISTS.map(([k, name]) => {
                           const on = hubTheorists.includes(k);
@@ -1440,12 +1433,26 @@ export default function Home() {
                       {hubTheorists.length > 0 && (
                         <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', marginTop: 12 }}>{hubTheorists.length === 1 ? (isHe ? 'נבחר אחד — התייעצות ממוקדת.' : 'One selected — focused consultation.') : (isHe ? `נבחרו ${hubTheorists.length} — שולחן עגול.` : `${hubTheorists.length} selected — round table.`)}</div>
                       )}
+                      {/* Both actions live here, after the approach is chosen (Aya, 25.08). The trigger
+                          for showing them is a DECISION, not a character count — which is why this
+                          satisfies the 09.07 rule (appear/disappear, never disabled-and-greyed) without
+                          bending it: nothing is dimmed, and nothing appears before she has chosen who.
+                          "נתח" moved down from the row above for the same reason. It was already
+                          voice-dependent — /api/analyze-note prepends the chosen theorist's block — the
+                          choice was simply being made silently for her. */}
                       {hubTheorists.length >= 1 && (
-                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+                          {!isRoundtable && analyzingNoteId !== 'draft' && (
+                            <button
+                              onClick={() => analyzeNote(dailyText, 'draft')}
+                              style={{ padding: '12px 20px', borderRadius: 'var(--radius-xl)', border: '1px solid var(--accent)', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'transparent', color: 'var(--accent)', cursor: 'pointer' }}>
+                              {isHe ? 'נתח' : 'Analyze'}
+                            </button>
+                          )}
                           <button
                             onClick={isRoundtable ? openRoundtableMockup : () => startConsultation(dailyText)}
-                            style={{ padding: '12px 20px', borderRadius: 'var(--radius-xl)', border: 'none', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--accent)', color: '#fff', cursor: 'pointer' }}>
-                            {isRoundtable ? (isHe ? 'שולחן עגול' : 'Round table') : (isHe ? 'המשך להתייעצות' : 'Continue to consultation')}
+                            style={{ padding: '12px 20px', borderRadius: 'var(--radius-xl)', border: '1px solid var(--accent)', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--accent)', color: '#fff', cursor: 'pointer' }}>
+                            {isRoundtable ? (isHe ? 'שולחן עגול' : 'Round table') : (isHe ? 'שיחה' : 'Talk')}
                           </button>
                         </div>
                       )}
@@ -1576,7 +1583,7 @@ export default function Home() {
                   <button onClick={() => setTherapistView(selectedCase ? 'caseDetail' : 'cases')} style={{ alignSelf: 'flex-start', background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '6px 14px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)', cursor: 'pointer', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ color: 'var(--accent)' }}>←</span>{selectedCase ? selectedCase.label : (isHe ? 'המקרים שלי' : 'My cases')}</button>
                   <p style={{ fontFamily: 'var(--font-cormorant), Georgia, serif', fontSize: 24, color: 'var(--text)', margin: '0 0 16px' }}>{isHe ? 'נחשוב על זה יחד.' : "Let's think this through together."}</p>
                   <textarea value={consultText} onChange={e => setConsultText(e.target.value)} placeholder={isHe ? `מה עלה בפגישה? ${gv('כתבי','כתוב','כתוב/י')} את החומר להתייעצות (יאונמז לפני שמירה)…` : 'What came up in the session? Write the material to consult on…'} style={{ width: '100%', maxWidth: 560, minHeight: 90, boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 16, padding: '12px 16px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--surface)', color: 'var(--text)', resize: 'vertical', marginBottom: 20 }} />
-                  <div className="hub-helpcap">{isHe ? <>תיאורטיקן <b>אחד</b> — קול אחד, לעומק.<br/>כמה תיאורטיקנים — שולחן עגול, כל אחד מהמקום שלו.</> : <>One theorist — one voice, in depth.<br/>Several — a round table, each from their own place.</>}</div>
+                  <div className="hub-helpcap">{isHe ? <>מאיזו גישה?<br/>אחד לעומק, או כמה יחד לשולחן עגול.</> : <>From which approach?<br/>One in depth, or several at a round table.</>}</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 20, maxWidth: 560 }}>
                     {HUB_THEORISTS.map(([k, name]) => {
                       const on = hubTheorists.includes(k);
