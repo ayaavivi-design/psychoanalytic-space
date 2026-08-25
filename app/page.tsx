@@ -1011,9 +1011,14 @@ export default function Home() {
         <header>
           <div className="header-top" style={{ padding: '16px 24px', direction: 'ltr' }}>
             {/* הכותרת התרוקנה משלושה אייקונים (הכרעת איה, פריטים 4 ו-5): מתג הסייד-בר עבר לתוך
-                הסייד-בר, וצור קשר והשפה עברו לתפריט הפרופיל. נשאר עוגן ריק כדי לשמור על מרכוז
-                הכותרת: header-top הוא שלוש עמודות, וללא העמודה הזו ה-h1 היה נשמט שמאלה. */}
-            <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, minWidth: 80 }} />
+                הסייד-בר, וצור קשר והשפה עברו לתפריט הפרופיל.
+                ה-h1 ממורכז ב-position:absolute ולכן אינו תורם גובה, ושאר עמודות הכותרת מוסתרות
+                בדסקטופ. בלי העוגן הזה לא נשאר ל-header-top אף ילד בזרימה, הבר התכווץ מ-89px
+                ל-45px והשם נדבק לקצה. הגובה 44 הוא בדיוק מה שאשכול האייקונים החזיק קודם.
+                אין כאן display בסגנון שורה בכוונה: ‎.header-left { display: none } במובייל הובס
+                עד היום בדיוק בגלל ה-display:flex שישב כאן, ולכן האייקונים נשארו בכותרת המובייל
+                בניגוד להערה שטענה שהם נושרים. בלעדיו הכלל עובד והכותרת חוזרת ל-56px. */}
+            <div className="header-left" style={{ flexShrink: 0, minWidth: 80, height: 44 }} />
             <h1 dir="ltr" style={{ direction: 'ltr' }} suppressHydrationWarning>Between</h1>
             <div style={{ flexShrink: 0, minWidth: 80, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
               {/* Mobile-only: new conversation. Bubble+plus (Claude Design 24.07) — a pencil read as "edit", not "new conversation". */}
