@@ -123,6 +123,11 @@ export default function Home() {
   // After "נתח" the analysis is the destination (mode 2א) — the theorist picker collapses
   // behind one quiet line and reopens only on request, so it stops competing with the output.
   const [consultPickerOpen, setConsultPickerOpen] = useState(false);
+  // בורר הגישה שבתוך השיחה (שלב 2, הכרעת איה). נפתח מ-‎.session-actions ולא מהסייד-בר.
+  const [sessionApproachOpen, setSessionApproachOpen] = useState(false);
+  // הגישה הפעילה בפועל, כולל מצב "אף אחת". נפרד מ-holdTheorist, שיש לו ברירת מחדל ויניקוט
+  // ושמתעלם מביטול בחירה, ולכן אינו יכול לייצג "עדיין לא נבחרה גישה".
+  const [activeApproach, setActiveApproach] = useState<string | null>(null);
   // BW-113 — therapist case-first flow.
   type TherapistCase = { id: string; label: string; created_at: string };
   type Consultation = { id: string; mode: string; theorists: string[]; anonymized_text: string; created_at: string };
@@ -226,10 +231,36 @@ export default function Home() {
     const handleTheoristChange = (e: Event) => {
       const key = (e as CustomEvent).detail?.key;
       if (key) setHoldTheorist(key);
+      // performTheoristSwitch מסמן ‎.active רק על האלמנט שנלחץ. מרגע שיש שני עותקים של
+      // הצ'יפים, בסייד-בר ובשורת השיחה, זה משאיר את העותק השני כבוי: בחירה מהשיחה השאירה
+      // את הסייד-בר בלי סימון. הסנכרון כאן מיישר את כל העותקים לפי מקור האמת שב-chat.js.
+      setActiveApproach(key || null);
+      document.querySelectorAll('.theorist-tag[data-key]').forEach(t => {
+        t.classList.toggle('active', !!key && t.getAttribute('data-key') === key);
+      });
     };
     window.addEventListener('holdtheoristchange', handleTheoristChange);
     return () => window.removeEventListener('holdtheoristchange', handleTheoristChange);
   }, []);
+
+  // בורר הגישה שבשורת השיחה: סגירה בלחיצה בחוץ, ב-Escape, וכשהשיחה נגמרת (chat.js מכבה את
+  // הקבוצה ושולח bwsessiontoolshide). בלי זה הפופאובר נשאר פתוח מעל מסך ריק אחרי "שיחה חדשה".
+  useEffect(() => {
+    if (!sessionApproachOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement)?.closest('#bw-session-tools')) setSessionApproachOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setSessionApproachOpen(false); };
+    const onHide = () => setSessionApproachOpen(false);
+    document.addEventListener('click', onDocClick);
+    document.addEventListener('keydown', onKey);
+    window.addEventListener('bwsessiontoolshide', onHide);
+    return () => {
+      document.removeEventListener('click', onDocClick);
+      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('bwsessiontoolshide', onHide);
+    };
+  }, [sessionApproachOpen]);
 
   // "שיחה חדשה" left the therapist writing box full (23.08). performNewChat() lives in chat.js and
   // clears everything it can reach — conversationHistory, #user-input, the draft, the DOM — but the
@@ -737,6 +768,15 @@ export default function Home() {
     ? ['freud','klein','winnicott','ogden','loewald','bion','kohut','heimann']
     : ['freud','klein','winnicott','ogden'];
   const THEORIST_LIST: [string, string, string][] = theoristKeys.map(k => [k, THEORIST_LABELS[k][0], THEORIST_LABELS[k][1]]);
+  // סגנון אחיד לכלי השיחה ב-‎.session-actions. שקט בכוונה: השורה יושבת מעל השיחה ואסור לה
+  // למשוך את העין אליה. גובה 32 ולא 44, כי אלה כלים משניים ולא פעולה ראשית.
+  const sessionToolStyle: React.CSSProperties = {
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-xs)',
+    height: 32, padding: '0 var(--space-sm)', borderRadius: 'var(--radius-sm)',
+    border: '1px solid transparent', background: 'transparent', color: 'var(--muted)',
+    cursor: 'pointer', fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif',
+    whiteSpace: 'nowrap', transition: 'color 0.15s, background 0.15s',
+  };
 
   return (
     <>
@@ -892,14 +932,10 @@ export default function Home() {
               <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-write-archive-label">{currentLang === 'he' ? 'מה כתבתי' : 'What I wrote'}</span>
             </div>
-            <div className="sb-item" data-persona="both" onClick={() => (window as any).exportPDF()}>
-              <span className="sb-icon"><Download size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label js-pdf-label">הורד PDF</span>
-            </div>
-            <div className="sb-item" data-persona="therapist" onClick={() => (window as any).openSessionSummary()}>
-              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
-              <span className="sb-label js-summary-label">סיכום התייעצות</span>
-            </div>
+            {/* הורד PDF וסיכום התייעצות ירדו מכאן לשורת השיחה (שלב 2, הכרעת איה). שניהם נוגעים
+                לשיחה הנוכחית בלבד, ולכן מקומם בתוכה ולא בתפריט שמלווה גם את מסך הבית.
+                בורר הגישה נשאר כאן בכוונה: הוא משנה תיאורטיקן גם לפני שנפתחה שיחה, והסרתו
+                הייתה סוגרת דרך קיימת. יורד רק אחרי שאיה תאשר שהמסלול שבשיחה עובד. */}
             {/* המקרים עברו לסייד-בר 21.08 (הכרעת מאיה). קודם ההתייעצויות הקודמות ישבו
                 פתוחות בתחתית מסך הכתיבה והתחרו בעבודה עצמה. רמה אחת בלבד — הדרופדאון
                 מציג מקרים, וההתייעצויות נשארות בתוך המקרה; רשימה מקוננת בסייד-בר צר
@@ -1083,10 +1119,8 @@ export default function Home() {
                   <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
                   <span className="sb-label js-websearch-label">חיפוש רשת: כבוי</span>
                 </div>
-                <div className="sb-item" data-persona="therapist" onClick={() => { (window as any).openSessionSummary(); (window as any).closeAccountMenu?.(); }}>
-                  <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◎</span>
-                  <span className="sb-label js-summary-label">סיכום התייעצות</span>
-                </div>
+                {/* סיכום התייעצות ירד גם מכאן: שורת כלי השיחה גלויה במובייל, ולכן הסיכום
+                    נגיש שם בזמן שיחה, וזה המקום היחיד שבו הוא רלוונטי. */}
                 {activePersona === 'patient' && (
                 <div className="sb-item" data-persona="patient" onClick={() => { (window as any).startIntake?.(); (window as any).closeAccountMenu?.(); }}>
                   <span className="sb-icon"><Sparkles size={15} strokeWidth={1.75} /></span>
@@ -1101,23 +1135,62 @@ export default function Home() {
             <div style={{ flex: 1 }}></div>
             <div className="session-actions">
               {/* intake btn moved to header-top right slot; clinical-btn accessible via sidebar only */}
-              {/* PDF — mobile-only: the sidebar already carries "הורד PDF" (page.tsx:830), so on
-                  desktop this button is redundant (UX-RULE 9). Gated to mobile like the voice chips.
-                  Shown only during a live conversation (chat.js updatePdfBtn toggles via conversationHistory;
-                  it guards on a missing element, so on desktop it simply no-ops). */}
-              {isMobile && (
-              <button
-                id="bw-session-pdf"
-                onClick={() => (window as any).exportPDF?.()}
-                title={isHe ? 'הורד PDF' : 'Download PDF'}
-                style={{ display: 'none', minHeight: 44, height: 44, borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', padding: '0 var(--space-md)', gap: 'var(--space-xs)', background: 'var(--accent-soft)', color: 'var(--accent)', cursor: 'pointer', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif', transition: 'color 0.15s, background 0.15s, border-color 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'var(--accent)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent-soft)'; e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
-              >
-                <Download size={15} strokeWidth={1.75} />
-                <span>{isHe ? 'הורדה' : 'Download'}</span>
-              </button>
-              )}
+              {/* כלי השיחה (שלב 2, הכרעת איה): "כל מה שקשור לשיחה שאני עושה צריך להיות בתוך
+                  השיחה". PDF, סיכום התייעצות ובורר הגישה ירדו מהסייד-בר לכאן. הקבוצה מוסתרת
+                  עד שיש שיחה חיה, ו-chat.js updatePdfBtn מדליק אותה לפי conversationHistory.
+                  הכפתור הוורוד שהיה כאן במובייל אוחד לסגנון שקט אחד, כדי ששורת הכלים לא
+                  תתחרה בשיחה עצמה. */}
+              <div id="bw-session-tools" style={{ display: 'none', alignItems: 'center', gap: 'var(--space-xs)', position: 'relative' }}>
+                <button
+                  onClick={() => setSessionApproachOpen(o => !o)}
+                  title={isHe ? 'שינוי גישה תיאורטית' : 'Change theoretical approach'}
+                  style={sessionToolStyle}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-soft)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <Sparkles size={14} strokeWidth={1.75} />
+                  <span>{(activeApproach && THEORIST_LABELS[activeApproach]?.[0]) || (isHe ? 'גישה' : 'Approach')}</span>
+                  <ChevronDown size={12} strokeWidth={1.75} style={{ transition: 'transform 0.2s', transform: sessionApproachOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                </button>
+                {activePersona === 'therapist' && (
+                <button
+                  onClick={() => (window as any).openSessionSummary?.()}
+                  title={isHe ? 'סיכום התייעצות' : 'Consultation summary'}
+                  style={sessionToolStyle}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-soft)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <span style={{ fontSize: 13, lineHeight: 1 }}>◎</span>
+                  <span>{isHe ? 'סיכום' : 'Summary'}</span>
+                </button>
+                )}
+                <button
+                  id="bw-session-pdf"
+                  onClick={() => (window as any).exportPDF?.()}
+                  title={isHe ? 'הורד PDF' : 'Download PDF'}
+                  style={sessionToolStyle}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-soft)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <Download size={14} strokeWidth={1.75} />
+                  <span>PDF</span>
+                </button>
+                {/* הצ'יפים נושאים ‎.theorist-tag ו-data-key בדיוק כמו בסייד-בר, ולכן
+                    performTheoristSwitch מנקה ומסמן את שני העותקים באותה קריאה. הקריאה היא
+                    ל-toggleTheorist ולא ל-bwSetActiveTheorist, כדי שהחלפת גישה באמצע שיחה
+                    תמשיך לעבור דרך מודל האזהרה הקיים. */}
+                {sessionApproachOpen && (
+                  <div style={{ position: 'absolute', top: 'calc(100% + 6px)', insetInlineStart: 0, zIndex: 60, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', boxShadow: '0 8px 24px rgba(45,36,32,0.12)', padding: 'var(--space-xs)', display: 'flex', flexDirection: 'column', gap: 1, minWidth: 150 }}>
+                    {THEORIST_LIST.map(([key, label]) => (
+                      <div key={key} className={`theorist-tag sb-item${activeApproach === key ? ' active' : ''}`} data-key={key}
+                        style={{ paddingInlineEnd: 10, fontSize: 13 }}
+                        onClick={(e) => { (window as any).toggleTheorist(e.currentTarget, key); setSessionApproachOpen(false); }}>
+                        {label}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>

@@ -2335,6 +2335,9 @@ function showTheoristSwitchModal(el, name) {
       showModeSelect();
     }
     performTheoristSwitch(el, name);
+    // ההחלפה מרוקנת את conversationHistory אבל לא עברה בנקודת החיים שמעדכנת את הכלים, ולכן
+    // שורת כלי השיחה נשארה דלוקה מעל מסך ריק. בלט מרגע ששלושת הכלים ירדו לשם (שלב 2).
+    updatePdfBtn();
   });
   document.getElementById('tsm-cancel').addEventListener('click', () => modal.remove());
   modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
@@ -8782,13 +8785,20 @@ function updateReflectionBtn() {
   btn.style.display = show ? 'flex' : 'none';
 }
 
-// Mobile PDF (#bw-session-pdf) lives in the conversation sub-header — shown only during a
-// live conversation. Called from updateReflectionBtn, which already fires at every
-// conversation lifecycle point (after each response, restore, new chat, init).
+// כלי השיחה (#bw-session-tools: בורר גישה, סיכום, PDF) יושבים בתת-הכותרת של השיחה ומוצגים
+// רק כשיש שיחה חיה. נקרא מ-updateReflectionBtn, שכבר יורה בכל נקודת חיים של שיחה (אחרי כל
+// תשובה, בשחזור, בשיחה חדשה, באתחול). קודם הפונקציה הדליקה את כפתור ה-PDF לבדו; מאז ששלושת
+// הכלים ירדו מהסייד-בר לשורת השיחה (שלב 2) היא מדליקה את הקבוצה כולה.
+// כשהשיחה נגמרת נשלח אירוע כדי שהפופאובר של הגישה ייסגר, אחרת הוא נשאר פתוח מעל מסך ריק.
 function updatePdfBtn() {
-  const btn = document.getElementById('bw-session-pdf');
-  if (!btn) return;
-  btn.style.display = conversationHistory.length > 0 ? 'flex' : 'none';
+  const group = document.getElementById('bw-session-tools');
+  if (!group) return;
+  const show = conversationHistory.length > 0;
+  const wasShown = group.style.display !== 'none';
+  group.style.display = show ? 'flex' : 'none';
+  if (wasShown && !show) {
+    try { window.dispatchEvent(new Event('bwsessiontoolshide')); } catch (e) {}
+  }
 }
 window.updatePdfBtn = updatePdfBtn;
 
