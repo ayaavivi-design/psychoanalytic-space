@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { PenLine, Globe, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, Mic, ScrollText, MessageCirclePlus, Sparkles } from 'lucide-react';
+import { PenLine, Globe, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, Mic, ScrollText, MessageCirclePlus, Sparkles, HelpCircle } from 'lucide-react';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -867,15 +867,23 @@ export default function Home() {
             </div>
           )}
           <div style={{ padding: '10px 8px 6px', display: 'flex', flexDirection: 'column', gap: 1 }}>
+            {/* כיווץ הסייד-בר — עבר לכאן מהכותרת (הכרעת איה, פריט 5). הסייד-בר מתכווץ ל-52px
+                ולא נעלם, ולכן המתג נשאר לחיץ גם כשהוא סגור: ‎.collapsed מסתיר את ה-sb-label בלבד. */}
+            <div className="sb-item" data-persona="both" onClick={() => (window as any).toggleSidebar()} id="sb-toggle-btn" title="כיווץ התפריט">
+              <span className="sb-icon">
+                <svg width="15" height="15" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                  <rect x="1" y="1" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+                  <line x1="6" y1="1" x2="6" y2="17" stroke="currentColor" strokeWidth="1.3"/>
+                </svg>
+              </span>
+              <span className="sb-label">{currentLang === 'he' ? 'כיווץ התפריט' : 'Collapse menu'}</span>
+            </div>
             {/* end-session moved out of sidebar — appears inline at bottom of chat */}
             <div className="sb-item" data-persona="both" onClick={() => (window as any).newChat()}>
               <span className="sb-icon"><PenLine size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-new-chat-label">שיחה חדשה</span>
             </div>
-            <div className="sb-item" data-persona="therapist" onClick={() => (window as any).toggleWebSearch()} id="sb-websearch-btn" title="חיפוש באינטרנט">
-              <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label js-websearch-label">חיפוש רשת: כבוי</span>
-            </div>
+            {/* חיפוש רשת ירד מכאן לתפריט הפרופיל (הכרעת איה, פריט 2) — הוא הגדרה נמשכת, לא פעולה. */}
             <div className="sb-item" data-persona="patient" onClick={() => (window as any).openWriteArchive?.()}>
               <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-write-archive-label">{currentLang === 'he' ? 'מה כתבתי' : 'What I wrote'}</span>
@@ -968,6 +976,20 @@ export default function Home() {
             </div>
           </div>
           <div id="sb-user-menu" style={{ display: 'none', padding: '2px 0' }}>
+            {/* חיפוש רשת, שפה וצור קשר רוכזו כאן מהסייד-בר ומהכותרת (הכרעת איה, פריטים 2 ו-4).
+                אותם מזהים ואותן מחלקות ‎js-*-label כמו קודם, כדי ש-applyUITranslation ימשיך לעדכן. */}
+            <div className="sb-item" data-persona="therapist" onClick={() => (window as any).toggleWebSearch()} id="sb-websearch-btn" title="חיפוש באינטרנט">
+              <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
+              <span className="sb-label js-websearch-label">חיפוש רשת: כבוי</span>
+            </div>
+            <div className="sb-item" onClick={(e) => { e.stopPropagation(); const nl = currentLang === 'he' ? 'en' : 'he'; setCurrentLang(nl); (window as any).selectLang?.(nl, nl === 'en' ? '🇬🇧' : '🇮🇱', nl === 'en' ? 'English' : 'עברית'); }}>
+              <span className="sb-icon"><Languages size={15} strokeWidth={1.75} /></span>
+              <span className="sb-label">{currentLang === 'he' ? 'שפה: עברית' : 'Language: English'}</span>
+            </div>
+            <div className="sb-item" onClick={() => (window as any).openSupportModal?.()}>
+              <span className="sb-icon"><HelpCircle size={15} strokeWidth={1.75} /></span>
+              <span className="sb-label">{currentLang === 'he' ? 'צור קשר' : 'Contact'}</span>
+            </div>
             <div className="sb-item" onClick={() => (window as any).openSettings()}>
               <span className="sb-icon"><Settings size={15} strokeWidth={1.75} /></span>
               <span className="sb-label js-settings-label">הגדרות</span>
@@ -984,37 +1006,10 @@ export default function Home() {
       <div id="main-content">
         <header>
           <div className="header-top" style={{ padding: '16px 24px', direction: 'ltr' }}>
-            <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-              <div onClick={() => (window as any).toggleSidebar()} style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 18, padding: '2px 6px', borderRadius: 6, lineHeight: 1 }} id="sb-toggle-btn">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
-                  <rect x="1" y="1" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                  <line x1="6" y1="1" x2="6" y2="17" stroke="currentColor" strokeWidth="1.3"/>
-                </svg>
-              </div>
-              <a
-                id="header-support-btn"
-                href="#"
-                title="Contact support"
-                onClick={(e) => {
-                  e.preventDefault();
-                  (window as any).openSupportModal?.();
-                }}
-                style={{ color: 'var(--muted)', lineHeight: 1, textDecoration: 'none', fontSize: 16, padding: '2px 4px', borderRadius: 6, transition: 'color 0.15s', minWidth: 44, minHeight: 44, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)'; }}
-              >
-                ?
-              </a>
-              <div
-                id="header-lang-btn"
-                onClick={(e) => { e.stopPropagation(); const nl = currentLang === 'he' ? 'en' : 'he'; setCurrentLang(nl); (window as any).selectLang?.(nl, nl === 'en' ? '🇬🇧' : '🇮🇱', nl === 'en' ? 'English' : 'עברית'); }}
-                style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 11, padding: 14, margin: '-12px -8px', borderRadius: 6, fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 500, letterSpacing: '0.04em', transition: 'color 0.15s', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none' }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)'; }}
-              >
-                <Globe size={16} strokeWidth={1.6} />
-              </div>
-            </div>
+            {/* הכותרת התרוקנה משלושה אייקונים (הכרעת איה, פריטים 4 ו-5): מתג הסייד-בר עבר לתוך
+                הסייד-בר, וצור קשר והשפה עברו לתפריט הפרופיל. נשאר עוגן ריק כדי לשמור על מרכוז
+                הכותרת: header-top הוא שלוש עמודות, וללא העמודה הזו ה-h1 היה נשמט שמאלה. */}
+            <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, minWidth: 80 }} />
             <h1 dir="ltr" style={{ direction: 'ltr' }} suppressHydrationWarning>Between</h1>
             <div style={{ flexShrink: 0, minWidth: 80, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
               {/* Mobile-only: new conversation. Bubble+plus (Claude Design 24.07) — a pencil read as "edit", not "new conversation". */}
@@ -1062,6 +1057,11 @@ export default function Home() {
                 <div className="sb-item" onClick={() => { (window as any).openSettings(); (window as any).closeAccountMenu?.(); }}>
                   <span className="sb-icon"><Settings size={15} strokeWidth={1.75} /></span>
                   <span className="sb-label js-settings-label">הגדרות</span>
+                </div>
+                {/* צור קשר — ירד מסימן השאלה שבכותרת (הכרעת איה, פריט 4). */}
+                <div className="sb-item" onClick={() => { (window as any).openSupportModal?.(); (window as any).closeAccountMenu?.(); }}>
+                  <span className="sb-icon"><HelpCircle size={15} strokeWidth={1.75} /></span>
+                  <span className="sb-label">{currentLang === 'he' ? 'צור קשר' : 'Contact'}</span>
                 </div>
                 <div className="sb-item" onClick={() => { (window as any).signOut(); (window as any).closeAccountMenu?.(); }}>
                   <span className="sb-icon"><LogOut size={15} strokeWidth={1.75} /></span>

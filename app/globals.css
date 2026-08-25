@@ -1025,8 +1025,9 @@ body.bw-selecting #flow-buttons {
 
   /* ── Header (Claude Design 24.07): identity + two actions. h1 is absolute-centered on
      desktop; on mobile return it to flow AND anchor it left (no order shuffle) so it never
-     clips. The left cluster (toggle/?/language) and intake drop out — the account dropdown
-     holds language/intake in a later stage; here the bar is just Between + bubble + avatar. ── */
+     clips. .header-left is an empty centering anchor since 25.08 (its toggle moved into the
+     sidebar, ? and language into the profile menu); intake drops out here, and the account
+     dropdown holds language/contact/intake. The bar is Between + bubble + avatar. ── */
   header h1 { position: static; transform: none; }
   .header-left { display: none; }
   #header-intake-btn { display: none !important; }
