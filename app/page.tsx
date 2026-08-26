@@ -1264,7 +1264,7 @@ export default function Home() {
               {/* Hold entry — patient only (therapist lands on direct conversation, no Hold) */}
               {activePersona === 'patient' && (
               <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
-                <p id="bw-hold-heading" style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 'var(--fs-heading-card)', fontWeight: 400, color: 'var(--text)', margin: 0, alignSelf: 'flex-start' }}>{isHe ? 'מה נשאר איתך?' : 'What stayed with you?'}</p>
+                <p id="bw-hold-heading" style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 'var(--fs-heading-lg)', fontWeight: 400, color: 'var(--text)', margin: 0, alignSelf: 'flex-start' }}>{isHe ? 'מה נשאר איתך?' : 'What stayed with you?'}</p>
                 {/* Single card — everything inside (option ו) */}
                 <div style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                   {/* Textarea — contenteditable for private-marking support */}
@@ -1309,7 +1309,7 @@ export default function Home() {
                           pointerEvents: 'none', userSelect: 'none', lineHeight: 1.6,
                         }}
                       >
-                        {isHe ? 'כתוב לעצמך או למטפל שלך או להביא לפגישה הבאה' : 'Write for yourself, for your therapist, or to bring to your next session.'}
+                        {isHe ? 'גם אם עוד אין לזה מילים.' : "Even if there aren't words for it yet."}
                       </span>
                     )}
                     {/* המיקרופון עבר לתוך השדה (הכרעת איה, פריט 1), כמו אצל המטפלת. */}
@@ -1479,7 +1479,7 @@ export default function Home() {
               {/* BW-113 — case detail: consultation timeline. */}
               {activePersona === 'therapist' && therapistView === 'caseDetail' && selectedCase && (
               <div style={{ width: '100%', maxWidth: 720, margin: '0 auto' }}>
-                <p style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 19, fontWeight: 400, color: 'var(--text)', margin: '0 0 16px' }}>{isHe ? 'מה עלה לך מהפגישה?' : 'What came up in the session?'}</p>
+                <p style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 'var(--fs-heading-lg)', fontWeight: 400, color: 'var(--text)', margin: '0 0 16px' }}>{isHe ? 'מה עלה לך מהפגישה?' : 'What came up in the session?'}</p>
                 {/* BW-116 — daily update section */}
                 <div style={{ marginBottom: 24, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '16px 18px' }}>
                   {/* המיקרופון עבר לתוך השדה (הכרעת איה, פריט 1). הריפוד התחתון פונה לו מקום
@@ -1488,7 +1488,7 @@ export default function Home() {
                     <textarea
                       value={dailyText}
                       onChange={e => setDailyText(e.target.value)}
-                      placeholder={isHe ? `מה עלה היום? ${gv('כתבי', 'כתוב', 'כתוב/י')} עדכון על המקרה…` : "What came up today? Write a case update…"}
+                      placeholder={isHe ? 'בלי לסדר את זה קודם.' : 'No need to tidy it first.'}
                       style={{ width: '100%', minHeight: 240, maxHeight: '50vh', overflowY: 'auto', boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px 44px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--bg)', color: 'var(--text)', resize: 'vertical', outline: 'none', display: 'block' }}
                     />
                     <button
@@ -1730,8 +1730,16 @@ export default function Home() {
                 return (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                   <button onClick={() => setTherapistView(selectedCase ? 'caseDetail' : 'cases')} style={{ alignSelf: 'flex-start', background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '6px 14px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)', cursor: 'pointer', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ color: 'var(--accent)' }}>←</span>{selectedCase ? selectedCase.label : (isHe ? 'המקרים שלי' : 'My cases')}</button>
-                  <p style={{ fontFamily: 'var(--font-cormorant), Georgia, serif', fontSize: 24, color: 'var(--text)', margin: '0 0 16px' }}>{isHe ? 'נחשוב על זה יחד.' : "Let's think this through together."}</p>
-                  <textarea value={consultText} onChange={e => setConsultText(e.target.value)} placeholder={isHe ? `מה עלה בפגישה? ${gv('כתבי','כתוב','כתוב/י')} את החומר להתייעצות (יאונמז לפני שמירה)…` : 'What came up in the session? Write the material to consult on…'} style={{ width: '100%', maxWidth: 560, minHeight: 90, boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 16, padding: '12px 16px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--surface)', color: 'var(--text)', resize: 'vertical', marginBottom: 20 }} />
+                  <p style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 'var(--fs-heading-lg)', fontWeight: 400, color: 'var(--text)', margin: '0 0 16px' }}>{isHe ? 'נחשוב על זה יחד.' : "Let's think this through together."}</p>
+                  {/* הערת ליה: "(יאונמז לפני שמירה)" ישבה בתוך הפתיח, כלומר הודעה משפטית
+                      בתוך מחווה של הזמנה לכתוב, ומי שקוראת אותה עוברת מקשב לזהירות באותה
+                      שורה. ההערה ירדה לשורה שקטה מתחת לשדה. היא לא רוככה ולא הוסתרה.
+                      הגובה עלה מ-90 ל-200: זה היה השדה הקטן ביותר מבין שלושת מסכי הכתיבה
+                      ודווקא הוא מיועד לחומר הקליני הארוך ביותר (מדידת מאיה). */}
+                  <textarea value={consultText} onChange={e => setConsultText(e.target.value)} placeholder={isHe ? 'מה שעלה בפגישה, כמו שעלה.' : 'What came up in the session, as it came up.'} style={{ width: '100%', maxWidth: 560, minHeight: 200, boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 16, padding: '12px 16px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--surface)', color: 'var(--text)', resize: 'vertical', marginBottom: 'var(--space-sm)' }} />
+                  <div style={{ maxWidth: 560, width: '100%', fontSize: 'var(--fs-caption)', color: 'var(--muted)', marginBottom: 'var(--space-lg)', textAlign: isHe ? 'right' : 'left' }}>
+                    {isHe ? 'החומר עובר אנונימיזציה לפני שמירה.' : 'The material is anonymized before saving.'}
+                  </div>
                   <div className="hub-helpcap">{isHe ? <>מאיזו גישה?<br/>אחד לעומק, או כמה יחד לשולחן עגול.</> : <>From which approach?<br/>One in depth, or several at a round table.</>}</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 20, maxWidth: 560 }}>
                     {HUB_THEORISTS.map(([k, name]) => {
