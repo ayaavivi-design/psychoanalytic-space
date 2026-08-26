@@ -7380,8 +7380,13 @@ function toggleSBRecent() {
   if (arrow) arrow.textContent = isOpen ? '▶' : '▼';
 }
 
+// מצב הכיווץ עבר לבעלות React ב-page.tsx, שמחליף כאן את window.toggleSidebar באפקט
+// האתחול. הגרסה הזו הוסיפה ‎.collapsed ישירות ל-DOM, בעוד ש-React מרנדר את אותו אלמנט עם
+// className שנגזר מהפרסונה, ולכן כל רינדור מחדש מחק אותה. נשארת כגיבוי בלבד למקרה
+// שהאפקט לא רץ; היא עדיין תעבוד עד הרינדור הבא.
 function toggleSidebar() {
   const sb = document.getElementById('sidebar');
+  if (!sb) return;
   sb.classList.toggle('collapsed');
   localStorage.setItem('sidebar_collapsed', sb.classList.contains('collapsed'));
 }
@@ -7648,12 +7653,11 @@ window.signIn = signIn;
 window.signUp = signUp;
 window.resetPassword = resetPassword;
 
-// Restore sidebar state
+// שחזור מצב הסייד-בר עבר ל-page.tsx. ברירת המחדל היא מכווץ (הכרעת איה): אחרי שהכלים ירדו
+// לשורת השיחה ולתפריט הפרופיל נשארו בו שני פריטים ופרופיל, ורצועה של 220px אינה מוצדקת
+// עבורם. השחזור אינו יכול לחיות כאן, כי React מרנדר את ‎#sidebar עם className משלו ומוחק כל
+// מחלקה שנוספה מבחוץ.
 (function() {
-  if (localStorage.getItem('sidebar_collapsed') === 'true') {
-    const sb = document.getElementById('sidebar');
-    if (sb) sb.classList.add('collapsed');
-  }
   updateSidebarMemories();
   // Load user prefs
   const prefs = JSON.parse(localStorage.getItem('user_prefs') || '{}');

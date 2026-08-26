@@ -129,6 +129,11 @@ export default function Home() {
   const [sessionApproachOpen, setSessionApproachOpen] = useState(false);
   // הניתוח של הטיוטה נפתח במודל ולא נפרש בתוך הכרטיס (הכרעת איה, פריט 10, לבדיקה).
   const [analysisModalOpen, setAnalysisModalOpen] = useState(false);
+  // מצב הכיווץ עבר לבעלות React. קודם chat.js הוסיף ‎.collapsed ל-‎#sidebar ידנית, ו-React
+  // מרנדר את אותו אלמנט עם className שנגזר מהפרסונה, כך שכל רינדור מחדש מחק את המחלקה.
+  // זה לא נראה כל עוד מכווץ היה חריג; מרגע שהוא ברירת המחדל (הכרעת איה) זה נשבר מיד.
+  // ברירת המחדל true גם בשרת, כך שאין הבהוב למי שלא בחר; מי שבחר לפתוח מתוקן באפקט למטה.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   // הגישה הפעילה בפועל, כולל מצב "אף אחת". נפרד מ-holdTheorist, שיש לו ברירת מחדל ויניקוט
   // ושמתעלם מביטול בחירה, ולכן אינו יכול לייצג "עדיין לא נבחרה גישה".
   const [activeApproach, setActiveApproach] = useState<string | null>(null);
@@ -184,6 +189,17 @@ export default function Home() {
   }, []);
   useEffect(() => {
     setMounted(true);
+    // ברירת המחדל היא מכווץ, חוץ מבלוקאל: שם איה עובדת מול הסייד-בר עצמו וכיווץ מפריע
+    // (הכרעת איה). העדפה מפורשת של מי שפתח את התפריט מבטלת גם היא.
+    try {
+      const local = window.location.hostname === 'localhost';
+      if (local || localStorage.getItem('sidebar_collapsed') === 'false') setSidebarCollapsed(false);
+    } catch { /* ignore */ }
+    (window as any).toggleSidebar = () => setSidebarCollapsed(v => {
+      const next = !v;
+      try { localStorage.setItem('sidebar_collapsed', String(next)); } catch { /* ignore */ }
+      return next;
+    });
     setIsLocalhost(window.location.hostname === 'localhost');
     // BW-111 — production persona is SERVER-GATED by allowlist (/api/me), not a public choice.
     // Fail-closed: patient by default; only an allowlisted account resolves to therapist.
@@ -925,7 +941,7 @@ export default function Home() {
       }} />
 
       {/* Sidebar */}
-      <div id="sidebar" className={`persona-${activePersona}`}>
+      <div id="sidebar" className={`persona-${activePersona}${sidebarCollapsed ? ' collapsed' : ''}`}>
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
           {/* כיווץ הסייד-בר — אייקון בלבד בראש התפריט, מעל הכל (הכרעת איה 25.08). עבר לכאן
               מהכותרת, שם ישב מעל אזור הכתיבה בלי קשר לשיחה. נשאר ‎.sb-item כדי שיתיישר עם
