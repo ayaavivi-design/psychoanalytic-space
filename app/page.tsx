@@ -768,15 +768,8 @@ export default function Home() {
     ? ['freud','klein','winnicott','ogden','loewald','bion','kohut','heimann']
     : ['freud','klein','winnicott','ogden'];
   const THEORIST_LIST: [string, string, string][] = theoristKeys.map(k => [k, THEORIST_LABELS[k][0], THEORIST_LABELS[k][1]]);
-  // סגנון אחיד לכלי השיחה ב-‎.session-actions. שקט בכוונה: השורה יושבת מעל השיחה ואסור לה
-  // למשוך את העין אליה. גובה 32 ולא 44, כי אלה כלים משניים ולא פעולה ראשית.
-  const sessionToolStyle: React.CSSProperties = {
-    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-xs)',
-    height: 32, padding: '0 var(--space-sm)', borderRadius: 'var(--radius-sm)',
-    border: '1px solid transparent', background: 'transparent', color: 'var(--muted)',
-    cursor: 'pointer', fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif',
-    whiteSpace: 'nowrap', transition: 'color 0.15s, background 0.15s',
-  };
+  // הסגנון של כלי השיחה עבר ל-‎.bw-session-tool ב-globals.css. הנימוק שעמד כאן, "גובה 32
+  // כי אלה כלים משניים", היה הצדקה עצמית: מאיה מדדה ופסלה, מינימום המגע הוא 44.
 
   return (
     <>
@@ -965,10 +958,9 @@ export default function Home() {
               </div>
             )}
             {/* פיקוח קליני הוסר מה-UI (קו אדום CORE: לא תחליף לסופרוויזיה; ההתייעצות מכסה את הצורך). הראוט/הפונקציה נשארו בקוד — הפיך. BW-112. */}
-            <div id="patient-reflection-btn" className="sb-item admin-only" data-persona="patient" onClick={() => (window as any).openPatientReflection()} style={{ display: 'none' }}>
-              <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◉</span>
-              <span className="sb-label" id="sb-reflection-label">מה לקחתי מהשיחה</span>
-            </div>
+            {/* "מה לקחתי מהשיחה" ירד מכאן לשורת כלי השיחה (הכרעת איה). הוא היה כפתור של שיחה
+                שיושב בתפריט של הממשק כולו: updateReflectionBtn כבר גידר אותו על
+                conversationHistory >= 2, כלומר התלות בשיחה הייתה קיימת והמיקום בלבד סתר אותה. */}
             {/* אנונימיזציה ופידבק — גלויים רק ב-localhost */}
             {/* anonymization removed from UI */}
             {isLocalhost && (
@@ -1144,9 +1136,7 @@ export default function Home() {
                 <button
                   onClick={() => setSessionApproachOpen(o => !o)}
                   title={isHe ? 'שינוי גישה תיאורטית' : 'Change theoretical approach'}
-                  style={sessionToolStyle}
-                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-soft)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.background = 'transparent'; }}
+                  className="bw-session-tool"
                 >
                   <Sparkles size={14} strokeWidth={1.75} />
                   <span>{(activeApproach && THEORIST_LABELS[activeApproach]?.[0]) || (isHe ? 'גישה' : 'Approach')}</span>
@@ -1156,21 +1146,32 @@ export default function Home() {
                 <button
                   onClick={() => (window as any).openSessionSummary?.()}
                   title={isHe ? 'סיכום התייעצות' : 'Consultation summary'}
-                  style={sessionToolStyle}
-                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-soft)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.background = 'transparent'; }}
+                  className="bw-session-tool"
                 >
                   <span style={{ fontSize: 13, lineHeight: 1 }}>◎</span>
                   <span>{isHe ? 'סיכום' : 'Summary'}</span>
+                </button>
+                )}
+                {/* "מה לקחתי מהשיחה" — עבר לכאן מהסייד-בר. הגידור לא השתנה: chat.js
+                    updateReflectionBtn מדליק אותו לפי isAdmin ו-conversationHistory >= 2,
+                    ולכן הוא נולד מוסתר ו-chat.js הוא שמדליק, בדיוק כמו קודם. */}
+                {activePersona === 'patient' && (
+                <button
+                  id="patient-reflection-btn"
+                  onClick={() => (window as any).openPatientReflection?.()}
+                  title={isHe ? 'מה לקחתי מהשיחה' : 'What I took from the conversation'}
+                  className="bw-session-tool"
+                  style={{ display: 'none' }}
+                >
+                  <span style={{ fontSize: 13, lineHeight: 1 }}>◉</span>
+                  <span>{isHe ? 'מה לקחתי' : 'What I took'}</span>
                 </button>
                 )}
                 <button
                   id="bw-session-pdf"
                   onClick={() => (window as any).exportPDF?.()}
                   title={isHe ? 'הורד PDF' : 'Download PDF'}
-                  style={sessionToolStyle}
-                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-soft)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.background = 'transparent'; }}
+                  className="bw-session-tool"
                 >
                   <Download size={14} strokeWidth={1.75} />
                   <span>PDF</span>

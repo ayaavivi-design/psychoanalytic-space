@@ -820,6 +820,31 @@ header span {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.35; }
 }
+/* כלי השיחה ב-‎.session-actions (גישה · מה לקחתי · סיכום · PDF). היה סגנון שורה חוזר בארבעה
+   מקומות, וזה סתר את כלל 1 ב-UX-RULES וגם הבטיח שהם ייפרדו זה מזה עם הזמן.
+   הגובה: 32px בעכבר, ו-44px במגע. מאיה מדדה 32 בכל הרוחבים ופסלה, מינימום המגע הוא 44. */
+.bw-session-tool {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  height: 32px;
+  padding: 0 var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: var(--fs-body-sm);
+  font-family: var(--font-rubik), sans-serif;
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+}
+.bw-session-tool:hover { color: var(--accent); background: var(--accent-soft); }
+@media (max-width: 600px) {
+  .bw-session-tool { height: 44px; }
+}
+
 /* מיקרופון בתוך שדה הכתיבה (הכרעת איה, פריט 1). קודם הוא ישב בשורת פעולות מתחת לשדה
    והתחרה עם "נתח" ו"שיחה" על אותו מבט; עכשיו הוא יושב בפינת השדה שהוא פועל עליו.
    מוחלט, ולכן הוא זקוק ל-position:relative על העוטף ולריפוד תחתון בשדה שלא יעבור מתחתיו. */
