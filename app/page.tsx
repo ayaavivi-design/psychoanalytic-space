@@ -5,7 +5,9 @@ import { PenLine, Globe, Settings, LogOut, Languages, Download, ChevronDown, Boo
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [isLocalhost, setIsLocalhost] = useState(false);
-  const [theoristsOpen, setTheoristsOpen] = useState(true);
+  // theoristsOpen ירד עם רשימת התיאורטיקנים מהסייד-בר. isMobile נשאר מוצהר אך אינו נקרא
+  // עוד מאז שהגידור על בורר הקול ירד; לא הסרתי אותו כי הוא עשוי לשמש שוב, והאפקט שמעדכן
+  // אותו זול.
   const [casesOpen, setCasesOpen] = useState(false);
   const [consultsOpen, setConsultsOpen] = useState(false);
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
@@ -180,7 +182,6 @@ export default function Home() {
   }, []);
   useEffect(() => {
     setMounted(true);
-    setTheoristsOpen(true);
     setIsLocalhost(window.location.hostname === 'localhost');
     // BW-111 — production persona is SERVER-GATED by allowlist (/api/me), not a public choice.
     // Fail-closed: patient by default; only an allowlisted account resolves to therapist.
@@ -980,24 +981,11 @@ export default function Home() {
             )}
           </div>
 
-          {/* Theorists section */}
-          <div style={{ borderTop: '1px solid var(--border)', padding: '6px 8px 4px' }}>
-            <div className="sb-item" onClick={() => setTheoristsOpen(o => !o)}>
-              <span className="sb-label" id="sb-theorists-label" style={{ flex: 1 }}>גישה תיאורטית</span>
-              <ChevronDown size={13} strokeWidth={1.75} className="theorist-chevron" style={{ color: 'var(--muted)', flexShrink: 0, transition: 'transform 0.2s', transform: theoristsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
-            </div>
-            {theoristsOpen && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 1, paddingTop: 2 }}>
-                {THEORIST_LIST.map(([key, label, tooltipText]) => (
-                  <div key={key} className="theorist-tag sb-item" data-key={key}
-                    style={{ paddingRight: 10, fontSize: 13 }}
-                    onClick={(e) => (window as any).toggleTheorist(e.currentTarget, key)}>
-                    {label}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* רשימת התיאורטיקנים ירדה מכאן (הכרעת איה, פריט 6). הבחירה שייכת למקום שהיא
+              פועלת עליו: המטופלת בוחרת בבורר הקול שבכרטיס הכתיבה, המטפלת בצ'יפים של
+              "מאיזו גישה?", ובתוך שיחה חיה שניהם דרך בורר הגישה שבשורת הכלים.
+              הגידור isMobile על בורר הקול ירד באותו קומיט, אחרת מטופלת בדסקטופ הייתה
+              נשארת נעולה על ויניקוט בלי שום דרך לשנות. */}
         </div>
         <div style={{ borderTop: '1px solid var(--border)', padding: 8 }}>
           <div className="sb-user-row" onClick={() => (window as any).toggleUserMenu()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8, direction: 'rtl' }} id="sb-user-row">
@@ -1272,13 +1260,14 @@ export default function Home() {
                       </button>
                     )}
                   </div>
-                  {/* Voice picker — mobile has no sidebar, so switching the theorist's voice
-                      happens here. Mobile-only: on desktop the sidebar already switches voice,
-                      and duplicating it below the writing card breaks hierarchy (UX-RULE 9).
-                      Exactly one chip is always active (default winnicott); reuses .theorist-tag.
-                      Its own row above the footer, so it never joins the footer flex line
-                      (that would worsen the primary-button jump, bug 6). */}
-                  {isMobile && (
+                  {/* בורר הקול. היה מגודר על מובייל בלבד, כי בדסקטופ הסייד-בר עשה את זה
+                      וכפילות שוברת היררכיה (UX-RULE 9). מרגע שרשימת התיאורטיקנים ירדה
+                      מהסייד-בר (הכרעת איה), אין יותר כפילות ואין בדסקטופ שום דרך אחרת
+                      לבחור קול לפני שיחה. הגידור ירד, וזה מה שמונע נעילה על ויניקוט.
+                      בדיוק אחד פעיל תמיד (ברירת מחדל ויניקוט); משתמש ב-‎.theorist-tag.
+                      שורה משל עצמו מעל הפוטר, כדי שלא יצטרף לשורת הפלקס שלו
+                      (זה היה מחמיר את קפיצת הכפתור הראשי, באג 6). */}
+                  {(
                   <div style={{ borderTop: '1px solid var(--border)', display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap', padding: 'var(--space-sm) var(--space-md)', minHeight: 44, alignItems: 'center' }}>
                     {(['freud', 'klein', 'winnicott', 'ogden'] as const).map(key => (
                       <span
