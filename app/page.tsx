@@ -1234,7 +1234,7 @@ export default function Home() {
                         }, 400);
                       }}
                       style={{
-                        width: '100%', minHeight: 200, padding: '20px',
+                        width: '100%', minHeight: 200, padding: '20px 20px 48px',
                         background: 'transparent',
                         color: 'var(--text)', fontSize: 15,
                         fontFamily: 'var(--font-rubik), sans-serif', lineHeight: 1.7,
@@ -1259,6 +1259,17 @@ export default function Home() {
                         {isHe ? 'כתוב לעצמך או למטפל שלך או להביא לפגישה הבאה' : 'Write for yourself, for your therapist, or to bring to your next session.'}
                       </span>
                     )}
+                    {/* המיקרופון עבר לתוך השדה (הכרעת איה, פריט 1), כמו אצל המטפלת. */}
+                    {speechSupported && (
+                      <button
+                        onClick={handleToggleVoice}
+                        className={`bw-mic${isRecording ? ' bw-mic-recording' : ''}`}
+                        aria-pressed={isRecording}
+                        title={isHe ? 'הקלטה קולית' : 'Voice input'}
+                      >
+                        <Mic size={15} />
+                      </button>
+                    )}
                   </div>
                   {/* Voice picker — mobile has no sidebar, so switching the theorist's voice
                       happens here. Mobile-only: on desktop the sidebar already switches voice,
@@ -1282,21 +1293,7 @@ export default function Home() {
                   {/* Footer: mic + continue. Parent is direction:rtl in Hebrew, so plain
                       'row' puts mic at the start (right) and the continue button at the end (left). */}
                   <div style={{ borderTop: '1px solid var(--border)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, flexDirection: 'row', flexWrap: 'wrap' }}>
-                    {speechSupported && (
-                    <button
-                      onClick={handleToggleVoice}
-                      className={isRecording ? 'bw-mic-recording' : ''}
-                      title={isHe ? 'הקלטה קולית' : 'Voice input'}
-                      style={{
-                        width: 44, height: 44, borderRadius: '50%', border: 'none', padding: 0,
-                        background: 'transparent', color: isRecording ? 'var(--accent)' : 'var(--muted)',
-                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        transition: 'color 0.15s', flexShrink: 0,
-                      }}
-                    >
-                      <Mic size={15} />
-                    </button>
-                    )}
+                    {/* המיקרופון ירד מכאן לתוך השדה. */}
                     <div style={{ flex: 1 }} />
                     {/* Secondary action — analyze the writing. Gated on written text (BW-122:
                         no fixed discharge-button from frame one; the gesture appears only
@@ -1431,12 +1428,24 @@ export default function Home() {
                 <p style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 19, fontWeight: 400, color: 'var(--text)', margin: '0 0 16px' }}>{isHe ? 'מה עלה לך מהפגישה?' : 'What came up in the session?'}</p>
                 {/* BW-116 — daily update section */}
                 <div style={{ marginBottom: 24, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '16px 18px' }}>
-                  <textarea
-                    value={dailyText}
-                    onChange={e => setDailyText(e.target.value)}
-                    placeholder={isHe ? `מה עלה היום? ${gv('כתבי', 'כתוב', 'כתוב/י')} עדכון על המקרה…` : "What came up today? Write a case update…"}
-                    style={{ width: '100%', minHeight: 240, maxHeight: '50vh', overflowY: 'auto', boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--bg)', color: 'var(--text)', resize: 'vertical', outline: 'none' }}
-                  />
+                  {/* המיקרופון עבר לתוך השדה (הכרעת איה, פריט 1). הריפוד התחתון פונה לו מקום
+                      כדי שהטקסט לא ייכתב מתחתיו, והעוטף relative כי ‎.bw-mic מוחלט. */}
+                  <div style={{ position: 'relative', width: '100%' }}>
+                    <textarea
+                      value={dailyText}
+                      onChange={e => setDailyText(e.target.value)}
+                      placeholder={isHe ? `מה עלה היום? ${gv('כתבי', 'כתוב', 'כתוב/י')} עדכון על המקרה…` : "What came up today? Write a case update…"}
+                      style={{ width: '100%', minHeight: 240, maxHeight: '50vh', overflowY: 'auto', boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px 44px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--bg)', color: 'var(--text)', resize: 'vertical', outline: 'none', display: 'block' }}
+                    />
+                    <button
+                      onClick={handleDailyVoice}
+                      className={`bw-mic${isDailyRecording ? ' bw-mic-recording' : ''}`}
+                      aria-pressed={isDailyRecording}
+                      title={isDailyRecording ? (isHe ? 'עצור הקלטה' : 'Stop recording') : (isHe ? 'הקלט קול' : 'Record voice')}
+                    >
+                      <Mic size={15} />
+                    </button>
+                  </div>
                   {/* The "saved on your device" line came down with "שמור" (Aya, 22.08). dailyText is
                       state only — with no save action nothing is stored anywhere, so the sentence
                       would have claimed a save that no longer happens. Replacement copy: Shaun. */}
@@ -1444,12 +1453,7 @@ export default function Home() {
                       Hidden once an analysis exists: the analysis is the destination, not a step. */}
                   {!noteAnalysis['draft'] && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, flexWrap: 'wrap', flexDirection: isHe ? 'row-reverse' : 'row' }}>
-                    <button
-                      onClick={handleDailyVoice}
-                      title={isDailyRecording ? (isHe ? 'עצור הקלטה' : 'Stop recording') : (isHe ? 'הקלט קול' : 'Record voice')}
-                      style={{ flexShrink: 0, width: 44, height: 44, borderRadius: '50%', border: 'none', padding: 0, background: 'transparent', color: isDailyRecording ? 'var(--accent)' : 'var(--muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'color 0.15s' }}>
-                      <Mic size={16} />
-                    </button>
+                    {/* המיקרופון ירד מכאן לתוך השדה. השורה נשארת כעוגן לפעולות שמופיעות אחרי כתיבה. */}
                     {/* Gating is appear/disappear, never disabled-and-greyed — a visible-but-dimmed
                         control reads as "you are not enough for this yet". Decision 09.07. */}
                     {/* "שמור" removed from the UI (Aya, 22.08) — an archive contradicts the ephemeral

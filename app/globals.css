@@ -820,8 +820,39 @@ header span {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.35; }
 }
+/* מיקרופון בתוך שדה הכתיבה (הכרעת איה, פריט 1). קודם הוא ישב בשורת פעולות מתחת לשדה
+   והתחרה עם "נתח" ו"שיחה" על אותו מבט; עכשיו הוא יושב בפינת השדה שהוא פועל עליו.
+   מוחלט, ולכן הוא זקוק ל-position:relative על העוטף ולריפוד תחתון בשדה שלא יעבור מתחתיו. */
+.bw-mic {
+  position: absolute;
+  inset-inline-end: 8px;
+  bottom: 8px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  padding: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  z-index: 2;
+}
+.bw-mic:hover { color: var(--accent); background: var(--accent-soft); }
+/* מצב לחוץ: לא רק צבע. רקע מלא ומסגרת, כדי שיהיה ברור שההקלטה פעילה ושלחיצה נוספת עוצרת. */
+.bw-mic.bw-mic-recording {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
 .bw-mic-recording {
   animation: bw-pulse 1.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bw-mic-recording { animation: none; }
 }
 
 /* Hold textarea placeholder */
