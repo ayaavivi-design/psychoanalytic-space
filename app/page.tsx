@@ -1489,7 +1489,12 @@ export default function Home() {
                       value={dailyText}
                       onChange={e => setDailyText(e.target.value)}
                       placeholder={isHe ? 'בלי לסדר את זה קודם.' : 'No need to tidy it first.'}
-                      style={{ width: '100%', minHeight: 240, maxHeight: '50vh', overflowY: 'auto', boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px 44px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--bg)', color: 'var(--text)', resize: 'vertical', outline: 'none', display: 'block' }}
+                      /* השדה היה נושא מסגרת ורקע משלו בתוך כרטיס שכבר יש לו מסגרת ורקע,
+                         כלומר קופסה בתוך קופסה. אצל המטופלת השדה שקוף וחסר מסגרת בתוך
+                         הכרטיס, ולכן הכרטיס נקרא כיחידה אחת עם אזורים. אותו כלל כאן.
+                         הריפוד האופקי אופס: הכרטיס כבר נותן 18px, ושכבה שנייה של ריפוד
+                         הייתה מזיזה את הטקסט פנימה ביחס לשאר תוכן הכרטיס. */
+                      style={{ width: '100%', minHeight: 240, maxHeight: '50vh', overflowY: 'auto', boxSizing: 'border-box', border: 'none', padding: '0 0 44px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'transparent', color: 'var(--text)', resize: 'vertical', outline: 'none', display: 'block' }}
                     />
                     <button
                       onClick={handleDailyVoice}
