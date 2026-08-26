@@ -1501,7 +1501,14 @@ async function openWriteSummary() {
     });
 
     // Send to therapist — summary only, or summary + full letter based on toggle
-    const summaryHtml = `${data.what_came_up ? `<p><strong>${isEn ? 'What came up' : 'מה עלה'}:</strong> ${data.what_came_up}</p>` : ''}${data.core_insight ? `<p><strong>${isEn ? "What's coming into focus" : 'מה שמתבהר'}:</strong> ${data.core_insight}</p>` : ''}${data.bring_to_session ? `<p><strong>${isEn ? 'What I want to bring' : 'מה אני רוצה להביא'}:</strong> ${data.bring_to_session}</p>` : ''}`;
+    // החוטים נשמטו מהמייל. המסך מרנדר ארבעה שדות (what_came_up · threads · core_insight ·
+    // bring_to_session) והמייל בנה שלושה, כך שדווקא החלק העשיר ביותר, החוטים בשמות שהמטופלת
+    // עצמה ניסחה, לא הגיע למטפלת. הסדר כאן זהה לסדר שעל המסך, אחרת הקריאה משתנה.
+    // בנוסף, השדות נשתלו במייל בלי esc בעוד שעל המסך הם עוברים דרכו. אותו תוכן, שני כללים.
+    const threadsEmailHtml = Array.isArray(data.threads)
+      ? data.threads.slice(0, 4).map(t => `<p><strong>${esc(t.name)}:</strong> ${esc(t.what)}</p>`).join('')
+      : '';
+    const summaryHtml = `${data.what_came_up ? `<p><strong>${isEn ? 'What came up' : 'מה עלה'}:</strong> ${esc(data.what_came_up)}</p>` : ''}${threadsEmailHtml}${data.core_insight ? `<p><strong>${isEn ? "What's coming into focus" : 'מה שמתבהר'}:</strong> ${esc(data.core_insight)}</p>` : ''}${data.bring_to_session ? `<p><strong>${isEn ? 'What I want to bring' : 'מה אני רוצה להביא'}:</strong> ${esc(data.bring_to_session)}</p>` : ''}`;
     const letterHtml = `<hr style="margin:20px 0;border:none;border-top:1px solid #eee;"><p style="font-size:12px;color:#999;margin-bottom:8px;">${isEn ? 'My writing:' : 'הכתיבה:'}</p><p style="white-space:pre-wrap;line-height:1.7;">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
     document.getElementById('ws-send-btn')?.addEventListener('click', () => {
       const attachLetter = document.getElementById('ws-attach-letter')?.checked;

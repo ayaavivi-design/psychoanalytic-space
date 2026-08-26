@@ -127,6 +127,8 @@ export default function Home() {
   const [consultPickerOpen, setConsultPickerOpen] = useState(false);
   // בורר הגישה שבתוך השיחה (שלב 2, הכרעת איה). נפתח מ-‎.session-actions ולא מהסייד-בר.
   const [sessionApproachOpen, setSessionApproachOpen] = useState(false);
+  // הניתוח של הטיוטה נפתח במודל ולא נפרש בתוך הכרטיס (הכרעת איה, פריט 10, לבדיקה).
+  const [analysisModalOpen, setAnalysisModalOpen] = useState(false);
   // הגישה הפעילה בפועל, כולל מצב "אף אחת". נפרד מ-holdTheorist, שיש לו ברירת מחדל ויניקוט
   // ושמתעלם מביטול בחירה, ולכן אינו יכול לייצג "עדיין לא נבחרה גישה".
   const [activeApproach, setActiveApproach] = useState<string | null>(null);
@@ -244,6 +246,19 @@ export default function Home() {
     return () => window.removeEventListener('holdtheoristchange', handleTheoristChange);
   }, []);
 
+  // מודל הניתוח: Escape סוגר, והגלילה מאחוריו ננעלת כדי שהגלגלת לא תזיז את הכתיבה שמתחת.
+  useEffect(() => {
+    if (!analysisModalOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setAnalysisModalOpen(false); };
+    document.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [analysisModalOpen]);
+
   // בורר הגישה שבשורת השיחה: סגירה בלחיצה בחוץ, ב-Escape, וכשהשיחה נגמרת (chat.js מכבה את
   // הקבוצה ושולח bwsessiontoolshide). בלי זה הפופאובר נשאר פתוח מעל מסך ריק אחרי "שיחה חדשה".
   useEffect(() => {
@@ -275,6 +290,16 @@ export default function Home() {
       setHubTheorists([]);
       setConsultPickerOpen(false);
       setNoteAnalysis(prev => { const n = { ...prev }; delete n['draft']; return n; });
+      setAnalysisModalOpen(false);
+      // שדה הכתיבה של המטופלת נשכח כאן בפעם הראשונה. הוא contentEditable ולא נשלט על ידי
+      // React, ולכן setHoldText לבדו לא מרוקן את המסך: צריך לגעת ב-DOM דרך ה-ref.
+      // ובלי לבטל את טיימר הדיבאונס ולמחוק את bw_hold_draft, הטקסט חוזר בטעינה הבאה.
+      // אותן ארבע שורות בדיוק שכבר קיימות ב-handleEnterConversation.
+      if (holdDraftTimerRef.current) clearTimeout(holdDraftTimerRef.current);
+      if (holdTextareaRef.current) holdTextareaRef.current.innerHTML = '';
+      setHoldText('');
+      setHoldSaveStatus('');
+      try { localStorage.removeItem('bw_hold_draft'); } catch { /* ignore */ }
     };
     window.addEventListener('bwnewchat', clearWritingSurface);
     return () => window.removeEventListener('bwnewchat', clearWritingSurface);
@@ -596,6 +621,9 @@ export default function Home() {
       const data = await r.json();
       if (data && !data.error) {
         setNoteAnalysis(prev => ({ ...prev, [key]: data }));
+        // הטיוטה נפתחת במודל. פתק שמור ממשיך להיפרש בשורה שלו, שם המודל היה מנתק
+        // את הניתוח מהפתק שהוא מתייחס אליו.
+        if (key === 'draft') setAnalysisModalOpen(true);
         // BW-116 — if analyzing a SAVED note, persist the analysis onto it
         if (key !== 'draft' && selectedCase) {
           setCaseUpdates(prev => {
@@ -608,7 +636,27 @@ export default function Home() {
     } catch { /* ignore */ }
     setAnalyzingNoteId(null);
   };
-  // BW-116 — inline render of the reflection for a note (no theorist named — woven between the lines)
+  // BW-116 — the reflection for a note (no theorist named — woven between the lines).
+  // הגוף הופרד מהמעטפת כדי שאותו תוכן ישמש גם את המודל של הטיוטה וגם את הרינדור בשורה
+  // של פתק שמור, בלי שני מקורות שיתפצלו עם הזמן.
+  const renderNoteAnalysisBody = (a: any) => {
+    const section = (label: string, body: React.ReactNode) => (
+      <div style={{ marginTop: 12 }}>
+        <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{label}</div>
+        {body}
+      </div>
+    );
+    const txt = (s: string) => <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6 }}>{s}</div>;
+    return (
+      <>
+        {a.countertransference && section(isHe ? 'מה עלה בך' : 'What moved in you', txt(a.countertransference))}
+        {a.what_opened && section(isHe ? 'מה נפתח' : 'What opened', txt(a.what_opened))}
+        {a.what_remained && section(isHe ? 'מה נותר פתוח' : 'What remained', txt(a.what_remained))}
+        {a.invitation && section(isHe ? 'הזמנה' : 'Invitation', <div style={{ fontSize: 13, color: 'var(--accent)', lineHeight: 1.6 }}>{a.invitation}</div>)}
+        {a.next_session_focus && section(isHe ? 'לפגישה הבאה' : 'Next session', txt(a.next_session_focus))}
+      </>
+    );
+  };
   const renderNoteAnalysis = (key: string) => {
     if (analyzingNoteId === key) {
       return <div style={{ marginTop: 12, fontSize: 12, color: 'var(--muted)', fontStyle: 'italic' }}>{isHe ? 'רגע…' : 'One moment…'}</div>;
@@ -1452,7 +1500,10 @@ export default function Home() {
                     <div style={{ flex: 1 }} />
                   </div>
                   )}
-                  {renderNoteAnalysis('draft')}
+                  {/* רק מצב הטעינה נשאר כאן. התוצאה עצמה עברה למודל (הכרעת איה, פריט 10). */}
+                  {analyzingNoteId === 'draft' && (
+                    <div style={{ marginTop: 12, fontSize: 12, color: 'var(--muted)', fontStyle: 'italic' }}>{isHe ? 'רגע…' : 'One moment…'}</div>
+                  )}
                   {/* Mode 2א — the analysis landed. Two quiet, equal actions behind a hairline;
                       neither is accent-filled, so the analysis stays the strongest thing here. */}
                   {!!noteAnalysis['draft'] && (
@@ -1462,9 +1513,15 @@ export default function Home() {
                       style={{ fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)', cursor: 'pointer' }}>
                       {isHe ? 'לחשוב על זה עם מישהו' : 'Think it through with someone'} {consultPickerOpen ? '⌃' : '⌄'}
                     </span>
+                    {/* בלי זה, סגירת המודל מאבדת את הניתוח בלי דרך חזרה. */}
+                    <span
+                      onClick={() => setAnalysisModalOpen(true)}
+                      style={{ fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)', cursor: 'pointer', marginInlineStart: 12 }}>
+                      {isHe ? 'הצג את הניתוח' : 'Show the reflection'}
+                    </span>
                     <div style={{ flex: 1 }} />
                     <span
-                      onClick={() => { setNoteAnalysis(prev => { const n = { ...prev }; delete n['draft']; return n; }); setConsultPickerOpen(false); }}
+                      onClick={() => { setNoteAnalysis(prev => { const n = { ...prev }; delete n['draft']; return n; }); setConsultPickerOpen(false); setAnalysisModalOpen(false); }}
                       style={{ fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)', cursor: 'pointer' }}>
                       {isHe ? 'חזרה לכתיבה' : 'Back to writing'}
                     </span>
@@ -1873,6 +1930,29 @@ export default function Home() {
         );
       })()}
 
+      {/* מודל הניתוח (הכרעת איה, פריט 10, לבדיקה). קודם הניתוח נפרש בתוך כרטיס הכתיבה
+          ודחף את הכתיבה עצמה מטה. כאן הוא מקבל מסך משלו, והכתיבה נשארת שלמה מאחוריו.
+          המשקל והצללית זהים למודל החלפת הגישה שב-chat.js, כדי ששני המודלים ייקראו כאותו
+          רכיב. סגירה: כפתור, לחיצה על הרקע, ו-Escape. הניתוח עצמו נשמר ב-noteAnalysis
+          ולא נמחק בסגירה, ולכן "הצג את הניתוח" מחזיר אליו. */}
+      {analysisModalOpen && !!noteAnalysis['draft'] && (
+        <div
+          onClick={(e) => { if (e.target === e.currentTarget) setAnalysisModalOpen(false); }}
+          style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(45,36,32,0.28)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-md)' }}
+        >
+          <div style={{ position: 'relative', width: 560, maxWidth: '94vw', maxHeight: '86vh', overflowY: 'auto', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', boxShadow: '0 16px 48px rgba(45,36,32,0.22)', padding: 'var(--space-lg)', direction: isHe ? 'rtl' : 'ltr' }}>
+            <button
+              onClick={() => setAnalysisModalOpen(false)}
+              title={isHe ? 'סגירה' : 'Close'}
+              style={{ position: 'absolute', top: 'var(--space-sm)', insetInlineEnd: 'var(--space-sm)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'transparent', color: 'var(--muted)', fontSize: 18, lineHeight: 1, cursor: 'pointer' }}
+            >×</button>
+            <div style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 'var(--fs-heading-card)', color: 'var(--text)', marginBottom: 'var(--space-xs)' }}>
+              {isHe ? 'מה יש כאן' : "What's here"}
+            </div>
+            {renderNoteAnalysisBody(noteAnalysis['draft'])}
+          </div>
+        </div>
+      )}
     </>
   );
 }
