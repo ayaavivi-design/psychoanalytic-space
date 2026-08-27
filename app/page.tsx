@@ -1395,17 +1395,17 @@ export default function Home() {
                     </button>
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 12, flexDirection: isHe ? 'row-reverse' : 'row' }}>
-                  <p style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', margin: 0, textAlign: isHe ? 'right' : 'left' }}>
+                {/* סעיף ד' (מדידת מאיה, הכרעת איה). "מה כתבתי" ירד: הוא קיים בסייד-בר
+                    ופתח את אותה openWriteArchive, כלומר כפילות (UX-RULE 9), והוא גם נשא
+                    את תבנית היישור השלישית על המסך, שורה מפוצלת לשני צדדים.
+                    ההוראה על סימון פרטי מגודרת על טקסט: לפני שנכתב משהו אין מה לסמן.
+                    היא ממשיכה לרחף כי מנגנון הסימון עצמו, ‎#bw-hold-private-bubble,
+                    מכריז על עצמו בבועה ברגע שבוחרים טקסט. */}
+                {!!holdText.trim() && (
+                  <p style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', margin: 0, width: '100%', textAlign: isHe ? 'right' : 'left' }}>
                     {isHe ? 'סמן טקסט כדי לסמן פרטי, לפני שמשתפים.' : 'Highlight text to mark private, before sharing.'}
                   </p>
-                  <button
-                    onClick={() => (window as any).openWriteArchive?.()}
-                    style={{ background: 'transparent', border: 'none', padding: 0, fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer', textDecoration: 'underline', whiteSpace: 'nowrap', flexShrink: 0 }}
-                  >
-                    {isHe ? 'מה כתבתי' : 'What I wrote'}
-                  </button>
-                </div>
+                )}
                 {/* Ephemerality — stated as a value, not read as a failure. Content is never
                     persisted server-side by design (MEMORY.md, "תוכן שיחות לא נשמר בשרת").
                     Left unsaid it reads as "my history got deleted"; PDF is the only keeping.
