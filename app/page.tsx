@@ -1338,9 +1338,13 @@ export default function Home() {
                       שורות עם שני קווים מפרידים, והתוכן שלהן נצמד לקצוות מנוגדים: הצ'יפים
                       לצד אחד, והכפתורים נפרשים על כל הרוחב בגלל מרווח flex:1 שדחף אותם
                       זה מזה. העין קפצה מקצה לקצה בין שתי שורות שמופרדות בקו.
-                      עכשיו הכל בשורה אחת, קו אחד, וללא המרווח: הכל צמוד לאותו קצה. */}
+                      עכשיו הכל בשורה אחת, קו אחד, וללא המרווח: הכל צמוד לאותו קצה.
+                      הרצועה כולה מגודרת על טקסט (הכרעת איה): מרגע שהכפתור הראשי חדל להיות
+                      מעומעם, לפני כתיבה לא נשאר בה דבר, ורצועה ריקה עם קו מפריד גרועה
+                      מכפתור. */}
+                  {!!holdText.trim() && (
                   <div style={{ borderTop: '1px solid var(--border)', padding: 'var(--space-sm) var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexDirection: 'row', flexWrap: 'wrap', minHeight: 44 }}>
-                    {!!holdText.trim() && (['freud', 'klein', 'winnicott', 'ogden'] as const).map(key => (
+                    {(['freud', 'klein', 'winnicott', 'ogden'] as const).map(key => (
                       <span
                         key={key}
                         className={`theorist-tag${holdTheorist === key ? ' active' : ''}`}
@@ -1354,7 +1358,7 @@ export default function Home() {
                         after the patient has written). Calls chat.js's openWriteSummary(),
                         which since BW-129 hits /api/analyze-note in patient mode (merged with
                         the old write-summary tool — see lib/analyze-note-prompt.ts). */}
-                    {holdText.trim() && (
+                    {(
                       <button
                         onClick={() => (window as any).openWriteSummary?.()}
                         style={{
@@ -1373,14 +1377,15 @@ export default function Home() {
                       </button>
                     )}
                     {/* Primary action — continue into a held conversation with the theorist.
-                        Label follows the sidebar selection via holdTheorist (holdtheoristchange). */}
+                        Label follows the sidebar selection via holdTheorist (holdtheoristchange).
+                        היה מרונדר תמיד עם disabled ו-opacity 0.4, וזו הייתה ההפרה היחידה
+                        שנותרה של ההחלטה מ-09.07 (appear/disappear, never disabled-and-greyed),
+                        דווקא במסך שבשבילו הנימוק שלה נכתב. עכשיו הוא בתוך הגייט ואינו מעומעם. */}
                     <button
                       onClick={() => handleEnterConversation(holdTheorist)}
-                      disabled={!holdText.trim()}
                       style={{
                         background: 'transparent', border: 'none', padding: 0, height: 44,
-                        cursor: holdText.trim() ? 'pointer' : 'default',
-                        opacity: holdText.trim() ? 1 : 0.4,
+                        cursor: 'pointer',
                         display: 'inline-flex', alignItems: 'center',
                         transition: 'opacity 0.15s', flexShrink: 1, minWidth: 0,
                       }}
@@ -1394,7 +1399,20 @@ export default function Home() {
                       </span>
                     </button>
                   </div>
+                  )}
                 </div>
+                {/* המשפט של שון, במקום הכפתור המעומעם. הוא עונה על מה שמאיה העלתה, שדף
+                    ריק אינו מגלה שהכתיבה מובילה לאנשהו, ועל מה שליה חידדה, שריק אינו
+                    ניטרלי ועלול להיקרא כ"אף אחד לא מחכה לזה". המשפט השני הופך את היעדר
+                    הפקדים מהיעדר להחלטה. נעלם ברגע שיש כתיבה, כי אז ההמשך כבר על המסך
+                    והמשפט היה סותר את מה שרואים. */}
+                {!holdText.trim() && (
+                  <p style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', margin: 0, width: '100%', lineHeight: 1.7, textAlign: isHe ? 'right' : 'left' }}>
+                    {isHe
+                      ? 'אפשר לכתוב בלי לדעת לאן זה הולך. ההמשך מגיע מהכתיבה, לא לפניה.'
+                      : 'No need to know where it goes. What comes next comes from the writing.'}
+                  </p>
+                )}
                 {/* סעיף ד' (מדידת מאיה, הכרעת איה). "מה כתבתי" ירד: הוא קיים בסייד-בר
                     ופתח את אותה openWriteArchive, כלומר כפילות (UX-RULE 9), והוא גם נשא
                     את תבנית היישור השלישית על המסך, שורה מפוצלת לשני צדדים.
