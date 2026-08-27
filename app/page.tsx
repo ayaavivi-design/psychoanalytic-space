@@ -1338,12 +1338,17 @@ export default function Home() {
                       שורות עם שני קווים מפרידים, והתוכן שלהן נצמד לקצוות מנוגדים: הצ'יפים
                       לצד אחד, והכפתורים נפרשים על כל הרוחב בגלל מרווח flex:1 שדחף אותם
                       זה מזה. העין קפצה מקצה לקצה בין שתי שורות שמופרדות בקו.
-                      עכשיו הכל בשורה אחת, קו אחד, וללא המרווח: הכל צמוד לאותו קצה.
                       הרצועה כולה מגודרת על טקסט (הכרעת איה): מרגע שהכפתור הראשי חדל להיות
                       מעומעם, לפני כתיבה לא נשאר בה דבר, ורצועה ריקה עם קו מפריד גרועה
-                      מכפתור. */}
+                      מכפתור.
+                      **עדכון (הכרעת איה): הפרדה בין הצ'יפים לכפתורים.** שבעה פקדים בשורה
+                      אחת ערבבו מצב (מי הקול) עם פעולה (מה עושים), ושם התיאורטיקן הופיע
+                      בשתי דרגות שונות. הפתרון הוא שתי שורות בתוך אותה רצועה, בלי קו מפריד
+                      שני: הזיגזג שנמדד קודם נבע משתי רצועות מגודרות בקו שהתוכן שלהן נצמד
+                      לקצוות מנוגדים, ולא מההפרדה עצמה. שתיהן מיושרות לאותו קצה. */}
                   {!!holdText.trim() && (
-                  <div style={{ borderTop: '1px solid var(--border)', padding: 'var(--space-sm) var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexDirection: 'row', flexWrap: 'wrap', minHeight: 44 }}>
+                  <div style={{ borderTop: '1px solid var(--border)', padding: 'var(--space-sm) var(--space-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
                     {(['freud', 'klein', 'winnicott', 'ogden'] as const).map(key => (
                       <span
                         key={key}
@@ -1353,6 +1358,8 @@ export default function Home() {
                         {getHoldTheoristName(key)}
                       </span>
                     ))}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap', minHeight: 44 }}>
                     {/* שמירה למה כתבתי. handleHoldSave היה קיים במלואו ולא חובר לאף כפתור,
                         וגם שורת "נשמר." שמחכה לו לא יכלה לירות. אותו סגנון רפאים של
                         "מה יש כאן", כדי ששניהם ייקראו כאותה דרגה מול הפעולה הראשית. */}
@@ -1422,6 +1429,7 @@ export default function Home() {
                         {isHe ? 'המשך לשיחה' : 'Continue'}
                       </span>
                     </button>
+                  </div>
                   </div>
                   )}
                 </div>
