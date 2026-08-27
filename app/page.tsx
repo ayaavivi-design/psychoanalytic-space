@@ -1334,9 +1334,13 @@ export default function Home() {
                       בדיוק אחד פעיל תמיד (ברירת מחדל ויניקוט); משתמש ב-‎.theorist-tag.
                       שורה משל עצמו מעל הפוטר, כדי שלא יצטרף לשורת הפלקס שלו
                       (זה היה מחמיר את קפיצת הכפתור הראשי, באג 6). */}
-                  {!!holdText.trim() && (
-                  <div style={{ borderTop: '1px solid var(--border)', display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap', padding: 'var(--space-sm) var(--space-md)', minHeight: 44, alignItems: 'center' }}>
-                    {(['freud', 'klein', 'winnicott', 'ogden'] as const).map(key => (
+                  {/* רצועה אחת במקום שתיים (מדידת מאיה, הכרעת איה). קודם היו כאן שתי
+                      שורות עם שני קווים מפרידים, והתוכן שלהן נצמד לקצוות מנוגדים: הצ'יפים
+                      לצד אחד, והכפתורים נפרשים על כל הרוחב בגלל מרווח flex:1 שדחף אותם
+                      זה מזה. העין קפצה מקצה לקצה בין שתי שורות שמופרדות בקו.
+                      עכשיו הכל בשורה אחת, קו אחד, וללא המרווח: הכל צמוד לאותו קצה. */}
+                  <div style={{ borderTop: '1px solid var(--border)', padding: 'var(--space-sm) var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexDirection: 'row', flexWrap: 'wrap', minHeight: 44 }}>
+                    {!!holdText.trim() && (['freud', 'klein', 'winnicott', 'ogden'] as const).map(key => (
                       <span
                         key={key}
                         className={`theorist-tag${holdTheorist === key ? ' active' : ''}`}
@@ -1345,13 +1349,6 @@ export default function Home() {
                         {getHoldTheoristName(key)}
                       </span>
                     ))}
-                  </div>
-                  )}
-                  {/* Footer: mic + continue. Parent is direction:rtl in Hebrew, so plain
-                      'row' puts mic at the start (right) and the continue button at the end (left). */}
-                  <div style={{ borderTop: '1px solid var(--border)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8, flexDirection: 'row', flexWrap: 'wrap' }}>
-                    {/* המיקרופון ירד מכאן לתוך השדה. */}
-                    <div style={{ flex: 1 }} />
                     {/* Secondary action — analyze the writing. Gated on written text (BW-122:
                         no fixed discharge-button from frame one; the gesture appears only
                         after the patient has written). Calls chat.js's openWriteSummary(),

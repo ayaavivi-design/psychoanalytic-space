@@ -5749,23 +5749,10 @@ function applyUITranslation(code) {
     const persona = JSON.parse(localStorage.getItem('user_prefs') || '{}').persona;
     if (persona) applyPersona(persona);
   } catch(e) {}
-  // Re-render memory-aware welcome text in correct language (targets dedicated element, not api-note)
-  const _apMemoryEl = document.querySelector('.welcome p:not(#welcome-api-text):not(.bw-entry-heading)');
-  // BW-113 — don't overwrite the therapist case-first React title with the patient "welcome back" greeting.
-  const _apIsTherapist = document.getElementById('sidebar')?.classList.contains('persona-therapist');
-  if (_apMemoryEl && conversationHistory.length === 0 && !_apIsTherapist) {
-    const _apMemories = loadMemory();
-    if (_apMemories.length > 0) {
-      const _apLast = _apMemories[_apMemories.length - 1];
-      const _apIsEn = code === 'en';
-      const _apDate = new Date(_apLast.ts).toLocaleDateString(_apIsEn ? 'en-US' : 'he-IL');
-      const summaryLang = /[֐-׿]/.test(_apLast.summary) ? 'he' : 'en';
-      const langMatch = summaryLang === code;
-      _apMemoryEl.innerHTML = _apIsEn
-        ? `Welcome back. Ready to continue when you are. <span style="color:var(--accent-dim)">What's on your mind today?</span>`
-        : `ברוכ/ה השב/ה. המרחב מוכן כשאת/ה מוכן/ה. <span style="color:var(--accent-dim)">מה עולה היום?</span>`;
-    }
-  }
+  // הרינדור מחדש של הברכה הוסר יחד איתה. הסלקטור שלו היה
+  // ‎.welcome p:not(#welcome-api-text):not(.bw-entry-heading), והכותרת של React היא
+  // ‎<p id="bw-hold-heading"> בתוך ‎.welcome, ולכן החלפת שפה דרסה אותה בברכה.
+  // זו הסיבה ש"מה נשאר איתך?" נעלמה מהמסך.
 }
 
 function selectLang(code, flag, name) {
@@ -7674,36 +7661,10 @@ window.resetPassword = resetPassword;
   }
 })();
 
-// Show memory-aware welcome if returning user (suppressed during BW-41 entry flow)
-(function() {
-  const memories = loadMemory();
-  if (memories.length > 0 && conversationHistory.length === 0 && !localStorage.getItem('bw_mode')) {
-    const last = memories[memories.length - 1];
-    const _rwLang = window._lang || 'he';
-    const _rwIsEn = _rwLang === 'en';
-    const date = new Date(last.ts).toLocaleDateString(_rwIsEn ? 'en-US' : 'he-IL');
-    const welcome = document.getElementById('welcome');
-    const flowBtns = document.getElementById('flow-buttons');
-    // BW-113 — therapist uses the case-first React views; skip the patient "welcome back" greeting.
-    const _isTherapist = document.getElementById('sidebar')?.classList.contains('persona-therapist');
-    if (welcome && !_isTherapist) {
-      const p = document.createElement('p');
-      p.style.cssText = 'font-size:13px;color:var(--muted);line-height:1.7;max-width:360px;margin:12px auto 0;text-align:center;';
-      // Memory snippet: show only if language matches, otherwise show generic return greeting
-      const summaryLang = /[֐-׿]/.test(last.summary) ? 'he' : 'en';
-      const langMatch = summaryLang === _rwLang;
-      if (_rwIsEn) {
-        p.innerHTML = `Welcome back. Ready to continue when you are. <span style="color:var(--accent-dim)">What's on your mind today?</span>`;
-      } else {
-        p.innerHTML = `ברוכ/ה השב/ה. המרחב מוכן כשאת/ה מוכן/ה. <span style="color:var(--accent-dim)">מה עולה היום?</span>`;
-      }
-      // Insert before flow buttons if they exist, otherwise append
-      // React-safe: only insertBefore when flowBtns is genuinely a child of #welcome (see renderAnalystBadge).
-      if (flowBtns && flowBtns.parentNode === welcome) welcome.insertBefore(p, flowBtns);
-      else welcome.appendChild(p);
-    }
-  }
-})();
+// הברכה למשתמשת חוזרת הוסרה (הכרעת איה, מדידת מאיה). היא הזריקה כותרת שנייה ל-#welcome
+// בזמן ש-React כבר מרנדר שם "מה נשאר איתך?", כלומר שתי שאלות ששואלות אותו דבר, אחת מהן
+// שלושה משפטים עם ארבעה לוכסני מגדר. הנתונים שהיא חישבה (date, summaryLang, langMatch)
+// כבר לא היו בשימוש בטקסט עצמו, כלומר זה היה שריד.
 
 // Build language menu
 const LANGUAGES = [
