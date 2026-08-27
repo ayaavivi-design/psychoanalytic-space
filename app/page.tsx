@@ -1353,6 +1353,25 @@ export default function Home() {
                         {getHoldTheoristName(key)}
                       </span>
                     ))}
+                    {/* שמירה למה כתבתי. handleHoldSave היה קיים במלואו ולא חובר לאף כפתור,
+                        וגם שורת "נשמר." שמחכה לו לא יכלה לירות. אותו סגנון רפאים של
+                        "מה יש כאן", כדי ששניהם ייקראו כאותה דרגה מול הפעולה הראשית. */}
+                    <button
+                      onClick={handleHoldSave}
+                      style={{
+                        background: 'transparent', border: 'none', padding: 0, height: 44,
+                        cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+                        transition: 'opacity 0.15s', flexShrink: 0, marginInlineEnd: 8,
+                      }}
+                    >
+                      <span style={{
+                        background: 'transparent', border: '1px solid var(--border)', borderRadius: 16, height: 30, padding: '0 14px',
+                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)',
+                        display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
+                      }}>
+                        {holdSaveStatus === 'saved' ? (isHe ? 'נשמר ✓' : 'Saved ✓') : (isHe ? 'שמור' : 'Save')}
+                      </span>
+                    </button>
                     {/* Secondary action — analyze the writing. Gated on written text (BW-122:
                         no fixed discharge-button from frame one; the gesture appears only
                         after the patient has written). Calls chat.js's openWriteSummary(),
@@ -1377,7 +1396,9 @@ export default function Home() {
                       </button>
                     )}
                     {/* Primary action — continue into a held conversation with the theorist.
-                        Label follows the sidebar selection via holdTheorist (holdtheoristchange).
+                        שם התיאורטיקן ירד מהתווית (הכרעת איה). הוא נוסף כשהסייד-בר היה הבורר
+                        היחיד והצ'יפים לא היו על המסך, ומאז שהם יושבים באותה שורה השם מופיע
+                        פעמיים בשני פקדים סמוכים. אותו נימוק שפג כמו הגידור isMobile.
                         היה מרונדר תמיד עם disabled ו-opacity 0.4, וזו הייתה ההפרה היחידה
                         שנותרה של ההחלטה מ-09.07 (appear/disappear, never disabled-and-greyed),
                         דווקא במסך שבשבילו הנימוק שלה נכתב. עכשיו הוא בתוך הגייט ואינו מעומעם. */}
@@ -1387,7 +1408,10 @@ export default function Home() {
                         background: 'transparent', border: 'none', padding: 0, height: 44,
                         cursor: 'pointer',
                         display: 'inline-flex', alignItems: 'center',
-                        transition: 'opacity 0.15s', flexShrink: 1, minWidth: 0,
+                        // flexShrink 0 ולא 1: עם כפתור השמירה הנוסף בשורה הוא התכווץ לרוחב
+                        // אפס במקום לרדת שורה, כלומר הפעולה הראשית נעלמה מהמסך. השורה
+                        // ממילא flexWrap, ולכן גלישה לשורה הבאה היא ההתנהגות הנכונה.
+                        transition: 'opacity 0.15s', flexShrink: 0,
                       }}
                     >
                       <span style={{
@@ -1395,7 +1419,7 @@ export default function Home() {
                         fontSize: 'var(--fs-body-md)', fontFamily: 'var(--font-rubik), sans-serif', color: '#fff',
                         display: 'inline-flex', alignItems: 'center', whiteSpace: 'normal',
                       }}>
-                        {isHe ? `המשך לשיחה עם ${getHoldTheoristName(holdTheorist)}` : `Continue with ${getHoldTheoristName(holdTheorist)}`}
+                        {isHe ? 'המשך לשיחה' : 'Continue'}
                       </span>
                     </button>
                   </div>
