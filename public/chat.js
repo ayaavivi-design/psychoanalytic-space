@@ -531,7 +531,7 @@ async function signOut() {
   const welcome = document.getElementById('welcome');
   if (welcome) welcome.style.display = '';
   activeTheorists = [];
-  document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.theorist-tag[data-key]').forEach(el => el.classList.remove('active'));
   window._bwWriteContent = null;
   window._bwWriteSessionContext = null;
 }
@@ -949,7 +949,7 @@ async function startAfterSessionConversation(text, theoristKey) {
 }
 
 function selectWinnicottDefault() {
-  document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.theorist-tag[data-key]').forEach(el => el.classList.remove('active'));
   activeTheorists = ['winnicott'];
   const wEl = document.querySelector('[data-key="winnicott"]');
   if (wEl) wEl.classList.add('active');
@@ -1819,7 +1819,7 @@ function renderTheoristGridForMode(mode) {
     window._bwPendingTheorist = lastChoice;
 
     // Clear sidebar theorist selection — in session mode the companion card is the only active choice
-    document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.theorist-tag[data-key].active').forEach(t => t.classList.remove('active'));
     activeTheorists = [];
 
     // Attach rich tooltips to companion cards — pure vanilla JS, no React state dependency
@@ -1986,7 +1986,7 @@ function selectTheoristEntry(key) {
     : document.querySelectorAll('.bw-theorist-card, .bw-companion-card');
   allCards.forEach(el => el.classList.remove('bw-theorist-selected'));
   // Also clear sidebar theorist buttons — prevents two active selections showing at once
-  document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.theorist-tag[data-key].active').forEach(t => t.classList.remove('active'));
   activeTheorists = [];
   // Scope querySelector to the grid to avoid any collision with other DOM elements
   const sel = grid
@@ -2040,7 +2040,7 @@ function confirmTheoristEntry() {
   if (theoristDiv) theoristDiv.style.display = 'none';
 
   // sync sidebar theorist tags — companion keys (vera/elliot) have no sidebar tag, that's ok
-  document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.theorist-tag[data-key]').forEach(el => el.classList.remove('active'));
   activeTheorists = [key];
   const sidebarTag = document.querySelector(`[data-key="${key}"]`);
   if (sidebarTag) sidebarTag.classList.add('active');
@@ -2268,8 +2268,13 @@ function toggleTheorist(el, name) {
 
 // BW-113 — set the active theorist by key without relying on the sidebar tag being rendered
 // (the theorist list is collapsed by default). Used by the therapist case-first consultation flow.
+//
+// קו בעלות על ‎.active: כל ניקוי גלובלי כאן מגודר על ‎[data-key]. הצ'יפים של המטופלת
+// מרונדרים ב-React בלי data-key, וה-className שלהם נגזר מ-holdTheorist. הניקוי הגלובלי
+// שהיה כאן מחק את הסימון שלהם ולא החזיר כלום, כי המסמן מחפש ‎[data-key] שאינו קיים שם.
+// כלומר: vanilla מחזיק צ'יפים עם data-key, React מחזיק את אלה שבלעדיו.
 window.bwSetActiveTheorist = function(key) {
-  document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.theorist-tag[data-key].active').forEach(t => t.classList.remove('active'));
   activeTheorists = [key];
   window._bwPendingTheorist = null;
   const tag = document.querySelector(`.theorist-tag[data-key="${key}"]`);
@@ -2325,7 +2330,7 @@ function showTheoristSwitchModal(el, name) {
       generateInterpretiveMemory(activeTheorists[0], conversationHistory);
     }
     // Deactivate ALL current theorist buttons before switching — prevents multiple active at once
-    document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.theorist-tag[data-key].active').forEach(t => t.classList.remove('active'));
     activeTheorists = [];
     // Clear conversation and reset chat
     conversationHistory = [];
@@ -2361,7 +2366,7 @@ function performTheoristSwitch(el, name) {
     window.dispatchEvent(new CustomEvent('holdtheoristchange', { detail: { key: null } }));
   } else {
     // Single-select: deselect all, then select this one
-    document.querySelectorAll('.theorist-tag.active').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.theorist-tag[data-key].active').forEach(t => t.classList.remove('active'));
     activeTheorists = [];
     el.classList.add('active');
     activeTheorists = [name];
@@ -7259,7 +7264,7 @@ function restoreConversation(memIndex) {
   // Restore theorist selection
   if (mem.theorists && mem.theorists.length > 0) {
     activeTheorists = [];
-    document.querySelectorAll('.theorist-tag').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.theorist-tag[data-key]').forEach(el => el.classList.remove('active'));
     mem.theorists.forEach(t => {
       activeTheorists.push(t);
       const el = document.querySelector(`.theorist-tag[data-key="${t}"]`);
