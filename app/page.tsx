@@ -1367,7 +1367,11 @@ export default function Home() {
                       מחזק את ההבחנה במקום להילחם בה. הפעולה הראשית נוחתת בקצה שבו העין
                       מסיימת את השורה. */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap', minHeight: 44, justifyContent: 'flex-end' }}>
-                    {/* שמירה למה כתבתי. handleHoldSave היה קיים במלואו ולא חובר לאף כפתור,
+                    {/* רוחב אחיד לשלושת הכפתורים (הכרעת איה): אורך התווית אינו משפיע
+                        על ההיקף. 110 נגזר מהרחב שבהם, שנמדד 92px, ועוד מרווח כדי שתווית
+                        שתתארך לא תיחתך. minWidth ולא width, כך שתווית חריגה תגדיל את
+                        הכפתור במקום לגלוש ממנו.
+                        שמירה למה כתבתי. handleHoldSave היה קיים במלואו ולא חובר לאף כפתור,
                         וגם שורת "נשמר." שמחכה לו לא יכלה לירות. אותו סגנון רפאים של
                         "מה יש כאן", כדי ששניהם ייקראו כאותה דרגה מול הפעולה הראשית. */}
                     <button
@@ -1379,7 +1383,7 @@ export default function Home() {
                       }}
                     >
                       <span style={{
-                        background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', height: 30, padding: '0 var(--space-md)',
+                        background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', height: 30, minWidth: 110, justifyContent: 'center', padding: '0 var(--space-md)',
                         fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)',
                         display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
                       }}>
@@ -1401,7 +1405,7 @@ export default function Home() {
                         }}
                       >
                         <span style={{
-                          background: 'transparent', border: '1px solid var(--accent)', borderRadius: 'var(--radius-xl)', height: 30, padding: '0 var(--space-md)',
+                          background: 'transparent', border: '1px solid var(--accent)', borderRadius: 'var(--radius-xl)', height: 30, minWidth: 110, justifyContent: 'center', padding: '0 var(--space-md)',
                           fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)',
                           display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
                         }}>
@@ -1429,7 +1433,7 @@ export default function Home() {
                       }}
                     >
                       <span style={{
-                        background: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 'var(--radius-xl)', height: 30, padding: '0 var(--space-md)',
+                        background: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 'var(--radius-xl)', height: 30, minWidth: 110, justifyContent: 'center', padding: '0 var(--space-md)',
                         fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif', color: '#fff',
                         display: 'inline-flex', alignItems: 'center', whiteSpace: 'normal',
                       }}>
