@@ -129,6 +129,11 @@ export default function Home() {
   const [sessionApproachOpen, setSessionApproachOpen] = useState(false);
   // הניתוח של הטיוטה נפתח במודל ולא נפרש בתוך הכרטיס (הכרעת איה, פריט 10, לבדיקה).
   const [analysisModalOpen, setAnalysisModalOpen] = useState(false);
+  // שגיאת ניתוח לפי מפתח פתק. עד עכשיו analyzeNote בלעה כל כישלון: לא היה else ל-
+  // ‎if (!data.error) וה-catch היה ריק, ולכן 401, 500 או נפילת רשת החזירו את המסך
+  // לשקט מוחלט אחרי "רגע…". זה מה שנקרא כמו כפתור מקולקל, וזה גם מנע מאיה למסור
+  // מה נכשל, כי המסך לא אמר לה כלום.
+  const [noteError, setNoteError] = useState<Record<string, string>>({});
   // מצב הכיווץ עבר לבעלות React. קודם chat.js הוסיף ‎.collapsed ל-‎#sidebar ידנית, ו-React
   // מרנדר את אותו אלמנט עם className שנגזר מהפרסונה, כך שכל רינדור מחדש מחק את המחלקה.
   // זה לא נראה כל עוד מכווץ היה חריג; מרגע שהוא ברירת המחדל (הכרעת איה) זה נשבר מיד.
@@ -628,14 +633,20 @@ export default function Home() {
     const t = text.trim();
     if (!t || analyzingNoteId) return;
     setAnalyzingNoteId(key);
+    setNoteError(prev => { const n = { ...prev }; delete n[key]; return n; });
     try {
       const gh = (window as any).getAuthHeaders;
       const headers = { 'Content-Type': 'application/json', ...(gh ? await gh() : {}) };
       let gender = '';
       try { gender = JSON.parse(localStorage.getItem('intake_completed') || '{}').gender || ''; } catch { /* none */ }
       const r = await fetch('/api/analyze-note', { method: 'POST', headers, body: JSON.stringify({ text: t, mode: activePersona, gender, theorist: holdTheorist }) });
-      const data = await r.json();
-      if (data && !data.error) {
+      // גוף לא-JSON הוא בעצמו מצב כישלון אפשרי, ולכן הפרסינג עטוף בנפרד.
+      let data: any = null;
+      try { data = await r.json(); } catch { /* body is not JSON */ }
+      if (!r.ok || !data || data.error) {
+        setNoteError(prev => ({ ...prev, [key]: (data && data.error) || `http_${r.status}` }));
+      }
+      if (r.ok && data && !data.error) {
         setNoteAnalysis(prev => ({ ...prev, [key]: data }));
         // הטיוטה נפתחת במודל. פתק שמור ממשיך להיפרש בשורה שלו, שם המודל היה מנתק
         // את הניתוח מהפתק שהוא מתייחס אליו.
@@ -649,12 +660,25 @@ export default function Home() {
           });
         }
       }
-    } catch { /* ignore */ }
+    } catch {
+      setNoteError(prev => ({ ...prev, [key]: 'network' }));
+    }
     setAnalyzingNoteId(null);
   };
   // BW-116 — the reflection for a note (no theorist named — woven between the lines).
   // הגוף הופרד מהמעטפת כדי שאותו תוכן ישמש גם את המודל של הטיוטה וגם את הרינדור בשורה
   // של פתק שמור, בלי שני מקורות שיתפצלו עם הזמן.
+  // תרגום קוד הכישלון למשפט שאפשר לפעול לפיו. הקוד עצמו נשאר בסוגריים, כדי שאיה
+  // תוכל למסור אותו כשהיא מדווחת. parse_failed הוא מסלול מכוון בשרת למצב מטפלת
+  // (analyze-note/route.ts), ולכן הוא מקבל ניסוח משלו ולא "משהו השתבש".
+  const analyzeErrorText = (code: string) => {
+    if (code === 'network') return isHe ? 'לא הצלחנו להגיע לשרת.' : 'Could not reach the server.';
+    // השרת מחזיר גוף JSON עם error:'Unauthorized', ולכן ה-401 לא מגיע לכאן כ-http_401.
+    if (code === 'http_401' || code === 'Unauthorized') return isHe ? 'ההתחברות פגה. רענני את הדף.' : 'Session expired. Reload the page.';
+    if (code === 'parse_failed') return isHe ? 'הניתוח חזר בצורה שאי אפשר להציג.' : 'The reflection came back unreadable.';
+    if (code === 'Missing text') return isHe ? 'אין מספיק טקסט לנתח.' : 'Not enough text to analyze.';
+    return isHe ? 'הניתוח נכשל.' : 'The analysis failed.';
+  };
   const renderNoteAnalysisBody = (a: any) => {
     const section = (label: string, body: React.ReactNode) => (
       <div style={{ marginTop: 12 }}>
@@ -1585,6 +1609,23 @@ export default function Home() {
                   {/* רק מצב הטעינה נשאר כאן. התוצאה עצמה עברה למודל (הכרעת איה, פריט 10). */}
                   {analyzingNoteId === 'draft' && (
                     <div style={{ marginTop: 12, fontSize: 12, color: 'var(--muted)', fontStyle: 'italic' }}>{isHe ? 'רגע…' : 'One moment…'}</div>
+                  )}
+                  {/* הכישלון נאמר במקום להיבלע. עד עכשיו המסך חזר מ"רגע…" לשקט מוחלט. */}
+                  {analyzingNoteId !== 'draft' && !!noteError['draft'] && (
+                    <div style={{ marginTop: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 'var(--fs-body-sm)', color: 'var(--accent-deep)', fontFamily: 'var(--font-rubik), sans-serif' }}>
+                        {analyzeErrorText(noteError['draft'])}
+                      </span>
+                      <span style={{ fontSize: 'var(--fs-caption)', color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif' }}>
+                        ({noteError['draft']})
+                      </span>
+                      <button
+                        onClick={() => analyzeNote(dailyText, 'draft')}
+                        style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', fontSize: 'var(--fs-body-sm)', color: 'var(--accent)', fontFamily: 'var(--font-rubik), sans-serif', textDecoration: 'underline' }}
+                      >
+                        {isHe ? 'לנסות שוב' : 'Try again'}
+                      </button>
+                    </div>
                   )}
                   {/* Mode 2א — the analysis landed. Two quiet, equal actions behind a hairline;
                       neither is accent-filled, so the analysis stays the strongest thing here. */}
