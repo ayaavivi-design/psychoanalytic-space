@@ -1235,10 +1235,11 @@ export default function Home() {
                 {sessionApproachOpen && (
                   <div style={{ position: 'absolute', top: 'calc(100% + 6px)', insetInlineStart: 0, zIndex: 60, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', boxShadow: '0 8px 24px rgba(45,36,32,0.12)', padding: 'var(--space-xs)', display: 'flex', flexDirection: 'column', gap: 1, minWidth: 150 }}>
                     {THEORIST_LIST.map(([key, label]) => (
-                      <div key={key} className={`theorist-tag sb-item${activeApproach === key ? ' active' : ''}`} data-key={key}
-                        style={{ paddingInlineEnd: 10, fontSize: 13 }}
+                      <div key={key} className={`theorist-tag with-sub sb-item${activeApproach === key ? ' active' : ''}`} data-key={key}
+                        style={{ fontSize: 13 }}
                         onClick={(e) => { (window as any).toggleTheorist(e.currentTarget, key); setSessionApproachOpen(false); }}>
-                        {label}
+                        <span>{label}{activeApproach === key ? ' ✓' : ''}</span>
+                        <span className="tt-sub">{THEORIST_LABELS[key]?.[1]}</span>
                       </div>
                     ))}
                   </div>
@@ -1352,14 +1353,20 @@ export default function Home() {
                     {(['freud', 'klein', 'winnicott', 'ogden'] as const).map(key => (
                       <span
                         key={key}
-                        className={`theorist-tag${holdTheorist === key ? ' active' : ''}`}
+                        className={`theorist-tag with-sub${holdTheorist === key ? ' active' : ''}`}
                         onClick={() => setHoldTheorist(key)}
                       >
-                        {getHoldTheoristName(key)}
+                        <span>{getHoldTheoristName(key)}{holdTheorist === key ? ' ✓' : ''}</span>
+                        <span className="tt-sub">{THEORIST_LABELS[key]?.[1]}</span>
                       </span>
                     ))}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap', minHeight: 44 }}>
+                  {/* שורת הפעולות מיושרת לקצה הנגדי (הכרעת איה). זה אינו מחזיר את הזיגזג
+                      שנמדד קודם: שם היו שתי רצועות מגודרות בקו שכל אחת הכילה תוכן מעורב,
+                      וכאן שורה אחת היא מצב טהור והשנייה פעולה טהורה, ולכן היישור המנוגד
+                      מחזק את ההבחנה במקום להילחם בה. הפעולה הראשית נוחתת בקצה שבו העין
+                      מסיימת את השורה. */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap', minHeight: 44, justifyContent: 'flex-end' }}>
                     {/* שמירה למה כתבתי. handleHoldSave היה קיים במלואו ולא חובר לאף כפתור,
                         וגם שורת "נשמר." שמחכה לו לא יכלה לירות. אותו סגנון רפאים של
                         "מה יש כאן", כדי ששניהם ייקראו כאותה דרגה מול הפעולה הראשית. */}

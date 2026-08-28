@@ -376,6 +376,29 @@ header span {
   flex-shrink: 0;
   position: relative;
 }
+/* צ'יפ דו-שורתי: שם ומתחתיו מה שהתיאורטיקן עוסק בו (הכרעת איה).
+   מטופלת מכירה לכל היותר שם אחד מתוך הארבעה, ולכן בחירה לפי שם היא קניות בעיוורון.
+   המשפטים כבר היו כתובים ב-THEORIST_LABELS ולא הוצגו באף אחד משני הבוררים.
+   ‎white-space חוזר ל-normal, כי בסיס ‎.theorist-tag הוא nowrap עבור פילים חד-שורתיים,
+   והפינה יורדת מ-xl (פיל) ל-md, כי שתי שורות בפינה עגולה מלאה נקראות כתג ולא ככרטיס. */
+.theorist-tag.with-sub {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  white-space: normal;
+  text-align: start;
+  line-height: 1.35;
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+}
+.theorist-tag .tt-sub {
+  font-size: var(--fs-caption);
+  opacity: 0.75;
+}
+/* בצ'יפ הדו-שורתי הסימון עובר לשורת השם ומרונדר מ-React. ‎::after הוא פריט פלקס בפני
+   עצמו בתוך עמודה, ולכן הוא ירד לשורה שלישית והגביה את הצ'יפ הנבחר ב-13px מול שכניו. */
+.theorist-tag.with-sub.active::after { content: none; }
 .theorist-tag:hover {
   border-color: var(--accent-dim);
   color: var(--accent);
