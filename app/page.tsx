@@ -1379,8 +1379,8 @@ export default function Home() {
                       }}
                     >
                       <span style={{
-                        background: 'transparent', border: '1px solid var(--border)', borderRadius: 16, height: 30, padding: '0 14px',
-                        fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)',
+                        background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', height: 30, padding: '0 var(--space-md)',
+                        fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)',
                         display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
                       }}>
                         {holdSaveStatus === 'saved' ? (isHe ? 'נשמר ✓' : 'Saved ✓') : (isHe ? 'שמור' : 'Save')}
@@ -1401,8 +1401,8 @@ export default function Home() {
                         }}
                       >
                         <span style={{
-                          background: 'transparent', border: '1px solid var(--accent)', borderRadius: 16, height: 30, padding: '0 14px',
-                          fontSize: 11, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)',
+                          background: 'transparent', border: '1px solid var(--accent)', borderRadius: 'var(--radius-xl)', height: 30, padding: '0 var(--space-md)',
+                          fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)',
                           display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
                         }}>
                           {isHe ? 'מה יש כאן' : "What's here"}
@@ -1429,8 +1429,8 @@ export default function Home() {
                       }}
                     >
                       <span style={{
-                        background: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 16, minHeight: 30, height: 'auto', padding: '0 var(--space-md)',
-                        fontSize: 'var(--fs-body-md)', fontFamily: 'var(--font-rubik), sans-serif', color: '#fff',
+                        background: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 'var(--radius-xl)', height: 30, padding: '0 var(--space-md)',
+                        fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif', color: '#fff',
                         display: 'inline-flex', alignItems: 'center', whiteSpace: 'normal',
                       }}>
                         {isHe ? 'המשך לשיחה' : 'Continue'}
