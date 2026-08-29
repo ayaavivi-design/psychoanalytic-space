@@ -353,9 +353,16 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
 /* ── מסך כניסה ──────────────────────────────────────────────────── */
 .auth{min-height:calc(100vh - 44px);background:var(--bg);display:flex;align-items:center;justify-content:center;padding:var(--s5)}
 .auth[hidden]{display:none}
-.authbox{width:400px;max-width:100%}
+.authbox{width:330px;max-width:100%;text-align:center}
 .authbox .n{font-size:34px;font-weight:200;letter-spacing:.01em}
-.authbox .s{font-size:13px;color:var(--mut);line-height:1.8;margin:10px 0 var(--s6)}
+.authlogo{height:52px;width:auto;display:block;margin:0 auto var(--s5)}
+.authbox .s{font-size:13.5px;color:var(--mut);line-height:1.7;margin:0 0 var(--s5)}
+.authbox .stack{display:flex;flex-direction:column;gap:10px}
+.authbox .inp{text-align:start}
+.authbox .seglbl{display:block;font-size:11.5px;letter-spacing:.08em;font-weight:700;color:var(--mut);margin-bottom:7px}
+.authbox .fine{margin-top:var(--s5);font-size:11px;color:var(--off);line-height:1.8}
+.sentbox{background:var(--p-50);border:1px solid var(--p-100);border-radius:var(--r-box);
+         padding:16px 18px;font-size:13.5px;color:var(--p-900);line-height:1.8;text-align:start}
 
 /* ── מסך מערכת העיצוב ───────────────────────────────────────────── */
 .sysgrid{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:var(--r-box);overflow:hidden;margin-bottom:var(--s5)}
@@ -418,10 +425,13 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
 
 /* מסך הכניסה · מייל וסיסמה, הכרעת איה 29.08. שיטת הכניסה נשארת כפי
    שהיא בממשק, ומה שהעיצוב קובע הוא שרואים פעולה ראשית אחת בלבד. */
-.authbox .seg{display:flex;gap:8px;margin-bottom:var(--s5)}
-.authbox .seg .opt{flex:1;height:var(--h-ctl);border:1px solid var(--line);border-radius:var(--r-ctl);
+/* ‎authseg‎ ולא ‎seg‎ · ‎.seg‎ הוא כלל גלובלי שמעצב את **הכפתורים** בהגדרות
+   (גובה 38, מסגרת, ריפוד). מכל בשם הזה קיבל מסגרת של כפתור, והכפתורים
+   שבתוכו גלשו ממנה. אותה התנגשות שמות של פריט 17, בגרסת CSS. */
+.authbox .authseg{display:flex;gap:8px}
+.authbox .authseg .opt{flex:1;height:var(--h-ctl);border:1px solid var(--line);border-radius:var(--r-ctl);
   background:transparent;color:var(--ink);font-family:inherit;font-size:14px;font-weight:500;cursor:pointer}
-.authbox .seg .opt.on{background:var(--p-600);border-color:var(--p-600);color:#fff;font-weight:600}
+.authbox .authseg .opt.on{background:var(--p-600);border-color:var(--p-600);color:#fff;font-weight:600}
 .authbox .btn{margin-top:var(--s2)}
 .lnk{color:var(--p-700);font-weight:600;text-decoration:underline;text-underline-offset:4px}
 
@@ -460,6 +470,7 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
     <button data-goto="auth">מסך כניסה</button>
     <button data-goto="system">מערכת העיצוב</button>
     <button id="btnReset">איפוס</button>
+    <button id="btnAuthSent">מסך אימות</button>
   </div>
 
   <!-- ═══ הבר העליון ═══
@@ -503,40 +514,56 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
 
 </div>
 
-<!-- ═══ מסך כניסה ═══ -->
+<!-- ═══ מסך כניסה · כיוון א׳ "ממורכז ושקט", הכרעת איה 30.08.2026 ═══
+     עמודה אחת של 330 באמצע. הלוגו במקום המילה, משפט אחד, שני שדות
+     ופעולה אחת. שלוש פסקאות האותיות הקטנות שהיו כאן צומצמו לשורה אחת. -->
 <div class="auth" id="screen-auth" hidden>
   <div class="authbox">
-    <div class="n">Between</div>
-    <p class="s">המרחב שבין הפגישות. מה שנכתב כאן חי בדפדפן שלך בלבד.</p>
 
-    <!-- מי משתמש במרחב · קובע את הפרסונה, לא את שיטת הכניסה -->
-    <div class="seg" id="authWho">
-      <button class="opt on" data-persona="patient">בטיפול</button>
-      <button class="opt" data-persona="therapist">מטפל/ת</button>
+    <!-- מצבי כניסה והרשמה -->
+    <div id="authForm">
+      <img class="authlogo" src="../../public/between-logo-dark.svg" alt="Between"
+           onerror="var m=this.parentNode;this.remove();var d=document.createElement('div');d.className='n';d.textContent='Between';m.prepend(d)">
+      <p class="s">המרחב שבין הפגישות.</p>
+
+      <!-- "מי נכנסת" בהרשמה בלבד · הבחירה נשמרת ומשתמשת חוזרת אינה
+           נשאלת שוב. **אין להסיר אותה מההרשמה:** הפרסונה נקבעת ב-
+           ‎(choice === 'therapist' && allowed)‎, כלומר מטפלת שנמצאת
+           ברשימת ההיתר ולא בחרה תיכנס כמטופלת. -->
+      <div id="authWhoRow" style="text-align:start;margin-bottom:var(--s4)">
+        <span class="seglbl">מי נכנסת</span>
+        <div class="authseg" id="authWho">
+          <button class="opt on" data-persona="patient">בטיפול</button>
+          <button class="opt" data-persona="therapist">מטפל/ת</button>
+        </div>
+      </div>
+
+      <div class="stack">
+        <input class="inp" id="auth-email" type="email" dir="ltr" placeholder="כתובת מייל">
+        <input class="inp" id="auth-password" type="password" dir="ltr" placeholder="סיסמה">
+        <button class="btn solid" id="btnSignup" style="width:100%">הרשמה</button>
+        <button class="btn solid" id="btnSignin" style="width:100%;display:none">כניסה</button>
+      </div>
+
+      <!-- שורת המעבר · אישור איה 28.08. בלעדיה משתמשת קיימת שמנקה עוגיות
+           או עוברת מכשיר נתקעת בלי דרך להיכנס. שקטה, לא כפתור. -->
+      <p class="note" id="authForgot" style="margin-top:var(--s4);display:none"><a href="#" class="lnk">שכחתי סיסמה</a></p>
+      <p class="note" id="authSwitch" style="margin-top:var(--s3)">כבר יש לך חשבון? <a href="#" class="lnk">כניסה</a></p>
+
+      <p class="fine" id="authFine">גישת מטפלים בהזמנה בלבד כרגע.</p>
     </div>
 
-    <div class="fieldrow">
-      <label for="auth-email">כתובת מייל</label>
-      <input class="inp" id="auth-email" type="email" dir="ltr" placeholder="you@example.com">
+    <!-- מצב שלישי · אחרי ההרשמה. קיים בקוד האמיתי ולא היה לו עיצוב. -->
+    <div id="authSent" hidden>
+      <img class="authlogo" src="../../public/between-logo-dark.svg" alt="Between" onerror="this.remove()">
+      <div class="sentbox">
+        שלחנו מייל אימות ל־<b dir="ltr">you@example.com</b>.<br>
+        צריך לפתוח אותו כדי לסיים.
+      </div>
+      <p class="note" style="margin-top:var(--s4)">לא הגיע? <a href="#" class="lnk">לשלוח שוב</a></p>
+      <p class="fine">אפשר לסגור את החלון. הקישור ימתין.</p>
     </div>
-    <div class="fieldrow">
-      <label for="auth-password">סיסמה</label>
-      <input class="inp" id="auth-password" type="password" dir="ltr" placeholder="••••••••">
-    </div>
 
-    <!-- פעולה ראשית אחת בלבד. הכרעת איה 28.08: שני כפתורים באותו משקל
-         מבקשים החלטה שהמשתמש אינו יכול לקבל, ושני משתמשים אמיתיים ניסו
-         כניסה לפני שנרשמו. משתמש חדש רואה הרשמה, וחוזר רואה כניסה,
-         לפי הדגל bw_has_account שנשמר בדפדפן אחרי אימות מוצלח. -->
-    <button class="btn solid" id="btnSignup" style="width:100%">הרשמה</button>
-    <button class="btn solid" id="btnSignin" style="width:100%;display:none">כניסה</button>
-
-    <!-- שורת המעבר · אישור איה 28.08. בלעדיה משתמשת קיימת שמנקה עוגיות
-         או עוברת מכשיר נתקעת בלי דרך להיכנס. שקטה, לא כפתור. -->
-    <p class="note" id="authSwitch" style="margin-top:14px">כבר יש לך חשבון? <a href="#" class="lnk">כניסה</a></p>
-    <p class="note" id="authForgot" style="margin-top:8px;display:none"><a href="#" class="lnk">שכחתי סיסמה</a></p>
-
-    <p class="note" style="margin-top:16px">השיחות נשמרות רק על המכשיר שלך ואינן נשמרות אצלנו. פרטי הכניסה מוצפנים.</p>
   </div>
 </div>
 
@@ -1129,6 +1156,14 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
     sw.innerHTML = signup
       ? 'כבר יש לך חשבון? <a href="#" class="lnk">כניסה</a>'
       : 'אין לך עדיין חשבון? <a href="#" class="lnk">הרשמה</a>';
+    /* "מי נכנסת" בהרשמה בלבד · נשאל פעם אחת, נשמר, ומשתמשת חוזרת אינה
+       רואה אותו. השורה השקטה מתחלפת איתו: בהרשמה היא אומרת שגישת
+       מטפלים בהזמנה, כי היום זה מתגלה רק אחרי הכניסה. */
+    var who=document.getElementById('authWhoRow'), fine=document.getElementById('authFine');
+    if(who) who.style.display = signup ? 'block' : 'none';
+    if(fine) fine.textContent = signup
+      ? 'גישת מטפלים בהזמנה בלבד כרגע.'
+      : 'השיחות נשמרות על המכשיר שלך.';
   }
   document.addEventListener('click', function(e){
     if(e.target.closest && e.target.closest('#authSwitch .lnk')){
@@ -1534,6 +1569,19 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
     $('#caselist').hidden = live===0;
   }
   refreshEmpty();
+
+  /* מצב "נשלח" הוא מסך של המוצר, ולכן אין לו כפתור בתוך המוצר · הכניסה
+     אליו היא מניווט האב-טיפוס בלבד. */
+  $('#btnAuthSent').addEventListener('click',function(){
+    goto('auth');
+    $('#authForm').hidden = true;
+    $('#authSent').hidden = false;
+  });
+  document.addEventListener('click',function(e){
+    if(e.target.closest && e.target.closest('#authSwitch, #btnSignup, #btnSignin')){
+      $('#authForm').hidden = false; $('#authSent').hidden = true;
+    }
+  });
 
   $('#btnReset').addEventListener('click',function(){
     chosen=null; $('#ta').textContent=''; $('#selName').textContent='בחרי גישה';

@@ -27,6 +27,7 @@ export default function Home() {
   // קיים בגלל דקדוק עברי: הקול פונה בכל משפט, ובלי הערך הוא מנחש. באנגלית
   // ‎you‎ אינו מגדרי וההוראה בשרת מנוסחת על צורות עבריות, ולכן המסך אינו
   // מוצג כלל בממשק אנגלי — הכרעת איה 29.08.2026.
+  const [authLogoFailed, setAuthLogoFailed] = useState(false);
   const [firstRunOpen, setFirstRunOpen] = useState(false);
   const [firstRunName, setFirstRunName] = useState('');
   const [firstRunGender, setFirstRunGender] = useState('');
@@ -1437,20 +1438,33 @@ export default function Home() {
               </div>
             )}
           </div>
-        {/* מסך הכניסה בעיצוב החדש · 28.08.2026.
-            השם ב-Assistant ולא בסריף איטלקי, לפי הכרעת הלוגו.
-            הפריסה מיושרת לתחילת השורה ולא ממורכזת, כי בעברית זה נקרא טוב יותר. */}
-        <div style={{ textAlign: 'start', maxWidth: 420, width: '90%', padding: '0 20px' }}>
-          <h2 id="auth-title" dir="ltr" style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 40, fontWeight: 200, letterSpacing: '.02em', color: 'var(--text)', marginBottom: 10, direction: 'ltr', textAlign: 'start' }} suppressHydrationWarning>Between</h2>
-          <p id="auth-subtitle" style={{ fontSize: 'var(--fs-body-lg)', color: 'var(--muted)', lineHeight: 1.8, marginBottom: 28 }}>{isHe ? 'מרחב לחשוב על מה שנשאר בין מפגש למפגש.' : 'A space to think about what stays between sessions.'}</p>
+        {/* מסך הכניסה · כיוון א׳ "ממורכז ושקט", הכרעת איה 30.08.2026.
+            עמודה של 330 באמצע, **הלוגו במקום המילה** (זה היה המסך היחיד
+            בלי הסימן), משפט אחד, ושורה אחת של אותיות קטנות במקום שלוש
+            פסקאות שתפסו חצי מסך. */}
+        {/* ללא ריפוד פנימי · הריפוד הקטין את השדות ל-290 בתוך עמודה של 330,
+            והקובץ נותן 330 מלאים. גדלי הטקסט כאן כתובים במפורש ולא דרך
+            ‎--fs-*‎: הטוקנים מרימים 13.5 ל-16 ו-11 ל-13, וזו בדיוק "רצפת
+            הקריאוּת" שנפסלה 29.08. */}
+        <div style={{ textAlign: 'center', maxWidth: 330, width: '90%' }}>
+          {!authLogoFailed
+            ? <img src="/between-logo-dark.svg" alt="Between" onError={() => setAuthLogoFailed(true)}
+                style={{ height: 52, width: 'auto', display: 'block', margin: '0 auto 24px' }} />
+            : <h2 id="auth-title" dir="ltr" style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 40, fontWeight: 200, letterSpacing: '.02em', color: 'var(--text)', marginBottom: 10 }} suppressHydrationWarning>Between</h2>}
+          <p id="auth-subtitle" style={{ fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.7, marginBottom: 24 }}>{isHe ? 'המרחב שבין הפגישות.' : 'The space between sessions.'}</p>
 
           {/* BW-111 — login persona CHOICE. The choice is a request; therapist is granted only if the
               account is on the allowlist (server-gated via /api/me in __resolvePersona). Else → patient. */}
-          <div style={{ marginBottom: 16 }}>
+          {/* ⚠️ הבחירה נשארת בהרשמה בלבד, וירדה מהכניסה. **אין להסיר אותה
+              לגמרי:** הפרסונה נקבעת ב-‎(choice === 'therapist' && allowed)‎,
+              כלומר מטפלת שנמצאת ברשימת ההיתר ולא בחרה תיכנס כמטופלת.
+              היא נשאלת פעם אחת, נשמרת ב-‎bw_persona_choice‎, ומשתמשת חוזרת
+              אינה נשאלת שוב. */}
+          <div style={{ marginBottom: 16, display: authMode === 'signup' ? 'block' : 'none', textAlign: 'start' }}>
             {/* הטקסטים כאן היו קבועים בעברית, ו-applyUITranslation חיפש מזהים
                 אחרים (persona-auth-*) שאיש אינו מרנדר, ולכן בממשק האנגלי
                 נשארה עברית. React מרנדר, ולכן React גם בוחר את השפה. */}
-            <div style={{ fontSize: 'var(--fs-caption)', letterSpacing: '.08em', fontWeight: 700, color: 'var(--muted)', marginBottom: 9 }}>{isHe ? 'כניסה כ' : 'Sign in as'}</div>
+            <div style={{ fontSize: 11.5, letterSpacing: '.08em', fontWeight: 700, color: 'var(--muted)', marginBottom: 9 }}>{isHe ? 'מי נכנסת' : 'Who is entering'}</div>
             <div style={{ display: 'flex', gap: 6 }}>
               {([['patient', isHe ? 'בטיפול' : 'In therapy'],['therapist', isHe ? 'מטפל/ת' : 'Therapist']] as [string,string][]).map(([key, label]) => (
                 <button key={key} id={`persona-choice-${key}`}
@@ -1466,7 +1480,7 @@ export default function Home() {
                       btn.style.fontWeight = on ? '600' : '500';
                     });
                   }}
-                  style={{ flex: 1, height: 44, background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontSize: 'var(--fs-body-md)', fontWeight: 500, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)', cursor: 'pointer', transition: 'all 0.25s' }}>
+                  style={{ flex: 1, height: 44, background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontSize: 14, fontWeight: 500, fontFamily: 'var(--font-assistant), sans-serif', color: 'var(--text)', cursor: 'pointer', transition: 'all 0.25s' }}>
                   {label}
                 </button>
               ))}
@@ -1475,11 +1489,11 @@ export default function Home() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
             <input id="auth-email" type="email" placeholder={isHe ? 'כתובת מייל' : 'Email address'} dir="ltr"
-              style={{ width: '100%', height: 44, padding: '0 14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-rubik), sans-serif', fontSize: 'var(--fs-body-md)', color: 'var(--text)', background: 'var(--field)', outline: 'none', textAlign: 'left' }}
+              style={{ width: '100%', height: 44, padding: '0 14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-assistant), sans-serif', fontSize: 14, color: 'var(--text)', background: 'var(--field)', outline: 'none', textAlign: 'left' }}
               onKeyDown={undefined}
             />
             <input id="auth-password" type="password" placeholder={isHe ? 'סיסמה' : 'Password'} dir="ltr"
-              style={{ width: '100%', height: 44, padding: '0 14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-rubik), sans-serif', fontSize: 'var(--fs-body-md)', color: 'var(--text)', background: 'var(--field)', outline: 'none', textAlign: 'left' }}
+              style={{ width: '100%', height: 44, padding: '0 14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-assistant), sans-serif', fontSize: 14, color: 'var(--text)', background: 'var(--field)', outline: 'none', textAlign: 'left' }}
             />
           </div>
 
@@ -1487,35 +1501,35 @@ export default function Home() {
           <div style={{ marginBottom: 12 }}>
             <button id="signin-btn"
               onClick={() => (window as any).signIn?.()}
-              style={{ display: authMode === 'signin' ? 'block' : 'none', width: '100%', height: 44, background: 'var(--accent-deep)', border: '1px solid var(--accent-deep)', color: '#fff', fontSize: 'var(--fs-body-md)', fontWeight: 600, fontFamily: 'var(--font-rubik), sans-serif', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}>
+              style={{ display: authMode === 'signin' ? 'block' : 'none', width: '100%', height: 44, background: 'var(--accent-deep)', border: '1px solid var(--accent-deep)', color: '#fff', fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-assistant), sans-serif', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}>
               {isHe ? 'כניסה' : 'Sign in'}
             </button>
             <button id="signup-btn"
               onClick={() => (window as any).signUp?.()}
-              style={{ display: authMode === 'signup' ? 'block' : 'none', width: '100%', height: 44, background: 'var(--accent-deep)', border: '1px solid var(--accent-deep)', color: '#fff', fontSize: 'var(--fs-body-md)', fontWeight: 600, fontFamily: 'var(--font-rubik), sans-serif', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}>
+              style={{ display: authMode === 'signup' ? 'block' : 'none', width: '100%', height: 44, background: 'var(--accent-deep)', border: '1px solid var(--accent-deep)', color: '#fff', fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-assistant), sans-serif', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}>
               {isHe ? 'הרשמה' : 'Sign up'}
             </button>
           </div>
           <div id="auth-error" style={{ display: 'none', fontSize: 15, color: '#c06060', marginTop: 8 }}></div>
-          <div style={{ marginTop: 14, textAlign: 'start', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {/* ממורכז כמו כל השאר בעמודה · היה ‎start‎ מהעיצוב הקודם שהיה מיושר לצד */}
+          <div style={{ marginTop: 14, textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span id="auth-forgot" onClick={() => (window as any).resetPassword?.()}
-              style={{ display: authMode === 'signin' ? 'inline' : 'none', fontSize: 'var(--fs-body-sm)', color: 'var(--muted)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 4 }}>{isHe ? 'שכחתי סיסמה' : 'Forgot password'}</span>
+              style={{ display: authMode === 'signin' ? 'inline' : 'none', fontSize: 12.5, color: 'var(--muted)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 4 }}>{isHe ? 'שכחתי סיסמה' : 'Forgot password'}</span>
             <span onClick={() => setAuthMode(m => m === 'signup' ? 'signin' : 'signup')}
-              style={{ fontSize: 'var(--fs-body-sm)', color: 'var(--muted)', cursor: 'pointer' }}>
+              style={{ fontSize: 12.5, color: 'var(--muted)', cursor: 'pointer' }}>
               {authMode === 'signup'
                 ? <>{isHe ? 'כבר יש לך חשבון? ' : 'Already have an account? '}<span style={{ color: 'var(--accent-deep)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: 4 }}>{isHe ? 'כניסה' : 'Sign in'}</span></>
                 : <>{isHe ? 'אין לך עדיין חשבון? ' : "Don't have an account yet? "}<span style={{ color: 'var(--accent-deep)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: 4 }}>{isHe ? 'הרשמה' : 'Sign up'}</span></>}
             </span>
           </div>
-          <p id="auth-security" style={{ fontSize: 'var(--fs-caption)', color: 'var(--muted)', lineHeight: 1.8, marginTop: 18 }}>
-            {isHe ? 'השיחות נשמרות רק על המכשיר שלך. אנחנו לא שומרים אותן אצלנו.' : 'Conversations are kept on your device only. We do not store them.'}
-            <br />
-            {isHe ? 'פרטי הכניסה מוצפנים ומאובטחים.' : 'Your sign-in details are encrypted and secure.'}
-          </p>
-          <p id="auth-disclaimer" style={{ fontSize: 'var(--fs-caption)', color: 'var(--muted)', lineHeight: 1.85, marginTop: 22, borderTop: '1px solid var(--border)', paddingTop: 14 }}>
-{isHe
-              ? "מרחב לחשיבה בין מפגשים, לא תחליף לטיפול ולא לסופרוויז'ן. העבודה קורית בין שני בני אדם: בנוכחות, בקשר, בזמן."
-              : 'A space to think between sessions, not a substitute for therapy or supervision. The work happens between two people: in presence, in relationship, in time.'}
+          {/* שלוש פסקאות האותיות הקטנות שהיו כאן תפסו חצי מסך. הן צומצמו
+              לשורה אחת שמתחלפת עם המצב: בהרשמה היא אומרת את מה שמתגלה
+              היום רק אחרי הכניסה (גישת מטפלים בהזמנה), ובכניסה את מה
+              שחשוב לדעת לפניה. */}
+          <p id="auth-security" style={{ fontSize: 11, color: 'var(--off)', lineHeight: 1.8, marginTop: 24 }}>
+            {authMode === 'signup'
+              ? (isHe ? 'גישת מטפלים בהזמנה בלבד כרגע.' : 'Therapist access is invite-only for now.')
+              : (isHe ? 'השיחות נשמרות על המכשיר שלך.' : 'Conversations are kept on your device.')}
           </p>
         </div>
         </>}
