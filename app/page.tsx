@@ -12,7 +12,9 @@ export default function Home() {
   const [consultsOpen, setConsultsOpen] = useState(false);
   const [tooltip, setTooltip] = useState<{ text: string; top: number; left: number; flip: boolean } | null>(null);
   const [hoveredMode, setHoveredMode] = useState<string>('session');
-  const [currentLang, setCurrentLang] = useState('en');
+  // עברית היא ברירת המחדל, כמו ב-chat.js. אתחול ל-'en' גרם להבזק אנגלי
+  // בטעינה הראשונה, ובפרודקשן הוא גם קבע את כיוון הבר ל-LTR.
+  const [currentLang, setCurrentLang] = useState('he');
   const [holdText, setHoldText] = useState('');
   const [holdTheorist, setHoldTheorist] = useState('winnicott');
   // לשון פנייה לפי ההגדרה של המשתמש/ת. עד 21.08 המסכים האלה היו בלשון נקבה קבועה,
@@ -173,6 +175,8 @@ export default function Home() {
   // מסך נבנה מבר עליון, קו, כותרת גדולה ופוטר; מודל מכותרת קטנה, פתיח וסרגל.
   type WriteEntry = { id: number | string; date?: string; fullText?: string; publicText?: string };
   const [patientView, setPatientView] = useState<'write' | 'archive'>('write');
+  // ההיכרות נעשתה? נקרא בעלייה ומתעדכן כשהיא מסתיימת
+  const [intakeDone, setIntakeDone] = useState(true);
   // מסך המחקר · בוחרים גישה לפני הכניסה, כמו במסך הכתיבה (הכרעת איה 29.08)
   const [researchPicking, setResearchPicking] = useState(false);
   const [researchApproach, setResearchApproach] = useState<string | null>(null);
@@ -403,6 +407,13 @@ export default function Home() {
     };
     window.addEventListener('bwnewchat', clearWritingSurface);
     return () => window.removeEventListener('bwnewchat', clearWritingSurface);
+  }, []);
+
+  useEffect(() => {
+    const read = () => { try { setIntakeDone(!!localStorage.getItem('intake_completed')); } catch { /* ignore */ } };
+    window.addEventListener('bw-intake-done', read);
+    read();
+    return () => window.removeEventListener('bw-intake-done', read);
   }, []);
 
   const isHe = currentLang === 'he';
@@ -1274,6 +1285,18 @@ export default function Home() {
               <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-write-archive-label">{currentLang === 'he' ? 'מה כתבתי' : 'What I wrote'}</span>
             </div>
+            {/* שיחת ההיכרות · הכניסה היחידה אליה הייתה ‎#header-intake-btn‎ שיושב
+                בתוך ‎.header-top‎, והעיצוב החדש מסתיר את כל הכותרת הישנה. כלומר
+                ‎chat.js‎ המשיך להדליק כפתור שאיש לא יכול היה לראות, גם משתמשת
+                חדשה. הכניסה עוברת לסייד-בר, לצד "מה כתבתי", ומוצגת רק למי
+                שטרם עשתה אותה — אותו תנאי בדיוק של ‎checkIntakeStatus‎. */}
+            {activePersona === 'patient' && !intakeDone && (
+              <div className="sb-item" data-persona="patient"
+                onClick={() => { (window as any).startIntake?.(); }}>
+                <span className="sb-icon"><Sparkles size={15} strokeWidth={1.75} /></span>
+                <span className="sb-label">{isHe ? 'שיחת היכרות' : 'Getting to know you'}</span>
+              </div>
+            )}
             {/* הורד PDF וסיכום התייעצות ירדו מכאן לשורת השיחה (שלב 2, הכרעת איה). שניהם נוגעים
                 לשיחה הנוכחית בלבד, ולכן מקומם בתוכה ולא בתפריט שמלווה גם את מסך הבית.
                 בורר הגישה נשאר כאן בכוונה: הוא משנה תיאורטיקן גם לפני שנפתחה שיחה, והסרתו

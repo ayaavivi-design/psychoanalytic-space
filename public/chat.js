@@ -430,6 +430,8 @@ function completeIntake() {
   const t = getIntakeTranslation();
   intakeData.completedAt = new Date().toISOString();
   localStorage.setItem('intake_completed', JSON.stringify(intakeData));
+  // React מציג את הכניסה להיכרות בסייד-בר רק למי שטרם עשתה אותה
+  try { window.dispatchEvent(new Event('bw-intake-done')); } catch (e) { /* noop */ }
   intakeMode = false;
   // Hide header intake button once completed
   const headerBtn = document.getElementById('header-intake-btn');
@@ -475,6 +477,7 @@ function enterMainSpace() {
 
 function resetIntake() {
   localStorage.removeItem('intake_completed');
+  try { window.dispatchEvent(new Event('bw-intake-done')); } catch (e) { /* noop */ }
   const modal = document.getElementById('settings-modal');
   if (modal) modal.style.display = 'none';
   newChat();
@@ -1703,8 +1706,10 @@ const _LANGS = {
   en: { code: 'en', flag: '🇬🇧', name: 'English' },
   he: { code: 'he', flag: '🇮🇱', name: 'עברית' },
 };
-const _savedLang = localStorage.getItem('bw_lang')
-  || ((navigator.language || '').startsWith('he') ? 'he' : 'en');
+// ברירת המחדל היא עברית, ולא שפת הדפדפן. הכרעת איה 29.08.2026: המוצר
+// עברי, והתרגום לאנגלית חלקי — מסך הכניסה יצא מעורבב למי שדפדפנו אינו
+// עברי. מי שבוחר אנגלית במפורש נשמר ב-bw_lang וממשיך לקבל אותה.
+const _savedLang = localStorage.getItem('bw_lang') || 'he';
 let selectedLang = _LANGS[_savedLang] || _LANGS['he'];
 window.selectedLang = selectedLang;
 window._lang = selectedLang.code; // always in sync with selectedLang
@@ -5262,7 +5267,6 @@ function applyUITranslation(code) {
     const stF = document.getElementById('st-female'); if (stF) stF.textContent = t.settingsFemale || 'נקבה';
     const stM = document.getElementById('st-male'); if (stM) stM.textContent = t.settingsMale || 'זכר';
     const stN = document.getElementById('st-neutral'); if (stN) stN.textContent = t.settingsNeutral || 'ניטרלי';
-    const stLL = document.getElementById('st-level-label'); if (stLL) stLL.textContent = t.settingsLevel || 'רקע';
     const stB = document.getElementById('st-beginner'); if (stB) stB.textContent = t.settingsBeginner || 'מתחיל/ה';
     const stI = document.getElementById('st-intermediate'); if (stI) stI.textContent = t.settingsIntermediate || 'בינוני/ת';
     const stA = document.getElementById('st-advanced'); if (stA) stA.textContent = t.settingsAdvanced || 'מנוסה';
@@ -6848,14 +6852,9 @@ function openSettings() {
           </div>
         </div>
 
-        <div>
-          <label id="st-level-label" style="font-size:15px;color:var(--muted);display:block;margin-bottom:8px;">רקע בפסיכואנליזה</label>
-          <div style="display:flex;gap:8px;">
-            <div class="pref-btn" data-group="level" data-val="beginner" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-beginner">מתחיל/ה</div>
-            <div class="pref-btn" data-group="level" data-val="intermediate" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-intermediate">בינוני/ת</div>
-            <div class="pref-btn" data-group="level" data-val="advanced" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-advanced">מנוסה</div>
-          </div>
-        </div>
+        <!-- ⛔ "רקע בפסיכואנליזה" ירד מההגדרות 29.08.2026 בהכרעת איה.
+             השדה עצמו (level) נשאר ב-user_prefs ובבניית ההקשר, כך שמי
+             שכבר בחר ערך אינו מאבד אותו. אין יותר דרך לשנות אותו במסך. -->
 
         <div>
           <label id="st-purpose-label" style="font-size:15px;color:var(--muted);display:block;margin-bottom:8px;">מה מביא אותך לכאן?</label>
@@ -6951,10 +6950,6 @@ function applyPersonaToSettings() {
   if (document.getElementById('sidebar')?.classList.contains('persona-therapist')) persona = 'therapist';
   const isTh = persona === 'therapist';
   const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.textContent = val; };
-  set('st-level-label',  isTh ? t.thLevel     : t.settingsLevel);
-  set('st-beginner',     isTh ? t.thBeginner  : t.settingsBeginner);
-  set('st-intermediate', isTh ? t.thIntermediate : t.settingsIntermediate);
-  set('st-advanced',     isTh ? t.thAdvanced  : t.settingsAdvanced);
   set('st-purpose-label',isTh ? t.thPurpose   : t.settingsPurpose);
   set('st-curiosity',    isTh ? t.thCuriosity : t.settingsCuriosity);
   set('st-study',        isTh ? t.thStudy     : t.settingsStudy);
@@ -7116,7 +7111,10 @@ function saveSettings() {
     name: document.getElementById('pref-name')?.value.trim() || '',
     context: document.getElementById('pref-context')?.value.trim() || '',
     gender: document.querySelector('.pref-btn[data-group="gender"][style*="accent"]')?.getAttribute('data-val') || '',
-    level: document.querySelector('.pref-btn[data-group="level"][style*="accent"]')?.getAttribute('data-val') || '',
+    // "רקע בפסיכואנליזה" ירד מהמסך · שומרים את הערך שכבר קיים במקום לאפס
+    // אותו בכל שמירה, אחרת ההסרה מהמסך הייתה מוחקת בשקט נתון של משתמשות
+    // קיימות. אינו הפיך אחרת: אין דרך לבחור אותו מחדש.
+    level: (() => { try { return JSON.parse(localStorage.getItem('user_prefs') || '{}').level || ''; } catch { return ''; } })(),
     purpose: document.querySelector('.pref-btn[data-group="purpose"][style*="accent"]')?.getAttribute('data-val') || '',
     timerEnabled: !!(document.getElementById('pref-timer-enabled')?.checked),
     timerWarningMinutes: parseInt(document.getElementById('pref-timer-warning')?.value) || 5,
