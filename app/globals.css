@@ -220,6 +220,7 @@ body {
 
 /* ── Mobile account menu — same persona scoping as the sidebar (the phone stand-in for it). ── */
 #bw-account-menu.persona-patient [data-persona="therapist"] { display: none !important; }
+
 #bw-account-menu.persona-therapist [data-persona="patient"] { display: none !important; }
 #bw-account-menu.persona-patient [data-persona="admin"],
 #bw-account-menu.persona-therapist [data-persona="admin"] { display: none !important; }

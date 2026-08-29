@@ -1436,10 +1436,17 @@ export default function Home() {
                   {profileName && <span className="n-n">{profileName}</span>}
                   <span className="n-e"><bdi>{userEmail}</bdi></span>
                 </div>
-                <button className="n-mi" data-persona="therapist" onClick={() => { (window as any).toggleWebSearch?.(); }}>
+                {/* חיפוש רשת הוא כלי של מטפלת בלבד (BRAIN). הגידור ב-CSS מכוון
+                    ל-‎#sidebar‎ ול-‎#bw-account-menu‎, ותפריט הבר אינו אף אחד מהם,
+                    ולכן מטופלת ראתה אותו. הגידור כאן הוא ב-React, שמרנדר את
+                    התפריט ויודע מי הפרסונה. זה חשוב במיוחד כי במצב הזה אימות
+                    הפלט מדולג והקול אינו מובטח. */}
+                {activePersona === 'therapist' && (
+                <button className="n-mi" onClick={() => { (window as any).toggleWebSearch?.(); }}>
                   <span>{isHe ? 'חיפוש רשת' : 'Web search'}</span>
                   <span className="n-val">{webSearchOn ? (isHe ? 'דלוק' : 'On') : (isHe ? 'כבוי' : 'Off')}</span>
                 </button>
+                )}
                 <button className="n-mi" onClick={() => { const nl = currentLang === 'he' ? 'en' : 'he'; setCurrentLang(nl); (window as any).selectLang?.(nl, nl === 'en' ? '🇬🇧' : '🇮🇱', nl === 'en' ? 'English' : 'עברית'); }}>
                   <span>{isHe ? 'שפה' : 'Language'}</span>
                   <span className="n-val">{currentLang === 'he' ? 'עברית' : 'English'}</span>
