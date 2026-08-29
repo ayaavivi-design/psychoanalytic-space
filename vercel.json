@@ -1,8 +1,6 @@
 {
-  "crons": [
-    { "path": "/api/qa-full?secret=psycho-qa-2026", "schedule": "0 7 */3 * *" },
-    { "path": "/api/judge-full?secret=psycho-qa-2026&rotate=1", "schedule": "0 5 * * *" }
-  ],
+  "_comment_crons": "⛔ שתי המשימות המתוזמנות הוקפאו 30.08.2026 בהכרעת איה, יחד עם הקפאת הצוות. הנימוק: הן מייצרות דוחות שאיש אינו קורא — אין איתן ואין ליה, וזה בדיוק הדפוס של הזיכרון הפרשני, פלט בלי קורא. הראוטים נשארו בשלמותם (/api/qa-full, /api/judge-full) ואפשר להריץ אותם ידנית; ההחזרה היא החזרת השורות למערך crons. הן היו: qa-full כל שלושה ימים ב-07:00, ו-judge-full יומי ב-05:00.",
+  "crons": [],
   "functions": {
     "app/api/qa-full/route.ts": {
       "maxDuration": 60
