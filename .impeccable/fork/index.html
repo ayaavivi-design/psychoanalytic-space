@@ -97,13 +97,14 @@ button{font-family:inherit}
 .sb .ic{width:16px;flex:0 0 16px;text-align:center;font-size:14px;color:var(--mut)}
 .sb.on .ic{color:var(--p-700)}
 .grouphead{padding:var(--s5) var(--s5) var(--s2);font-size:10px;letter-spacing:.18em;color:var(--off);font-weight:700}
-/* כותרת קבוצה עם פעולה · הפלוס של "מקרים". שקט כברירת מחדל, ורוד
-   בריחוף, ואינו מזיז את הכותרת: הוא בגובה השורה שלה. */
-.grouphead-act{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.headadd{background:none;border:none;cursor:pointer;color:var(--off);font-family:inherit;
-         font-size:15px;line-height:1;padding:2px;margin:-2px;border-radius:var(--r-ctl)}
-.headadd:hover{color:var(--p-600)}
-.headadd:focus-visible{outline:2px solid var(--p-500);outline-offset:2px}
+/* קו מפריד · מחליף את כותרות הקבוצה. הכרעת איה 29.08.2026: הכותרות
+   הוסיפו רמת היררכיה שלישית על שישה פריטים, והקו מפריד בלי להוסיף רמה —
+   הוא אינו טקסט, אי אפשר ללחוץ עליו, והעין אינה קוראת אותו כשלב במבנה. */
+.rule{height:1px;background:var(--line-soft);margin:10px var(--s5)}
+
+/* הפלוס יושב על הפריט "מקרים" · הפריט הוא flex, ולכן דחיפה לקצה */
+.sb-add .headadd{margin-inline-start:auto;color:var(--off);font-size:15px;line-height:1}
+.sb-add .headadd:hover{color:var(--p-600)}
 .sb-sub{padding-inline-start:42px;font-size:13px;font-weight:400;height:34px}
 /* ערך המצב בפריט סייד-בר · כבוי / בבחירה / פעיל. אותו משקל של הערך
    בתפריט הפרופיל, כי זו אותה אמירה: הגדרה נמשכת ולא פעולה. */
@@ -561,36 +562,35 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
          ההוספה עברה לפלוס שבכותרת "מקרים". -->
     <button class="sb" id="sbFirst" data-persona-only="patient" data-goto="write"><span class="sb-label">שיחה חדשה</span></button>
 
+    <!-- ═══ רמה אחת · הכרעת איה 29.08.2026 ═══
+         היו כאן שלוש רמות על שישה פריטים: כותרת "מקרים", מתחתיה "כל
+         המקרים" שנקרא ככותרת שנייה אף שהוא פריט, ומתחתיה המקרים מוזחים
+         ב-42. "ארכיון" ישב באותה הזחה של "כל המקרים" בלי להיות מאותו סוג.
+         הכל שורה אחת באותה רמה, וההפרדה נעשית בקו דק: הוא מפריד בלי
+         להוסיף רמה, כי אינו טקסט ואי אפשר ללחוץ עליו. -->
     <div data-persona-only="therapist">
-      <!-- הפלוס יושב על הכותרת של הרשימה שהוא מוסיף אליה. הכפתור שבמסך
-           "כל המקרים" נשאר: אחד מלווה את הרשימה בכל מסך, והשני יושב בתוך
-           המסך עצמו. -->
-      <div class="grouphead grouphead-act">
-        <span>מקרים</span>
-        <button class="headadd" data-open="newcase" aria-label="מקרה חדש" title="מקרה חדש">+</button>
-      </div>
-      <button class="sb sb-nav" data-goto="cases"><span class="sb-label">כל המקרים</span></button>
-      <button class="sb sb-sub" data-goto="write">מקרה ו׳</button>
-      <button class="sb sb-sub" data-goto="write">מקרה ד׳</button>
-      <button class="sb sb-sub" data-goto="write">מקרה א׳</button>
+      <!-- הפריט הראשון הוא הרשימה עצמה, והפלוס יושב עליו -->
+      <button class="sb sb-nav sb-add" data-goto="cases">
+        <span class="sb-label">מקרים</span>
+        <span class="headadd" data-open="newcase" role="button" aria-label="מקרה חדש" title="מקרה חדש">+</span>
+      </button>
+      <button class="sb" data-goto="write">מקרה ו׳</button>
+      <button class="sb" data-goto="write">מקרה ד׳</button>
+      <button class="sb" data-goto="write">מקרה א׳</button>
+      <div class="rule"></div>
       <!-- הארכיון היה קיים בקוד בלי שום כניסה אליו: "העברה לארכיון" הזיזה
-           מקרה למקום שאי אפשר לראות. נוסף בממשק 29.08 וחסר כאן. -->
+           מקרה למקום שאי אפשר לראות. -->
       <button class="sb sb-nav" data-goto="casearchive"><span class="sb-label">ארכיון</span></button>
-    </div>
-
-    <!-- מצב עבודה · מחקר הוא מצב ולא מקרה, ולכן קבוצה משלו ולא פריט בתוך
-         רשימת המקרים. הקבוצה ירדה מתחת לארכיון 29.08.2026 בבקשת איה.
-         הגידור ל-localhost הוסר באותו יום: מטפלת רואה אותו גם בפרודקשן,
-         ומטופלת אינה רואה אותו. -->
-    <div data-persona-only="therapist">
-      <div class="grouphead">מצב עבודה</div>
+      <div class="rule"></div>
+      <!-- מחקר הוא מצב עבודה ולא מקרה, ולכן הוא אחרי הקו ולא ברשימה.
+           מטופלת אינה רואה אותו. -->
       <button class="sb sb-nav" id="sbResearch" data-goto="research">
         <span class="sb-label">מחקר</span><span class="val" id="resVal">כבוי</span>
       </button>
     </div>
 
     <div data-persona-only="patient">
-      <div class="grouphead">שלי</div>
+      <div class="rule"></div>
       <button class="sb sb-nav" data-goto="archive"><span class="sb-label">מה כתבתי</span></button>
     </div>
 

@@ -1466,7 +1466,7 @@ export default function Home() {
               </div>
             )}
             {/* חיפוש רשת ירד מכאן לתפריט הפרופיל (הכרעת איה, פריט 2) — הוא הגדרה נמשכת, לא פעולה. */}
-            {activePersona === 'patient' && <div className="sb-section-label">{isHe ? 'שלי' : 'Mine'}</div>}
+            {activePersona === 'patient' && <div className="sb-rule" />}
             <div className={`sb-item${patientView === 'archive' ? ' active' : ''}`} data-persona="patient" onClick={() => { loadWriteEntries(); setPatientView('archive'); }}>
               <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-write-archive-label">{currentLang === 'he' ? 'מה כתבתי' : 'What I wrote'}</span>
@@ -1494,33 +1494,35 @@ export default function Home() {
                 למשתמש חדש שהוא פספס משהו. אותו רכיב של "גישה תיאורטית". */}
             {activePersona === 'therapist' && (
               <>
-                {/* הפלוס יושב על הכותרת של הרשימה שהוא מוסיף אליה · הכרעת איה
-                    29.08.2026, אחרי ש"מקרה חדש" הופיע גם כפריט עליון וגם ככפתור
-                    במסך. הכפתור שבמסך נשאר, וזו הכניסה השנייה ולא כפילות: אחת
-                    מלווה את הרשימה בכל מסך, והשנייה יושבת בתוך הרשימה עצמה. */}
-                <div className="sb-section-label sb-section-head">
-                  <span>{isHe ? 'מקרים' : 'Cases'}</span>
+                {/* ═══ רמה אחת · הכרעת איה 29.08.2026 ═══
+                    היו כאן שלוש רמות על שישה פריטים: כותרת "מקרים", מתחתיה
+                    "כל המקרים" שנקרא ככותרת שנייה אף שהוא פריט, ומתחתיה
+                    המקרים מוזחים ב-42. ו"ארכיון" ישב באותה הזחה של "כל
+                    המקרים" בלי להיות מאותו סוג. הכל שורה אחת באותה רמה,
+                    וההפרדה נעשית בקו דק — קו מפריד בלי להוסיף רמה, כי אינו
+                    טקסט ואי אפשר ללחוץ עליו. */}
+                <div className={`sb-item${!researchPicking && therapistView === 'cases' ? ' active' : ''}`}
+                  onClick={() => { setResearchPicking(false); setTherapistView('cases'); setCasesLoaded(false); }}>
+                  <span className="sb-label">{isHe ? 'מקרים' : 'Cases'}</span>
                   <button className="sb-section-add" title={isHe ? 'מקרה חדש' : 'New case'}
                     aria-label={isHe ? 'מקרה חדש' : 'New case'}
                     onClick={e => { e.stopPropagation(); setResearchPicking(false); setNewCaseLabel(''); setNewCaseError(''); setShowNewCase(true); }}>
                     <Plus size={14} strokeWidth={2} />
                   </button>
                 </div>
-                <div className={`sb-item${!researchPicking && therapistView === 'cases' ? ' active' : ''}`}
-                  onClick={() => { setResearchPicking(false); setTherapistView('cases'); setCasesLoaded(false); }}>
-                  <span className="sb-label">{isHe ? 'כל המקרים' : 'All cases'}</span>
-                </div>
                 {cases.map(c => (
-                  <div key={c.id} className={`sb-item sb-sub${!researchPicking && !researchOn && selectedCase?.id === c.id && therapistView === 'caseDetail' ? ' active' : ''}`} onClick={() => { setResearchPicking(false); openCase(c); }}>
+                  <div key={c.id} className={`sb-item${!researchPicking && !researchOn && selectedCase?.id === c.id && therapistView === 'caseDetail' ? ' active' : ''}`} onClick={() => { setResearchPicking(false); openCase(c); }}>
                     <span className="sb-label">{c.label}</span>
                   </div>
                 ))}
+                <div className="sb-rule" />
                 {/* הארכיון היה קיים במלואו בקוד ולא הייתה אליו שום כניסה:
                     "העברה לארכיון" הזיזה מקרה למקום שאי אפשר לראות. */}
                 <div className={`sb-item${!researchPicking && therapistView === 'archive' ? ' active' : ''}`}
                   onClick={() => { setResearchPicking(false); setArchivedLoaded(false); setTherapistView('archive'); }}>
                   <span className="sb-label">{isHe ? 'ארכיון' : 'Archive'}</span>
                 </div>
+                <div className="sb-rule" />
               </>
             )}
             {/* BW-113 — מחקר הוא מצב עבודה ולא מקרה. הכרעת איה 29.08: הוא ישב
@@ -1532,7 +1534,7 @@ export default function Home() {
                 ומטופלת אינה רואה אותו. */}
             {activePersona === 'therapist' && (
               <>
-                <div className="sb-section-label">{isHe ? 'מצב עבודה' : 'Mode'}</div>
+
                 {/* הסימון הוורוד אומר "זה המסך שאני עליו", ולא "המצב דלוק".
                     כשהוא נגזר גם מ-‎researchOn‎, מטפלת שנמצאת ב"כל המקרים"
                     ראתה שני פריטים מסומנים בבת אחת, כי המצב נשאר explore.
@@ -1564,7 +1566,7 @@ export default function Home() {
             {/* פריטי פיתוח · הכותרת והפריט שתחתיה גדורים באותו ‎isLocalhost‎
                 כדי שלא תישאר כותרת יתומה. "פידבק משתמש" נמחק 29.08 (ראה למטה),
                 ולכן מתחתיה נשאר חדר הבורד בלבד. */}
-            {isLocalhost && <div className="sb-section-label">{isHe ? 'פיתוח' : 'Dev'}</div>}
+            {isLocalhost && <div className="sb-rule" />}
             {/* ⛔ "פידבק משתמש" ◈ נמחק 29.08.2026 בהכרעת איה: לא עבד טוב ואינו
                 נחוץ בתצורה הזו. נמחק ולא גודר, כאן וב-chat.js. הראוט
                 ‎/api/user-feedback‎ נשאר בשרת ואינו מקושר לשום דבר. */}

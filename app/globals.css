@@ -2088,6 +2088,13 @@ button, input, textarea, select { font-family: inherit; }
    נדרש רק לפזר את שני הילדים לקצוות. הפלוס שקט כברירת מחדל ומקבל את
    ורוד המילוי בריחוף, ואינו מזיז את הכותרת: הוא בגובה השורה שלה. */
 #sidebar .sb-section-head { align-items: center; justify-content: space-between; gap: 8px; }
+
+/* קו מפריד · מחליף את כותרות הקבוצה. הכרעת איה 29.08.2026: הכותרות
+   הוסיפו רמת היררכיה שלישית על שישה פריטים, והקו מפריד בלי להוסיף רמה —
+   הוא אינו טקסט, אי אפשר ללחוץ עליו, והעין אינה קוראת אותו כשלב במבנה. */
+#sidebar .sb-rule { height: 1px; background: var(--border); opacity: .55; margin: 10px 24px; }
+/* הפלוס יושב עכשיו על פריט ולא על כותרת · הפריט הוא ‎flex‎, ולכן דחיפה לקצה */
+#sidebar .sb-item .sb-section-add { margin-inline-start: auto; }
 #sidebar .sb-section-add {
   background: none; border: none; cursor: pointer; color: var(--off);
   display: inline-flex; align-items: center; justify-content: center;
