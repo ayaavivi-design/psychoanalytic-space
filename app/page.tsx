@@ -2647,7 +2647,7 @@ export default function Home() {
                   aria-busy={savingConsult} onClick={saveConsultation}>
                   {savingConsult ? (isHe ? 'שומר…' : 'Saving…')
                     : consultSaved ? (isHe ? 'נשמר ✓' : 'Saved ✓')
-                    : (isHe ? 'שמור למקרה' : 'Save to case')}
+                    : (isHe ? 'שמור' : 'Save')}
                 </button>
               )}
               {activePersona === 'patient' && (
