@@ -2124,8 +2124,8 @@ button, input, textarea, select { font-family: inherit; }
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  /* הריפוד האנכי ירד מ-12 ל-10 כדי לפנות מקום ללוגו הגדול · בקשת איה 29.08.
-     גובה הבר נשאר 72, וכך 52 + 10 + 10 ממלאים אותו במדויק. */
+  /* 30.08: גובה הבר נשאר 72. הלוגו נמדד בתיבה של 52, אבל אחרי שה-viewBox
+     נחתך אל הדיו התיבה כמעט כולה דיו, ולכן 52 כאן גדול מ-64 של אתמול. */
   padding: 10px 18px;
   background: var(--proto-bg);
   border-bottom: 1px solid var(--proto-line);

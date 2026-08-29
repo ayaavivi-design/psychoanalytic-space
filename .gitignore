@@ -58,3 +58,6 @@ public/Gemini_Generated_Image_*.jpeg
 !.impeccable/fork/
 .impeccable/fork/*
 !.impeccable/fork/index.html
+
+# קבצי המקור של הלוגו · נשמרים מקומית, אינם נטענים ואינם מוגשים
+public/Between_logo_*_on_transparent.svg

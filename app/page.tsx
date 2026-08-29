@@ -1448,8 +1448,8 @@ export default function Home() {
             הקריאוּת" שנפסלה 29.08. */}
         <div style={{ textAlign: 'center', maxWidth: 330, width: '90%' }}>
           {!authLogoFailed
-            ? <img src="/between-logo-dark.svg" alt="Between" onError={() => setAuthLogoFailed(true)}
-                style={{ height: 52, width: 'auto', display: 'block', margin: '0 auto 24px' }} />
+            ? <img src="/Between_logo_black.svg?v=2" alt="Between" onError={() => setAuthLogoFailed(true)}
+                style={{ height: 50, width: 'auto', display: 'block', margin: '0 auto 24px' }} />
             : <h2 id="auth-title" dir="ltr" style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 40, fontWeight: 200, letterSpacing: '.02em', color: 'var(--text)', marginBottom: 10 }} suppressHydrationWarning>Between</h2>}
           <p id="auth-subtitle" style={{ fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.7, marginBottom: 24 }}>{isHe ? 'המרחב שבין הפגישות.' : 'The space between sessions.'}</p>
 
@@ -1742,7 +1742,7 @@ export default function Home() {
                 ‎onLoad‎ אינו אמין כאן: תמונה שכבר במטמון נטענת לפני ש-React
                 מחבר את המטפל, והאירוע לא נורה כלל. */}
             {!logoFailed && (
-              <img src="/between-logo-light.svg" alt="Between"
+              <img src="/Between_logo_white.svg?v=2" alt="Between"
                 onError={() => setLogoFailed(true)} />
             )}
             {logoFailed && <span className="bw-topbar-wordmark">Between</span>}
