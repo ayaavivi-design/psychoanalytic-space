@@ -3427,9 +3427,17 @@ If no directly relevant texts come to mind — omit this section entirely.
 // it on is a clinical decision rather than a plumbing one.
 function buildUserContext() {
   try {
+    // ═══ לשון הפנייה · ההגדרות ראשונות, האינטייק נפילה לאחור ═══
+    // שיחת ההיכרות יורדת מה-UI (הכרעת איה 29.08), והשדה היחיד שלה שהגיע
+    // אי פעם למודל הוא לשון הפנייה. ההגדרות שומרות אותה כ-female/male/
+    // neutral, אבל הן נכנסו לפרומפט דרך ‎buildSystemPrompt‎ שהשרת זורק
+    // (פריט 8) — כלומר הן מעולם לא הגיעו. כאן, בנתיב שכן עובד, ההגדרות
+    // גוברות, והערך מהאינטייק נשאר כנפילה לאחור למי שכבר עשתה אותו.
+    const _pf = (() => { try { return JSON.parse(localStorage.getItem('user_prefs') || '{}'); } catch { return {}; } })();
     const intake = JSON.parse(localStorage.getItem('intake_completed') || '{}');
     const g = intake.gender || '';
     const gender =
+      _pf.gender === 'female' ? 'f' : _pf.gender === 'male' ? 'm' : _pf.gender === 'neutral' ? 'n' :
       ['נקבה','She/her','Weiblich','Féminin','Женский','Femminile','Ella'].includes(g) ? 'f' :
       ['זכר','He/him','Männlich','Masculin','Мужской','Maschile','Él'].includes(g) ? 'm' :
       ['ניטרלי','They/them','Neutral','Neutre','Нейтральный','Neutro'].includes(g) ? 'n' : undefined;

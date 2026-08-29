@@ -1785,11 +1785,13 @@ export default function Home() {
                 </div>}
                 {/* סיכום התייעצות ירד גם מכאן: שורת כלי השיחה גלויה במובייל, ולכן הסיכום
                     נגיש שם בזמן שיחה, וזה המקום היחיד שבו הוא רלוונטי. */}
-                {activePersona === 'patient' && (
-                <div className="sb-item" data-persona="patient" onClick={() => { (window as any).startIntake?.(); (window as any).closeAccountMenu?.(); }}>
-                  <span className="sb-icon"><Sparkles size={15} strokeWidth={1.75} /></span>
-                  <span className="sb-label">שיחת היכרות</span>
-                </div>
+                {/* ⛔ שיחת ההיכרות הוסרה מה-UI 29.08.2026 · ‎false &&‎ ולא מחיקה,
+                    כמו פיקוח קליני ואנונימיזציה. ההחזרה היא הסרת גידור. */}
+                {false && activePersona === 'patient' && (
+                  <div className="sb-item" data-persona="patient" onClick={() => { (window as any).startIntake?.(); (window as any).closeAccountMenu?.(); }}>
+                    <span className="sb-icon"><Sparkles size={15} strokeWidth={1.75} /></span>
+                    <span className="sb-label">שיחת היכרות</span>
+                  </div>
                 )}
               </div>
             </div>
@@ -2037,16 +2039,16 @@ export default function Home() {
                 {/* ההזמנה לשיחת ההיכרות · פעם אחת, כאן, ואז נעלמת לתמיד.
                     אותו תנאי בדיוק של הפריט שירד מהסייד־בר (‎intake_completed‎),
                     ולכן מי שכבר עשתה אותה אינה רואה כאן דבר. */}
-                {!intakeDone && (
-                  <div style={{ alignSelf: 'flex-start', margin: '0 0 var(--space-md)', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                    <button className="n-btn n-ghost" onClick={() => (window as any).startIntake?.()}>
-                      {isHe ? 'שיחת היכרות' : 'Introduction'}
-                    </button>
-                    <span className="n-note" style={{ margin: 0 }}>
-                      {isHe ? 'כמה שאלות, פעם אחת, מול הגישה שתבחרי.' : 'A few questions, once, with the approach you choose.'}
-                    </span>
-                  </div>
-                )}
+                {/* ⛔ שיחת ההיכרות הוסרה מה-UI 29.08.2026 בהכרעת איה, אחרי
+                    סריקה שהראתה: מתוך תשע שאלותיה **שדה אחד בלבד נקרא אי פעם**,
+                    לשון הפנייה. ‎intakeData‎ לעולם אינו נשלח לשרת, והשאר נשמר
+                    ב-localStorage ואיש אינו קורא אותו. שאלה אחת אינה מצדיקה
+                    טופס בן תשע.
+                    לשון הפנייה נשאלת עכשיו בהגדרות, ו-‎buildUserContext‎ קורא
+                    אותה משם — ראה ההערה שם, כי זה החלק שאסור לשבור.
+                    **הקוד נשאר בשלמותו** (‎startIntake‎, השלבים, ‎completeIntake‎),
+                    כמו שנעשה עם פיקוח קליני ואנונימיזציה. ההחזרה היא הסרת
+                    גידור, ולא כתיבה מחדש. */}
                 {/* משטח הכתיבה · מבנה העיצוב החדש, 28.08: אזור בחירת גישה מעל,
                     אזור כתיבה מתחת, והכתיבה נעולה עד שנבחרה גישה. */}
                 <div className={`n-plate${activeApproach ? '' : ' n-locked'}${entering ? ' n-leaving' : ''}`} style={{ width: '100%' }}>
