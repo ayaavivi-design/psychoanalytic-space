@@ -1389,7 +1389,11 @@ export default function Home() {
             {activePersona === 'therapist' && (
               <>
                 <div className="sb-section-label">{isHe ? 'מצב עבודה' : 'Mode'}</div>
-                <div id="sb-explore-btn" className={`sb-item${researchPicking || researchOn ? ' active' : ''}`} data-persona="therapist"
+                {/* הסימון הוורוד אומר "זה המסך שאני עליו", ולא "המצב דלוק".
+                    כשהוא נגזר גם מ-‎researchOn‎, מטפלת שנמצאת ב"כל המקרים"
+                    ראתה שני פריטים מסומנים בבת אחת, כי המצב נשאר explore.
+                    המצב עצמו נאמר בערך שבקצה: כבוי · בבחירה · פעיל. */}
+                <div id="sb-explore-btn" className={`sb-item${researchPicking ? ' active' : ''}`} data-persona="therapist"
                   onClick={() => {
                     // פעיל -> יציאה דרך אותה פונקציה שמנקה את השיחה.
                     // כבוי -> מסך בחירת גישה, ולא כניסה מיידית לברירת מחדל.
@@ -1398,10 +1402,14 @@ export default function Home() {
                   }}>
                   <span className="sb-icon"><BookOpen size={15} strokeWidth={1.75} /></span>
                   <span className="sb-label">{currentLang === 'he' ? 'מחקר' : 'Research'}</span>
-                  {/* "בבחירה" גובר על "פעיל": בזמן בחירה אין שיחה, ולומר עליה
-                      פעיל הוא לתאר מצב שאינו קיים. קרה גם כשחוזרים לכתיבת
-                      המחקר, שם bw_mode נשאר explore בכוונה (הוא מגדר את הקול). */}
-                  <span className="n-val" id="sb-explore-val">{researchPicking ? (isHe ? 'בבחירה' : 'Choosing') : researchOn ? (isHe ? 'פעיל' : 'On') : (isHe ? 'כבוי' : 'Off')}</span>
+                  {/* התווית מתארת את ‎bw_mode‎, כי הוא הדבר שבאמת משנה: הוא
+                      מגדר את הקול. הקדמתי כאן פעם את "בבחירה" ל"פעיל", וזו
+                      הייתה טעות — אחרי "חזרה לכתיבה" המצב נשאר explore והתווית
+                      אמרה "בבחירה", כלומר היא הכחישה בדיוק את מה שהיה נכון.
+                      **פעיל** = הקול במצב מחקר, גם אם אין שיחה פתוחה.
+                      **בבחירה** = נלחץ, טרם נבחרה גישה, והמצב עוד לא נכתב.
+                      **כבוי** = הקול אינו במצב מחקר. */}
+                  <span className="n-val" id="sb-explore-val">{researchOn ? (isHe ? 'פעיל' : 'On') : researchPicking ? (isHe ? 'בבחירה' : 'Choosing') : (isHe ? 'כבוי' : 'Off')}</span>
                 </div>
               </>
             )}
