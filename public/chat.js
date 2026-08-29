@@ -4939,7 +4939,6 @@ const UI_TRANSLATIONS = {
     sessionSummary: 'סיכום התייעצות',
     reflection: 'מה לקחתי מהשיחה',
     anonymize: 'אנונימיזציה',
-    userFeedback: 'פידבק משתמש',
     boardRoom: 'חדר הבורד',
     tooltips: { freud:'מה שלא נאמר', klein:'מה שקשה לגעת בו', winnicott:'המרחב להיות', ogden:'מה שנוצר בין שנינו', loewald:'הקשר עצמו כגורם המרפא', bion:'מה שעדיין לא ניתן לומר', kohut:'להרגיש מובן', heimann:'מה שהמפגש מעורר בי' },
     authTitle: 'Between', authSubtitle: 'מה שעלה בפגישה — אפשר להביא לכאן.',
@@ -5077,7 +5076,6 @@ const UI_TRANSLATIONS = {
     sessionSummary: 'Consultation summary',
     reflection: 'What I took from this',
     anonymize: 'Anonymize',
-    userFeedback: 'User feedback',
     boardRoom: 'Board room',
     tooltips: { freud:'What goes unsaid', klein:"What's hard to touch", winnicott:'The space to simply be', ogden:'What emerges between us', loewald:'The relationship itself as healing', bion:'What cannot yet be spoken', kohut:'To feel understood', heimann:'What the encounter stirs in me' },
     authTitle: 'Between', authSubtitle: 'What came up in your session — bring it here.',
@@ -5218,8 +5216,6 @@ function applyUITranslation(code) {
   // Tool labels
   const summaryText = t.sessionSummary || 'Session summary';
   document.querySelectorAll('.js-summary-label').forEach(el => { el.textContent = summaryText; });
-  const sbFeedback = document.getElementById('sb-feedback-label');
-  if (sbFeedback) sbFeedback.textContent = t.userFeedback || 'User feedback';
   const sbBoard = document.getElementById('sb-board-label');
   if (sbBoard) sbBoard.textContent = t.boardRoom || 'Board room';
   // ⛔ מסך הכניסה כולו בבעלות React · הוא מרנדר כל מחרוזת לפי isHe, כולל
@@ -8690,131 +8686,7 @@ function buildUXFeedbackTab(feedback) {
 }
 
 // ── פאנל ראשי ──────────────────────────────────────────────
-async function openUserFeedback() {
-  const existing = document.getElementById('user-feedback-modal');
-  if (existing) { existing.remove(); return; }
 
-  const overlay = document.createElement('div');
-  overlay.id = 'user-feedback-modal';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(45,36,32,0.28);backdrop-filter:blur(4px);direction:rtl;';
-
-  overlay.innerHTML = `
-    <div style="background:#fff;border-radius:8px;width:680px;max-width:94vw;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.14);overflow:hidden;">
-      <div style="background:linear-gradient(135deg,#2a1a30,#4a2a5a);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
-        <span style="color:rgba(255,255,255,0.9);font-size:16px;">◈ פידבק UX — משתמש מדומה</span>
-        <button id="uf-close" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:22px;cursor:pointer;line-height:1;">×</button>
-      </div>
-
-      <div id="uf-controls" style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;flex-shrink:0;">
-        <div style="display:flex;flex-direction:column;gap:4px;">
-          <label style="font-size:13px;color:var(--muted);font-weight:600;letter-spacing:0.04em;">פרסונה</label>
-          <select id="uf-persona" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:15px;background:var(--surface);color:var(--text);">
-            ${Object.entries(USER_FEEDBACK_PERSONAS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}
-          </select>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px;">
-          <label style="font-size:13px;color:var(--muted);font-weight:600;letter-spacing:0.04em;">תיאורטיקן</label>
-          <select id="uf-theorist" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:15px;background:var(--surface);color:var(--text);">
-            ${USER_FEEDBACK_THEORISTS.map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}
-          </select>
-        </div>
-        <button id="uf-run" style="padding:8px 22px;background:#4a2a5a;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;font-family:var(--font-rubik),sans-serif;margin-right:auto;">הרץ</button>
-      </div>
-
-      <div style="flex:1;overflow-y:auto;">
-        <div id="uf-body" style="padding:20px;">
-          <div style="color:var(--muted);font-size:15px;text-align:center;padding:30px 0;line-height:2;">
-            הסוכן מדמה משתמש שמנסה להשתמש בממשק:<br>
-            <span style="font-size:13px;opacity:0.7;">ניווט · שיחה · פידבק על פלואו וכפתורים</span>
-          </div>
-        </div>
-      </div>
-    </div>`;
-
-  document.body.appendChild(overlay);
-  document.getElementById('uf-close').addEventListener('click', () => overlay.remove());
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
-
-  document.getElementById('uf-run').addEventListener('click', async () => {
-    const personaId = document.getElementById('uf-persona').value;
-    const theorist  = document.getElementById('uf-theorist').value;
-    const body      = document.getElementById('uf-body');
-    const btn       = document.getElementById('uf-run');
-
-    btn.disabled = true;
-    btn.textContent = 'מריץ...';
-    body.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:16px;">
-      <div style="font-size:26px;margin-bottom:12px;animation:spin 1.2s linear infinite;display:inline-block;">◈</div><br>
-      מדמה משתמש · ניווט + שיחה + פידבק<br>
-      <span style="font-size:13px;opacity:0.6;">בד"כ 30-50 שניות</span>
-    </div>
-    <style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>`;
-
-    try {
-      const res  = await fetch('/api/user-feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-        body: JSON.stringify({ personaId, theorist }),
-      });
-      const data = await res.json();
-      if (data.error) { body.innerHTML = `<div style="color:#c00;padding:20px;text-align:center;">${data.error}</div>`; return; }
-
-      body.innerHTML = '';
-
-      const meta = document.createElement('div');
-      meta.style.cssText = 'font-size:13px;color:var(--muted);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);';
-      const theoristLabel = USER_FEEDBACK_THEORISTS.find(([k])=>k===theorist)?.[1] || theorist;
-      meta.textContent = `${data.personaName} · ${theoristLabel} · ${data.transcript.length / 2} תורות שיחה`;
-      body.appendChild(meta);
-
-      // Tabs
-      const tabs = document.createElement('div');
-      tabs.style.cssText = 'display:flex;gap:6px;margin-bottom:16px;';
-      const tabUX   = document.createElement('button');
-      const tabNav  = document.createElement('button');
-      const tabConv = document.createElement('button');
-      [[tabUX,'פידבק UX'],[tabNav,'יומן ניווט'],[tabConv,'שיחה']].forEach(([btn,lbl]) => {
-        btn.style.cssText = 'padding:5px 14px;border-radius:6px;font-size:15px;cursor:pointer;font-family:var(--font-rubik),sans-serif;border:1px solid var(--border);transition:all 0.15s;background:none;color:var(--muted);';
-        btn.textContent = lbl;
-        tabs.appendChild(btn);
-      });
-      body.appendChild(tabs);
-
-      const area = document.createElement('div');
-      body.appendChild(area);
-
-      const uxContent   = buildUXFeedbackTab(data.feedback);
-      const navContent  = buildNavLogTab(data.uxNavLog);
-      const convContent = buildConvTab(data.transcript, data.personaName);
-
-      function activate(which) {
-        [[tabUX,'ux'],[tabNav,'nav'],[tabConv,'conv']].forEach(([btn,key]) => {
-          const isActive = key === which;
-          btn.style.background    = isActive ? '#4a2a5a' : 'none';
-          btn.style.borderColor   = isActive ? '#4a2a5a' : 'var(--border)';
-          btn.style.color         = isActive ? '#fff'    : 'var(--muted)';
-        });
-        area.innerHTML = '';
-        if (which === 'ux')   area.appendChild(uxContent);
-        if (which === 'nav')  area.appendChild(navContent);
-        if (which === 'conv') area.appendChild(convContent);
-      }
-
-      tabUX.addEventListener('click',   () => activate('ux'));
-      tabNav.addEventListener('click',  () => activate('nav'));
-      tabConv.addEventListener('click', () => activate('conv'));
-      activate('ux');
-
-    } catch (e) {
-      body.innerHTML = `<div style="color:#c00;padding:20px;text-align:center;">שגיאת רשת — ${e.message}</div>`;
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'הרץ';
-    }
-  });
-}
-
-window.openUserFeedback = openUserFeedback;
 
 // ─── חדר הבורד ──────────────────────────────────────────────────────────────
 
