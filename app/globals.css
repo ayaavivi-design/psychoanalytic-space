@@ -2069,6 +2069,18 @@ button, input, textarea, select { font-family: inherit; }
 }
 #sidebar .sb-item .n-val { font-size: 11.5px; font-weight: 600; }
 
+/* כותרת קבוצה עם פעולה · הפלוס של "מקרים". הכותרת כבר ‎flex‎, ולכן
+   נדרש רק לפזר את שני הילדים לקצוות. הפלוס שקט כברירת מחדל ומקבל את
+   ורוד המילוי בריחוף, ואינו מזיז את הכותרת: הוא בגובה השורה שלה. */
+#sidebar .sb-section-head { align-items: center; justify-content: space-between; gap: 8px; }
+#sidebar .sb-section-add {
+  background: none; border: none; cursor: pointer; color: var(--off);
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 2px; margin: -2px; border-radius: var(--radius-sm); line-height: 1;
+}
+#sidebar .sb-section-add:hover { color: var(--accent-deep); }
+#sidebar .sb-section-add:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
 /* כותרת המשנה של השיחה ("התייעצות — פרויד") אינה בקובץ העיצוב. הבר העליון
    כבר נושא "שיחה עם X · מקרה · תאריך", ולכן זו כותרת שנייה שסותרת אותו.
    הוסרה בהכרעת איה 29.08. ‎!important‎ כי chat.js מציב display בשורה. */

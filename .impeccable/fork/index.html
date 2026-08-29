@@ -97,6 +97,13 @@ button{font-family:inherit}
 .sb .ic{width:16px;flex:0 0 16px;text-align:center;font-size:14px;color:var(--mut)}
 .sb.on .ic{color:var(--p-700)}
 .grouphead{padding:var(--s5) var(--s5) var(--s2);font-size:10px;letter-spacing:.18em;color:var(--off);font-weight:700}
+/* כותרת קבוצה עם פעולה · הפלוס של "מקרים". שקט כברירת מחדל, ורוד
+   בריחוף, ואינו מזיז את הכותרת: הוא בגובה השורה שלה. */
+.grouphead-act{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.headadd{background:none;border:none;cursor:pointer;color:var(--off);font-family:inherit;
+         font-size:15px;line-height:1;padding:2px;margin:-2px;border-radius:var(--r-ctl)}
+.headadd:hover{color:var(--p-600)}
+.headadd:focus-visible{outline:2px solid var(--p-500);outline-offset:2px}
 .sb-sub{padding-inline-start:42px;font-size:13px;font-weight:400;height:34px}
 /* ערך המצב בפריט סייד-בר · כבוי / בבחירה / פעיל. אותו משקל של הערך
    בתפריט הפרופיל, כי זו אותה אמירה: הגדרה נמשכת ולא פעולה. */
@@ -539,28 +546,20 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
               style="margin-inline-start:auto;width:34px;height:34px">✕</button>
     </div>
 
-    <!-- אצל מטפלת יחידת העבודה היא מקרה ולא שיחה, ולכן הפריט הראשון פותח
-         מקרה חדש. הכרעת איה 29.08.2026. התווית מתחלפת עם הפרסונה. -->
-    <!-- הפריט הראשון תלוי פרסונה, הכרעת איה 29.08.2026: אצל מטפלת יחידת
-         העבודה היא מקרה ולא שיחה, ולכן הוא נקרא "מקרה חדש" ופותח את המודל
-         של מקרה חדש. אצל מטופלת הוא נשאר "שיחה חדשה". -->
+    <!-- אצל מטופלת יחידת העבודה היא שיחה, ולכן הפריט הראשון נשאר אצלה.
+         אצל מטפלת הוא ירד 29.08.2026 בהכרעת איה: "מקרה חדש" הופיע גם כאן
+         וגם ככפתור במסך המקרים, והסייד־בר נפתח בפעולה במקום ברשימה.
+         ההוספה עברה לפלוס שבכותרת "מקרים". -->
     <button class="sb" id="sbFirst" data-persona-only="patient" data-goto="write"><span class="sb-label">שיחה חדשה</span></button>
-    <button class="sb" id="sbFirstTh" data-persona-only="therapist" data-open="newcase"><span class="sb-label">מקרה חדש</span></button>
-
-    <!-- מצב עבודה · מחקר הוא מצב ולא מקרה. הכרעת איה 29.08.2026:
-         כשהוא ישב בתחתית קבוצת "מקרים" הוא נקרא כשם של מטופל נוסף
-         ברשימה. קבוצה משלו, מעל הרשימה.
-         הגידור ל-localhost הוסר 29.08.2026 בהכרעת איה: מטפלת רואה אותו
-         גם בפרודקשן. מטופלת אינה רואה אותו. -->
-    <div data-persona-only="therapist">
-      <div class="grouphead">מצב עבודה</div>
-      <button class="sb sb-nav" id="sbResearch" data-goto="research">
-        <span class="sb-label">מחקר</span><span class="val" id="resVal">כבוי</span>
-      </button>
-    </div>
 
     <div data-persona-only="therapist">
-      <div class="grouphead">מקרים</div>
+      <!-- הפלוס יושב על הכותרת של הרשימה שהוא מוסיף אליה. הכפתור שבמסך
+           "כל המקרים" נשאר: אחד מלווה את הרשימה בכל מסך, והשני יושב בתוך
+           המסך עצמו. -->
+      <div class="grouphead grouphead-act">
+        <span>מקרים</span>
+        <button class="headadd" data-open="newcase" aria-label="מקרה חדש" title="מקרה חדש">+</button>
+      </div>
       <button class="sb sb-nav" data-goto="cases"><span class="sb-label">כל המקרים</span></button>
       <button class="sb sb-sub" data-goto="write">מקרה ו׳</button>
       <button class="sb sb-sub" data-goto="write">מקרה ד׳</button>
@@ -568,6 +567,17 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
       <!-- הארכיון היה קיים בקוד בלי שום כניסה אליו: "העברה לארכיון" הזיזה
            מקרה למקום שאי אפשר לראות. נוסף בממשק 29.08 וחסר כאן. -->
       <button class="sb sb-nav" data-goto="casearchive"><span class="sb-label">ארכיון</span></button>
+    </div>
+
+    <!-- מצב עבודה · מחקר הוא מצב ולא מקרה, ולכן קבוצה משלו ולא פריט בתוך
+         רשימת המקרים. הקבוצה ירדה מתחת לארכיון 29.08.2026 בבקשת איה.
+         הגידור ל-localhost הוסר באותו יום: מטפלת רואה אותו גם בפרודקשן,
+         ומטופלת אינה רואה אותו. -->
+    <div data-persona-only="therapist">
+      <div class="grouphead">מצב עבודה</div>
+      <button class="sb sb-nav" id="sbResearch" data-goto="research">
+        <span class="sb-label">מחקר</span><span class="val" id="resVal">כבוי</span>
+      </button>
     </div>
 
     <div data-persona-only="patient">
@@ -1161,7 +1171,6 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
     persona=p;
     $$('#personaGrp button').forEach(function(b){ b.classList.toggle('on', b.dataset.persona===p); });
     $$('[data-persona-only]').forEach(function(el){ el.style.display = el.dataset.personaOnly===p ? '' : 'none'; });
-    $('#sbFirst .sb-label').textContent = p==='therapist' ? 'מקרה חדש' : 'שיחה חדשה';
     $('#wHead').textContent = p==='therapist' ? 'מה עלה לך מהפגישה?' : 'מה נשאר לך מהפגישה?';
     $('#wCase').textContent = p==='therapist' ? 'מקרה ו׳' : 'הפגישה האחרונה';
     $('#wFoot').textContent = p==='therapist'

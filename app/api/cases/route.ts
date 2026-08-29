@@ -52,7 +52,32 @@ export async function GET(req: NextRequest) {
   const { data, error } = await q.order('created_at', { ascending: false });
 
   if (error) return NextResponse.json({ error: 'list_failed' }, { status: 500 });
-  return NextResponse.json({ cases: data ?? [] });
+  const rows = data ?? [];
+
+  // מה יש בתוך כל מקרה · בלי זה כרטיס המקרה אומר רק שם ותאריך, ואין ממנו
+  // דרך לדעת אם יש למה לחזור. שאילתה אחת לכל ההתייעצויות של המטפלת,
+  // וצבירה בזיכרון — ולא שאילתה לכל מקרה. אין כאן טקסט קליני: רק ספירה,
+  // מתי לאחרונה, ודרך איזו גישה.
+  const ids = rows.map(r => r.id);
+  if (ids.length) {
+    const { data: cons } = await supabase
+      .from('case_consultations')
+      .select('case_id, theorists, created_at')
+      .eq('user_id', user.id)
+      .in('case_id', ids)
+      .order('created_at', { ascending: false });
+    const agg = new Map<string, { count: number; last_at: string; last_theorist: string | null }>();
+    for (const c of cons ?? []) {
+      const prev = agg.get(c.case_id);
+      if (prev) prev.count += 1;
+      // הרשימה ממוינת מהחדש לישן, ולכן הראשון שנראה לכל מקרה הוא האחרון בזמן
+      else agg.set(c.case_id, { count: 1, last_at: c.created_at, last_theorist: c.theorists?.[0] ?? null });
+    }
+    return NextResponse.json({
+      cases: rows.map(r => ({ ...r, ...(agg.get(r.id) ?? { count: 0, last_at: null, last_theorist: null }) })),
+    });
+  }
+  return NextResponse.json({ cases: rows });
 }
 
 // DELETE /api/cases?id=xxx  → permanently delete a case and its consultations

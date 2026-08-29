@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { PenLine, Globe, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, Mic, ScrollText, MessageCirclePlus, Sparkles, HelpCircle } from 'lucide-react';
+import { PenLine, Globe, Settings, LogOut, Languages, Download, ChevronDown, BookOpen, Sofa, Mic, ScrollText, MessageCirclePlus, Sparkles, HelpCircle, Plus } from 'lucide-react';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -154,7 +154,9 @@ export default function Home() {
   // ושמתעלם מביטול בחירה, ולכן אינו יכול לייצג "עדיין לא נבחרה גישה".
   const [activeApproach, setActiveApproach] = useState<string | null>(null);
   // BW-113 — therapist case-first flow.
-  type TherapistCase = { id: string; label: string; created_at: string };
+  type TherapistCase = { id: string; label: string; created_at: string;
+    // מה יש בתוך המקרה · מגיע מ-‎GET /api/cases‎, בלי טקסט קליני
+    count?: number; last_at?: string | null; last_theorist?: string | null };
   type Consultation = { id: string; mode: string; theorists: string[]; anonymized_text: string; created_at: string };
   const [therapistView, setTherapistView] = useState<'cases' | 'hub' | 'caseDetail' | 'archive'>('cases');
   // Ephemeral-consultation step 1 — therapist lands directly on the writing page (skip roster). Guards initial auto-entry.
@@ -1053,6 +1055,31 @@ export default function Home() {
     ogden:    ['אוגדן',   'Ogden'],
     bion:     ['ביון',    'Bion'],
   };
+  // זמן יחסי · "לפני יומיים" ולא "27 באוגוסט". תאריך מוחלט דורש חישוב
+  // מהקורא, וכרטיס המקרה נסרק במבט. הצורות העבריות מיוחדות: יומיים
+  // ושבועיים אינן "לפני 2".
+  const relTime = (iso: string) => {
+    const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+    if (!isHe) {
+      if (days <= 0) return 'today';
+      if (days === 1) return 'yesterday';
+      if (days < 7) return `${days} days ago`;
+      if (days < 14) return 'last week';
+      if (days < 31) return `${Math.floor(days / 7)} weeks ago`;
+      if (days < 62) return 'last month';
+      return `${Math.floor(days / 30)} months ago`;
+    }
+    if (days <= 0) return 'היום';
+    if (days === 1) return 'אתמול';
+    if (days === 2) return 'לפני יומיים';
+    if (days < 7) return `לפני ${days} ימים`;
+    if (days < 14) return 'לפני שבוע';
+    if (days === 14) return 'לפני שבועיים';
+    if (days < 31) return `לפני ${Math.floor(days / 7)} שבועות`;
+    if (days < 62) return 'לפני חודש';
+    return `לפני ${Math.floor(days / 30)} חודשים`;
+  };
+
   const getHoldTheoristName = (key: string) => {
     const pair = HOLD_THEORIST_NAMES[key];
     return pair ? (isHe ? pair[0] : pair[1]) : key;
@@ -1341,18 +1368,17 @@ export default function Home() {
           {/* BW-104 · מתג הפרסונות עבר לבר העליון, כמו בקובץ העיצוב. */}
           <div style={{ padding: '16px 8px 6px', display: 'flex', flexDirection: 'column', gap: 1 }}>
             {/* end-session moved out of sidebar — appears inline at bottom of chat */}
-            {/* אצל מטפלת יחידת העבודה היא מקרה ולא שיחה, ולכן הפריט הראשון
-                פותח את "מקרה חדש" ולא מנקה שיחה. הכרעת איה 29.08. בקובץ
-                העיצוב הפריט אחיד לשתי הפרסונות, וזו סטייה מודעת ממנו. */}
-            <div className="sb-item" data-persona="both" onClick={() => {
-              if (activePersona === 'therapist') { setResearchPicking(false); setNewCaseLabel(''); setNewCaseError(''); setShowNewCase(true); return; }
-              setResearchPicking(false); setPatientView('write'); (window as any).newChat();
-            }}>
-              <span className="sb-icon"><PenLine size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label" id="sb-new-chat-label">{activePersona === 'therapist'
-                ? (isHe ? 'מקרה חדש' : 'New case')
-                : (isHe ? 'שיחה חדשה' : 'New conversation')}</span>
-            </div>
+            {/* "מקרה חדש" ירד מכאן 29.08.2026 בהכרעת איה: אותה פעולה הופיעה
+                פעמיים, כפריט עליון וככפתור במסך המקרים, והסייד־בר נפתח
+                בפעולה במקום ברשימה. ההוספה עברה לפלוס שבכותרת "מקרים",
+                כלומר היא יושבת על הרשימה שהיא מוסיפה אליה. הכפתור שבמסך
+                נשאר. אצל מטופלת הפריט נשאר, כי שיחה היא יחידת העבודה שלה. */}
+            {activePersona === 'patient' && (
+              <div className="sb-item" onClick={() => { setResearchPicking(false); setPatientView('write'); (window as any).newChat(); }}>
+                <span className="sb-icon"><PenLine size={15} strokeWidth={1.75} /></span>
+                <span className="sb-label" id="sb-new-chat-label">{isHe ? 'שיחה חדשה' : 'New conversation'}</span>
+              </div>
+            )}
             {/* חיפוש רשת ירד מכאן לתפריט הפרופיל (הכרעת איה, פריט 2) — הוא הגדרה נמשכת, לא פעולה. */}
             {activePersona === 'patient' && <div className="sb-section-label">{isHe ? 'שלי' : 'Mine'}</div>}
             <div className={`sb-item${patientView === 'archive' ? ' active' : ''}`} data-persona="patient" onClick={() => { loadWriteEntries(); setPatientView('archive'); }}>
@@ -1380,9 +1406,41 @@ export default function Home() {
                 מציג מקרים, וההתייעצויות נשארות בתוך המקרה; רשימה מקוננת בסייד-בר צר
                 היא מלכודת. ומרונדר רק כשיש מקרה — דרופדאון שנפתחת אל כלום אומרת
                 למשתמש חדש שהוא פספס משהו. אותו רכיב של "גישה תיאורטית". */}
+            {activePersona === 'therapist' && (
+              <>
+                {/* הפלוס יושב על הכותרת של הרשימה שהוא מוסיף אליה · הכרעת איה
+                    29.08.2026, אחרי ש"מקרה חדש" הופיע גם כפריט עליון וגם ככפתור
+                    במסך. הכפתור שבמסך נשאר, וזו הכניסה השנייה ולא כפילות: אחת
+                    מלווה את הרשימה בכל מסך, והשנייה יושבת בתוך הרשימה עצמה. */}
+                <div className="sb-section-label sb-section-head">
+                  <span>{isHe ? 'מקרים' : 'Cases'}</span>
+                  <button className="sb-section-add" title={isHe ? 'מקרה חדש' : 'New case'}
+                    aria-label={isHe ? 'מקרה חדש' : 'New case'}
+                    onClick={e => { e.stopPropagation(); setResearchPicking(false); setNewCaseLabel(''); setNewCaseError(''); setShowNewCase(true); }}>
+                    <Plus size={14} strokeWidth={2} />
+                  </button>
+                </div>
+                <div className={`sb-item${!researchPicking && therapistView === 'cases' ? ' active' : ''}`}
+                  onClick={() => { setResearchPicking(false); setTherapistView('cases'); setCasesLoaded(false); }}>
+                  <span className="sb-label">{isHe ? 'כל המקרים' : 'All cases'}</span>
+                </div>
+                {cases.map(c => (
+                  <div key={c.id} className={`sb-item sb-sub${!researchPicking && !researchOn && selectedCase?.id === c.id && therapistView === 'caseDetail' ? ' active' : ''}`} onClick={() => { setResearchPicking(false); openCase(c); }}>
+                    <span className="sb-label">{c.label}</span>
+                  </div>
+                ))}
+                {/* הארכיון היה קיים במלואו בקוד ולא הייתה אליו שום כניסה:
+                    "העברה לארכיון" הזיזה מקרה למקום שאי אפשר לראות. */}
+                <div className={`sb-item${!researchPicking && therapistView === 'archive' ? ' active' : ''}`}
+                  onClick={() => { setResearchPicking(false); setArchivedLoaded(false); setTherapistView('archive'); }}>
+                  <span className="sb-label">{isHe ? 'ארכיון' : 'Archive'}</span>
+                </div>
+              </>
+            )}
             {/* BW-113 — מחקר הוא מצב עבודה ולא מקרה. הכרעת איה 29.08: הוא ישב
                 בתחתית קבוצת "מקרים" ונקרא כשם של מטופל נוסף ברשימה. הועבר
-                לקבוצה משלו, מעל הרשימה. */}
+                לקבוצה משלו. הקבוצה ירדה מתחת לארכיון 29.08 בבקשת איה,
+                והיא נשארת קבוצה נפרדת ולא פריט בתוך רשימת המקרים. */}
             {/* ⛔ הגידור ל-localhost הוסר 29.08.2026 בהכרעת איה. מצב מחקר
                 גלוי עכשיו למטפלת גם בפרודקשן. הוא נשאר כלי של מטפלת בלבד,
                 ומטופלת אינה רואה אותו. */}
@@ -1413,49 +1471,17 @@ export default function Home() {
                 </div>
               </>
             )}
-            {activePersona === 'therapist' && (
-              <>
-                <div className="sb-section-label">{isHe ? 'מקרים' : 'Cases'}</div>
-                <div className={`sb-item${!researchPicking && therapistView === 'cases' ? ' active' : ''}`}
-                  onClick={() => { setResearchPicking(false); setTherapistView('cases'); setCasesLoaded(false); }}>
-                  <span className="sb-label">{isHe ? 'כל המקרים' : 'All cases'}</span>
-                </div>
-                {cases.map(c => (
-                  <div key={c.id} className={`sb-item sb-sub${!researchPicking && !researchOn && selectedCase?.id === c.id && therapistView === 'caseDetail' ? ' active' : ''}`} onClick={() => { setResearchPicking(false); openCase(c); }}>
-                    <span className="sb-label">{c.label}</span>
-                  </div>
-                ))}
-                {/* הארכיון היה קיים במלואו בקוד ולא הייתה אליו שום כניסה:
-                    "העברה לארכיון" הזיזה מקרה למקום שאי אפשר לראות. */}
-                <div className={`sb-item${!researchPicking && therapistView === 'archive' ? ' active' : ''}`}
-                  onClick={() => { setResearchPicking(false); setArchivedLoaded(false); setTherapistView('archive'); }}>
-                  <span className="sb-label">{isHe ? 'ארכיון' : 'Archive'}</span>
-                </div>
-              </>
-            )}
             {/* פיקוח קליני הוסר מה-UI (קו אדום CORE: לא תחליף לסופרוויזיה; ההתייעצות מכסה את הצורך). הראוט/הפונקציה נשארו בקוד — הפיך. BW-112. */}
             {/* "מה לקחתי מהשיחה" ירד מכאן לשורת כלי השיחה (הכרעת איה). הוא היה כפתור של שיחה
                 שיושב בתפריט של הממשק כולו: updateReflectionBtn כבר גידר אותו על
                 conversationHistory >= 2, כלומר התלות בשיחה הייתה קיימת והמיקום בלבד סתר אותה. */}
-            {/* אנונימיזציה ופידבק — גלויים רק ב-localhost */}
-            {/* anonymization removed from UI */}
-            {/* פריטי פיתוח · אותו נימוק כמו מחקר, אסור שייקראו כפריט ברשימת המקרים */}
-            {/* הכותרת גדורה ב-‎isLocalhost‎ בדיוק כמו "פידבק משתמש" שתחתיה, ולכן
-                השתיים נופלות יחד. אין להוסיף לה ‎data-persona="admin"‎: היא
-                הייתה נסגרת בעוד הפריט נשאר, וזו הכותרת היתומה בהיפוך. */}
+            {/* פריטי פיתוח · הכותרת והפריט שתחתיה גדורים באותו ‎isLocalhost‎
+                כדי שלא תישאר כותרת יתומה. "פידבק משתמש" נמחק 29.08 (ראה למטה),
+                ולכן מתחתיה נשאר חדר הבורד בלבד. */}
             {isLocalhost && <div className="sb-section-label">{isHe ? 'פיתוח' : 'Dev'}</div>}
-            {/* ‎data-persona="admin"‎ הוסר מ"פידבק משתמש" 29.08.2026 בבקשת איה. כלל
-                BW-112 מסתיר ‎[data-persona="admin"]‎ בשתי הפרסונות, ומכיוון שהסייד־בר
-                תמיד נושא אחת מהן הפריט לא הופיע גם ב-localhost. הגידור היחיד שנשאר
-                הוא ‎isLocalhost‎, ולכן בפרודקשן הוא אינו מרונדר כלל. אין להחזיר את
-                המאפיין בלי להחזיר גם את הכותרת שמעליו לאותו גידור. */}
-            {isLocalhost && (
-              <div className="sb-item admin-only" onClick={() => (window as any).openUserFeedback()}>
-                <span className="sb-icon" style={{ fontSize: 16, lineHeight: 1 }}>◈</span>
-                <span className="sb-label" id="sb-feedback-label">פידבק משתמש</span>
-                <span style={{ fontSize: 13, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(בטא)' : '(Beta)'}</span>
-              </div>
-            )}
+            {/* ⛔ "פידבק משתמש" ◈ נמחק 29.08.2026 בהכרעת איה: לא עבד טוב ואינו
+                נחוץ בתצורה הזו. נמחק ולא גודר, כאן וב-chat.js. הראוט
+                ‎/api/user-feedback‎ נשאר בשרת ואינו מקושר לשום דבר. */}
             {/* חדר הבורד — גלוי רק ב-localhost */}
             {isLocalhost && (
               <div className="sb-item admin-only" data-persona="admin" onClick={() => (window as any).openBoardRoom()}>
@@ -2109,7 +2135,23 @@ export default function Home() {
                         ) : (
                           <div className="n-t">{c.label}</div>
                         )}
-                        <div className="n-m">{new Date(c.created_at).toLocaleDateString(isHe ? 'he-IL' : 'en-US', { month: 'long', day: 'numeric' })}</div>
+                        {/* שורת המטא מקובץ העיצוב · תווית הספירה בקצה, ואחריה
+                            מתי עודכן ודרך איזו גישה. בלי זה הכרטיס אומר שם
+                            ותאריך בלבד, ואין ממנו דרך לדעת אם יש למה לחזור. */}
+                        <div className="n-m">
+                          {!!c.count && (
+                            <span className="n-tag">{isHe
+                              ? (c.count === 1 ? '1 התייעצות' : `${c.count} התייעצויות`)
+                              : (c.count === 1 ? '1 consultation' : `${c.count} consultations`)}</span>
+                          )}
+                          {c.count
+                            ? <>{isHe ? 'עודכן ' : 'Updated '}{relTime(c.last_at || c.created_at)}
+                                {c.last_theorist ? (isHe
+                                  ? ` · אחרונה דרך הגישה של ${getHoldTheoristName(c.last_theorist)}`
+                                  : ` · last through ${getHoldTheoristName(c.last_theorist)}'s approach`) : ''}</>
+                            : <>{isHe ? `נפתח ${relTime(c.created_at)} · עוד לא נכתב דבר`
+                                      : `Opened ${relTime(c.created_at)} · nothing written yet`}</>}
+                        </div>
                       </div>
                     ))}
                   </div>
