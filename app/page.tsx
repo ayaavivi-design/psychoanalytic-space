@@ -782,9 +782,22 @@ export default function Home() {
     // moment a consultation starts. Two modes, two moments of intent, two explicit writes.
     try { localStorage.setItem('bw_mode', 'consult'); } catch { /* private mode */ }
     const material = (typeof materialOverride === 'string' ? materialOverride : consultText).trim();
+
+    // ═══ המסך מתחלף לפני ההמתנה, לא אחריה ═══
+    // האנונימיזציה היא קריאת מודל שלמה, 2 עד 6 שניות, וכשהיא ישבה לפני
+    // המעבר המטפלת נשארה מול מסך הכתיבה הקפוא. אצל מטופלת אין שלב כזה
+    // כלל, ולכן זה הרגיש איטי משמעותית. הכניסה לחדר מיידית עכשיו,
+    // וההמתנה נראית בתוכו כשלוש הנקודות של המערכת.
+    if ((window as any).bwSetActiveTheorist) (window as any).bwSetActiveTheorist(key);
+    document.body.classList.remove('bw-selecting');
+    const _welcomeEl = document.getElementById('welcome');
+    if (_welcomeEl) _welcomeEl.style.display = 'none';
+
     let seed = material;
-    try {
-      if (selectedCase && material) {
+    let anonymizeFailed = false;
+    if (selectedCase && material) {
+      (window as any).showThinking?.();
+      try {
         const gh = (window as any).getAuthHeaders;
         const headers = { 'Content-Type': 'application/json', ...(gh ? await gh() : {}) };
         const res = await fetch('/api/consultations', { method: 'POST', headers, body: JSON.stringify({ case_id: selectedCase.id, mode: 'consult', theorists: [key], text: material }) });
@@ -793,17 +806,22 @@ export default function Home() {
           if (typeof d.anonymized_text === 'string') seed = d.anonymized_text;
           setConsultRowId(typeof d.id === 'string' ? d.id : null);
           setConsultSaved(false); setConsultSaveError('');
+        } else {
+          // ‎seed‎ נשאר הטקסט הגולמי, ולכן אסור לשלוח אותו: ההבטחה היא
+          // שהתיאורטיקן רואה רק חומר מאונמז. קודם הכישלון נבלע והגולמי נשלח.
+          anonymizeFailed = true;
         }
-      }
-    } catch { /* ignore */ }
-    if ((window as any).bwSetActiveTheorist) (window as any).bwSetActiveTheorist(key);
-    // Always navigate to chat — hide hub/welcome regardless of whether there is seeded text.
-    // sendMessage() returns early on empty input, so we must hide welcome explicitly here.
-    // Also remove bw-selecting — showModeSelect() adds it on page load, confirmTheoristEntry()
-    // removes it in patient flow, but therapist goes via startConsultation which skips that path.
-    document.body.classList.remove('bw-selecting');
-    const _welcomeEl = document.getElementById('welcome');
-    if (_welcomeEl) _welcomeEl.style.display = 'none';
+      } catch { anonymizeFailed = true; }
+      (window as any).hideThinking?.();
+    }
+
+    if (anonymizeFailed) {
+      setConsultSaveError(isHe
+        ? 'האנונימיזציה לא הצליחה, ולכן החומר לא נשלח ולא נשמר. אפשר לנסות שוב.'
+        : 'Anonymization failed, so nothing was sent or saved. Try again.');
+      return;
+    }
+
     const input = document.getElementById('user-input') as HTMLInputElement | HTMLTextAreaElement | null;
     if (input) {
       if (seed) input.value = seed;

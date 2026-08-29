@@ -2139,6 +2139,10 @@ function removeThinking() {
 }
 
 function hideThinking() { removeThinking(); }
+// מיוצאים · המסלול של המטפלת מחליף מסך ואז ממתין לאנונימיזציה, והסימן
+// הזה הוא מה שמראה שההמתנה חיה. הוא כבר הסימן של המערכת, ולכן לא נבנה חדש.
+window.showThinking = showThinking;
+window.hideThinking = hideThinking;
 
 const THEORIST_KNOWLEDGE = {
   freud: `פרויד — ידע מעמיק
