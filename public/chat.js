@@ -1497,7 +1497,7 @@ function startHoldConversation() {
   enterHoldConversation(key, getPublicWriteContent());
 }
 
-function enterHoldConversation(theorist, holdText, displayText) {
+async function enterHoldConversation(theorist, holdText, displayText) {
   localStorage.setItem('bw_mode', 'session');
   syncExploreIndicator();
   window._bwPendingTheorist = theorist || 'winnicott';
@@ -1509,7 +1509,7 @@ function enterHoldConversation(theorist, holdText, displayText) {
   window._bwWriteSessionContext = (holdText && holdText.trim())
     ? { text: holdText.trim(), display: (displayText || holdText).trim(), summary: null }
     : null;
-  confirmTheoristEntry();
+  await confirmTheoristEntry();
 }
 window.enterHoldConversation = enterHoldConversation;
 
@@ -1635,7 +1635,7 @@ function bwUpdateModeLabels() {
 // session → 2 companion cards (Vera / Elliot) with SVG icons, localStorage pre-select
 // explore → 4 theorist cards (freud/klein/winnicott/ogden) with rich tooltips
 
-function confirmTheoristEntry() {
+async function confirmTheoristEntry() {
   const mode = localStorage.getItem('bw_mode') || 'session';
   // Write mode: skip theorist selection entirely
   if (mode === 'write') {
@@ -1702,7 +1702,7 @@ function confirmTheoristEntry() {
   if (mode === 'session' && !window._bwWriteSessionContext) {
     renderFlowButtons();
   } else {
-    showTheoristOpening(key, false);
+    await showTheoristOpening(key, false);
   }
 }
 let uploadedFileContent = null;
@@ -6705,7 +6705,9 @@ function bwExitChatToHome(opts) {
   clearTimeout(idleTimer); idleTimer = null; idleMessageSent = false;
   conversationHistory = [];
   sessionMemorySaved = false;
-  bwResetApproachChoice();
+  // ב"חזרה לכתיבה" הגישה נשמרת · היא חזרה ולא התחלה מחדש. איפוס כאן היה
+  // מחזיר את הכתיבה לשדה נעול, וזה נקרא כאילו היא נמחקה.
+  if (!(opts && opts.keepWriting)) bwResetApproachChoice();
   currentConversationId = null; // שיחה חדשה נרשמת מחדש
   try { saveConversation(); } catch (e) { /* noop */ }
   const titleEl = document.getElementById('session-title'); if (titleEl) titleEl.textContent = '';

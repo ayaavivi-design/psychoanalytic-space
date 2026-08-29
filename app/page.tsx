@@ -179,6 +179,8 @@ export default function Home() {
   // מסך נבנה מבר עליון, קו, כותרת גדולה ופוטר; מודל מכותרת קטנה, פתיח וסרגל.
   type WriteEntry = { id: number | string; date?: string; fullText?: string; publicText?: string };
   const [patientView, setPatientView] = useState<'write' | 'archive'>('write');
+  // נכנסים לשיחה · חוסם לחיצה כפולה ומראה שמשהו קורה
+  const [entering, setEntering] = useState(false);
   // ההיכרות נעשתה? נקרא בעלייה ומתעדכן כשהיא מסתיימת
   const [intakeDone, setIntakeDone] = useState(true);
   // מסך המחקר · בוחרים גישה לפני הכניסה, כמו במסך הכתיבה (הכרעת איה 29.08)
@@ -383,6 +385,10 @@ export default function Home() {
       // "חזרה לכתיבה" מתוך מחקר מחזירה למסך הכתיבה של המחקר. היעד מגיע
       // מ-chat.js על האירוע עצמו, כי הוא זה שיודע באיזה מצב היינו.
       setResearchPicking((e as CustomEvent | undefined)?.detail?.back === 'research');
+      // "חזרה לכתיבה" היא חזרה, לא התחלה מחדש. אם מאפסים גם את הגישה,
+      // הכתיבה חוזרת לשדה נעול עם הכיתוב "בחרי גישה כדי להתחיל לכתוב"
+      // מעליה, כלומר היא שם ואי אפשר לגעת בה. זה נקרא כאילו נמחקה.
+      const keepWriting = !!(e as CustomEvent | undefined)?.detail?.keepWriting;
       setDailyText('');
       setConsultText('');
       setHubTheorists([]);
@@ -390,8 +396,7 @@ export default function Home() {
       // בחירת הגישה מתאפסת גם היא. בלי זה שיחה חדשה נפתחה על התיאורטיקן
       // האחרון, כלומר על בחירה שהמטופלת לא עשתה הפעם, והלוח נראה פתוח
       // בזמן שהרמז "מתחילים כאן" כבר לא מוצג.
-      setActiveApproach(null);
-      setResearchApproach(null);
+      if (!keepWriting) { setActiveApproach(null); setResearchApproach(null); }
       setSelOpen(false);
       setResearchSelOpen(false);
       setNoteAnalysis(prev => { const n = { ...prev }; delete n['draft']; return n; });
@@ -406,8 +411,7 @@ export default function Home() {
       if (holdDraftTimerRef.current) clearTimeout(holdDraftTimerRef.current);
       // חזרה לכתיבה מחזירה את מה שנכתב · שיחה חדשה מנקה
       let restore = '';
-      const keep = !!(e as CustomEvent)?.detail?.keepWriting;
-      if (keep) { try { restore = localStorage.getItem('bw_hold_last') || ''; } catch { /* ignore */ } }
+      if (keepWriting) { try { restore = localStorage.getItem('bw_hold_last') || ''; } catch { /* ignore */ } }
       if (holdTextareaRef.current) holdTextareaRef.current.innerHTML = restore;
       setHoldText(restore ? (holdTextareaRef.current?.innerText?.trim() || '') : '');
       setHoldSaveStatus('');
@@ -1116,7 +1120,7 @@ export default function Home() {
     setTimeout(() => setHoldSaveStatus(''), 2500);
   };
 
-  const handleEnterConversation = (theorist: string) => {
+  const handleEnterConversation = async (theorist: string) => {
     setShowHoldTheoristPicker(false);
     const { full, public: pub, display } = getHoldContent();
     // Crisis check scans FULL text (incl. .bw-private) so distress marked
@@ -1127,7 +1131,10 @@ export default function Home() {
     }
     // Default save: commit the writing to the local archive once, on continue.
     if (full) (window as any).saveWriteEntry?.(full, pub);
-    (window as any).enterHoldConversation?.(theorist, pub, display);
+    // ‎enterHoldConversation‎ מגיע עד ‎showTheoristOpening‎ שהוא async ופונה
+    // למודל. בלי ההמתנה כאן הכפתור היה חוזר למצבו הרגיל מיד, לפני שהמסך
+    // התחלף בכלל.
+    await (window as any).enterHoldConversation?.(theorist, pub, display);
     window.bwTrack?.('conversation_entered', { theorist });
     // ‎bw_hold_last‎ שומר עותק אחד בצד, כדי ש"חזרה לכתיבה" תוכל להחזיר את
     // מה שנכתב. **הקריאה חייבת לקרות לפני הניקוי** — קודם היא ישבה אחריו
@@ -2029,8 +2036,13 @@ export default function Home() {
                   </button>
                   <button className="n-btn n-ghost" disabled={!activeApproach || !holdText.trim()}
                     onClick={() => (window as any).openWriteSummary?.()}>{isHe ? 'נתח' : 'Analyse'}</button>
-                  <button className="n-btn n-solid" disabled={!activeApproach || !holdText.trim()}
-                    onClick={() => handleEnterConversation(holdTheorist)}>{isHe ? 'המשך לשיחה' : 'Continue'}</button>
+                  {/* הכניסה לשיחה כוללת קריאת מודל, ולכן יש שם המתנה של כמה
+                      שניות עד שהמסך מתחלף. ‎showThinking()‎ מופיע רק אחרי
+                      המעבר, כלומר בדיוק בפער הזה לא היה שום סימן שמשהו קורה,
+                      והכפתור הזמין לחיצה נוספת. */}
+                  <button className="n-btn n-solid" disabled={entering || !activeApproach || !holdText.trim()}
+                    onClick={async () => { setEntering(true); try { await handleEnterConversation(holdTheorist); } finally { setEntering(false); } }}>
+                    {entering ? (isHe ? 'נכנס לשיחה…' : 'Opening…') : (isHe ? 'המשך לשיחה' : 'Continue')}</button>
                 </div>
                 {/* Ephemerality — stated as a value, not read as a failure. Content is never
                     persisted server-side by design (MEMORY.md, "תוכן שיחות לא נשמר בשרת").
