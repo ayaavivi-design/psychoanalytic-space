@@ -39,3 +39,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# כלי סוכן מותקנים מקומית (impeccable וכד')
+.claude/skills/
+
+# חומרי עבודה של העיצוב · אינם חלק מהמוצר ואסור שיוגשו מ-public.
+# ‎_design-reference.html‎ הוא אב הטיפוס המלא (92KB), והוא עותק של
+# ‎.impeccable/fork/index.html‎ שנועד להשוואה מקומית בלבד.
+# קובץ ה-JPEG הוא המקור שממנו נחתכו הלוגואים.
+public/_design-reference.html
+public/Gemini_Generated_Image_*.jpeg
+
+# ‎.impeccable‎ · חומרי העבודה של הסקיל (מוקאפים, שאלות, יסודות) אינם נכנסים,
+# הם 7MB של תמונות ביניים. **היוצא מן הכלל הוא קובץ העיצוב עצמו**, שלפי
+# UX-RULES הוא מקור האמת היחיד לעיצוב, ולכן הוא חייב לחיות בריפו ולא רק
+# על מחשב אחד. החריגה נכתבת אחרי ההתעלמות, אחרת git מתעלם ממנה.
+.impeccable/*
+!.impeccable/fork/
+.impeccable/fork/*
+!.impeccable/fork/index.html

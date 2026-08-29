@@ -2,54 +2,154 @@
   "global": {
     "color": {
       "bg": {
-        "value": "#f3e7e2",
+        "value": "#F4F4F2",
         "type": "color",
-        "description": "רקע כללי — רוז עמוק (קנבס כל האפליקציה)"
+        "description": "רקע כללי — ניטרלי. היה קרם חם #f3e7e2 עד 28.08.2026"
       },
       "surface": {
-        "value": "#fffaf8",
+        "value": "#FAFAF9",
         "type": "color",
-        "description": "כרטיסים, panels — משטח צף חמים על הרוז"
+        "description": "כרטיסים, סייד־בר — משטח צף בהיר"
       },
       "border": {
-        "value": "#e6d6cf",
+        "value": "#D6D6D2",
         "type": "color",
-        "description": "גבולות עדינים — מותאם לרוז"
+        "description": "גבולות ומסגרות"
       },
       "text": {
-        "value": "#2d2420",
+        "value": "#111111",
         "type": "color",
-        "description": "טקסט ראשי — כמעט שחור, חמים"
+        "description": "טקסט ראשי — דיו"
       },
       "muted": {
-        "value": "#74645e",
+        "value": "#66655F",
         "type": "color",
-        "description": "טקסט משני — placeholder, labels (4.65 על הרוז, עובר WCAG AA)"
+        "description": "טקסט משני — 5.31:1 על הרקע. היה #74645e שנתן 3.96 ונכשל"
       },
       "accent": {
-        "value": "#c4607a",
+        "value": "#C4607A",
         "type": "color",
-        "description": "צבע ראשי — ורוד-אדום"
+        "description": "צבע המותג — סמן, סימון, מספר פעיל. 3.96:1 מול לבן, ולכן אינו נושא טקסט לבן"
       },
       "accentDim": {
-        "value": "#d4899a",
+        "value": "#D4899A",
         "type": "color",
-        "description": "accent בהיר — hover, גבולות"
+        "description": "accent בהיר — קווים ומפרידים"
       },
       "accentDeep": {
-        "value": "#a8475f",
+        "value": "#A8475F",
         "type": "color",
-        "description": "accent כהה — טקסט CTA / רקע כפתורים (4.65 על הרוז, עובר WCAG AA)"
+        "description": "מילוי פקדים עם טקסט לבן — 5.63:1"
       },
       "accentSoft": {
-        "value": "rgba(196, 96, 122, 0.08)",
+        "value": "#FDF2F5",
         "type": "color",
-        "description": "accent שקוף — selected background"
+        "description": "רקע רמז ורוד"
       },
       "thinking": {
-        "value": "#ecc7d4",
+        "value": "#ECC7D4",
         "type": "color",
-        "description": "רקע מחשבה של AI — הועמק כדי לבלוט על הרוז"
+        "description": "הדגשת ריחוף ברשימות"
+      },
+      "accentHover": {
+        "value": "#BA536F",
+        "type": "color",
+        "description": "ריחוף על מילוי — בהיר מהמילוי ולא כהה. 4.61:1 מול לבן"
+      },
+      "field": {
+        "value": "#FFFFFF",
+        "type": "color",
+        "description": "כל משטח שכותבים לתוכו. בהיר מהרקע, ולכן נקרא כפתוח"
+      },
+      "fieldPlaceholder": {
+        "value": "#6E6D69",
+        "type": "color",
+        "description": "פלייסהולדר — 5.18:1 על לבן"
+      },
+      "zone": {
+        "value": "#F0F0EE",
+        "type": "color",
+        "description": "אזור פעיל בתוך לוח"
+      },
+      "zoneOff": {
+        "value": "#E1E1DE",
+        "type": "color",
+        "description": "אזור כבוי — כהה מהרקע, ולכן נקרא כשקוע"
+      },
+      "accent100": {
+        "value": "#F8DDE4",
+        "type": "color",
+        "description": "ורוד 100 · פריט נבחר בתפריט"
+      },
+      "accent400": {
+        "value": "#CE6F87",
+        "type": "color",
+        "description": "ורוד 400 · ביניים"
+      },
+      "accent700": {
+        "value": "#8E3550",
+        "type": "color",
+        "description": "ורוד 700 · טקסט ורוד על בהיר, 7.57:1"
+      },
+      "accent800": {
+        "value": "#6B233A",
+        "type": "color",
+        "description": "ורוד 800 · לחוץ"
+      },
+      "accent900": {
+        "value": "#4A1626",
+        "type": "color",
+        "description": "ורוד 900 · דיו התיאורטיקן בתמליל, 14.65:1 על לבן"
+      },
+      "lineSoft": {
+        "value": "#E6E6E2",
+        "type": "color",
+        "description": "קו שיער בין תורות בתמליל"
+      },
+      "off": {
+        "value": "#9A9A95",
+        "type": "color",
+        "description": "טקסט מושבת · פקד כבוי בלבד"
+      },
+      "ink900": {
+        "value": "#0D0D0D",
+        "type": "color",
+        "description": "רקע כהה לתצוגות בקרה"
+      },
+      "placeholderOff": {
+        "value": "#B4B4B0",
+        "type": "color",
+        "description": "פלייסהולדר בשדה מושבת"
+      },
+      "proto-bg": {
+        "value": "#151515",
+        "type": "color",
+        "description": "הבר השחור העליון — רקע. מקובץ העיצוב (.proto), הכרעת איה 29.08.2026"
+      },
+      "proto-line": {
+        "value": "#2A2A2A",
+        "type": "color",
+        "description": "הבר השחור — קו תחתון"
+      },
+      "proto-btn-line": {
+        "value": "#333333",
+        "type": "color",
+        "description": "הבר השחור — מסגרת כפתור"
+      },
+      "proto-btn-ink": {
+        "value": "#9A9A9A",
+        "type": "color",
+        "description": "הבר השחור — טקסט כפתור"
+      },
+      "proto-btn-hover": {
+        "value": "#555555",
+        "type": "color",
+        "description": "הבר השחור — מסגרת כפתור בריחוף"
+      },
+      "proto-btn-ink-hover": {
+        "value": "#DDDDDD",
+        "type": "color",
+        "description": "הבר השחור — טקסט כפתור בריחוף"
       }
     },
     "borderRadius": {
