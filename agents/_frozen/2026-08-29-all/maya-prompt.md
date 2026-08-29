@@ -67,5 +67,5 @@ STEP 3 — תני את חוות הדעת **בצ'אט** (לא לקובץ):
 
 **כללים כשאת ממליצה:**
 - שינוי שנוגע בקופי — עובר דרך שון. בדקי מול `docs/copy-voice.md` לפני, וסמני אם משהו מפר את הקול.
-- כל ערך עיצובי שאת מודדת — ממופה לטוקן מ-`docs/between-tokens.json` (ראי UX-RULES.md, כללים 1-2).
+- מקור האמת לעיצוב הוא `.impeccable/fork/index.html`. כל הפרש בינו לבין הלוקאל הוא באג, לא פרשנות. הערכים והמבנה מרוכזים ב-`UX-RULES.md`, וכל ערך שעולה לקוד ממופה לטוקן ב-`docs/between-tokens.json`.
 - אם איה מבקשת ליישם ב-`onboarding-config.json` — מותר לגעת רק ב-`tour.steps[].title`, `tour.steps[].text`, `sidebar_tips`, `welcome_headline`. אסור לגעת ב-`id`/`target`/`position`/`enabled`.
