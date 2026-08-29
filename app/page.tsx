@@ -1361,10 +1361,11 @@ export default function Home() {
           <div id="sb-user-menu" className="n-acctmenu">
             {/* חיפוש רשת, שפה וצור קשר רוכזו כאן מהסייד-בר ומהכותרת (הכרעת איה, פריטים 2 ו-4).
                 אותם מזהים ואותן מחלקות ‎js-*-label כמו קודם, כדי ש-applyUITranslation ימשיך לעדכן. */}
-            <button className="n-mi" data-persona="therapist" onClick={() => (window as any).toggleWebSearch()} id="sb-websearch-btn">
+            {/* ⛔ ירד מה-UI 29.08.2026 · ראה ההערה בתפריט הבר */}
+            {false && <button className="n-mi" data-persona="therapist" onClick={() => (window as any).toggleWebSearch()} id="sb-websearch-btn">
               <span>{isHe ? 'חיפוש רשת' : 'Web search'}</span>
               <span className="n-val">{webSearchOn ? (isHe ? 'דלוק' : 'On') : (isHe ? 'כבוי' : 'Off')}</span>
-            </button>
+            </button>}
             <button className="n-mi" onClick={(e) => { e.stopPropagation(); const nl = currentLang === 'he' ? 'en' : 'he'; setCurrentLang(nl); (window as any).selectLang?.(nl, nl === 'en' ? '🇬🇧' : '🇮🇱', nl === 'en' ? 'English' : 'עברית'); }}>
               <span>{isHe ? 'שפה' : 'Language'}</span>
               <span className="n-val">{currentLang === 'he' ? 'עברית' : 'English'}</span>
@@ -1441,7 +1442,12 @@ export default function Home() {
                     ולכן מטופלת ראתה אותו. הגידור כאן הוא ב-React, שמרנדר את
                     התפריט ויודע מי הפרסונה. זה חשוב במיוחד כי במצב הזה אימות
                     הפלט מדולג והקול אינו מובטח. */}
-                {activePersona === 'therapist' && (
+{/* ⛔ חיפוש רשת ירד מה-UI 29.08.2026 בהכרעת איה. הקוד ו-route נשארו
+                    והמחיקה הפיכה, כמו שנעשה עם פיקוח קליני ואנונימיזציה.
+                    הסיבה: בריצה חיה במצב הזה אימות הפלט מדולג והקול מתמוטט
+                    לגנרי. `window.webSearch` נשאר false ולעולם אינו נדלק,
+                    ולכן השרת תמיד מריץ RAG בלי אינטרנט. */}
+                {false && (
                 <button className="n-mi" onClick={() => { (window as any).toggleWebSearch?.(); }}>
                   <span>{isHe ? 'חיפוש רשת' : 'Web search'}</span>
                   <span className="n-val">{webSearchOn ? (isHe ? 'דלוק' : 'On') : (isHe ? 'כבוי' : 'Off')}</span>
@@ -1536,11 +1542,12 @@ export default function Home() {
               </div>
               {/* 4. Tools (therapist) + PDF (gated) + intake (patient). */}
               <div className="bw-acct-section">
-                <div className="sb-item" data-persona="therapist" onClick={() => { (window as any).toggleWebSearch(); (window as any).closeAccountMenu?.(); }}>
+                {/* ⛔ ירד מה-UI 29.08.2026 · ראה ההערה בתפריט הבר */}
+                {false && <div className="sb-item" data-persona="therapist" onClick={() => { (window as any).toggleWebSearch(); (window as any).closeAccountMenu?.(); }}>
                   <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
                   <span className="sb-label">{isHe ? 'חיפוש רשת' : 'Web search'}</span>
                   <span className="n-val">{webSearchOn ? (isHe ? 'דלוק' : 'On') : (isHe ? 'כבוי' : 'Off')}</span>
-                </div>
+                </div>}
                 {/* סיכום התייעצות ירד גם מכאן: שורת כלי השיחה גלויה במובייל, ולכן הסיכום
                     נגיש שם בזמן שיחה, וזה המקום היחיד שבו הוא רלוונטי. */}
                 {activePersona === 'patient' && (
