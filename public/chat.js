@@ -473,7 +473,10 @@ function completeIntake() {
   const chat = document.getElementById('chat');
   const closeDiv = document.createElement('div');
   closeDiv.className = 'message agent';
-  closeDiv.innerHTML = `<div class="message-role">${step.speaker || intakeSpeaker(t)}</div><div class="message-content" style="">${t.closing}</div>`;
+  // ‎step‎ אינו קיים כאן · ההודעה הזו אינה שלב אלא הסיום, ולכן הדובר הוא
+  // התיאורטיקן שנבחר בתחילת השיחה. החלפה גלובלית קודמת הכניסה לכאן
+  // ‎step.speaker‎ בטעות, וזה היה זורק ReferenceError בדיוק בסיום.
+  closeDiv.innerHTML = `<div class="message-role">${intakeSpeaker(t)}</div><div class="message-body"><div class="message-content">${t.closing}</div></div>`;
   chat.appendChild(closeDiv);
   chat.scrollTop = chat.scrollHeight;
   setTimeout(enterMainSpace, 2200);
