@@ -6596,7 +6596,13 @@ async function checkConversationLimit() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return true;
     // שולחים את התיאורטיקן הנוכחי כדי לשמור בסטטיסטיקות
-    const theorist = window.selectedTheorist || 'winnicott';
+    // ‎window.selectedTheorist‎ אינו קיים בשום מקום בקוד: זו הייתה הקריאה
+    // היחידה אליו, ואיש לא כתב אליו מעולם. כלומר כל שורה בטבלה נרשמה
+    // כוויניקוט, ללא קשר למי שנבחרה בפועל. מקור האמת הוא ‎activeTheorists‎,
+    // ובנתיב המטופלת גם ‎bw_explore_theorist‎ שנשמר בבחירת גישה.
+    const theorist = (Array.isArray(activeTheorists) && activeTheorists[0])
+      || (() => { try { return localStorage.getItem('bw_explore_theorist'); } catch (e) { return null; } })()
+      || null;
     const res = await fetch('/api/start-conversation', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
@@ -6680,7 +6686,10 @@ function performNewChat() {
 // BW-116 — exit an active consultation chat back to the therapist React home (My Cases / Archive).
 // Mirrors performNewChat's cleanup but WITHOUT showModeSelect()/renderAnalystBadge()/clinical reset,
 // which are patient-flow only and would clobber the React therapist view living inside #welcome.
-function bwExitChatToHome() {
+// ‎opts.keepWriting‎ · "חזרה לכתיבה" היא חזרה ולא התחלה מחדש. בלי הדגל
+// היא משדרת את אותו ‎bwnewchat‎ של "שיחה חדשה", שתפקידו לנקות הכל, והמסך
+// חזר ריק. איה דיווחה על זה 29.08, גם בלוקאל וגם בפרודקשן.
+function bwExitChatToHome(opts) {
   try { stopSessionTimer(); } catch (e) { /* noop */ }
   clearTimeout(silenceTimer); silenceResponseSent = false;
   clearTimeout(idleTimer); idleTimer = null; idleMessageSent = false;
@@ -6718,7 +6727,7 @@ function bwExitChatToHome() {
   // שהוא קורא לכאן, ולכן הבדיקה כאן מחזירה false והיציאה רגילה.
   const _backToResearch = _exitTherapist && localStorage.getItem('bw_mode') === 'explore';
   window.dispatchEvent(new CustomEvent('bwnewchat', {
-    detail: { back: _backToResearch ? 'research' : null }
+    detail: { back: _backToResearch ? 'research' : null, keepWriting: !!(opts && opts.keepWriting) }
   })); // same React-state gap as performNewChat
 }
 window.bwExitChatToHome = bwExitChatToHome;
