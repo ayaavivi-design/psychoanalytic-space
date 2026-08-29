@@ -1,35 +1,15 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
-import { Rubik, Cormorant_Garamond, Frank_Ruhl_Libre, Assistant } from 'next/font/google';
+import { Assistant } from 'next/font/google';
 import './globals.css';
 
-const rubik = Rubik({
-  subsets: ['latin', 'hebrew'],
-  weight: ['300', '400', '500'],
-  style: ['normal', 'italic'],
-  variable: '--font-rubik',
-  display: 'swap',
-});
-
-const frankRuhl = Frank_Ruhl_Libre({
-  subsets: ['hebrew', 'latin'],
-  weight: ['300', '400', '500'],
-  variable: '--font-frank',
-  display: 'swap',
-});
-
+// ששת המשקלים של העיצוב החדש. 200 נושא את הכותרות הגדולות ואת השם Between,
+// ו-700 נושא את התוויות ואת שמות הדוברים בתמליל. בלעדיהם הדפדפן נופל
+// למשקל הקרוב או מסנתז בולד, וזה מה שהבדיל את הלוקאל מאב הטיפוס.
 const assistant = Assistant({
   subsets: ['hebrew', 'latin'],
-  weight: ['300', '400', '500', '600'],
+  weight: ['200', '300', '400', '500', '600', '700'],
   variable: '--font-assistant',
-  display: 'swap',
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['300', '400'],
-  style: ['normal', 'italic'],
-  variable: '--font-cormorant',
   display: 'swap',
 });
 
@@ -51,7 +31,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl" className={`${rubik.variable} ${cormorant.variable} ${frankRuhl.variable} ${assistant.variable}`} suppressHydrationWarning>
+    <html lang="he" dir="rtl" className={assistant.variable} suppressHydrationWarning>
       <body style={{ margin: 0, padding: 0 }} suppressHydrationWarning>
         {children}
         <Script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" strategy="afterInteractive" />

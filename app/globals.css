@@ -1,24 +1,37 @@
 
+/* ═══════════════════════════════════════════════════════════════════
+   מערכת העיצוב החדשה · הוטמעה 28.08.2026 בענף design/new-system
+   שמות הטוקנים לא השתנו, רק הערכים, כדי שלא יישבר שום שימוש קיים.
+   הרקע עבר מקרם חם לניטרלי, והפינות מ-22 ל-6.
+   ═══════════════════════════════════════════════════════════════════ */
 :root {
   /* Color tokens */
-  --bg:          #f3e7e2;
-  --surface:     #fffaf8;
-  --border:      #e6d6cf;
-  --text:        #2d2420;
-  --muted:       #74645e;
-  --accent:      #c4607a;
-  --accent-dim:  #d4899a;
-  --accent-deep: #a8475f;
-  --accent-soft: rgba(196,96,122,0.08);
-  --thinking:    #ecc7d4;
+  --bg:          #F4F4F2;   /* היה קרם חם */
+  --surface:     #FAFAF9;   /* היה קרם חם */
+  --border:      #D6D6D2;   /* היה ורדרד */
+  --text:        #111111;   /* היה חום־שחור */
+  --muted:       #66655F;   /* נותן 5.31:1. הקודם נתן 3.96 ונכשל */
+  --accent:      #C4607A;   /* המותג · לא השתנה */
+  --accent-dim:  #D4899A;   /* לא השתנה */
+  --accent-deep: #A8475F;   /* מילוי פקדים · 5.63:1 מול לבן */
+  --accent-soft: #FDF2F5;   /* היה rgba שקוף */
+  --thinking:    #ECC7D4;   /* לא השתנה */
 
-  /* Border radius */
-  --radius-xs:     4px;   /* inline, message bubble corner  */
-  --radius-sm:     8px;   /* sidebar items, modals, dropdowns */
-  --radius-md:     12px;  /* cards (theorist), small panels */
-  --radius-lg:     16px;  /* input wrap, mode cards, message bubbles */
-  --radius-xl:     22px;  /* all pill buttons */
-  --radius-circle: 50%;   /* avatars, dots */
+  /* טוקנים חדשים */
+  --accent-hover:#BA536F;   /* ריחוף בהיר מהמילוי · 4.61:1 מול לבן */
+  --field:       #FFFFFF;   /* כל משטח שכותבים לתוכו */
+  --field-ph:    #6E6D69;   /* פלייסהולדר · 5.18:1 על לבן */
+  --zone:        #F0F0EE;   /* אזור פעיל */
+  --zone-off:    #E1E1DE;   /* אזור כבוי · כהה מהרקע */
+
+  /* Border radius · קטן מאוד, לא חד. הפינות המעוגלות היו חלק ממה
+     שגרם למסך להיראות כאפליקציה, ולכן 22 ירד ל-6. */
+  --radius-xs:     4px;   /* inline, פינת בועה */
+  --radius-sm:     6px;   /* פקדים, פריטי סייד־בר */
+  --radius-md:     6px;   /* כרטיסים קטנים */
+  --radius-lg:     8px;   /* לוחות, מודלים, קופסאות */
+  --radius-xl:     6px;   /* היה 22 · כל הכפתורים */
+  --radius-circle: 50%;   /* אווטארים, נקודות */
 
   /* Spacing */
   --space-xs:    4px;
@@ -40,17 +53,61 @@
   /* --bp-tablet:  900px  — tablet / narrow desktop */
   /* --bp-desktop: 1200px — full desktop */
 
-  /* Font sizes — type scale (10 values, no others permitted) */
-  --fs-micro:        9px;   /* Rubik — subtitles בתוך כרטיסים, uppercase */
-  --fs-caption:      11px;  /* Rubik — labels, timestamps, disclaimers */
-  --fs-body-sm:      12px;  /* Rubik — כפתורי flow, metadata */
-  --fs-body-md:      13px;  /* Rubik — UI כללי: sidebar, buttons */
-  --fs-body-lg:      15px;  /* Rubik — הודעות שיחה, שדה קלט */
-  --fs-heading-card: 18px;  /* Cormorant — שמות תיאורטיקנים, mode cards */
-  --fs-heading-md:   20px;  /* Cormorant — כותרת session פעילה */
-  --fs-heading-lg:   22px;  /* Assistant — כותרת welcome */
-  --fs-heading-xl:   26px;  /* Cormorant — שם המוצר בheader */
-  --fs-display:      48px;  /* Cormorant — אלמנט דקורטיבי */
+  /* Font sizes · סקאלה מתוקנת 28.08.2026.
+     הרצפה: 13 לתווית קצרה, 15 לטקסט משני, 16 לפקדים, 17 לטקסט שנקרא.
+     קודם 41 מתוך 68 ההצהרות היו מתחת ל-14. */
+  --fs-micro:        13px;  /* היה 9 */
+  --fs-caption:      13px;  /* היה 11 */
+  --fs-body-sm:      15px;  /* היה 12 */
+  --fs-body-md:      16px;  /* היה 13 · פקדים וסייד־בר */
+  --fs-body-lg:      17px;  /* היה 15 · הודעות שיחה ושדה קלט */
+  --fs-heading-card: 20px;  /* היה 18 */
+  --fs-heading-md:   22px;  /* היה 20 */
+  --fs-heading-lg:   26px;  /* היה 22 */
+  --fs-heading-xl:   30px;  /* היה 26 */
+  --fs-display:      48px;  /* לא השתנה */
+
+  /* ── מיפוי · שמות המשתנים של אב הטיפוס אל הטוקנים של האפליקציה.
+     בלי הבלוק הזה כל שכבת n- מפנה למשתנים שאינם קיימים ואינה עובדת. ── */
+  --p-50:  var(--accent-soft);
+  --p-100: #F8DDE4;
+  --p-200: var(--thinking);
+  --p-300: var(--accent-dim);
+  --p-400: #CE6F87;
+  --p-500: var(--accent);
+  --p-hover: var(--accent-hover);
+  --p-600: var(--accent-deep);
+  --p-700: #8E3550;
+  --p-800: #6B233A;
+  --p-900: #4A1626;
+  --accent50:  #FDF2F5;
+  --accent100: #F8DDE4;
+  --accent700: #8E3550;
+  --accent900: #4A1626;
+  --line:      var(--border);
+  --line-soft: #E6E6E2;
+  --off:       #9A9A95;
+  --ink:       var(--text);
+  --mut:       var(--muted);
+  --r-ctl:  var(--radius-sm);
+  --r-box:  var(--radius-lg);
+  --h-ctl:  44px;
+  --w-side: 248px;
+  /* הבר השחור · מקובץ העיצוב */
+  --proto-bg: #151515;
+  --proto-line: #2A2A2A;
+  --proto-btn-line: #333333;
+  --proto-btn-ink: #9A9A9A;
+  --proto-btn-hover: #555555;
+  --proto-btn-ink-hover: #DDDDDD;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+}
+/* העיצוב החדש הוא משפחת פונט אחת, אסיסטנט. המיפוי כאן חוסך שכתוב של 36 אתרי קריאה
+   בעמוד, והספציפיות (html:root) גוברת על מחלקת המשתנים ש-next/font מציב על התגית */
+html:root {
+  --font-rubik:     var(--font-assistant);
+  --font-frank:     var(--font-assistant);
+  --font-cormorant: var(--font-assistant);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -59,7 +116,9 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-rubik), sans-serif;
-  font-weight: 300;
+  /* 400 · כמו בקובץ העיצוב. היה 300, ולכן כל טקסט בממשק שלא הוצהר עליו
+     במפורש יצא דק ממה שעוצב. זה היה השורש של 20 מתוך 43 ההפרשים שנמדדו. */
+  font-weight: 400;
   height: 100vh;
   height: 100dvh; /* iOS: shrink with the browser's dynamic bottom bar. Old browsers ignore this and keep the 100vh above. */
   display: flex;
@@ -67,8 +126,7 @@ body {
   direction: ltr;
   overflow: hidden;
   overscroll-behavior: none; /* mobile: block browser pull-to-refresh from reloading the page and wiping the conversation */
-  background-image: radial-gradient(circle at 80% 10%, rgba(196,96,122,0.05) 0%, transparent 50%),
-                    radial-gradient(circle at 10% 90%, rgba(196,96,122,0.03) 0%, transparent 40%);
+  /* הגרדיאנטים הוורודים ירדו 28.08 · המערכת החדשה נשענת על קווים ולא על זוהר */
 }
 #auth-screen[data-bw-hidden] {
   display: none !important;
@@ -84,7 +142,7 @@ body {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  transition: width 0.2s ease, min-width 0.2s ease;
+  /* ההנפשה של width הוסרה 28.08 · הכיווץ ירד עם האייקונים, ואין יותר מה להנפיש */
   direction: rtl;
   overflow: hidden;
   position: relative;
@@ -162,6 +220,7 @@ body {
 
 /* ── Mobile account menu — same persona scoping as the sidebar (the phone stand-in for it). ── */
 #bw-account-menu.persona-patient [data-persona="therapist"] { display: none !important; }
+
 #bw-account-menu.persona-therapist [data-persona="patient"] { display: none !important; }
 #bw-account-menu.persona-patient [data-persona="admin"],
 #bw-account-menu.persona-therapist [data-persona="admin"] { display: none !important; }
@@ -279,7 +338,7 @@ header {
   position: relative;
 }
 .header-psi {
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-assistant), sans-serif;
   font-size: 64px; /* decorative only — not in type scale */
   color: var(--accent);
   opacity: 0.07;
@@ -314,12 +373,13 @@ header {
   align-items: center;
 }
 header h1 {
-  font-family: var(--font-cormorant), serif;
+  /* השם ב-Assistant ובדיו · הכרעת הלוגו, 28.08. היה סריף איטלקי ורוד. */
+  font-family: var(--font-assistant), sans-serif;
   font-size: var(--fs-heading-xl);
-  font-weight: 300;
-  font-style: italic;
-  color: var(--accent);
-  letter-spacing: 0.04em;
+  font-weight: 200;
+  font-style: normal;
+  color: var(--text);
+  letter-spacing: 0.02em;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -434,10 +494,6 @@ header span {
   max-width: 740px;
 }
 
-.message {
-  max-width: 720px;
-  animation: fadeUp 0.35s ease both;
-}
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -459,32 +515,51 @@ header span {
   line-height: 1.85;
   color: var(--text);
 }
-.message.user .message-body {
-  display: inline-block;
-  background: var(--accent-soft);
-  border: 1px solid rgba(196,96,122,0.12);
-  border-radius: var(--radius-lg) var(--radius-xs) var(--radius-lg) var(--radius-lg);
-  padding: 10px 16px;
+/* ── השיחה כתמליל · הכרעת איה, אפשרות 05 ──────────────────────────
+   אין בועות ואין צדדים. מסמך אחד רציף, קו שיער בין תור לתור,
+   וההבחנה בין הקולות היא בצבע הדיו בלבד:
+   הכתיבה שלה בשחור, התיאורטיקן בדיו ורוד־חום. 18.88:1 מול 14.65:1. */
+.message {
+  max-width: 720px;
+  padding: 17px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.message:first-child { border-top: none; }
+.message.user { text-align: start; }
+.message.user .message-role { text-align: start; }
+.message-role {
+  font-size: var(--fs-caption);
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: none;
+  opacity: 1;
+}
+.message.assistant .message-role { color: var(--accent700); }
+.message.user .message-body,
+.message.assistant .message-body {
+  display: block;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  max-width: 62ch;
   font-family: var(--font-rubik), sans-serif;
   font-size: var(--fs-body-lg);
   font-weight: 300;
-  color: var(--text);
-  text-align: right;
+  line-height: 1.8;
+  text-align: start;
 }
-.message.assistant .message-body {
-  font-weight: 300;
-  background: var(--surface); /* היה: rgba(253,248,246,0.7) — לא טוקן */
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xs) var(--radius-lg) var(--radius-lg) var(--radius-lg);
-  padding: 14px 18px;
-  box-shadow: 0 1px 4px rgba(45,36,32,0.04);
-}
+.message.user .message-body { color: var(--text); }
+.message.assistant .message-body { color: var(--accent900); }
 
 .attribution {
   margin-top: 10px;
   font-size: var(--fs-caption);
   color: var(--accent-dim);
-  font-style: italic;
+  
   letter-spacing: 0.05em;
 }
 
@@ -533,10 +608,10 @@ header span {
   padding: 28px;
 }
 .memory-box h2 {
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-assistant), sans-serif;
   font-size: var(--fs-heading-md);
   font-weight: 300;
-  font-style: italic;
+  
   color: var(--accent);
   margin-bottom: var(--space-lg);
 }
@@ -551,7 +626,7 @@ header span {
   color: var(--muted);
   font-size: var(--fs-caption);
   margin-bottom: var(--space-xs);
-  font-style: italic;
+  
 }
 .memory-close {
   margin-top: var(--space-lg);
@@ -769,7 +844,7 @@ header span {
   animation: fadeUp 0.6s ease both;
 }
 .welcome .ornament {
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-assistant), sans-serif;
   font-size: var(--fs-display);
   color: var(--accent);
   opacity: 0.25;
@@ -788,9 +863,12 @@ header span {
   color: var(--muted);
 }
 
-#chat::-webkit-scrollbar { width: 4px; }
-#chat::-webkit-scrollbar-track { background: transparent; }
-#chat::-webkit-scrollbar-thumb { background: var(--accent-dim); opacity: 0.3; border-radius: var(--radius-xl); }
+/* ‎#chat‎ נשאר אזור הגלילה, כי ארבעה־עשר מקומות ב-chat.js מסתמכים על
+   ‎scrollTop = scrollHeight‎ כדי לעגון בתור החדש. אבל הסרגל עצמו נסתר:
+   בעיצוב ‎.doc‎ הוא ‎overflow:hidden‎ ואין בתוכו שום פס אנכי, והפס שהיה כאן
+   יושב בדיוק במקום של "קו אנכי בשוליים של תור", שנפסל 28.08. */
+#chat { scrollbar-width: none; }
+#chat::-webkit-scrollbar { width: 0; height: 0; }
 
 .lang-option {
   padding: 7px 12px; /* TODO: 7px not in spacing tokens */
@@ -945,7 +1023,7 @@ body.bw-selecting #flow-buttons {
   min-width: 88px;
   padding: 9px 16px;
   border-radius: var(--radius-xl);
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-assistant), sans-serif;
   font-size: var(--fs-body-lg);
   font-weight: 300;
   color: var(--muted);
@@ -999,7 +1077,7 @@ body.bw-selecting #flow-buttons {
   background: var(--accent-soft);
 }
 .bw-t-name {
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-assistant), sans-serif;
   font-size: var(--fs-heading-card);
   font-weight: 300;
   color: var(--text);
@@ -1221,4 +1299,980 @@ button:disabled:not(#send-btn) {
   background: rgba(196,96,122,0.12);
   border-bottom: 1px solid #d4899a;
   border-radius: 2px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   שכבת העיצוב · נוצרת מכנית מ-.impeccable/fork/index.html
+   29.08.2026. אין לערוך אותה ביד. כל שינוי נעשה בקובץ העיצוב, ואז
+   מריצים מחדש את הייצור. הכתיבה ביד היא מה שגרם לסחיפה: כלל אחרי
+   כלל, כל אחד נראה סביר לבדו, והתוצאה לא הייתה הקובץ.
+   כל מחלקה נושאת תחילית n- כדי שהשכבה תחיה לצד הקיימת.
+   הטוקנים אינם כאן, הם ב-:root למעלה.
+   ═══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════
+   BETWEEN · אב טיפוס עיצובי · עותק נפרד
+   חזית סטטית בלבד. אין קריאות רשת, אין שרת, אין מצב מתמיד.
+   אינו מיובא על ידי שום קובץ בפרויקט ואינו נבנה על ידי Next.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── טוקנים ─────────────────────────────────────────────────────── */
+
+/* ── מסגרת האפליקציה ────────────────────────────────────────────── */
+.n-app{display:flex;min-height:calc(100vh - 44px);background:var(--bg)}
+.n-app[hidden]{display:none}
+
+/* ── סייד־בר ────────────────────────────────────────────────────── */
+.n-side{width:var(--w-side);flex:0 0 auto;background:var(--surface);border-inline-start:1px solid var(--line);
+      display:flex;flex-direction:column;padding:var(--s5) 0 var(--s4)}
+.n-side.n-collapsed{width:64px}
+.n-brand{padding:0 var(--s5) var(--s5);display:flex;align-items:center;gap:9px}
+.n-brandmark{flex:0 0 auto}
+.n-brand .n-n{font-size:19px;font-weight:200;letter-spacing:.02em}
+.n-brand .n-s{font-size:10px;letter-spacing:.18em;color:var(--mut);font-weight:600}
+.n-side.n-collapsed .n-brand .n-n,.n-side.n-collapsed .n-sb-label,.n-side.n-collapsed .n-sb-sub,.n-side.n-collapsed .n-grouphead{display:none}
+
+.n-sb{display:flex;align-items:center;padding:0 var(--s5);height:40px;cursor:pointer;color:var(--ink);
+    font-size:13.5px;font-weight:500;background:transparent;border:none;width:100%;text-align:start}
+.n-sb:hover{background:var(--p-50)}
+.n-sb.n-on{background:var(--p-100);font-weight:600}
+.n-sb .n-ic{width:16px;flex:0 0 16px;text-align:center;font-size:14px;color:var(--mut)}
+.n-sb.n-on .n-ic{color:var(--p-700)}
+.n-grouphead{padding:var(--s5) var(--s5) var(--s2);font-size:10px;letter-spacing:.18em;color:var(--off);font-weight:700}
+.n-sb-sub{padding-inline-start:42px;font-size:13px;font-weight:400;height:34px}
+.n-side .n-spacer{flex:1}
+
+.n-acct{margin:0 var(--s3);padding:var(--s3);border:1px solid var(--line);border-radius:var(--r-box);
+      cursor:pointer;background:transparent;text-align:start;width:calc(100% - var(--s3)*2);position:relative}
+.n-acct:hover{border-color:var(--p-500)}
+.n-acct .n-e{display:block;font-size:12.5px;font-weight:600}
+.n-acct .n-r{display:block;font-size:11px;color:var(--mut);margin-top:2px}
+.n-side.n-collapsed .n-acct .n-e,.n-side.n-collapsed .n-acct .n-r{display:none}
+
+.n-acctmenu{position:absolute;inset-block-end:calc(100% + 6px);inset-inline-start:0;min-width:230px;z-index:60;
+          background:var(--surface);border:1px solid var(--ink);border-radius:var(--r-box);overflow:hidden;display:none}
+.n-acctmenu.n-open{display:block}
+/* כרטיס החשבון בראש התפריט · הועתק מהקובץ (‎.acctmenu .who‎). הוא לא נוצר
+   בשכבה המכנית, ולכן התפריט הופיע בלי הראש: עיגול, שם ומייל על ‎--p-50‎.
+   השם הוא מה שנקבע ב"שם או כינוי", אותו שם שהתיאורטיקנים פונים בו. */
+.n-acctmenu .n-who{background:var(--p-50);border-bottom:1px solid var(--line-soft);
+               padding:22px 16px 19px;text-align:center}
+.n-acctmenu .n-who .n-av{width:56px;height:56px;border-radius:50%;margin:0 auto 12px;
+                   background:var(--p-600);color:#fff;font-size:22px;font-weight:600;
+                   display:flex;align-items:center;justify-content:center;overflow:hidden}
+.n-acctmenu .n-who .n-av img{width:100%;height:100%;object-fit:cover;display:block}
+.n-acctmenu .n-who .n-n{display:block;font-size:15px;font-weight:600;line-height:1.4}
+.n-acctmenu .n-who .n-e{display:block;font-size:12.5px;color:var(--mut);margin-top:2px;
+                  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.n-acctmenu .n-mi{display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;cursor:pointer;
+              background:transparent;border:none;width:100%;text-align:start}
+.n-acctmenu .n-mi:hover{background:var(--p-200)}
+.n-acctmenu .n-mi .n-ic{width:16px;color:var(--mut);font-size:13px}
+.n-acctmenu .n-div{height:1px;background:var(--line-soft)}
+.n-acctmenu .n-mi .n-val{margin-inline-start:auto;font-size:11.5px;color:var(--mut);font-weight:600}
+
+/* ── אזור ראשי ──────────────────────────────────────────────────── */
+.n-main{flex:1;min-width:0;padding:var(--s7) var(--s6) var(--s6);overflow:auto}
+.n-wrap{max-width:760px;margin:0 auto}
+.n-screen[hidden]{display:none}
+
+/* ── ברים ───────────────────────────────────────────────────────── */
+.n-topbar{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.14em;font-weight:600;margin-bottom:9px}
+.n-topbar .n-ix{color:var(--p-500)}
+.n-hr{height:1px;background:var(--ink)}
+.n-hr-soft{height:1px;background:var(--line)}
+h1.n-h{font-size:38px;font-weight:200;letter-spacing:-.02em;line-height:1.14;margin:var(--s5) 0 var(--s5);max-width:17ch}
+h2.n-h2{font-size:22px;font-weight:300;letter-spacing:-.01em;margin:0 0 var(--s4)}
+.n-botbar{margin-top:var(--s5);border-top:1px solid var(--ink);padding-top:var(--s3);font-size:11.5px;color:var(--mut)}
+
+/* ── פקדים ──────────────────────────────────────────────────────── */
+.n-btn{height:var(--h-ctl);display:inline-flex;align-items:center;justify-content:center;padding:0 20px;
+     font-size:14px;font-weight:600;cursor:pointer;border:1px solid transparent;border-radius:var(--r-ctl);
+     background:transparent;transition:background-color .3s ease,color .3s ease,border-color .3s ease}
+.n-btn.n-ghost{border-color:var(--ink);color:var(--ink)}
+.n-btn.n-solid{background:var(--p-600);color:#fff}
+.n-btn.n-plain{border-color:var(--line);color:var(--mut)}
+.n-btn.n-sm{height:34px;padding:0 13px;font-size:12.5px}
+.n-btn.n-solid:hover:not([disabled]){background:var(--p-hover)}
+.n-btn.n-ghost:hover:not([disabled]){border-color:var(--p-600);color:var(--p-700)}
+.n-btn.n-plain:hover:not([disabled]){border-color:var(--p-500);color:var(--p-700)}
+.n-btn:focus-visible{outline:2px solid var(--p-500);outline-offset:2px}
+.n-btn[disabled]{cursor:not-allowed}
+.n-btn.n-ghost[disabled],.n-btn.n-plain[disabled]{border-color:var(--line);color:var(--off)}
+.n-btn.n-solid[disabled]{background:var(--line);color:var(--off)}
+@keyframes wake{0%{box-shadow:0 0 0 0 rgba(196,96,122,.6)}100%{box-shadow:0 0 0 10px rgba(196,96,122,0)}}
+.n-btn.n-wake{animation:wake .75s ease-out 1}
+
+.n-sel{height:var(--h-ctl);display:inline-flex;align-items:center;gap:9px;padding:0 15px;font-size:14px;font-weight:600;
+     background:transparent;border:1px solid var(--ink);border-radius:var(--r-ctl);color:var(--ink);cursor:pointer;
+     transition:border-color .3s ease,color .3s ease}
+.n-sel .n-chev{font-size:11px;opacity:.7}
+.n-sel .n-sub{font-size:12px;font-weight:400;color:var(--mut)}
+.n-sel:hover{border-color:var(--p-600)}
+.n-sel.n-primed{border:2px solid var(--p-500);color:var(--p-700);padding:0 14px;font-weight:500}
+.n-sel.n-primed:hover{border-color:var(--p-hover)}
+.n-sel:focus-visible{outline:2px solid var(--p-500);outline-offset:3px}
+.n-hintstart{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--p-700)}
+
+/* הרשימה מרחפת מעל אזור הכתיבה. הוחזר במפורש בהחלטת איה, 28.08,
+   אחרי שנוסתה גרסה בתוך הזרימה שדחפה את הכתיבה מטה. */
+.n-menu{position:absolute;inset-block-start:calc(var(--h-ctl) + 8px);inset-inline-start:0;z-index:50;min-width:268px;
+      background:var(--surface);border:1px solid var(--ink);border-radius:var(--r-box);overflow:hidden;
+      display:none;flex-direction:column}
+.n-menu.n-open{display:flex}
+.n-menu .n-mi{padding:11px 15px;cursor:pointer;display:flex;flex-direction:column;gap:2px;border:none;background:transparent;text-align:start}
+.n-menu .n-mi .n-nm{font-size:14px;font-weight:600}
+.n-menu .n-mi .n-ds{font-size:12px;color:var(--mut)}
+.n-menu .n-mi:hover,.n-menu .n-mi:focus-visible{background:var(--p-200);outline:none}
+.n-menu .n-mi[aria-selected="true"]{background:var(--p-600)}
+.n-menu .n-mi[aria-selected="true"] .n-nm,.n-menu .n-mi[aria-selected="true"] .n-ds{color:#fff}
+
+/* ── לוח הכתיבה · שני אזורים, קו מקצה לקצה ─────────────────────── */
+.n-plate{background:var(--zone);border:1px solid var(--line);border-radius:var(--r-box);padding:0}
+.n-zone-head{display:flex;align-items:center;gap:10px;padding:20px 23px 15px;border-bottom:1px solid var(--line);
+           position:relative;flex-wrap:wrap}
+.n-zone-head .n-lbl{font-size:12px;letter-spacing:.06em;color:var(--mut);font-weight:600}
+.n-zone-write{position:relative;padding:20px 23px;background:var(--field);border-end-start-radius:7px;border-end-end-radius:7px;
+            transition:background-color .35s ease}
+.n-plate.n-locked .n-zone-write{background:var(--zone-off)}
+.n-ta{width:100%;min-height:180px;border:none;background:transparent;outline:none;padding:0;display:block;
+    font-family:inherit;font-size:16px;font-weight:300;line-height:1.85;color:var(--ink);caret-color:var(--p-500);
+    white-space:pre-wrap;word-break:break-word}
+.n-ta:empty::before{content:attr(data-ph);color:var(--field-ph)}
+.n-ta[contenteditable="false"]{color:var(--off);cursor:not-allowed}
+.n-ta[contenteditable="false"]:empty::before{color:#B4B4B0}
+
+/* ── סימון קטע שנשמר רק למטופלת ──────────────────────────────────
+   רקע ניטרלי וקו מקווקו. אפור ולא ורוד, כי הוורוד הוא צבע המותג
+   ולא צבע של מצב, ופרטיות אינה הדגשה. */
+.n-ta .n-private{background:var(--zone-off);border-bottom:1px dotted var(--mut);
+             border-radius:3px;padding:1px 3px;cursor:pointer}
+.n-marktip{position:absolute;z-index:80}
+.n-marktip .n-btn{height:36px;padding:0 14px;font-size:13px;background:var(--ink);color:#fff;
+              border:none;border-radius:var(--r-ctl);box-shadow:0 4px 14px rgba(0,0,0,.22)}
+.n-marktip .n-btn:hover{background:var(--p-600)}
+.n-privhint{font-size:12px;color:var(--mut);margin-top:10px;display:none}
+.n-privhint.n-on{display:block}
+
+/* ── תצוגת מה נשלח למטפל/ת ── */
+.n-share .n-prev{background:var(--field);border:1px solid var(--line);border-radius:var(--r-box);
+             padding:20px 22px;font-size:15.5px;font-weight:300;line-height:1.85;white-space:pre-wrap}
+.n-share .n-prev .n-redact{display:inline-block;background:var(--zone-off);color:var(--mut);border-radius:3px;
+                     padding:1px 9px;font-size:12.5px;font-weight:600;letter-spacing:.04em}
+.n-share .n-opt{display:flex;align-items:flex-start;gap:11px;padding:14px 0;border-top:1px solid var(--line-soft)}
+.n-share .n-opt input{width:19px;height:19px;margin-top:2px;accent-color:var(--p-600);flex:0 0 auto}
+.n-share .n-opt .n-t{font-size:15px;font-weight:600}
+.n-share .n-opt .n-d{font-size:13px;color:var(--mut);line-height:1.7;margin-top:3px}
+.n-locknote{font-size:12.5px;color:var(--off);padding-top:6px;line-height:1.7}
+.n-actions{display:flex;align-items:center;gap:10px;margin-top:var(--s4);flex-wrap:wrap}
+.n-actions .n-sp{flex:1}
+
+/* ── כרטיסים / רשימות ───────────────────────────────────────────── */
+.n-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-box);padding:var(--s4) var(--s5);
+      cursor:pointer;transition:border-color .25s ease}
+.n-card:hover{border-color:var(--p-500)}
+.n-card + .n-card{margin-top:10px}
+.n-card .n-t{font-size:15px;font-weight:600}
+.n-card .n-m{font-size:12px;color:var(--mut);margin-top:3px;display:flex;align-items:baseline;flex-wrap:wrap}
+.n-card .n-tag{float:inline-end;font-size:10.5px;letter-spacing:.14em;font-weight:700;color:var(--p-700)}
+.n-empty{border:1px dashed var(--line);border-radius:var(--r-box);padding:var(--s7) var(--s6);text-align:center}
+.n-empty .n-t{font-size:19px;font-weight:300;color:var(--ink);margin-bottom:9px}
+.n-empty .n-d{font-size:14px;color:var(--mut);line-height:1.8;max-width:44ch;margin:0 auto var(--s5)}
+
+/* ── תיבת הגבול הקליני. אינה טקסט עזרה אלא כלל, ולכן אינה אפורה. ── */
+.n-bound{background:var(--p-50);border:1px solid var(--p-100);border-radius:var(--r-ctl);
+       padding:13px 15px;margin-top:11px}
+.n-bound .n-t{font-size:13.5px;font-weight:700;color:var(--p-700);margin-bottom:4px}
+.n-bound .n-d{font-size:13px;color:var(--p-900);line-height:1.7}
+
+/* ── תפריט לכל מקרה ── */
+.n-card{position:relative}
+.n-card .n-more{position:absolute;inset-block-start:12px;inset-inline-end:12px;width:32px;height:32px;
+            border:1px solid transparent;border-radius:var(--r-ctl);background:transparent;cursor:pointer;
+            color:var(--mut);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center}
+.n-card .n-more:hover{border-color:var(--line);color:var(--ink)}
+.n-cardmenu{position:absolute;inset-block-start:46px;inset-inline-end:12px;z-index:40;min-width:170px;
+          background:var(--surface);border:1px solid var(--ink);border-radius:var(--r-box);overflow:hidden;display:none}
+.n-cardmenu.n-open{display:block}
+.n-cardmenu button{display:block;width:100%;text-align:start;padding:11px 14px;font-size:13.5px;
+                 background:transparent;border:none;cursor:pointer;font-family:inherit;color:var(--ink)}
+.n-cardmenu button:hover{background:var(--p-200)}
+.n-card.n-archived{opacity:.55}
+.n-card.n-archived .n-t::after{content:" · בארכיון";font-size:12px;color:var(--mut);font-weight:400}
+
+/* ── שיחה ───────────────────────────────────────────────────────── */
+/* ── השיחה כתמליל · הכרעת איה, אפשרות 05 ─────────────────────────
+   שתי קופסאות בלבד: התמליל, ומה שנכתב עכשיו. אין בועות ואין צדדים.
+   ההבחנה בין שני הקולות היא בצבע הדיו בלבד: הכתיבה שלה בשחור,
+   התיאורטיקן בדיו כהה בגוון ורוד־חום. 18.88:1 מול 14.65:1, שניהם קריאים. */
+.n-doc{background:var(--field);border:1px solid var(--line);border-radius:var(--r-box);overflow:hidden;margin:var(--s5) 0}
+.n-turn{display:flex;gap:20px;padding:17px 30px}
+.n-turn + .n-turn{border-top:1px solid var(--line-soft)}
+.n-turn .n-spk{width:74px;flex:0 0 74px;font-size:11px;letter-spacing:.1em;font-weight:700;color:var(--mut);padding-top:5px}
+.n-turn .n-bd{flex:1;font-size:16px;font-weight:300;line-height:1.8;max-width:60ch}
+.n-turn.n-them .n-spk{color:var(--p-700)}
+.n-turn.n-them .n-bd{color:var(--p-900)}
+.n-composer{border:1px solid var(--line);border-radius:var(--r-box);background:var(--field);padding:16px 18px}
+.n-composer .n-ta{min-height:74px;font-size:16px;line-height:1.75}
+
+/* ── מודל ───────────────────────────────────────────────────────── */
+.n-ovl{position:fixed;inset:0;z-index:300;background:rgba(30,22,26,.42);display:none;align-items:center;justify-content:center;padding:var(--s5)}
+.n-ovl.n-open{display:flex}
+.n-modal{--modal-pad:var(--s6);
+       background:var(--surface);border:1px solid var(--ink);border-radius:var(--r-box);width:600px;max-width:100%;
+       max-height:86vh;overflow:auto;padding:var(--modal-pad)}
+.n-modal h3{font-size:21px;font-weight:300;margin:0 0 6px}
+.n-modal .n-lead{font-size:12.5px;color:var(--mut);margin:0 0 var(--s5);line-height:1.7}
+.n-fieldrow{margin-bottom:var(--s5)}
+.n-fieldrow label{display:block;font-size:11.5px;letter-spacing:.08em;font-weight:700;color:var(--mut);margin-bottom:7px}
+.n-inp{width:100%;height:var(--h-ctl);border:1px solid var(--line);border-radius:var(--r-ctl);background:var(--field);
+     padding:0 13px;font-family:inherit;font-size:14px;color:var(--ink);caret-color:var(--p-500)}
+.n-inp:focus{outline:none;border-color:var(--p-500)}
+textarea.n-inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
+.n-segs{display:flex;gap:8px;flex-wrap:wrap}
+.n-seg{height:38px;padding:0 15px;display:inline-flex;align-items:center;font-size:13px;font-weight:500;
+     border:1px solid var(--line);border-radius:var(--r-ctl);background:transparent;cursor:pointer;color:var(--ink)}
+.n-seg:hover{border-color:var(--p-500)}
+.n-seg.n-on{background:var(--p-600);border-color:var(--p-600);color:#fff;font-weight:600}
+/* שורת הפעולות של המודל נדבקת לתחתיתו. בהגדרות התוכן גבוה מהמודל,
+   וכפתורי שמור וביטול היו מתחת לקו הקיפול בלי שום סימן שיש עוד. */
+.n-modal .n-foot{position:sticky;inset-block-end:calc(var(--modal-pad) * -1);z-index:2;
+             display:flex;gap:10px;align-items:center;justify-content:flex-end;
+             margin:var(--s6) calc(var(--modal-pad) * -1) calc(var(--modal-pad) * -1);
+             padding:var(--s4) var(--modal-pad) var(--modal-pad);
+             background:var(--surface);border-top:1px solid var(--line-soft)}
+.n-modal .n-foot .n-sp{flex:1}
+/* סימן ההצלחה במודל "צרי קשר". ורוד ולא ירוק: אין במערכת צבע סמנטי,
+   והוספת ירוק כאן הייתה מכניסה משפחת צבע שלמה בשביל מצב אחד. */
+.n-donemark{width:46px;height:46px;border-radius:50%;background:var(--p-100);color:var(--p-700);
+          display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:var(--s4)}
+
+/* ── סיכום התייעצות ──────────────────────────────────────────────
+   עשרת השדות מגיעים מ-lib/summary-prompt.n-ts ולא הומצאו.
+   נקרא כמסמך ולא כלוח מחוונים, כי זה הדבר שיורד כ-PDF ונשמר. */
+.n-sum .n-meta{display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center;margin:0 0 var(--s5)}
+.n-chip{font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:var(--r-ctl);
+      background:var(--p-50);color:var(--p-700);border:1px solid var(--p-100)}
+.n-chip.n-n{background:transparent;color:var(--mut);border-color:var(--line)}
+.n-sum .n-sec{padding:var(--s5) 0;border-top:1px solid var(--line-soft)}
+.n-sum .n-sec h4{font-size:10.5px;letter-spacing:.18em;font-weight:700;color:var(--mut);margin:0 0 10px}
+.n-sum .n-sec p{font-size:15.5px;font-weight:300;line-height:1.8;margin:0;max-width:58ch}
+.n-sum .n-moment + .n-moment{margin-top:var(--s5)}
+.n-sum .n-quote{font-size:16px;font-weight:400;line-height:1.7;color:var(--ink);
+            border-inline-start:2px solid var(--p-300);padding-inline-start:15px;margin:0 0 8px;max-width:56ch}
+.n-sum .n-why{font-size:13.5px;font-weight:300;line-height:1.75;color:var(--mut);margin:0;max-width:58ch}
+/* מה להביא לחדר · הקצה של המסמך, ולפי CORE גם הסיבה שהוא קיים */
+.n-sum .n-bring{background:var(--p-50);border:1px solid var(--p-100);border-radius:var(--r-box);
+            padding:var(--s5);margin-top:var(--s5)}
+.n-sum .n-bring h4{color:var(--p-700)}
+.n-sum .n-bring p{font-size:17px;font-weight:400;line-height:1.7;color:var(--p-900)}
+
+/* ── מסך כניסה ──────────────────────────────────────────────────── */
+.n-auth{min-height:calc(100vh - 44px);background:var(--bg);display:flex;align-items:center;justify-content:center;padding:var(--s5)}
+.n-auth[hidden]{display:none}
+.n-authbox{width:400px;max-width:100%}
+.n-authbox .n-n{font-size:34px;font-weight:200;letter-spacing:.01em}
+.n-authbox .n-s{font-size:13px;color:var(--mut);line-height:1.8;margin:10px 0 var(--s6)}
+
+/* ── מסך מערכת העיצוב ───────────────────────────────────────────── */
+.n-sysgrid{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:var(--r-box);overflow:hidden;margin-bottom:var(--s5)}
+.n-sw{flex:1 1 88px;min-width:88px;min-height:104px;padding:14px 11px;display:flex;flex-direction:column;gap:4px}
+.n-sw .n-k{font-size:10px;font-family:ui-monospace,monospace}
+.n-sw .n-h{font-size:10px;font-family:ui-monospace,monospace;opacity:.75}
+.n-sw .n-u{font-size:10.5px;font-weight:600;margin-top:auto;line-height:1.35}
+.n-specrow{display:flex;gap:var(--s4);align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.n-specrow .n-k{font-size:11px;font-family:ui-monospace,monospace;color:var(--mut);min-width:120px}
+.n-specrow .n-v{font-size:13px}
+.n-demo{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:var(--s4) 0 var(--s5)}
+
+.n-note{font-size:12.5px;color:var(--mut);line-height:1.85;margin-top:var(--s4)}
+.n-note b{color:var(--ink);font-weight:600}
+
+/* ── סרגל מובייל · כפתור התפריט ומסך העמעום ─────────────────────── */
+.n-mobbar{display:none;align-items:center;gap:12px;margin-bottom:var(--s5)}
+.n-iconbtn{width:var(--h-ctl);height:var(--h-ctl);flex:0 0 auto;border:1px solid var(--line);border-radius:var(--r-ctl);
+         background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+         font-size:15px;color:var(--ink);transition:border-color .25s ease}
+.n-iconbtn:hover{border-color:var(--p-500)}
+.n-iconbtn:focus-visible{outline:2px solid var(--p-500);outline-offset:2px}
+.n-mobbar .n-t{font-size:13px;font-weight:600;letter-spacing:.02em}
+.n-scrim{position:fixed;inset:0;z-index:150;background:rgba(30,22,26,.42);display:none}
+.n-scrim.n-on{display:block}
+.n-sideclose{display:none}
+
+@media (max-width:900px){
+  /* הסייד־בר נשאר בצד ימין כמו בדסקטופ, ונדחף החוצה לאותו צד.
+     הכיוון מוצהר לשתי השפות, כי transform אינו מודע לכיוון הקריאה. */
+  .n-side{position:fixed;inset-block:0;inset-inline-start:0;z-index:200;overflow:auto;
+        transform:translateX(-100%);transition:transform .28s ease;box-shadow:none}
+  [dir="rtl"] .n-side{transform:translateX(100%)}
+  .n-side.n-mobopen,[dir="rtl"] .n-side.n-mobopen{transform:none;box-shadow:0 0 40px rgba(0,0,0,.18)}
+  .n-side.n-collapsed{width:var(--w-side)}   /* כיווץ הוא מושג של דסקטופ בלבד */
+  .n-sideclose{display:flex}
+  .n-mobbar{display:flex}
+  .n-main{padding:var(--s5) var(--s4) var(--s6)}
+  h1.n-h{font-size:28px}
+  .n-modal{--modal-pad:var(--s5)}
+  .n-turn{flex-direction:column;gap:6px;padding:15px 18px}
+  .n-turn .n-spk{width:auto;flex:none}
+}
+@media (min-width:901px){ .n-scrim{display:none !important} }
+
+/* מסך הכניסה · מייל וסיסמה, הכרעת איה 29.08. שיטת הכניסה נשארת כפי
+   שהיא בממשק, ומה שהעיצוב קובע הוא שרואים פעולה ראשית אחת בלבד. */
+.n-authbox .n-seg{display:flex;gap:8px;margin-bottom:var(--s5)}
+.n-authbox .n-seg .n-opt{flex:1;height:var(--h-ctl);border:1px solid var(--line);border-radius:var(--r-ctl);
+  background:transparent;color:var(--ink);font-family:inherit;font-size:14px;font-weight:500;cursor:pointer}
+.n-authbox .n-seg .n-opt.n-on{background:var(--p-600);border-color:var(--p-600);color:#fff;font-weight:600}
+.n-authbox .n-btn{margin-top:var(--s2)}
+.n-lnk{color:var(--p-700);font-weight:600;text-decoration:underline;text-underline-offset:4px}
+
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   הטמעת העיצוב החדש · הסייד־בר
+   28.08.2026, ענף design/new-system.
+   האייקונים ירדו בהחלטת איה: הם היו אוסף גליפים ממשפחות שונות, והאלמנט
+   היחיד במערכת שאינו טיפוגרפיה או קו. איתם יורד גם כפתור הכיווץ, כי בלי
+   אייקונים לא נשאר מה להראות בסרגל מכווץ.
+   ═══════════════════════════════════════════════════════════════════ */
+#sidebar .sb-icon { display: none !important; }
+#sidebar #sb-toggle-btn { display: none !important; }
+
+#sidebar {
+  background: var(--surface);
+  border-inline-start: 1px solid var(--border);
+  box-shadow: none;                /* היה צל · המערכת נשענת על קו ולא על צל */
+  width: 248px;
+  min-width: 248px;
+}
+#sidebar .sb-item {
+  height: 40px;
+  padding: 0 24px;
+  gap: 0;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-body-md);
+  font-weight: 500;
+}
+#sidebar .sb-item:hover { background: var(--accent-soft); }
+#sidebar .sb-item.active { background: var(--accent100); color: var(--text); font-weight: 600; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   הטמעת העיצוב החדש · כותרת, מודלים, ושדות כתיבה
+   28.08.2026, ענף design/new-system.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* כל משטח שכותבים לתוכו הוא לבן */
+#bw-hold-textarea,
+#chat-input,
+.chat-input,
+textarea,
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  background: var(--field);
+  caret-color: var(--accent);
+}
+#bw-hold-textarea:empty::before,
+textarea::placeholder,
+input::placeholder { color: var(--field-ph); }
+
+/* מודלים · שורת פעולות בצד שמאל, פינות 8, בלי צל ורוד */
+[id$="-modal"] > div,
+.bw-modal, .modal-box {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 12px 40px rgba(17,17,17,0.14) !important;
+}
+
+/* פס ההקלטה והמיקרופון · מרובע ולא עגול */
+.bw-mic { border-radius: var(--radius-sm); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   הסייד־בר עובר לימין · 28.08.2026
+   ה-body מוגדר direction: ltr והסייד־בר הוא הילד הראשון, ולכן הוא נחת
+   בשמאל. באב הטיפוס המסמך rtl ולכן הוא בימין. row-reverse מזיז אותו
+   בלי לגעת בכיוון הקריאה של התוכן. באנגלית הוא חוזר לשמאל.
+   ═══════════════════════════════════════════════════════════════════ */
+body { flex-direction: row-reverse; }
+[dir="ltr"] body { flex-direction: row; }
+#sidebar {
+  border-inline-start: none;
+  border-inline-end: 1px solid var(--border);
+}
+[dir="ltr"] #sidebar {
+  border-inline-end: none;
+  border-inline-start: 1px solid var(--border);
+}
+
+/* שורת שלוש הפעולות מתחת ללוח · העיצוב החדש */
+.n-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.n-actions .n-sp { flex: 1; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   מסך השיחה והסייד-בר · העיצוב החדש, 29.08
+   נכתב בסוף הקובץ בכוונה: הוא גובר על הכללים הישנים לאותם סלקטורים,
+   ולכן אין צורך למחוק אותם ואפשר להחזיר בהסרת הגוש הזה בלבד.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* התמליל · מסמך לבן אחד, ולא רצף על גוון הרקע.
+   התור הוא שתי עמודות: שם הדובר בעמודה צרה, והגוף לצידו. */
+#main-content:has(#chat .message) #chat {
+  background: var(--field);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0;
+  gap: 0;
+  align-items: stretch;
+  margin-block: var(--s5);
+}
+#chat .message {
+  display: flex;
+  gap: 20px;
+  padding: 17px 30px;
+  max-width: none;
+  border-top: none;
+}
+#chat .message + .message { border-top: 1px solid var(--line-soft); }
+#chat .message-role {
+  width: 74px;
+  flex: 0 0 74px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--muted);
+  padding-top: 5px;
+  margin-bottom: 0;
+}
+#chat .message-body {
+  flex: 1;
+  max-width: 60ch;
+  font-size: var(--fs-body-md);
+  font-weight: 300;
+  line-height: 1.8;
+}
+/* התיאורטיקן נבדל בצבע הדיו בלבד · אין בועה ואין צד */
+#chat .message.assistant .message-role { color: var(--accent-deep); }
+#chat .message.assistant .message-body { color: var(--accent900); }
+#chat .message.user .message-body { color: var(--text); }
+@media (max-width: 720px) {
+  #chat .message { flex-direction: column; gap: 8px; padding: 15px 18px; }
+  #chat .message-role { width: auto; flex: none; padding-top: 0; }
+}
+
+/* תיבת הכתיבה בשיחה · מלבן לבן, בלי צל ובלי פינות עגולות */
+.input-wrap {
+  background: var(--field);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+  padding: 16px 18px;
+}
+.input-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: none;
+}
+#user-input { min-height: 74px; font-size: var(--fs-body-md); line-height: 1.75; }
+#user-input::placeholder { color: var(--field-ph); opacity: 1; }
+#send-btn {
+  width: auto;
+  min-width: 96px;
+  height: var(--h-ctl);
+  padding: 0 20px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-deep);
+  color: #fff;
+  font-family: var(--font-rubik), sans-serif;
+  font-size: var(--fs-body-sm);
+}
+#send-btn:hover { background: var(--accent-hover); transform: none; }
+
+/* הסייד-בר · שטוח, בלי אייקונים, פריט בגובה 40 */
+#sidebar {
+  background: var(--surface);
+  border-inline-start: 1px solid var(--border);
+  box-shadow: none;
+}
+#sidebar .sb-item,
+#sidebar .sb-btn,
+#sidebar .sidebar-item {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 var(--s5);
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-rubik), sans-serif;
+  font-size: var(--fs-body-sm);
+}
+/* הצבעים של ‎.sb:hover‎ ו-‎.sb.on‎ בקובץ העיצוב · ורוד ולא אפור */
+#sidebar .sb-item:hover,
+#sidebar .sb-btn:hover,
+#sidebar .sidebar-item:hover { background: var(--accent50); }
+#sidebar .sb-item.active,
+#sidebar .sb-btn.active,
+#sidebar .sidebar-item.active { background: var(--accent100); font-weight: 600; }
+#sidebar .sb-section-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--muted);
+  padding: 0 var(--s5);
+  margin-top: var(--s5);
+}
+
+/* קבוצת הכלים שישבה בכותרת מוסתרת: אותם כלים יושבים עכשיו בשורת הפעולות
+   שמתחת לתיבת הכתיבה, לפי העיצוב החדש. !important כדי לגבור על ה-display
+   ש-chat.js מציב בשורה כשהשיחה נעשית חיה. */
+#bw-session-tools { display: none !important; }
+
+/* רצפת הקריאוּת הוסרה 29.08 בהכרעת איה. היא הועלתה על ידי, לא בבקשתה,
+   והרימה כל טקסט של 10 עד 13.5 פיקסלים ל-13 ו-15. זו הייתה הסטייה
+   הגדולה ביותר בין הלוקאל לקובץ העיצוב. הגדלים חוזרים לקובץ. */
+
+
+/* מסמך השיחה · אינו נמרח על כל רוחב המסך. ‎#chat הוא גם אזור הגלילה,
+   ולכן הרוחב נקבע על המסמך שבתוכו ולא על המכל. */
+#chat, .input-area, #bw-talk-topbar, #bw-talk-hr {
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+/* הבר העליון והקו של מסך השיחה · מוצגים רק כשמסך הפתיחה מוסתר,
+   כלומר כשיש שיחה חיה. ‎:has()‎ קורא את המצב ש-chat.js כבר מנהל,
+   במקום לשכפל אותו לסטייט שני שיֵצא מסנכרון (פריט 17). */
+/* הגידור נשען על קיום תורים בתמליל ולא על הסתרת מסך הפתיחה. הגידור הישן
+   הדליק את הבר גם במסך "מה כתבתי", ואז היו שני ברים עליונים על אותו מסך,
+   כלומר שתי כותרות שסותרות זו את זו. */
+#bw-talk-topbar, #bw-talk-hr { display: none; }
+#main-content:has(#chat .message) #bw-talk-topbar { display: flex; }
+#main-content:has(#chat .message) #bw-talk-hr { display: block; }
+
+/* כפתור השליחה במצב כבוי · הכלל הישן עימעם אותו ל-25% ונתן ורוד חיוור
+   שנקרא כצבע ולא כמצב. העיצוב החדש מכבה אותו לאפור מלא. */
+#send-btn:disabled { opacity: 1; background: var(--border); color: var(--off); }
+
+/* ══════════════════════════════════════════════════════════════════════
+   מסך השיחה · יישור אחרון לאב הטיפוס, 29.08
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* שם התיאורטיקן בתמליל · אב הטיפוס משתמש ב-p-700 ולא ב-p-600.
+   ההפרש נמדד: 142,53,80 מול 168,71,95. */
+#chat .message.assistant .message-role { color: var(--accent700); }
+
+/* אין כותרת עמוד במסך השיחה. באב הטיפוס השם Between חי בסייד-בר בלבד,
+   והשורה שמזהה את המסך היא הבר העליון ("שיחה עם X · מקרה · תאריך").
+   הכותרת נשארת בזרימה כי היא נושאת את כפתור שיחת ההיכרות ואת פקדי
+   המובייל; מה שיורד הוא המשקל הוויזואלי שלה: השם הכפול והקו.
+   הפיך בהסרת שני הכללים האלה. */
+@media (min-width: 900px) {
+  #main-content > header { border-bottom: none; background: transparent; }
+  #main-content > header h1 { display: none; }
+  #main-content > header .header-top { padding-block: 0; min-height: 0; }
+}
+
+/* קו הפרדה כפול · ‎.input-area-outer‎ מצייר קו מעל תיבת הכתיבה, ובאב
+   הטיפוס אין קו שם: הפוטר השקט מתחת לפעולות הוא ההפרדה היחידה. */
+.input-area-outer { border-top: none; }
+.input-area { padding-top: 0; }
+
+/* פקדים יורשים את הפונט של העמוד · 29.08
+   הדפדפן נותן ל-button/input/textarea/select ברירת מחדל משלו (אריאל),
+   ולכן כל כפתורי הממשק רונדרו באריאל בעוד הטקסט סביבם באסיסטנט.
+   אריאל במשקל 600 נקרא כבולד, ואסיסטנט באותו משקל נקרא רגיל, וזה
+   ההבדל שנראה מול אב הטיפוס. באב הטיפוס יש בדיוק את השורה הזו. */
+button, input, textarea, select { font-family: inherit; }
+
+
+
+/* כרטיס החשבון · ‎.sb-user-row‎ מצהיר ‎display:flex‎, ולכן שתי השורות
+   נפרשו זו לצד זו אף שכל אחת מהן ‎block‎. באב הטיפוס הן נערמות. */
+.n-acct { display: block; }
+
+/* עמודת התוכן · 29.08
+   ‎#chat‎ נתן ריפוד 32 ו-‎.welcome‎ נתן עוד 40 לכל צד ועוד תקרה של 740,
+   כך שעמודה שאמורה להיות 760 הצטמצמה ל-616 והטקסט נשבר כל חמש מילים.
+   הרוחב נקבע פעם אחת, על ‎#chat‎, ושתי השכבות שמתחתיו ממלאות אותו. */
+#chat { padding-inline: 0; }
+#chat > .welcome {
+  /* ‎.welcome‎ נשא ריפוד ‎20px 40px‎ ותקרה של 560. הריפוד האנכי נשאר,
+     האופקי יורד, והתקרה עולה, אחרת עמודת התוכן נחתכת ל-720 במקום 760
+     ומסכי המטפלת יוצאים צרים מהקובץ. */
+  max-width: 100%;
+  padding-inline: 0;
+  padding-block: 0;
+  align-items: stretch;
+  text-align: start;
+  gap: 0;
+}
+/* בתוך התמליל הריפוד שייך לתור עצמו, ולכן המכל נשאר בלי ריפוד אנכי */
+#main-content:has(#chat .message) #chat { padding-block: 0; }
+
+/* תיבת הכתיבה יושבת על אותו קו כמו המסמך שמעליה. ‎.input-area‎ נשא ריפוד
+   אופקי של 32 לכל צד, ולכן היה צר ממנו ב-64. */
+.input-area { padding-inline: 0; }
+
+
+/* מצב מחקר · הסימון היה צבע האייקון בלבד, והאייקונים מוסתרים בעיצוב החדש.
+   כשהמצב פעיל הפריט נצבע ומקבל את אותו רקע כמו פריט נבחר. */
+#sidebar .sb-item.research-active { color: var(--accent-deep); background: var(--accent100); font-weight: 600; }
+#sidebar .sb-item.research-active .n-val { color: var(--accent-deep); font-weight: 700; }
+
+/* ‎.n-val‎ · ערך שנאמר לצד שם ההגדרה. עוצב עד כה רק בתוך תפריט החשבון,
+   ולכן בסייד-בר הוא קיבל דיו מלא בגודל הגוף ובלי מרווח, ונקרא "מחקרכבוי".
+   הכלל מנותק מהמיקום: הערך נדחף לקצה, שקט וקטן מהשם. */
+.n-val {
+  margin-inline-start: auto;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+#sidebar .sb-item .n-val { padding-inline-start: 12px; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   תפריט החשבון · נכנס לזרימה במקום לרחף, 29.08
+   כפאנל מרחף הוא כיסה את רשימת המקרים ואת שורת המחקר, ומי שפתח אותו
+   איבד את מה שהיה מתחתיו. עכשיו הוא נפתח מעל כרטיס החשבון ודוחף את
+   הרשימה כלפי מעלה; אזור הרשימה הוא ‎flex:1‎ עם גלילה, ולכן הוא מתקצר
+   ונגלל במקום להיחסם. שום פריט אינו מוסתר.
+   ══════════════════════════════════════════════════════════════════════ */
+#sidebar .n-acctmenu {
+  /* הכלל המיובא נותן ‎display:none‎ ומצפה למחלקת ‎n-open‎. כאן React הוא
+     שמרכיב ומפרק את התפריט, ולכן עצם קיומו בעץ פירושו שהוא פתוח. */
+  display: block;
+  position: static;
+  min-width: 0;
+  width: auto;
+  /* מיושר בדיוק לכרטיס החשבון שמתחתיו, שנושא ‎margin:0 var(--s3)‎ */
+  margin: 0 var(--s3) var(--s2);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: none;
+  overflow: hidden;
+}
+#sidebar .n-acctmenu .n-mi { width: 100%; }
+/* פתיחה רכה, כדי שהדחיפה כלפי מעלה תיקרא כתנועה ולא כקפיצה */
+@media (prefers-reduced-motion: no-preference) {
+  #sidebar .n-acctmenu { animation: bw-acct-open 0.18s ease-out; }
+  @keyframes bw-acct-open { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
+
+/* כותרת קבוצה בסייד-בר · הייתה 11, מתחת לרצפת הקריאוּת */
+
+
+
+/* גיאומטריית הפקדים בתוך דיאלוג ישן שנורמל · 29.08
+   הכפתורים בחלונות האלה נכתבו בסגנון שורה, ולכן ‎.n-btn‎ אינו חל עליהם.
+   הכלל מיישר את הגובה, הפינה, הפונט והמשקל בלי לגעת בצבע, כדי שהראשי
+   יישאר ראשי והמשני יישאר משני. ‎!important‎ הכרחי מול סגנון בשורה. */
+.bw-legacy-modal button {
+  height: var(--h-ctl) !important;
+  padding: 0 20px !important;
+  border-radius: var(--radius-sm) !important;
+  font-family: var(--font-assistant), sans-serif !important;
+  font-size: var(--fs-body-sm) !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+/* טיפוגרפיה של הגוף · הטקסטים שם נכתבו ב-17 עם משקל רגיל */
+.bw-legacy-modal p { font-size: var(--fs-body-sm) !important; line-height: 1.75 !important; }
+.bw-legacy-modal h3 { font-size: 21px !important; font-weight: 300 !important; }
+
+/* סימון המקום הנוכחי בסייד-בר · 29.08
+   בלעדיו לחיצה שמצליחה נראית כאילו לא קרה דבר: "כל המקרים" כשכבר עומדים
+   שם אינו משנה דבר על המסך, ומעבר בין מקרים מחליף רק את שורת הכותרת.
+   באב הטיפוס זה ‎.sb.on‎, רקע מודגש ומשקל כבד יותר. */
+#sidebar .sb-item.active {
+  background: var(--accent100);
+  font-weight: 600;
+}
+#sidebar .sb-item.active .sb-label { font-weight: 600; }
+
+
+/* עריכת שם מקרה · עריכה במקום ולא שדה טופס. ‎.n-inp‎ הוא קופסה בגובה 44
+   עם מסגרת, ובתוך כרטיס שכבר ממוסגר הוא נקרא כמסגרת בתוך מסגרת ומעוות
+   את הכרטיס. כאן הכותרת עצמה נעשית ניתנת לעריכה: אותה טיפוגרפיה, בלי
+   רקע ובלי מסגרת, וקו תחתון בלבד שמסמן שהיא פעילה. */
+.n-card .n-rename {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-assistant), sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--accent);
+  border-radius: 0;
+  padding: 0 0 3px;
+  outline: none;
+  /* אינו נכנס מתחת לכפתור ה-⋯ שבפינה */
+  padding-inline-end: 40px;
+}
+
+/* כפתור ה-⋯ נשאר לחיץ בזמן שהתפריט שלו פתוח, כדי שאפשר יהיה לסגור אותו
+   באותו כפתור שפתח. בלי זה שכבת הסגירה בולעת את הלחיצה החוזרת. */
+.n-card .n-more { z-index: 41; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   סייד-בר · המידות של קובץ העיצוב, אחת לאחת. 29.08
+   הכרעת איה: הסייד-בר בלוקאל משכפל את ה-HTML במדויק. רצפת הקריאוּת
+   שקבעתי קודם לא חלה כאן, כי הבקשה היא זהות ולא פשרה.
+   המקור: .side / .brand / .sb / .grouphead / .sb-sub / .acct בקובץ.
+   ══════════════════════════════════════════════════════════════════════ */
+#sidebar {
+  width: 248px;
+  padding: 24px 0 16px;
+  background: var(--surface);
+}
+#sidebar .sb-item {
+  height: 40px;
+  padding: 0 24px;
+  font-size: 13.5px;
+  font-weight: 500;
+  border-radius: 0;
+}
+#sidebar .sb-item .sb-label { font-size: 13.5px; font-weight: 500; }
+#sidebar .sb-item.sb-sub {
+  padding: 0 42px 0 24px;
+  height: 34px;
+  font-size: 13px;
+  font-weight: 400;
+}
+#sidebar .sb-item.sb-sub .sb-label { font-size: 13px; font-weight: 400; }
+#sidebar .sb-section-label {
+  padding: 24px 24px 8px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--off);
+  margin: 0;
+}
+#sidebar .sb-item .n-val { font-size: 11.5px; font-weight: 600; }
+
+/* כותרת המשנה של השיחה ("התייעצות — פרויד") אינה בקובץ העיצוב. הבר העליון
+   כבר נושא "שיחה עם X · מקרה · תאריך", ולכן זו כותרת שנייה שסותרת אותו.
+   הוסרה בהכרעת איה 29.08. ‎!important‎ כי chat.js מציב display בשורה. */
+#session-title { display: none !important; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   הבר השחור · נשמר מקובץ העיצוב, הכרעת איה 29.08
+   הערכים לקוחים מ-‎.proto‎ בקובץ: רקע #151515, קו תחתון #2a2a2a,
+   ריפוד 10/18. Between בצד שמאל הפיזי, ההגדרות בצד ימין הפיזי, ולכן
+   הבר עצמו ‎ltr‎ והתפריט שנפתח ממנו חוזר לכיוון של הממשק.
+   ══════════════════════════════════════════════════════════════════════ */
+.bw-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 400;
+  /* הבר יורש את כיוון הממשק: בעברית הלוגו בהתחלה (ימין) וההגדרות בסוף
+     (שמאל), ובאנגלית להפך. הכרעת איה 29.08. */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  /* הריפוד האנכי ירד מ-12 ל-10 כדי לפנות מקום ללוגו הגדול · בקשת איה 29.08.
+     גובה הבר נשאר 72, וכך 52 + 10 + 10 ממלאים אותו במדויק. */
+  padding: 10px 18px;
+  background: var(--proto-bg);
+  border-bottom: 1px solid var(--proto-line);
+  flex-shrink: 0;
+}
+.bw-topbar-mark {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: 19px;
+  font-weight: 200;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+.bw-topbar-end { position: relative; }
+
+.bw-topbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--proto-btn-line);
+  color: var(--proto-btn-ink);
+  font-family: var(--font-assistant), sans-serif;
+  font-size: 12px;
+  padding: 6px 11px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.bw-topbar-btn:hover { border-color: var(--proto-btn-hover); color: var(--proto-btn-ink-hover); }
+.bw-topbar-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* התפריט קופץ מעל המסך, ולכן הוא מקבל צל · בקשת איה */
+.bw-topbar-scrim { position: fixed; inset: 0; z-index: 410; }
+.bw-topbar-menu {
+  position: absolute;
+  inset-block-start: calc(100% + 8px);
+  inset-inline-end: 0;
+  left: auto;
+  right: 0;
+  z-index: 420;
+  min-width: 230px;
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgba(17, 17, 17, 0.18), 0 2px 6px rgba(17, 17, 17, 0.08);
+  overflow: hidden;
+}
+
+/* הכותרת הישנה יורדת · הבר השחור מחליף אותה */
+#main-content > header .header-top { display: none; }
+
+/* הבר חוצה את כל הרוחב מעל הסייד-בר ומעל התוכן, כמו בקובץ העיצוב.
+   קודם הוא ישב רק מעל אזור התוכן, ואז השם Between הופיע פעמיים. */
+/* גובה הבר · הורחב מ-50 ל-72 כדי שהלוגו יינשם. הכרעת איה 29.08 */
+:root { --h-topbar: 72px; }
+.bw-topbar {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  left: 0;
+  right: 0;
+  height: var(--h-topbar);
+  box-sizing: border-box;
+}
+/* ‎<body>‎ נושא ‎padding:0‎ בסגנון שורה מ-layout.tsx, ולכן ההזחה חייבת
+   לשבת על שתי העמודות עצמן ולא עליו. הן נשארות בגובה מסך מלא. */
+#sidebar, #main-content {
+  padding-block-start: var(--h-topbar);
+  box-sizing: border-box;
+}
+/* השם בסייד-בר יורד · הבר נושא אותו עכשיו. כפתור הכיווץ נשאר. */
+#sidebar .n-brand .n-n { display: none; }
+#sidebar .n-brand { padding: 0 12px 12px; justify-content: flex-end; }
+
+/* התפריט נפתח מתחת לכפתור ההגדרות, בקצה שבו הכפתור יושב · לוגי ולא פיזי.
+   ‎inset-block-end:auto‎ הכרחי: הכלל שנוצר מהקובץ מציב ‎bottom‎ (התפריט שם
+   נפתח כלפי מעלה), וכששני הקצוות מוגדרים הגובה נכפה מהם — התפריט נמדד
+   2 פיקסלים והתוכן נחתך. */
+.bw-topbar-menu {
+  left: auto;
+  right: auto;
+  inset-inline-end: 0;
+  inset-block-end: auto;
+  height: auto;
+}
+
+/* כרטיס החשבון בתחתית הסייד-בר יורד · כל ההגדרות עברו לכפתור שבבר
+   העליון, והשארתו יצרה שני מקומות לאותו דבר. הכרעת איה 29.08. */
+#sidebar .n-acct, #sidebar .n-acctmenu { display: none !important; }
+
+/* הבר יושב בתוך ‎#main-content‎, שמקובע ל-RTL, ולכן הוא לא התהפך באנגלית.
+   הכיוון נקבע כאן מפורשות לפי שפת הממשק: עברית — לוגו בימין והגדרות
+   בשמאל; אנגלית — הפוך. */
+.bw-topbar { direction: rtl; }
+[dir="ltr"] .bw-topbar { direction: ltr; }
+
+/* עמודת התוכן · בקובץ ‎.wrap‎ הוא בלוק בתוך ‎.main‎ ולכן הוא ממלא עד 760.
+   בלוקאל הוא פריט פלקס בתוך מכל ממורכז, ולכן התכווץ לרוחב התוכן: מסך
+   המקרים נמדד 369 במקום 760. ‎max-width‎ לבדו אינו מרחיב פריט פלקס. */
+.n-wrap { width: 100%; }
+
+/* הריווח העליון בסייד-בר · הקובץ נותן 24 מעל הפריט הראשון. אצלנו הוא
+   נבלע כשהוספתי את ההזחה של הבר השחור. */
+#sidebar { padding-block-start: calc(var(--h-topbar) + 24px); }
+
+/* כפתור ה-⋯ · הריפוד מהקובץ אבד מול איפוס כפתורים כללי בממשק */
+.n-card .n-more { padding: 1px 6px; }
+
+/* צל ורוד · הקובץ מדליק אותו על בורר הגישה כשהוא מחכה לבחירה (‎@keyframes wake‎
+   ו-‎.sel.primed‎). איה ביקשה שהסייד-בר יקבל את אותה שפה. */
+#sidebar { box-shadow: -2px 0 24px rgba(196, 96, 122, 0.10); }
+[dir="ltr"] #sidebar { box-shadow: 2px 0 24px rgba(196, 96, 122, 0.10); }
+
+/* מתג הפרסונות בבר · הסגנון של ‎.proto .grp‎ ו-‎.proto button.on‎ מהקובץ.
+   היה בסייד-בר כזוג לשוניות, ובקובץ הוא יושב בבר העליון. */
+.bw-topbar-grp { display: flex; gap: 6px; flex-wrap: wrap; }
+.bw-topbar-btn.on {
+  background: var(--accent-deep);
+  border-color: var(--accent-deep);
+  color: #fff;
+}
+.bw-topbar-btn.on:hover { border-color: var(--accent-deep); color: #fff; }
+/* המותג לבדו בקצה שלו · מתג הפרסונות וההגדרות נדחפים יחד לקצה הנגדי,
+   כדי שהמתג לא ייצמד ללוגו ולא יזיז אותו. */
+.bw-topbar { justify-content: flex-start; }
+.bw-topbar-grp { margin-inline-start: auto; }
+.bw-topbar-end { margin-inline-start: 0; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   גשר מבנה · תיקונים שנובעים מכך שהממשק אינו העץ של הקובץ
+   הכללים כאן חייבים לשבת מחוץ לשכבה שנוצרת מכנית, אחרת ייצור מחדש
+   מוחק אותם. זה כבר קרה: רוחב שורת הפעולות אבד בייצור והכפתורים
+   נצמדו שוב.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* בקובץ ‎.actions‎ הוא בלוק שממלא את העמודה. אצלנו הוא פריט פלקס בתוך
+   מכל ממורכז, ולכן הוא מתכווץ לתוכן והמפריד לא מקבל מקום לדחוף. */
+.n-actions { width: 100%; }
+.n-wrap { width: 100%; }
+
+/* הלוגו בבר · יונק הדבש עם המילה. הבר כהה, ולכן גרסת הלבן.
+   גובה 26 בתוך בר של 50, ומרווח 10 בין הסימן למילה.
+   כשקובץ הלוגו חסר, ‎onError‎ מסתיר את התמונה והמילה נשארת לבדה. */
+/* הלוגו ממורכז מעל עמודת הסייד-בר ולא נצמד לקצה. הבלוק תופס בדיוק את
+   רוחב הסייד-בר, והמרווח השלילי מבטל את ריפוד הבר בצד הזה כדי שהמרכזים
+   יתלכדו. בקצה השני הבר משאיר את הריפוד כרגיל. הכרעת איה 29.08. */
+.bw-topbar-mark {
+  display: inline-flex; align-items: center; gap: 10px;
+  width: var(--w-side);
+  margin-inline-start: -18px; /* ריפוד הבר בצד הזה */
+  justify-content: center;
+}
+@media (max-width: 900px) {
+  /* במובייל אין עמודת סייד-בר לרכוב עליה */
+  .bw-topbar-mark { width: auto; margin-inline-start: 0; justify-content: flex-start; }
+}
+.bw-topbar-mark img { height: 52px; width: auto; display: block; }
+/* אין כאן גידור ב-CSS · React מרנדר או את הסימן או את המילה, לא שניהם */
+
+/* מסך הכתיבה מוסתר בזמן שהארכיון פתוח · דרך מחלקה על האב ולא דרך סגנון
+   שורה על האלמנט עצמו, כי ה-display שלו בבעלות chat.js. */
+.welcome.bw-archive-open #bw-mode-select { display: none !important; }
+
+/* האוויר של ‎.main‎ · בקובץ הריפוד הוא ‎var(--s7) var(--s6) var(--s6)‎, כלומר
+   48 מעל, 32 בצדדים ו-32 מתחת. הכלל נוצר מכנית על ‎.n-main‎, שאינו קיים
+   בעץ שלנו, ולכן מעולם לא חל: מדדתי 13 פיקסלים בין הבר השחור לבר העליון
+   במקום 48. זה בלט במסך השיחה, שבו מסמך התמליל מתחיל מיד מתחת לבר.
+   ההזחה מצטברת על גובה הבר הקבוע, ולכן ‎calc‎ ולא ערך יחיד. */
+#main-content {
+  padding-block-start: calc(var(--h-topbar) + var(--s7));
+  padding-inline: var(--s6);
+  padding-block-end: var(--s6);
+}
+/* שארית הכותרת הישנה · ‎.header-top‎ כבר מוסתר, אבל ה-‎<header>‎ עצמו המשיך
+   לתפוס 13 פיקסלים: ‎.header-session‎ ריקה עם ריפוד 6/16, ועוד גבול תחתון.
+   נמדד ‎elementFromPoint = null‎ עליה, כלומר שורה שאינה נראית ואינה נגישה,
+   והיא זו שאכלה את האוויר שהריפוד החדש נותן. בקובץ אין לה מקבילה. */
+#main-content > header { border-bottom: none; }
+#main-content > header .header-session { display: none; }
+
+/* הכותרת באנגלית · ‎max-width:17ch‎ שבקובץ כויל על עברית, שגליפיה צרים
+   מרוחב הספרה שממנה נגזר ‎ch‎. מדדתי: התקרה היא 225 פיקסלים, הכותרות
+   העבריות תופסות 151 עד 200 ונכנסות בשורה, והאנגליות 237 עד 331 ולכן
+   נשברות. הערך בעברית לא נגע, והכיוון הלטיני מקבל תקרה מקבילה.
+   הקובץ עברי בלבד, ולכן אין בו ערך לגזור ממנו כאן. */
+[dir="ltr"] h1.n-h { max-width: 26ch; }
+
+/* נקודת השבירה והערכים מהקובץ (‎@media max-width:900px‎) */
+@media (max-width: 900px) {
+  #main-content {
+    padding-block-start: calc(var(--h-topbar) + var(--s5));
+    padding-inline: var(--s4);
+    padding-block-end: var(--s6);
+  }
 }

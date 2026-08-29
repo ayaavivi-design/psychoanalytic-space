@@ -601,7 +601,11 @@ LANGUAGE — ABSOLUTE, OVERRIDES EVERYTHING BELOW
     // is carried and what is deliberately left out.
     let dynamicSystem = END_SESSION_SUFFIX + buildUserContextBlock(userContext);
 
-    if (theorist && THEORISTS_WITH_RAG.has(theorist) && messages?.length > 0) {
+    // חיפוש רשת מחליף את ה-RAG ואינו מצטרף אליו. עד עכשיו שניהם רצו יחד:
+    // הבקשה קיבלה גם את הקטעים מהקורפוס וגם את כלי החיפוש, כלומר ההדלקה
+    // הוסיפה מקור ולא החליפה אותו. הכרעת איה: האינטרנט פתוח, ולא ה-RAG.
+    // הענף ה-else למטה ממשיך להוסיף את בלוק הבטיחות ואת הגדרת התחום.
+    if (theorist && THEORISTS_WITH_RAG.has(theorist) && messages?.length > 0 && !webSearch) {
       // Query expansion (register-gap fix, 12.07): a single colloquial patient turn
       // retrieves sub-floor (0.34–0.54 < 0.59 health floor) against the theoretical
       // English corpus. Accumulate the last few PATIENT turns (not theorist output —

@@ -100,22 +100,22 @@ function showTherapyGate() {
   gate.style.display = 'flex';
   gate.innerHTML = isHe ? `
     <div style="text-align:center;max-width:400px;width:90%;padding:0 20px;">
-      <h2 style="font-family:var(--font-cormorant),serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:28px;">Between</h2>
-      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:6px;">Between בנוי בשביל הזמן שבין פגישות הטיפול.</p>
-      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:32px;">זה נכון לגביך?</p>
+      <h2 style="font-family:var(--font-assistant), sans-serif;font-size:28px;font-weight:300;color:var(--accent);margin-bottom:28px;">Between</h2>
+      <p style="font-size:16px;color:var(--text);line-height:1.8;margin-bottom:6px;">Between בנוי בשביל הזמן שבין פגישות הטיפול.</p>
+      <p style="font-size:16px;color:var(--text);line-height:1.8;margin-bottom:32px;">זה נכון לגביך?</p>
       <div style="display:flex;gap:12px;justify-content:center;">
-        <button onclick="therapyGateAnswer('yes')" style="flex:1;max-width:160px;padding:12px 16px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-family:var(--font-rubik),sans-serif;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">כן</button>
-        <button onclick="therapyGateAnswer('no')" style="flex:1;max-width:160px;padding:12px 16px;background:none;border:1px solid var(--border);border-radius:10px;font-size:15px;font-family:var(--font-rubik),sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">לא ממש</button>
+        <button onclick="therapyGateAnswer('yes')" style="flex:1;max-width:160px;padding:12px 16px;background:var(--accent-deep);color:#fff;border:none;border-radius:6px;font-size:16px;font-family:var(--font-rubik),sans-serif;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">כן</button>
+        <button onclick="therapyGateAnswer('no')" style="flex:1;max-width:160px;padding:12px 16px;background:none;border:1px solid var(--border);border-radius:6px;font-size:16px;font-family:var(--font-rubik),sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">לא ממש</button>
       </div>
     </div>
   ` : `
     <div style="text-align:center;max-width:400px;width:90%;padding:0 20px;">
-      <h2 style="font-family:var(--font-cormorant),serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:28px;">Between</h2>
-      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:6px;">Between is built for the time between therapy sessions.</p>
-      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:32px;">Does that sound like you?</p>
+      <h2 style="font-family:var(--font-assistant), sans-serif;font-size:28px;font-weight:300;color:var(--accent);margin-bottom:28px;">Between</h2>
+      <p style="font-size:16px;color:var(--text);line-height:1.8;margin-bottom:6px;">Between is built for the time between therapy sessions.</p>
+      <p style="font-size:16px;color:var(--text);line-height:1.8;margin-bottom:32px;">Does that sound like you?</p>
       <div style="display:flex;gap:12px;justify-content:center;">
-        <button onclick="therapyGateAnswer('yes')" style="flex:1;max-width:160px;padding:12px 16px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-family:var(--font-rubik),sans-serif;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Yes</button>
-        <button onclick="therapyGateAnswer('no')" style="flex:1;max-width:160px;padding:12px 16px;background:none;border:1px solid var(--border);border-radius:10px;font-size:15px;font-family:var(--font-rubik),sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">Not quite</button>
+        <button onclick="therapyGateAnswer('yes')" style="flex:1;max-width:160px;padding:12px 16px;background:var(--accent-deep);color:#fff;border:none;border-radius:6px;font-size:16px;font-family:var(--font-rubik),sans-serif;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Yes</button>
+        <button onclick="therapyGateAnswer('no')" style="flex:1;max-width:160px;padding:12px 16px;background:none;border:1px solid var(--border);border-radius:6px;font-size:16px;font-family:var(--font-rubik),sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">Not quite</button>
       </div>
     </div>
   `;
@@ -138,24 +138,47 @@ function showTherapyGateExit() {
   const isHe = (selectedLang?.code || 'he') !== 'en';
   gate.innerHTML = isHe ? `
     <div style="text-align:center;max-width:400px;width:90%;padding:0 20px;">
-      <h2 style="font-family:var(--font-cormorant),serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:28px;">Between</h2>
-      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:16px;">המקום הזה עובד בתוך מרחב טיפולי.</p>
-      <p style="font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:32px;">אם יש לך מטפל.ת — אנחנו כאן.</p>
+      <h2 style="font-family:var(--font-assistant), sans-serif;font-size:28px;font-weight:300;color:var(--accent);margin-bottom:28px;">Between</h2>
+      <p style="font-size:16px;color:var(--text);line-height:1.8;margin-bottom:16px;">המקום הזה עובד בתוך מרחב טיפולי.</p>
+      <p style="font-size:16px;color:var(--muted);line-height:1.8;margin-bottom:32px;">אם יש לך מטפל.ת — אנחנו כאן.</p>
       <a href="https://www.psychology.org.il" target="_blank" rel="noopener noreferrer"
-        style="font-size:14px;color:var(--accent);text-decoration:underline;opacity:0.85;">
+        style="font-size:16px;color:var(--accent);text-decoration:underline;opacity:0.85;">
         למצוא מטפל.ת ←
       </a>
     </div>
   ` : `
     <div style="text-align:center;max-width:420px;width:90%;padding:0 20px;">
-      <h2 style="font-family:var(--font-cormorant),serif;font-size:26px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:28px;">Between</h2>
-      <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:16px;">Between is for people in therapy.</p>
-      <p style="font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:28px;">When you're ready to start — we'll be here.</p>
+      <h2 style="font-family:var(--font-assistant), sans-serif;font-size:28px;font-weight:300;color:var(--accent);margin-bottom:28px;">Between</h2>
+      <p style="font-size:16px;color:var(--text);line-height:1.8;margin-bottom:16px;">Between is for people in therapy.</p>
+      <p style="font-size:16px;color:var(--muted);line-height:1.8;margin-bottom:28px;">When you're ready to start — we'll be here.</p>
     </div>
   `;
 }
 
 // ── Intake / שיחת היכרות ──────────────────────────────────────
+// שם הדובר בשיחת ההיכרות היה קבוע לויניקוט, גם כשהמשתמשת בחרה גישה אחרת,
+// ואז הכותרת אמרה "שיחה עם קליין" והתורים נשאו שם אחר. שני שמות במסך אחד
+// שוברים את היסוד שב-CORE: נוכחות של תיאורטיקן אחד ומובחן.
+// שם הדובר של המשתמשת בתמליל · אם נקבע שם בהגדרות, הוא זה שמופיע,
+// ורק בהיעדרו נופלים ל"את/ה". הכינוי הוא מה שהמשתמשת בחרה שיקראו לה,
+// ולכן אין סיבה שהתמליל יקרא לה אחרת.
+function bwSpeakerLabel(t) {
+  try {
+    const nm = (JSON.parse(localStorage.getItem('user_prefs') || '{}').name || '').trim();
+    if (nm) return nm;
+  } catch (e) { /* noop */ }
+  return (t && t.youLabel) || (window.selectedLang?.code === 'en' ? 'You' : 'את');
+}
+
+function intakeSpeaker(t) {
+  const isEn = (selectedLang?.code || 'he') === 'en';
+  const NAMES = isEn
+    ? {freud:'Freud',klein:'Klein',winnicott:'Winnicott',ogden:'Ogden',loewald:'Loewald',bion:'Bion',kohut:'Kohut',heimann:'Heimann'}
+    : {freud:'פרויד',klein:'קליין',winnicott:'ויניקוט',ogden:'אוגדן',loewald:'לוואלד',bion:'ביון',kohut:'קוהוט',heimann:'היימן'};
+  const key = (Array.isArray(activeTheorists) && activeTheorists.length === 1) ? activeTheorists[0] : null;
+  return (key && NAMES[key]) || (t && t.speaker) || NAMES.winnicott;
+}
+
 const INTAKE_TRANSLATIONS = {
   he: {
     postWelcomeH2: (name) => `שלום, ${name}`,
@@ -250,13 +273,11 @@ function checkIntakeStatus() {
   if (headerBtn) {
     const it = getIntakeTranslation();
     headerBtn.textContent = it.btnLabel;
-    headerBtn.style.display = 'block';
+    headerBtn.style.display = 'inline-flex';
   }
 }
 
 function startIntake() {
-  const tip = document.getElementById('intake-tooltip');
-  if (tip) tip.remove();
   intakeMode = true;
   intakeStep = 0;
   const prefs = JSON.parse(localStorage.getItem('user_prefs') || '{}');
@@ -280,15 +301,15 @@ function showIntakeQuestion() {
   const msgDiv = document.createElement('div');
   msgDiv.className = 'message agent';
   const subtextHtml = step.subtext
-    ? `<div class="message-content" style="font-size:12px;color:var(--muted);margin-top:4px;margin-bottom:2px;">${step.subtext}</div>`
+    ? `<div class="message-content" style="font-size:15px;color:var(--muted);margin-top:4px;margin-bottom:2px;">${step.subtext}</div>`
     : '';
   const skipBtnHtml = step.optional
-    ? `<div onclick="skipIntakeStep();" class="theorist-tag" style="cursor:pointer;opacity:0.55;font-size:12px;">${t.skipLabel || 'Skip'}</div>`
+    ? `<div onclick="skipIntakeStep();" class="theorist-tag" style="cursor:pointer;opacity:0.55;font-size:15px;">${t.skipLabel || 'Skip'}</div>`
     : '';
   if (step.options) {
     if (step.multiSelect) {
       msgDiv.innerHTML = `
-        <div class="message-role">${t.speaker}</div>
+        <div class="message-role">${intakeSpeaker(t)}</div>
         <div class="message-content">${step.q}</div>
         ${subtextHtml}
         <div class="intake-options" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;">
@@ -301,7 +322,7 @@ function showIntakeQuestion() {
       `;
     } else {
       msgDiv.innerHTML = `
-        <div class="message-role">${t.speaker}</div>
+        <div class="message-role">${intakeSpeaker(t)}</div>
         <div class="message-content">${step.q}</div>
         ${subtextHtml}
         <div class="intake-options" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;">
@@ -312,10 +333,10 @@ function showIntakeQuestion() {
     }
   } else {
     const typeHintHtml = step.optional
-      ? `<div style="font-size:11px;color:var(--muted);opacity:0.65;margin-top:10px;">${t.typeHint || (selectedLang?.code === 'en' ? 'Type in the text box below, or' : 'כתוב/י בתיבת הטקסט למטה, או')}</div>`
+      ? `<div style="font-size:13px;color:var(--muted);opacity:0.65;margin-top:10px;">${t.typeHint || (selectedLang?.code === 'en' ? 'Type in the text box below, or' : 'כתוב/י בתיבת הטקסט למטה, או')}</div>`
       : '';
     msgDiv.innerHTML = `
-      <div class="message-role">${t.speaker}</div>
+      <div class="message-role">${intakeSpeaker(t)}</div>
       <div class="message-content">${step.q}</div>
       ${subtextHtml}
       ${typeHintHtml}
@@ -365,7 +386,7 @@ function submitIntakeAnswer(answer) {
   const chat = document.getElementById('chat');
   const userDiv = document.createElement('div');
   userDiv.className = 'message user';
-  userDiv.innerHTML = `<div class="message-role">${t.youLabel || 'You'}</div><div class="message-content">${answer}</div>`;
+  userDiv.innerHTML = `<div class="message-role">${bwSpeakerLabel(t)}</div><div class="message-content">${answer}</div>`;
   chat.appendChild(userDiv);
   chat.scrollTop = chat.scrollHeight;
   intakeStep++;
@@ -405,16 +426,6 @@ function skipIntakeStep() {
   }
 }
 
-function showIntakeWarning(text, speaker, onDone) {
-  const chat = document.getElementById('chat');
-  const warnDiv = document.createElement('div');
-  warnDiv.className = 'message agent';
-  warnDiv.innerHTML = `<div class="message-role">${speaker}</div><div class="message-content" style="font-style:italic;color:var(--muted);">${text}</div>`;
-  chat.appendChild(warnDiv);
-  chat.scrollTop = chat.scrollHeight;
-  setTimeout(onDone, 2000);
-}
-
 function completeIntake() {
   const t = getIntakeTranslation();
   intakeData.completedAt = new Date().toISOString();
@@ -429,7 +440,7 @@ function completeIntake() {
   const chat = document.getElementById('chat');
   const closeDiv = document.createElement('div');
   closeDiv.className = 'message agent';
-  closeDiv.innerHTML = `<div class="message-role">${t.speaker}</div><div class="message-content" style="font-style:italic;">${t.closing}</div>`;
+  closeDiv.innerHTML = `<div class="message-role">${intakeSpeaker(t)}</div><div class="message-content" style="">${t.closing}</div>`;
   chat.appendChild(closeDiv);
   chat.scrollTop = chat.scrollHeight;
   setTimeout(enterMainSpace, 2200);
@@ -478,7 +489,9 @@ async function signIn() {
   const password = document.getElementById('auth-password').value;
   if (!email || !password) { errEl.textContent = _at.authErrFillAll || 'Please fill in both email and password'; errEl.style.display = 'block'; return; }
   const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
+  if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+  /* מסך הכניסה פותח משתמש חדש בהרשמה בלבד. הדגל הזה הוא מה שמבדיל. */
+  try { localStorage.setItem('bw_has_account', '1'); } catch {}
 }
 
 async function signUp() {
@@ -491,6 +504,7 @@ async function signUp() {
   if (!email || !password) { errEl.textContent = _at.authErrFillAll || 'Please fill in both email and password'; errEl.style.display = 'block'; return; }
   if (password.length < 6) { errEl.textContent = _at.authErrPassword || 'Password must be at least 6 characters'; errEl.style.display = 'block'; return; }
   const { data, error } = await supabaseClient.auth.signUp({ email, password });
+  if (!error) { try { localStorage.setItem('bw_has_account', '1'); } catch {} }
   if (error) {
     const _signupClosed = error.code === 'signup_disabled' || /signup.*not allowed|signups? not allowed/i.test(error.message || '');
     errEl.textContent = _signupClosed
@@ -551,22 +565,20 @@ function applyAdminVisibility(email) {
 function loadUserProfile(user) {
   const email = user.email || '';
   window._userEmail = email; // used by openSupportModal
+  // שורת המייל בכרטיס החשבון בבעלות React בלבד. כתיבה ישירה לתוכה לא שרדה,
+  // כי כל רינדור מחדש של העמוד החזיר את טקסט ברירת המחדל של ה-JSX. במקום
+  // לכתוב לאלמנט, מודיעים ל-React והוא מרנדר את הערך בעצמו.
+  window.dispatchEvent(new CustomEvent('bw-user-email', { detail: email }));
   const sbName = document.getElementById('sb-user-name');
-  const sbEmail = document.getElementById('sb-user-email');
-  const sbAvatar = document.getElementById('sb-avatar');
   if (sbName) sbName.textContent = email.split('@')[0];
-  if (sbEmail) sbEmail.textContent = email;
-  if (sbAvatar) sbAvatar.textContent = email.charAt(0).toUpperCase();
   // Load saved user prefs
   const prefs = JSON.parse(localStorage.getItem('user_prefs') || '{}');
   if (prefs.name) {
     if (sbName) sbName.textContent = prefs.name;
-    if (sbAvatar) sbAvatar.textContent = prefs.name.charAt(0).toUpperCase();
   }
   applyAdminVisibility(email);
 }
 // ─────────────────────────────────────────────────────────────
-
 
 const STORAGE_KEY = 'psycho_agent_v2';
 
@@ -589,20 +601,20 @@ function formatResponse(text) {
         // BW-118 — wrap the whole reflective-questions block in a nested "thinking" card (Maya).
         const q = t.replace(/^→\s*/, '');
         const open = idx === firstFollowupIdx
-          ? `<div style="background:var(--thinking);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:20px;"><span style="display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;font-family:'Rubik',sans-serif;">${(window._lang === 'en') ? 'Questions to stay with' : 'שאלות להישאר איתן'}</span>`
+          ? `<div style="background:var(--thinking);border:1px solid var(--border);border-radius:6px;padding:12px;margin-top:20px;"><span style="display:block;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;font-family:var(--font-assistant),sans-serif;">${(window._lang === 'en') ? 'Questions to stay with' : 'שאלות להישאר איתן'}</span>`
           : '';
         const close = idx === lastFollowupIdx ? `</div>` : '';
-        return `${open}<span class="followup-q" style="color:var(--text);font-size:13px;line-height:1.6;font-family:'Rubik',sans-serif;">${q}</span>${close}`;
+        return `${open}<span class="followup-q" style="color:var(--text);font-size:16px;line-height:1.6;font-family:var(--font-assistant),sans-serif;">${q}</span>${close}`;
       }
       if (_isExplore) {
-        return `<span class="followup-q" onclick="useFollowup(this)" style="display:inline-block;cursor:pointer;color:var(--accent);font-size:13px;padding:5px 12px;margin:3px 0;font-family:'Rubik',sans-serif;background:var(--accent-soft);border:1px solid var(--accent-dim);border-radius:var(--radius-xl);transition:background 0.15s,border-color 0.15s;" onmouseover="this.style.background='rgba(196,96,122,0.14)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='var(--accent-soft)';this.style.borderColor='var(--accent-dim)'">${t}</span><br>`;
+        return `<span class="followup-q" onclick="useFollowup(this)" style="display:inline-block;cursor:pointer;color:var(--accent);font-size:16px;padding:5px 12px;margin:3px 0;font-family:var(--font-assistant),sans-serif;background:var(--accent-soft);border:1px solid var(--accent-dim);border-radius:var(--radius-sm);transition:background 0.15s,border-color 0.15s;" onmouseover="this.style.background='rgba(196,96,122,0.14)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='var(--accent-soft)';this.style.borderColor='var(--accent-dim)'">${t}</span><br>`;
       }
       // Session/hold: the theorist's question to the patient — plain, non-clickable, part of the response.
       const _sq = t.replace(/^→\s*/, '');
-      return `<span class="followup-q" style="display:block;color:var(--text);font-size:13px;line-height:1.6;font-family:'Rubik',sans-serif;margin:3px 0;">${_sq}</span>`;
+      return `<span class="followup-q" style="display:block;color:var(--text);font-size:16px;line-height:1.6;font-family:var(--font-assistant),sans-serif;margin:3px 0;">${_sq}</span>`;
     }
     if (t.startsWith('📄')) {
-      return `<span style="display:block;font-size:11px;color:var(--muted);padding:2px 0;font-family:'Rubik',sans-serif;font-style:italic;">${t}</span>`;
+      return `<span style="display:block;font-size:13px;color:var(--muted);padding:2px 0;font-family:var(--font-assistant),sans-serif;">${t}</span>`;
     }
     return line;
   });
@@ -645,7 +657,7 @@ function renderApiNote() {
   const isEn = (window.selectedLang?.code === 'en');
   const p = document.createElement('p');
   p.id = 'welcome-api-text';
-  p.style.cssText = 'font-size:11px;color:var(--muted);line-height:1.6;margin:0;margin-top:auto;padding-top:36px;';
+  p.style.cssText = 'font-size:13px;color:var(--muted);line-height:1.6;margin:0;margin-top:auto;padding-top:36px;';
   const linkText = t.privacyLink || (isEn ? 'Privacy Policy' : 'מדיניות פרטיות');
   const mainText = isEn
     ? "Conversations are processed through Anthropic's API and are not stored by us or used for model training."
@@ -664,12 +676,11 @@ function renderAnalystBadge() {
   const heNames = {freud:'פרויד',klein:'קליין',winnicott:'ויניקוט',ogden:'אוגדן',loewald:'לוואלד',bion:'ביון',kohut:'קוהוט',heimann:'היימן'};
   const activeT = activeTheorists[0] || 'winnicott';
   const name = (isEn ? enNames : heNames)[activeT] || activeT;
-  const changeLabel = isEn ? 'change' : 'החלף';
   const withLabel = isEn ? `with ${name}` : `עם ${name}`;
   const badge = document.createElement('div');
   badge.id = 'analyst-badge';
-  badge.style.cssText = 'font-size:11px;color:var(--muted);letter-spacing:0.03em;margin-top:6px;margin-bottom:16px;';
-  badge.innerHTML = `${withLabel} · <span onclick="document.getElementById('sb-theorists-label')?.closest('.sb-item')?.click()" style="color:var(--accent);cursor:pointer;text-decoration:underline;">${changeLabel}</span>`;
+  badge.style.cssText = 'font-size:13px;color:var(--muted);letter-spacing:0.03em;margin-top:6px;margin-bottom:16px;';
+  badge.textContent = withLabel;
   const h2 = welcome.querySelector('h2');
   // React-safe: only insertBefore when the reference node is genuinely a child of #welcome.
   // React may have re-rendered #welcome's children, leaving h2.nextSibling parented elsewhere —
@@ -715,53 +726,6 @@ function renderFlowButtons() {
   // React-safe: only insertBefore when apiNote is genuinely a child of appendTarget (see renderAnalystBadge).
   if (apiNote && welcomeVisible && apiNote.parentNode === appendTarget) appendTarget.insertBefore(container, apiNote);
   else appendTarget.appendChild(container);
-}
-
-function showAfterSessionTextarea() {
-  const isEn = (window.selectedLang?.code === 'en');
-  const chat = document.getElementById('chat');
-  if (!chat) return;
-
-  const wrapper = document.createElement('div');
-  wrapper.id = 'bw-after-session-input';
-  wrapper.style.cssText = `display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px 0 20px;direction:${isEn ? 'ltr' : 'rtl'};`;
-
-  const prompt = document.createElement('p');
-  prompt.style.cssText = `font-family:'Cormorant Garamond','Cormorant',Georgia,serif;font-size:19px;color:#2d2420;text-align:center;margin:0;max-width:420px;line-height:1.5;`;
-  prompt.textContent = isEn
-    ? 'What stayed with you from your session?'
-    : 'מה נשאר שעדיין לא מצא את מקומו?';
-
-  const ta = document.createElement('textarea');
-  ta.style.cssText = `width:100%;max-width:420px;min-height:96px;padding:12px 16px;font-family:Rubik,sans-serif;font-size:15px;color:#2d2420;background:#fff;border:1.5px solid #ede4e0;border-radius:16px;resize:none;outline:none;box-sizing:border-box;line-height:1.6;`;
-  ta.placeholder = isEn ? 'Write here…' : 'כתוב/י כאן…';
-
-  const btn = document.createElement('button');
-  btn.textContent = isEn ? 'Continue' : 'המשך';
-  btn.style.cssText = `padding:8px 28px;background:#c4607a;color:#fff;border:none;border-radius:22px;font-family:Rubik,sans-serif;font-size:13px;cursor:pointer;opacity:0.5;transition:opacity 0.15s;`;
-  btn.disabled = true;
-
-  ta.addEventListener('input', () => {
-    const has = ta.value.trim().length > 0;
-    btn.disabled = !has;
-    btn.style.opacity = has ? '1' : '0.5';
-  });
-
-  btn.addEventListener('click', () => {
-    const text = ta.value.trim();
-    if (!text) return;
-    window._bwAfterSessionText = text;
-    wrapper.remove();
-    const welcomeEl = document.getElementById('welcome');
-    if (welcomeEl) welcomeEl.style.display = '';
-    showTheoristEntry('session');
-  });
-
-  wrapper.appendChild(prompt);
-  wrapper.appendChild(ta);
-  wrapper.appendChild(btn);
-  chat.appendChild(wrapper);
-  setTimeout(() => ta.focus(), 100);
 }
 
 async function startFlow(flowKey) {
@@ -869,85 +833,6 @@ async function startFlow(flowKey) {
   }
 }
 
-async function startAfterSessionConversation(text, theoristKey) {
-  window.activeFlow = 'after_session';
-
-  // BW-51: Record flow selection
-  (function() {
-    const _isEn = (window.selectedLang?.code === 'en');
-    const _flowLabels = _isEn
-      ? { after_session: 'Still with my session', before_session: 'Session coming up', something_else: "Something won't leave me" }
-      : { after_session: 'עוד מהפגישה', before_session: 'יש לי פגישה בקרוב', something_else: 'משהו לא עוזב אותי' };
-    const _allKeys = ['after_session', 'before_session', 'something_else'];
-    const _allLabels = _allKeys.map(k => _flowLabels[k]);
-    const _chat = document.getElementById('chat');
-    if (!_chat) return;
-    const _ind = document.createElement('div');
-    _ind.className = 'message flow-selection';
-    _ind.dataset.selected = _flowLabels['after_session'];
-    _ind.dataset.options = JSON.stringify(_allLabels);
-    _chat.appendChild(_ind);
-  })();
-
-  if (conversationHistory.length === 0) {
-    const allowed = await checkConversationLimit();
-    if (!allowed) { window.activeFlow = null; renderFlowButtons(); return; }
-  }
-
-  isThinking = true;
-  document.getElementById('send-btn').disabled = true;
-  if (!sessionTimerInterval) startSessionTimer();
-  const _sb = document.getElementById('suggestion-bubbles');
-  if (_sb) _sb.classList.add('subtle');
-
-  appendMessage('user', text);
-  conversationHistory.push({ role: 'user', content: text });
-
-  showThinking();
-  try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-      body: JSON.stringify({
-        messages: conversationHistory,
-        system: buildSystemPrompt(),
-        userContext: buildUserContext(),
-        webSearch: false,
-        theorist: theoristKey,
-        bw_mode: (document.getElementById('sidebar')?.classList.contains('persona-therapist') && localStorage.getItem('bw_mode') !== 'explore') ? 'consult' : (localStorage.getItem('bw_mode') || 'session'),
-        persona: document.getElementById('sidebar')?.classList.contains('persona-therapist') ? 'therapist' : 'patient',
-        uiLang: (window.selectedLang?.code || 'he')
-      })
-    });
-    const data = await response.json();
-    hideThinking();
-    isThinking = false;
-    document.getElementById('send-btn').disabled = false;
-    if (data.error) throw new Error(typeof data.error === 'string' ? data.error : (data.error.message || 'error'));
-    const reply = Array.isArray(data.content)
-      ? data.content.filter(b => b.type === 'text').map(b => b.text).join('')
-      : (data.text || '');
-    if (reply) {
-      appendMessage('assistant', reply);
-      conversationHistory.push({ role: 'assistant', content: reply });
-      updateReflectionBtn();
-      updateEndSessionBtn();
-      if (window.clinicalMode && !silenceResponseSent) {
-        clearTimeout(silenceTimer);
-        silenceTimer = setTimeout(handleSilence, SILENCE_THRESHOLD_MS);
-      }
-      resetIdleTimer();
-      saveConversation();
-    }
-  } catch(e) {
-    hideThinking();
-    isThinking = false;
-    document.getElementById('send-btn').disabled = false;
-    window.activeFlow = null;
-    console.error('[startAfterSessionConversation] error:', e);
-  }
-}
-
 function selectWinnicottDefault() {
   document.querySelectorAll('.theorist-tag[data-key]').forEach(el => el.classList.remove('active'));
   activeTheorists = ['winnicott'];
@@ -994,12 +879,12 @@ function showWriteInterface() {
         border-radius: 2px;
       }
       .bw-hold-chip {
-        border: 1px solid var(--border); border-radius: 22px; padding: 7px 16px;
-        font-size: 13px; font-family: var(--font-rubik), sans-serif; cursor: pointer;
+        border: 1px solid var(--border); border-radius: 6px; padding: 7px 16px;
+        font-size: 16px; font-family: var(--font-rubik), sans-serif; cursor: pointer;
         color: var(--text); background: var(--surface); transition: background 0.15s, border-color 0.15s, color 0.15s;
       }
       .bw-hold-chip.active {
-        border-color: var(--accent); background: var(--accent); color: #fff;
+        border-color: var(--accent-deep); background: var(--accent-deep); color: #fff;
       }
     `;
     document.head.appendChild(s);
@@ -1012,13 +897,13 @@ function showWriteInterface() {
   area.id = 'bw-write-area';
   area.style.cssText = `display:flex;flex-direction:column;height:100%;padding:32px 28px 24px;direction:${dir};box-sizing:border-box;`;
   area.innerHTML = `
-    <div id="bw-write-heading" style="font-family:var(--font-cormorant),serif;font-size:20px;font-weight:300;color:var(--muted);margin-bottom:20px;">
+    <div id="bw-write-heading" style="font-family:var(--font-assistant), sans-serif;font-size:22px;font-weight:300;color:var(--muted);margin-bottom:20px;">
       ${isEn ? 'Write to your therapist' : 'כתיבה למטפל'}
     </div>
-    <div id="bw-write-panel" style="flex:1;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;box-sizing:border-box;">
+    <div id="bw-write-panel" style="flex:1;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:20px;box-sizing:border-box;">
       <div id="bw-write-textarea" contenteditable="true"
         data-placeholder="${placeholder}"
-        style="flex:1;outline:none;font-family:var(--font-rubik),sans-serif;font-size:15px;line-height:1.85;color:var(--text);width:100%;direction:${dir};min-height:220px;word-break:break-word;white-space:pre-wrap;"></div>
+        style="flex:1;outline:none;font-family:var(--font-rubik),sans-serif;font-size:16px;line-height:1.85;color:var(--text);width:100%;direction:${dir};min-height:220px;word-break:break-word;white-space:pre-wrap;"></div>
       <div id="bw-write-hold-picker" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);flex-direction:column;align-items:center;">
         <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
           <span class="bw-hold-chip" data-key="freud" onclick="selectHoldTheorist('freud')">${isEn ? 'Freud' : 'פרויד'}</span>
@@ -1028,16 +913,16 @@ function showWriteInterface() {
         </div>
         <div style="display:flex;gap:10px;margin-top:12px;align-items:center;justify-content:center;flex-wrap:wrap;">
           <button id="bw-hold-analyze-btn" onclick="openWriteSummary()"
-            style="padding:10px 28px;border-radius:22px;border:1px solid var(--accent);font-size:13px;font-family:var(--font-rubik),sans-serif;background:none;color:var(--accent);cursor:pointer;">
-            ${isEn ? "What's here" : 'מה יש כאן'}
+            style="padding:10px 28px;border-radius:6px;border:1px solid var(--accent);font-size:16px;font-family:var(--font-rubik),sans-serif;background:none;color:var(--accent);cursor:pointer;">
+            ${isEn ? 'Analyse' : 'נתח'}
           </button>
           <button id="bw-hold-start-btn" disabled onclick="startHoldConversation()"
-            style="padding:10px 28px;border-radius:22px;border:none;font-size:13px;font-family:var(--font-rubik),sans-serif;background:var(--border);color:var(--muted);cursor:default;">
+            style="padding:10px 28px;border-radius:6px;border:none;font-size:16px;font-family:var(--font-rubik),sans-serif;background:var(--border);color:var(--muted);cursor:default;">
             ${isEn ? 'Talk it through' : 'שיחה'}
           </button>
         </div>
       </div>
-      <div id="bw-write-hint" style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:flex-end;align-items:center;">
+      <div id="bw-write-hint" style="font-size:13px;color:var(--muted);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:flex-end;align-items:center;">
         <span id="bw-write-hint-archive" onclick="openWriteArchive()" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;">${isEn ? 'What I wrote' : 'מה כתבתי'}</span>
       </div>
     </div>`;
@@ -1047,7 +932,7 @@ function showWriteInterface() {
   const _arrowHtml = `<span style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #2d2420;"></span>`;
   const bubble = document.createElement('div');
   bubble.id = 'bw-private-bubble';
-  bubble.style.cssText = 'display:none;position:fixed;z-index:400;background:#2d2420;color:#fff;border-radius:22px;padding:4px 10px;font-size:11px;font-family:Rubik,sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;box-shadow:0 1px 4px rgba(45,36,32,0.2);user-select:none;';
+  bubble.style.cssText = 'display:none;position:fixed;z-index:400;background:#2d2420;color:#fff;border-radius:6px;padding:4px 10px;font-size:13px;font-family:var(--font-assistant),sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;box-shadow:0 1px 4px rgba(45,36,32,0.2);user-select:none;';
   bubble.dataset.mode = 'mark';
 
   bubble.addEventListener('mousedown', (e) => {
@@ -1143,7 +1028,7 @@ function initHoldPrivateBubble() {
   const _arrowHtml = `<span style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #2d2420;"></span>`;
   const bubble = document.createElement('div');
   bubble.id = 'bw-hold-private-bubble';
-  bubble.style.cssText = 'display:none;position:fixed;z-index:400;background:#2d2420;color:#fff;border-radius:22px;padding:4px 10px;font-size:11px;font-family:Rubik,sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;box-shadow:0 1px 4px rgba(45,36,32,0.2);user-select:none;';
+  bubble.style.cssText = 'display:none;position:fixed;z-index:400;background:#2d2420;color:#fff;border-radius:6px;padding:4px 10px;font-size:13px;font-family:var(--font-assistant),sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;box-shadow:0 1px 4px rgba(45,36,32,0.2);user-select:none;';
   bubble.dataset.mode = 'mark';
 
   bubble.addEventListener('mousedown', (e) => {
@@ -1252,12 +1137,24 @@ function saveWriteEntry(fullText, publicText, summary = null) {
 function deleteWriteEntry(id) {
   try {
     const entries = JSON.parse(localStorage.getItem(BW_WRITES_KEY) || '[]');
-    const filtered = entries.filter(e => e.id !== id);
+    // השוואה סובלנית לטיפוס · רשומות ישנות נשמרו עם מזהה כמחרוזת, וב-‎!==‎
+    // הן לא נמצאו כלל: הכרטיס נעלם מהמסך וחזר ברענון.
+    const target = String(id);
+    const filtered = entries.filter(e => String(e.id) !== target);
+    if (filtered.length === entries.length) {
+      console.warn('[bw-archive] no entry matched id', id);
+      return false;
+    }
     localStorage.setItem(BW_WRITES_KEY, JSON.stringify(filtered));
-  } catch(e) { console.warn('[bw-archive] delete failed', e); }
+    return true;
+  } catch(e) { console.warn('[bw-archive] delete failed', e); return false; }
 }
 
 function openWriteArchive() {
+  // "מה כתבתי" הוא מסך ב-React מאז 29.08, ולא שכבה. השארת שתי גרסאות של אותו
+  // דבר היא בדיוק הדיברגנציה של פריט 17, ולכן הקריאה מנותבת למסך ואינה בונה
+  // מכל שני. הבנייה הישנה נשארת מתחת, מנוטרלת, ואפשר להחזירה בהסרת השורות.
+  try { window.dispatchEvent(new CustomEvent('bw-open-write-archive')); return; } catch (e) { /* fall through */ }
   document.getElementById('bw-archive-modal')?.remove();
   const isEn = (window.selectedLang?.code === 'en');
   const dir = isEn ? 'ltr' : 'rtl';
@@ -1266,18 +1163,27 @@ function openWriteArchive() {
 
   const modal = document.createElement('div');
   modal.id = 'bw-archive-modal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(45,36,32,0.45);display:flex;align-items:center;justify-content:center;';
+  modal.className = 'n-ovl n-open';
+  modal.style.zIndex = '500';
 
+  // מבנה העיצוב החדש · בר עליון, קו, כותרת, כרטיסים, הערת ארעיות ופוטר.
   const inner = document.createElement('div');
-  inner.style.cssText = `background:var(--bg);border-radius:16px;padding:28px;max-width:540px;width:92%;max-height:80vh;overflow-y:auto;direction:${dir};`;
+  inner.className = 'n-modal';
+  inner.style.cssText = `width:640px;max-width:92%;max-height:84vh;overflow-y:auto;direction:${dir};`;
 
-  const title = isEn ? 'What I wrote' : 'מה כתבתי';
-  const emptyMsg = isEn ? 'Nothing here yet.' : 'עדיין לא כתבת כאן.';
-
-  let html = `<div style="font-family:var(--font-cormorant),serif;font-size:22px;font-weight:300;color:var(--text);margin-bottom:20px;">${title}</div>`;
+  const today = new Date().toLocaleDateString(isEn ? 'en-GB' : 'he-IL', { day: '2-digit', month: '2-digit' });
+  let html = `
+    <div class="n-topbar"><span>${isEn ? 'What I wrote' : 'מה כתבתי'}</span><span>${today}</span></div>
+    <div class="n-hr"></div>
+    <h1 class="n-h">${isEn ? 'What has already come up' : 'מה שכבר עלה'}</h1>`;
 
   if (entries.length === 0) {
-    html += `<div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--muted);padding:8px 0;">${emptyMsg}</div>`;
+    html += `<div class="n-empty">
+      <div class="n-t">${isEn ? 'Nothing here yet' : 'עדיין לא כתבת כאן'}</div>
+      <div class="n-d">${isEn
+        ? 'What you write on the writing screen is kept here, on this device only.'
+        : 'מה שנכתב במסך הכתיבה נשמר כאן, על המכשיר הזה בלבד.'}</div>
+    </div>`;
   } else {
     entries.forEach((entry, i) => {
       // Backward-compat: entries saved before BW-129 carry the old key_points/bring_to_session
@@ -1289,31 +1195,37 @@ function openWriteArchive() {
         || (entry.publicText || entry.fullText || '').split('\n')[0]
         || '—').slice(0, 90);
       const kpHtml = entry.summary?.key_points?.length
-        ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'Key points:' : 'נקודות עיקריות:'}</div><ul style="margin:0;padding-${dir==='rtl'?'right':'left'}:16px;">${entry.summary.key_points.map(p=>`<li style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${p}</li>`).join('')}</ul></div>`
+        ? `<div style="margin-bottom:10px;"><div style="font-family:var(--font-assistant),sans-serif;font-size:13px;color:var(--muted);margin-bottom:4px;">${isEn ? 'Key points:' : 'נקודות עיקריות:'}</div><ul style="margin:0;padding-${dir==='rtl'?'right':'left'}:16px;">${entry.summary.key_points.map(p=>`<li style="font-family:var(--font-assistant),sans-serif;font-size:15px;color:var(--text);line-height:1.6;">${p}</li>`).join('')}</ul></div>`
         : (entry.summary?.what_came_up
-          ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'What came up:' : 'מה עלה:'}</div><div style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${entry.summary.what_came_up}</div></div>` : '');
+          ? `<div style="margin-bottom:10px;"><div style="font-family:var(--font-assistant),sans-serif;font-size:13px;color:var(--muted);margin-bottom:4px;">${isEn ? 'What came up:' : 'מה עלה:'}</div><div style="font-family:var(--font-assistant),sans-serif;font-size:15px;color:var(--text);line-height:1.6;">${entry.summary.what_came_up}</div></div>` : '');
       const insightHtml = entry.summary?.core_insight
-        ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? "What's coming into focus:" : 'מה שמתבהר:'}</div><div style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${entry.summary.core_insight}</div></div>` : '';
+        ? `<div style="margin-bottom:10px;"><div style="font-family:var(--font-assistant),sans-serif;font-size:13px;color:var(--muted);margin-bottom:4px;">${isEn ? "What's coming into focus:" : 'מה שמתבהר:'}</div><div style="font-family:var(--font-assistant),sans-serif;font-size:15px;color:var(--text);line-height:1.6;">${entry.summary.core_insight}</div></div>` : '';
       const bringHtml = entry.summary?.bring_to_session
-        ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'What I want to bring:' : 'מה אני רוצה להביא:'}</div><div style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;">${entry.summary.bring_to_session}</div></div>`
+        ? `<div style="margin-bottom:10px;"><div style="font-family:var(--font-assistant),sans-serif;font-size:13px;color:var(--muted);margin-bottom:4px;">${isEn ? 'What I want to bring:' : 'מה אני רוצה להביא:'}</div><div style="font-family:var(--font-assistant),sans-serif;font-size:15px;color:var(--text);line-height:1.6;">${entry.summary.bring_to_session}</div></div>`
         : (entry.summary?.reflection
-          ? `<div style="margin-bottom:10px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:4px;">${isEn ? 'Holding:' : 'החזקה:'}</div><div style="font-family:Rubik,sans-serif;font-size:12px;color:var(--text);line-height:1.6;white-space:pre-wrap;">${entry.summary.reflection}</div></div>` : '');
+          ? `<div style="margin-bottom:10px;"><div style="font-family:var(--font-assistant),sans-serif;font-size:13px;color:var(--muted);margin-bottom:4px;">${isEn ? 'Holding:' : 'החזקה:'}</div><div style="font-family:var(--font-assistant),sans-serif;font-size:15px;color:var(--text);line-height:1.6;white-space:pre-wrap;">${entry.summary.reflection}</div></div>` : '');
       html += `
-        <div class="bw-archive-entry" style="border-bottom:1px solid var(--border);padding:14px 0;cursor:pointer;">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;">
-            <div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${preview.replace(/</g,'&lt;')}</div>
-            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-              <div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);white-space:nowrap;">${entry.date || ''}</div>
-              <button class="bw-archive-delete" data-id="${entry.id}" title="${isEn ? 'Delete' : 'מחק'}" aria-label="${isEn ? 'Delete' : 'מחק'}" style="background:none;border:none;padding:2px 4px;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;flex-shrink:0;">×</button>
-            </div>
-          </div>
+        <div class="bw-archive-entry n-card">
+          <button class="bw-archive-delete n-more" data-id="${entry.id}" title="${isEn ? 'Delete' : 'מחיקה'}" aria-label="${isEn ? 'Delete' : 'מחיקה'}">×</button>
+          <div class="n-t">${preview.replace(/</g,'&lt;')}</div>
+          <div class="n-m">${entry.date || ''}${entry.theorist ? ' · ' + entry.theorist : ''}</div>
           <div class="bw-archive-body" style="display:none;margin-top:14px;">
             ${kpHtml}${insightHtml}${bringHtml}
-            <div style="margin-top:4px;"><div style="font-family:Rubik,sans-serif;font-size:11px;color:var(--muted);margin-bottom:6px;">${isEn ? 'Full text (including private):' : 'הטקסט המלא (כולל פרטי):'}</div><div style="font-family:Rubik,sans-serif;font-size:13px;color:var(--text);line-height:1.75;white-space:pre-wrap;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;">${(entry.fullText || '').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>
+            <div style="margin-top:4px;"><div style="font-family:var(--font-assistant),sans-serif;font-size:13px;color:var(--muted);margin-bottom:6px;">${isEn ? 'Full text (including private):' : 'הטקסט המלא (כולל פרטי):'}</div><div style="font-family:var(--font-assistant),sans-serif;font-size:16px;color:var(--text);line-height:1.75;white-space:pre-wrap;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px;">${(entry.fullText || '').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>
           </div>
         </div>`;
     });
   }
+
+  // הערת הארעיות והפוטר · מהעיצוב. ההערה נאמרת כערך ולא כתקלה.
+  if (entries.length) {
+    html += `<div class="n-empty" style="margin-top:14px;border:none;padding:14px 0">${isEn
+      ? 'What was written before is no longer here.<br>The space does not keep, and downloading is the only way to remember.'
+      : 'מה שנכתב לפני כן כבר לא כאן.<br>המרחב אינו שומר, וההורדה היא הדרך היחידה לזכור.'}</div>`;
+  }
+  html += `<div class="n-botbar">${isEn
+    ? 'The space serves the therapy. What becomes clear here belongs in the room.'
+    : 'המרחב משרת את הטיפול. מה שמתבהר כאן, מקומו בחדר.'}</div>`;
 
   inner.innerHTML = html;
   inner.querySelectorAll('.bw-archive-entry').forEach(el => {
@@ -1357,13 +1269,13 @@ async function openWriteSummary() {
   overlay.id = 'write-summary-modal';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
   overlay.innerHTML = `
-    <div style="background:var(--bg);border-radius:16px;width:520px;max-width:92vw;max-height:82vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:${dir};padding:28px 28px 24px;">
+    <div style="background:var(--bg);border-radius:8px;width:520px;max-width:92vw;max-height:82vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:${dir};padding:28px 28px 24px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <span style="font-family:var(--font-cormorant),serif;font-size:20px;font-weight:400;color:var(--text);">${isEn ? "What's here" : 'מה יש כאן'}</span>
-        <button onclick="document.getElementById('write-summary-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted);line-height:1;">×</button>
+        <span style="font-family:var(--font-assistant), sans-serif;font-size:22px;font-weight:400;color:var(--text);">${isEn ? 'Analyse' : 'נתח'}</span>
+        <button onclick="document.getElementById('write-summary-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--muted);line-height:1;">×</button>
       </div>
-      <div id="write-summary-results" style="font-family:var(--font-rubik),sans-serif;font-size:14px;color:var(--text);line-height:1.7;">
-        <div style="color:var(--muted);font-size:13px;">${isEn ? 'Generating…' : 'מכין…'}</div>
+      <div id="write-summary-results" style="font-family:var(--font-rubik),sans-serif;font-size:16px;color:var(--text);line-height:1.7;">
+        <div style="color:var(--muted);font-size:16px;">${isEn ? 'Generating…' : 'מכין…'}</div>
       </div>
     </div>`;
   document.body.appendChild(overlay);
@@ -1401,7 +1313,7 @@ async function openWriteSummary() {
     if (data.held) {
       const reflection = (data.reflection || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       el.innerHTML = `
-        <div style="background:var(--accent-soft);border-radius:10px;padding:16px 18px;">
+        <div style="background:var(--accent-soft);border-radius:6px;padding:16px 18px;">
           <div style="color:var(--text);line-height:1.8;white-space:pre-wrap;">${reflection || (isEn ? "What you wrote is still alive — it's waiting for the room." : 'מה שכתבת עוד חי — הוא מחכה לחדר.')}</div>
         </div>`;
       const heldInner = el.parentElement;
@@ -1417,11 +1329,11 @@ async function openWriteSummary() {
         // "צרף את הכתיבה" is the one option that stays out, for a structural reason and not a
         // stylistic one: in this path her writing IS the message, so there is nothing to attach.
         heldFooter.innerHTML = `
-          <label id="ws-held-save-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;direction:${isEn ? 'ltr' : 'rtl'};font-family:var(--font-rubik),sans-serif;font-size:12px;color:var(--muted);user-select:none;margin-bottom:12px;">
+          <label id="ws-held-save-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;direction:${isEn ? 'ltr' : 'rtl'};font-family:var(--font-rubik),sans-serif;font-size:15px;color:var(--muted);user-select:none;margin-bottom:12px;">
             <input type="checkbox" id="ws-held-save" style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer;">
             <span id="ws-held-save-label">${isEn ? 'Save to journal' : 'שמור ביומן'}</span>
           </label>
-          <span id="ws-held-send" style="font-family:var(--font-rubik),sans-serif;font-size:13px;color:var(--accent);cursor:pointer;">
+          <span id="ws-held-send" style="font-family:var(--font-rubik),sans-serif;font-size:16px;color:var(--accent);cursor:pointer;">
             ${isEn ? 'Send my writing to my therapist' : 'לשלוח את מה שכתבתי למטפל/ת'}
           </span>`;
         heldInner.appendChild(heldFooter);
@@ -1452,7 +1364,7 @@ async function openWriteSummary() {
     const threadsHtml = Array.isArray(data.threads)
       ? data.threads.slice(0, 4).map(t => `
         <div style="margin-bottom:16px;">
-          <div style="font-family:var(--font-cormorant),Georgia,serif;font-size:15px;color:var(--accent);margin-bottom:4px;">${esc(t.name)}</div>
+          <div style="font-family:var(--font-assistant), sans-serif;font-size:16px;color:var(--accent);margin-bottom:4px;">${esc(t.name)}</div>
           <div style="color:var(--text);line-height:1.75;">${esc(t.what)}</div>
         </div>`).join('')
       : '';
@@ -1460,24 +1372,24 @@ async function openWriteSummary() {
       ${data.what_came_up ? block(data.what_came_up) : ''}
       ${threadsHtml}
       ${data.core_insight ? `<div style="border-top:1px solid var(--border);padding-top:14px;margin-top:2px;">${block(data.core_insight)}</div>` : ''}
-      ${data.bring_to_session ? `<div style="background:var(--accent-soft);border-radius:10px;padding:14px 16px;">
-        <div style="font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Bring to session' : 'להביא לפגישה'}</div>
+      ${data.bring_to_session ? `<div style="background:var(--accent-soft);border-radius:6px;padding:14px 16px;">
+        <div style="font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Bring to session' : 'להביא לפגישה'}</div>
         <div style="color:var(--text);line-height:1.75;">${esc(data.bring_to_session)}</div>
       </div>` : ''}`;
 
     // Footer actions
     const modalInner = el.parentElement;
-    const btnStyle = 'flex:1;padding:10px 12px;border-radius:10px;font-family:var(--font-rubik),sans-serif;font-size:13px;cursor:pointer;transition:all 0.15s;';
+    const btnStyle = 'flex:1;padding:10px 12px;border-radius:6px;font-family:var(--font-rubik),sans-serif;font-size:16px;cursor:pointer;transition:all 0.15s;';
     const footer = document.createElement('div');
     footer.id = 'write-summary-footer';
     footer.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);';
     const toggleDir = isEn ? 'ltr' : 'rtl';
     footer.innerHTML = `
-      <label id="ws-save-toggle-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;direction:${toggleDir};font-family:var(--font-rubik),sans-serif;font-size:12px;color:var(--muted);user-select:none;">
+      <label id="ws-save-toggle-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;direction:${toggleDir};font-family:var(--font-rubik),sans-serif;font-size:15px;color:var(--muted);user-select:none;">
         <input type="checkbox" id="ws-save-journal" style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer;">
         <span id="ws-save-label">${isEn ? 'Save to journal' : 'שמור ביומן'}</span>
       </label>
-      <label id="ws-attach-toggle-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;direction:${toggleDir};font-family:var(--font-rubik),sans-serif;font-size:12px;color:var(--muted);user-select:none;">
+      <label id="ws-attach-toggle-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;direction:${toggleDir};font-family:var(--font-rubik),sans-serif;font-size:15px;color:var(--muted);user-select:none;">
         <input type="checkbox" id="ws-attach-letter" style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer;">
         ${isEn ? 'Attach my writing' : 'צרף את הכתיבה'}
       </label>
@@ -1509,7 +1421,7 @@ async function openWriteSummary() {
       ? data.threads.slice(0, 4).map(t => `<p><strong>${esc(t.name)}:</strong> ${esc(t.what)}</p>`).join('')
       : '';
     const summaryHtml = `${data.what_came_up ? `<p><strong>${isEn ? 'What came up' : 'מה עלה'}:</strong> ${esc(data.what_came_up)}</p>` : ''}${threadsEmailHtml}${data.core_insight ? `<p><strong>${isEn ? "What's coming into focus" : 'מה שמתבהר'}:</strong> ${esc(data.core_insight)}</p>` : ''}${data.bring_to_session ? `<p><strong>${isEn ? 'What I want to bring' : 'מה אני רוצה להביא'}:</strong> ${esc(data.bring_to_session)}</p>` : ''}`;
-    const letterHtml = `<hr style="margin:20px 0;border:none;border-top:1px solid #eee;"><p style="font-size:12px;color:#999;margin-bottom:8px;">${isEn ? 'My writing:' : 'הכתיבה:'}</p><p style="white-space:pre-wrap;line-height:1.7;">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
+    const letterHtml = `<hr style="margin:20px 0;border:none;border-top:1px solid #eee;"><p style="font-size:15px;color:#999;margin-bottom:8px;">${isEn ? 'My writing:' : 'הכתיבה:'}</p><p style="white-space:pre-wrap;line-height:1.7;">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
     document.getElementById('ws-send-btn')?.addEventListener('click', () => {
       const attachLetter = document.getElementById('ws-attach-letter')?.checked;
       const emailHtml = attachLetter ? summaryHtml + letterHtml : summaryHtml;
@@ -1534,10 +1446,6 @@ function goBackToChat() {
   const welcome = document.getElementById('welcome');
   if (welcome) welcome.style.display = 'none';
   document.body.classList.remove('bw-selecting');
-}
-
-function openHoldSummary() {
-  return openWriteSummary();
 }
 
 // ── Held conversation entry — patient write screen ─────────────────────────
@@ -1581,15 +1489,17 @@ function startHoldConversation() {
   enterHoldConversation(key, getPublicWriteContent());
 }
 
-function enterHoldConversation(theorist, holdText) {
+function enterHoldConversation(theorist, holdText, displayText) {
   localStorage.setItem('bw_mode', 'session');
   syncExploreIndicator();
   window._bwPendingTheorist = theorist || 'winnicott';
   // Pass the hold text so showTheoristOpening can build the write-context API call.
   // Do NOT reset this here — showTheoristOpening is async and reads it after confirmTheoristEntry returns.
   // It is cleared inside showTheoristOpening after use.
+  // text  → מה שנשלח למודל, בלי הקטעים הפרטיים.
+  // display → מה שמוצג בתמליל, עם חסימה במקום הקטעים שהוסרו.
   window._bwWriteSessionContext = (holdText && holdText.trim())
-    ? { text: holdText.trim(), summary: null }
+    ? { text: holdText.trim(), display: (displayText || holdText).trim(), summary: null }
     : null;
   confirmTheoristEntry();
 }
@@ -1599,11 +1509,41 @@ window.enterHoldConversation = enterHoldConversation;
 // Enters explore mode directly: clears session, picks last used theorist (or winnicott),
 // calls confirmTheoristEntry which shows the explore opening.
 // מסמן/מנקה את פריט "מחקר" בסייד-בר לפי מצב bw_mode (localhost בלבד — הפריט קיים רק שם).
+// מצב מחקר אינו קיים בקובץ העיצוב · הוא כלי פיתוח לוקאלי בלבד, והוא נשמר
+// ב-localStorage ולכן שרד רענונים והשאיר את הממשק תקוע עליו. בטעינה הוא
+// מתאפס תמיד. זהו גם השורש של פריט 11 ב-OPEN_LOOPS, "bw_mode דביק".
+(function resetExploreOnLoad() {
+  try {
+    if (localStorage.getItem('bw_mode') === 'explore') localStorage.setItem('bw_mode', 'consult');
+  } catch (e) { /* noop */ }
+})();
+
 function syncExploreIndicator() {
-  document.getElementById('sb-explore-btn')
-    ?.classList.toggle('research-active', localStorage.getItem('bw_mode') === 'explore');
+  const on = localStorage.getItem('bw_mode') === 'explore';
+  document.getElementById('sb-explore-btn')?.classList.toggle('research-active', on);
+  // הסימון היחיד היה צבע האייקון, והעיצוב החדש הסתיר את האייקונים, כך שההחלפה
+  // התרחשה בלי שום סימן על המסך. הערך נאמר במילים לצד השם.
+  // התווית בבעלות React · כתיבה ישירה לא שרדה רינדור מחדש, וזה אותו דפוס
+  // של שני מקורות לאותו אלמנט. מודיעים, ו-React מרנדר.
+  try { window.dispatchEvent(new CustomEvent('bw-explore-mode', { detail: on })); } catch (e) { /* noop */ }
 }
 window.syncExploreIndicator = syncExploreIndicator;
+
+// כניסה למחקר עם גישה שנבחרה במפורש. הכרעת איה 29.08: המחקר נפתח באותה
+// זרימה כמו הכתיבה, בוחרים גישה ורק אז נכנסים, ולא נופלים לברירת מחדל.
+window.bwStartExplore = function(key) {
+  window._bwWriteSessionContext = null;
+  localStorage.setItem('bw_mode', 'explore');
+  try { localStorage.setItem('bw_explore_theorist', key); } catch (e) {}
+  syncExploreIndicator();
+  if (window.bwSetActiveTheorist) window.bwSetActiveTheorist(key);
+  document.body.classList.remove('bw-selecting');
+  const w = document.getElementById('welcome');
+  if (w) w.style.display = 'none';
+  showTheoristOpening(key, false);
+  const inp = document.getElementById('user-input');
+  if (inp) inp.focus();
+};
 
 function enterExploreModeFromSidebar() {
   window._bwWriteSessionContext = null;
@@ -1614,6 +1554,10 @@ function enterExploreModeFromSidebar() {
   if (localStorage.getItem('bw_mode') === 'explore') {
     localStorage.setItem('bw_mode', 'consult');
     syncExploreIndicator();
+    // כיבוי המצב היה מחליף את הערך בלבד ומשאיר את המשתמשת בתוך שיחת המחקר
+    // שנפתחה, כלומר ההדלקה פתחה משהו והכיבוי לא סגר אותו. היציאה מחזירה
+    // למסך הכתיבה, אותה יציאה שמפעיל הכפתור "חזרה לכתיבה".
+    try { bwExitChatToHome(); } catch (e) { /* noop */ }
     return;
   }
   localStorage.setItem('bw_mode', 'explore');
@@ -1638,17 +1582,12 @@ function enterExploreModeFromSidebar() {
 
 function showModeSelect() {
   const modeDiv = document.getElementById('bw-mode-select');
-  const theoristDiv = document.getElementById('bw-theorist-select');
   const apiNote = document.getElementById('welcome-api-text');
   // Guard: ensure #welcome is visible (may have been hidden by confirmTheoristEntry or signOut)
   const welcomeEl = document.getElementById('welcome');
   if (welcomeEl && welcomeEl.style.display === 'none') welcomeEl.style.display = '';
   // Unified screen: show both sections together
   if (modeDiv) modeDiv.style.display = 'flex';
-  if (theoristDiv) {
-    theoristDiv.style.display = 'flex';
-    theoristDiv.classList.remove('bw-slide-in');
-  }
   // Show back button only if there's an active conversation to return to
   const backBtn = document.getElementById('bw-back-btn');
   if (backBtn) {
@@ -1671,340 +1610,22 @@ function showModeSelect() {
   document.querySelector('.bw-mode-primary')?.classList.toggle('bw-mode-selected', savedMode === 'session');
   document.querySelector('.bw-mode-secondary')?.classList.toggle('bw-mode-selected', savedMode === 'explore');
   document.querySelector('.bw-mode-tertiary')?.classList.toggle('bw-mode-selected', savedMode === 'write');
-  // Populate theorist grid — content depends on mode (session=companions, explore=theorists)
-  renderTheoristGridForMode(savedMode);
-  // Show confirm button — disabled if session mode and no prior companion selection
-  const btn = document.getElementById('bw-theorist-confirm');
-  if (btn) {
-    btn.style.display = 'block';
-    // vera is always the default — button is never disabled on first visit
-    btn.disabled = false;
-  }
   // Set labels
   bwUpdateModeLabels();
 }
 
 function bwUpdateModeLabels() {
+  // כל השאר בגוף הזה נגע ברשת התיאורטיקנים הישנה, במסך הכתיבה הישן
+  // ובתוויות המצב שלו. שלושתם ירדו מהממשק. ‎#bw-mode-select‎ מרונדר
+  // ב-React (page.tsx) ולכן נשאר.
   const isEn = (window.selectedLang?.code === 'en');
   const heading = document.querySelector('#bw-mode-select .bw-entry-heading');
   if (heading) heading.textContent = isEn ? 'How are you coming in today?' : 'מה עולה לך היום?';
-  const sessionLabel = document.getElementById('bw-label-session');
-  if (sessionLabel) sessionLabel.textContent = isEn ? 'Session' : 'סשן';
-  const exploreLabel = document.getElementById('bw-label-explore');
-  if (exploreLabel) exploreLabel.textContent = isEn ? 'Explore' : 'לחקור';
-  const writeLabel = document.getElementById('bw-label-write');
-  if (writeLabel) writeLabel.textContent = isEn ? 'Write' : 'כתיבה';
-  // Update write area texts if currently shown
-  const _writeArea = document.getElementById('bw-write-area');
-  if (_writeArea) {
-    const _wHeading = document.getElementById('bw-write-heading');
-    if (_wHeading) _wHeading.textContent = isEn ? 'Write to your therapist' : 'כתיבה למטפל';
-    const _wTa = document.getElementById('bw-write-textarea');
-    if (_wTa) _wTa.dataset.placeholder = isEn ? 'Something you want your therapist to know.' : 'משהו שתרצה שהמטפל שלך ידע.';
-    const _wHintText = document.getElementById('bw-write-hint-text');
-    if (_wHintText) _wHintText.textContent = isEn ? 'When you\'re ready, "What\'s here" below holds what you wrote.' : 'כשתסיימי/תסיים — "מה יש כאן" למטה מחזיק את מה שכתבתם.';
-    const _wHintArchive = document.getElementById('bw-write-hint-archive');
-    if (_wHintArchive) { _wHintArchive.textContent = isEn ? 'What I wrote' : 'מה כתבתי'; _wHintArchive.style.marginLeft = isEn ? '12px' : ''; _wHintArchive.style.marginRight = isEn ? '' : '12px'; }
-    _writeArea.style.direction = isEn ? 'ltr' : 'rtl';
-    if (_wTa) _wTa.style.direction = isEn ? 'ltr' : 'rtl';
-  }
-  const theoristPrompt = document.querySelector('#bw-theorist-select .bw-entry-heading');
-  if (theoristPrompt) theoristPrompt.textContent = isEn ? 'Who would you like to speak with?' : 'עם מי תרצה לדבר?';
-  const confirmBtn = document.getElementById('bw-theorist-confirm');
-  if (confirmBtn) confirmBtn.textContent = isEn ? 'Continue' : 'המשך';
-  // Update theorist card names in-place (without re-rendering, to preserve selection + listeners)
-  const TNAMES = {
-    freud:     { he: 'פרויד',   en: 'Freud',      sub_he: 'דחפים וקונפליקט',   sub_en: 'Drive & Conflict'  },
-    klein:     { he: 'קליין',   en: 'Klein',      sub_he: 'יחסי אובייקט',       sub_en: 'Object Relations'  },
-    winnicott: { he: 'ויניקוט', en: 'Winnicott',  sub_he: 'עצמי ומרחב מחזיק',   sub_en: 'Self & Holding'    },
-    ogden:     { he: 'אוגדן',   en: 'Ogden',      sub_he: 'הניסיון האנליטי',     sub_en: 'Analytic Third'    },
-  };
-  document.querySelectorAll('.bw-theorist-card[data-theorist]').forEach(card => {
-    const key = card.getAttribute('data-theorist');
-    if (!TNAMES[key]) return;
-    const nameEl = card.querySelector('.bw-t-name');
-    const subEl  = card.querySelector('.bw-t-sub');
-    if (nameEl) nameEl.textContent = isEn ? TNAMES[key].en : TNAMES[key].he;
-    if (subEl)  subEl.textContent  = isEn ? TNAMES[key].sub_en : TNAMES[key].sub_he;
-  });
-  // Update companion card names in-place (session mode)
-  const CNAMES = {
-    vera:   { he: 'ורה',   en: 'Vera'   },
-    elliot: { he: 'אליוט', en: 'Elliot' },
-  };
-  document.querySelectorAll('.bw-companion-card[data-theorist]').forEach(card => {
-    const key = card.getAttribute('data-theorist');
-    if (!CNAMES[key]) return;
-    const nameEl = card.querySelector('.bw-t-name');
-    if (nameEl) nameEl.textContent = isEn ? CNAMES[key].en : CNAMES[key].he;
-  });
-}
-
-function onModeSelected(mode) {
-  localStorage.setItem('bw_mode', mode);
-  syncExploreIndicator();
-  // Unified screen: just toggle pill visual, don't navigate away
-  document.querySelector('.bw-mode-primary')?.classList.toggle('bw-mode-selected', mode === 'session');
-  document.querySelector('.bw-mode-secondary')?.classList.toggle('bw-mode-selected', mode === 'explore');
-  document.querySelector('.bw-mode-tertiary')?.classList.toggle('bw-mode-selected', mode === 'write');
-  // Re-render theorist grid for the newly selected mode
-  renderTheoristGridForMode(mode);
 }
 
 // ── BW-53: Renders the correct grid based on mode ──────────────────────────
 // session → 2 companion cards (Vera / Elliot) with SVG icons, localStorage pre-select
 // explore → 4 theorist cards (freud/klein/winnicott/ogden) with rich tooltips
-function renderTheoristGridForMode(mode) {
-  const grid = document.getElementById('bw-theorist-grid');
-  if (!grid) return;
-
-  // ── Write mode: no theorist needed ──────────────────────────────────────
-  const _theoristPrompt = document.querySelector('#bw-theorist-select .bw-entry-heading');
-  if (mode === 'write') {
-    grid.innerHTML = '';
-    grid.style.display = 'none';
-    if (_theoristPrompt) _theoristPrompt.style.display = 'none';
-    const _wConfirm = document.getElementById('bw-theorist-confirm');
-    const _wIsEn = (window.selectedLang?.code === 'en');
-    if (_wConfirm) {
-      _wConfirm.textContent = _wIsEn ? 'Start writing' : 'להתחיל לכתוב';
-      _wConfirm.disabled = false;
-      _wConfirm.style.display = 'block';
-    }
-    return;
-  }
-  // Restore prompt + grid visibility when switching away from write
-  grid.style.display = 'grid';
-  if (_theoristPrompt) _theoristPrompt.style.display = '';
-  // Reset confirm button label
-  const _resetConfirm = document.getElementById('bw-theorist-confirm');
-  const _resetIsEn = (window.selectedLang?.code === 'en');
-  if (_resetConfirm) _resetConfirm.textContent = _resetIsEn ? 'Continue' : 'המשך';
-
-  if (false) { /* Vera/Elliot frozen — session mode now uses the 4 theorist cards (see else branch below). Code preserved for future use. */
-    // ── Companion cards ──
-    const lastChoice = localStorage.getItem('bw_companion') || 'vera';
-    grid.classList.add('bw-companion-grid');
-
-    const SVG_VERA = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="bw-companion-icon" aria-hidden="true">
-      <circle cx="12" cy="5.5" r="2"/>
-      <circle cx="12" cy="11" r="3.5"/>
-      <path d="M6 21c0-3 2.7-5 6-5s6 2 6 5"/>
-    </svg>`;
-    const SVG_ELLIOT = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="bw-companion-icon" aria-hidden="true">
-      <path d="M8.5 9.5C8.5 7 10 6 12 6s3.5 1 3.5 3.5"/>
-      <circle cx="12" cy="11" r="3.5"/>
-      <path d="M6 21c0-3 2.7-5 6-5s6 2 6 5"/>
-    </svg>`;
-
-    const isEn = (window.selectedLang?.code === 'en');
-    const COMPANION_NAMES = {
-      vera:   { he: 'ורה',   en: 'Vera'   },
-      elliot: { he: 'אליוט', en: 'Elliot' },
-    };
-
-    grid.innerHTML = [
-      { key: 'vera',   svg: SVG_VERA   },
-      { key: 'elliot', svg: SVG_ELLIOT },
-    ].map(({ key, svg }) =>
-      `<div class="bw-companion-card${lastChoice && key === lastChoice ? ' bw-theorist-selected' : ''}"
-        data-theorist="${key}"
-        onclick="selectTheoristEntry('${key}')">
-        ${svg}
-        <span class="bw-t-name">${isEn ? COMPANION_NAMES[key].en : COMPANION_NAMES[key].he}</span>
-      </div>`
-    ).join('');
-
-    // Pre-select vera by default; update if user has a stored choice
-    window._bwPendingTheorist = lastChoice;
-
-    // Clear sidebar theorist selection — in session mode the companion card is the only active choice
-    document.querySelectorAll('.theorist-tag[data-key].active').forEach(t => t.classList.remove('active'));
-    activeTheorists = [];
-
-    // Attach rich tooltips to companion cards — pure vanilla JS, no React state dependency
-    const _CTIP_DATA = {
-      vera: {
-        he: { approach: 'נוכחות לפני פרשנות — להיות איתך לפני שעושים משהו עם מה שמביאים', concepts: 'הינכחות, החזקה, שהייה בחשכה, לב שומע', forWhom: 'מי שמעבד משהו מהפגישה האחרונה שעדיין לא שקע' },
-        en: { approach: 'Presence before action — staying with what you carry before making it into meaning', concepts: 'Presencing, holding, staying in the dark, listening heart', forWhom: 'Those processing something from a recent session that has not yet settled' },
-      },
-      elliot: {
-        he: { approach: 'שהייה במה שאין לו עדיין מילים — ללא פרשנות, ללא הסבר', concepts: 'מצב being, מצב doing, החזקה, הימנעות כשפה', forWhom: 'מי שעדיין בתוך הפגישה ולא מוכן לעשות ממנה סיפור' },
-        en: { approach: 'Staying in what has no words yet — no interpretation, no rush toward meaning', concepts: 'Being state, doing state, holding without direction', forWhom: 'Those still inside something from the session, not ready to make it into a story' },
-      },
-    };
-    const _CTIP_NAMES  = { vera: { he: 'ורה', en: 'Vera' }, elliot: { he: 'אליוט', en: 'Elliot' } };
-    const _CTIP_LABELS = {
-      he: { approach: 'גישה', concepts: 'מושגים', forWhom: 'מתאים ל' },
-      en: { approach: 'Approach', concepts: 'Concepts', forWhom: 'For whom' },
-    };
-
-    const _showCTip = function(key, top, left) {
-      const lang   = window.selectedLang?.code || 'he';
-      const isRtl  = lang !== 'en';
-      const data   = _CTIP_DATA[key]?.[lang] || _CTIP_DATA[key]?.['he'];
-      const labels = _CTIP_LABELS[lang] || _CTIP_LABELS['he'];
-      const name   = _CTIP_NAMES[key]?.[lang] || key;
-      if (!data) return;
-      let tip = document.getElementById('bw-companion-tooltip');
-      if (!tip) {
-        tip = document.createElement('div');
-        tip.id = 'bw-companion-tooltip';
-        document.body.appendChild(tip);
-      }
-      Object.assign(tip.style, {
-        position: 'fixed', top: top + 'px', left: left + 'px',
-        pointerEvents: 'none', zIndex: '1000',
-        background: 'var(--surface,#fff)', border: '1px solid var(--border,#ede4e0)',
-        borderRadius: '12px', padding: '14px 16px', width: '240px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-        fontFamily: 'var(--font-rubik,sans-serif)',
-        direction: isRtl ? 'rtl' : 'ltr', textAlign: isRtl ? 'right' : 'left',
-        display: 'block',
-      });
-      tip.innerHTML =
-        `<div style="font-size:13px;font-weight:600;color:var(--accent,#c4607a);margin-bottom:10px;">${name}</div>` +
-        `<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--muted,#80706a);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.approach}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.approach}</div></div>` +
-        `<div style="margin-bottom:8px;"><div style="font-size:10px;color:var(--muted,#80706a);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.concepts}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.concepts}</div></div>` +
-        `<div><div style="font-size:10px;color:var(--muted,#80706a);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;">${labels.forWhom}</div><div style="font-size:12px;color:var(--text,#2d2420);line-height:1.6;">${data.forWhom}</div></div>`;
-    };
-    const _hideCTip = function() {
-      const tip = document.getElementById('bw-companion-tooltip');
-      if (tip) tip.style.display = 'none';
-    };
-
-    document.querySelectorAll('#bw-theorist-grid .bw-companion-card[data-theorist]').forEach(card => {
-      const key = card.getAttribute('data-theorist');
-      card.addEventListener('mouseenter', e => {
-        const r = e.currentTarget.getBoundingClientRect();
-        const cardH = 310, cardW = 240, vh = window.innerHeight, vw = window.innerWidth;
-        const sidebarW = document.getElementById('sidebar')?.getBoundingClientRect().width || 220;
-        const contentCenter = sidebarW + (vw - sidebarW) / 2;
-        const flip = r.top + cardH > vh - 16;
-        const rawTop = flip ? r.bottom - cardH : r.top;
-        const top = Math.min(Math.max(rawTop, 8), vh - cardH - 8);
-        const isRightColumn = r.left > contentCenter;
-        const gr = document.getElementById('bw-theorist-grid')?.getBoundingClientRect() ?? r;
-        const left = isRightColumn
-          ? Math.min(gr.right + 16, vw - cardW - 8)
-          : Math.max(sidebarW + 8, gr.left - cardW - 16);
-        _showCTip(key, top, left);
-      });
-      card.addEventListener('mouseleave', _hideCTip);
-    });
-
-  } else {
-    // ── Theorist cards (explore mode) ──
-    // Clean up any stale companion tooltip that may have been left from session mode
-    const _staleTooltip = document.getElementById('bw-companion-tooltip');
-    if (_staleTooltip) _staleTooltip.remove();
-    grid.classList.remove('bw-companion-grid');
-    const isEn = (window.selectedLang?.code === 'en');
-    const NAMES = {
-      freud:    { he: 'פרויד',   en: 'Freud',     sub_he: 'דחפים וקונפליקט',  sub_en: 'Drive & Conflict' },
-      klein:    { he: 'קליין',   en: 'Klein',     sub_he: 'יחסי אובייקט',      sub_en: 'Object Relations' },
-      winnicott:{ he: 'ויניקוט', en: 'Winnicott', sub_he: 'עצמי ומרחב מחזיק',  sub_en: 'Self & Holding'   },
-      ogden:    { he: 'אוגדן',   en: 'Ogden',     sub_he: 'הניסיון האנליטי',    sub_en: 'Analytic Third'   },
-    };
-    const exploreKeys = ['freud','klein','winnicott','ogden'];
-    // Sync grid with sidebar/localStorage — priority: live activeTheorists → persisted choice → winnicott
-    const activeExplore = (activeTheorists[0] && exploreKeys.includes(activeTheorists[0]))
-      ? activeTheorists[0]
-      : (localStorage.getItem('bw_explore_theorist') || 'winnicott');
-    grid.innerHTML = exploreKeys.map(key =>
-      `<div class="bw-theorist-card${key === activeExplore ? ' bw-theorist-selected' : ''}"
-        data-theorist="${key}"
-        onclick="selectTheoristEntry('${key}')">
-        <span class="bw-t-name">${isEn ? NAMES[key].en : NAMES[key].he}</span>
-        <span class="bw-t-sub">${isEn ? NAMES[key].sub_en : NAMES[key].sub_he}</span>
-      </div>`
-    ).join('');
-    window._bwPendingTheorist = activeExplore;
-
-    // Attach rich tooltips — both theorist cards (explore) and companion cards (session)
-    document.querySelectorAll('#bw-theorist-grid .bw-theorist-card[data-theorist], #bw-theorist-grid .bw-companion-card[data-theorist]').forEach(card => {
-      const key = card.getAttribute('data-theorist');
-      card.addEventListener('mouseenter', e => {
-        if (typeof window.setTheoristTooltip !== 'function') return;
-        const r = e.currentTarget.getBoundingClientRect();
-        const cardH = 310, cardW = 240, vh = window.innerHeight, vw = window.innerWidth;
-        const sidebarW = document.getElementById('sidebar')?.getBoundingClientRect().width || 220;
-        const contentCenter = sidebarW + (vw - sidebarW) / 2;
-        const flip = r.top + cardH > vh - 16;
-        const rawTop = flip ? r.bottom - cardH : r.top;
-        const top = Math.min(Math.max(rawTop, 8), vh - cardH - 8);
-        const isRightColumn = r.left > contentCenter;
-        const gr = document.getElementById('bw-theorist-grid')?.getBoundingClientRect() ?? r;
-        const left = isRightColumn
-          ? Math.min(gr.right + 16, vw - cardW - 8)
-          : Math.max(sidebarW + 8, gr.left - cardW - 16);
-        window.setTheoristTooltip(key, top, left, flip);
-      });
-      card.addEventListener('mouseleave', () => window.clearTheoristTooltip?.());
-    });
-  }
-}
-
-function showTheoristEntry(mode) {
-  const modeDiv = document.getElementById('bw-mode-select');
-  const theoristDiv = document.getElementById('bw-theorist-select');
-  const apiNote = document.getElementById('welcome-api-text');
-  if (modeDiv) modeDiv.style.display = 'none';
-  // Keep input hidden during theorist selection too
-  document.body.classList.add('bw-selecting');
-  if (theoristDiv) {
-    theoristDiv.style.display = 'flex';
-    theoristDiv.classList.remove('bw-slide-in');
-    void theoristDiv.offsetWidth; // reflow to retrigger animation
-    theoristDiv.classList.add('bw-slide-in');
-  }
-  if (apiNote) apiNote.style.display = 'none';
-  bwUpdateModeLabels();
-
-  // Update back button language
-  const backBtn = document.getElementById('bw-back-btn');
-  const isEnBack = (window.selectedLang?.code === 'en');
-  if (backBtn) backBtn.textContent = isEnBack ? '← Back' : '← חזרה';
-
-  // Render the correct grid for this mode (session=companions, explore=theorists)
-  renderTheoristGridForMode(mode);
-
-  const btn = document.getElementById('bw-theorist-confirm');
-  if (btn) {
-    btn.style.display = 'block';
-    // winnicott is the default — button is never disabled on first visit
-    btn.disabled = false;
-  }
-}
-
-function selectTheoristEntry(key) {
-  window._bwPendingTheorist = key;
-  const grid = document.getElementById('bw-theorist-grid');
-  // Clear selection on both theorist cards and companion cards — scoped to grid
-  const allCards = grid
-    ? grid.querySelectorAll('.bw-theorist-card, .bw-companion-card')
-    : document.querySelectorAll('.bw-theorist-card, .bw-companion-card');
-  allCards.forEach(el => el.classList.remove('bw-theorist-selected'));
-  // Also clear sidebar theorist buttons — prevents two active selections showing at once
-  document.querySelectorAll('.theorist-tag[data-key].active').forEach(t => t.classList.remove('active'));
-  activeTheorists = [];
-  // Scope querySelector to the grid to avoid any collision with other DOM elements
-  const sel = grid
-    ? grid.querySelector(`[data-theorist="${key}"]`)
-    : document.querySelector(`[data-theorist="${key}"]`);
-  if (sel) sel.classList.add('bw-theorist-selected');
-  // Save choice to localStorage immediately on click
-  const mode = localStorage.getItem('bw_mode') || 'session';
-  if (mode === 'session' && (key === 'vera' || key === 'elliot')) {
-    localStorage.setItem('bw_companion', key);
-  }
-  if (mode === 'explore' && ['freud','klein','winnicott','ogden'].includes(key)) {
-    localStorage.setItem('bw_explore_theorist', key);
-  }
-  // Enable confirm button once user has made a selection
-  const btn = document.getElementById('bw-theorist-confirm');
-  if (btn) btn.disabled = false;
-}
 
 function confirmTheoristEntry() {
   const mode = localStorage.getItem('bw_mode') || 'session';
@@ -2020,11 +1641,6 @@ function confirmTheoristEntry() {
   // Case: user clicks a sidebar theorist (performTheoristSwitch sets _bwPendingTheorist=null
   // and clears grid selection) — activeTheorists[0] captures that choice before we fall to default.
   let key = window._bwPendingTheorist;
-  if (!key) {
-    const _grid = document.getElementById('bw-theorist-grid');
-    const _sel = _grid?.querySelector('[data-theorist].bw-theorist-selected');
-    if (_sel) key = _sel.getAttribute('data-theorist');
-  }
   if (!key && activeTheorists.length > 0) key = activeTheorists[0];
   if (!key) key = defaultKey;
 
@@ -2035,9 +1651,6 @@ function confirmTheoristEntry() {
   if (mode === 'session' && (key === 'vera' || key === 'elliot')) {
     localStorage.setItem('bw_companion', key);
   }
-
-  const theoristDiv = document.getElementById('bw-theorist-select');
-  if (theoristDiv) theoristDiv.style.display = 'none';
 
   // sync sidebar theorist tags — companion keys (vera/elliot) have no sidebar tag, that's ok
   document.querySelectorAll('.theorist-tag[data-key]').forEach(el => el.classList.remove('active'));
@@ -2197,14 +1810,6 @@ function resetIdleTimer() {
   idleTimer = setTimeout(handleIdleMessage, IDLE_THRESHOLD_MS);
 }
 
-
-
-
-
-
-
-
-
 // Load persisted data
 function loadMemory() {
   try {
@@ -2215,7 +1820,6 @@ function loadMemory() {
 
 function saveMemory(memories) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(memories));
-  updateMemoryCount();
 }
 
 function loadConversation() {
@@ -2228,23 +1832,6 @@ function loadConversation() {
 function saveConversation() {
   localStorage.setItem(CONV_KEY, JSON.stringify(conversationHistory));
 }
-
-function updateMemoryCount() {
-  const memories = loadMemory();
-  const mc = document.getElementById('memory-count'); if (mc) mc.textContent = (window._lang === 'en') ? `${memories.length} memories` : `${memories.length} זיכרונות`;
-  const sbCount = document.getElementById('sb-memory-count'); if (sbCount) sbCount.textContent = memories.length;
-  updateSidebarMemories();
-}
-
-
-
-
-
-
-
-
-
-
 
 function updateInputSuggestion() {
   // Don't override input if a file is uploaded
@@ -2312,12 +1899,12 @@ function showTheoristSwitchModal(el, name) {
   modal.id = 'theorist-switch-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
   modal.innerHTML = `
-    <div style="background:var(--bg);border-radius:16px;padding:32px 28px;max-width:340px;width:90%;text-align:center;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
-      <h3 style="font-size:16px;font-weight:600;color:var(--text);font-family:Rubik,sans-serif;margin:0 0 12px;line-height:1.5;">${title}</h3>
-      <p style="font-size:14px;color:var(--muted);font-family:Rubik,sans-serif;margin:0 0 24px;line-height:1.6;">${msg}</p>
+    <div style="background:var(--bg);border-radius:8px;padding:32px 28px;max-width:340px;width:90%;text-align:center;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <h3 style="font-size:17px;font-weight:600;color:var(--text);font-family:var(--font-assistant),sans-serif;margin:0 0 12px;line-height:1.5;">${title}</h3>
+      <p style="font-size:16px;color:var(--muted);font-family:var(--font-assistant),sans-serif;margin:0 0 24px;line-height:1.6;">${msg}</p>
       <div style="display:flex;gap:12px;justify-content:center;">
-        <button id="tsm-confirm" style="background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;flex:1;">${confirmText}</button>
-        <button id="tsm-cancel" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;flex:1;">${cancelText}</button>
+        <button id="tsm-confirm" style="background:var(--accent-deep);color:#fff;border:none;padding:10px 24px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;cursor:pointer;flex:1;">${confirmText}</button>
+        <button id="tsm-cancel" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 24px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;cursor:pointer;flex:1;">${cancelText}</button>
       </div>
     </div>`;
   document.body.appendChild(modal);
@@ -2356,8 +1943,6 @@ function showTheoristSwitchModal(el, name) {
 }
 
 function performTheoristSwitch(el, name) {
-  // Always clear companion card selection — prevents dual active state between grid and sidebar
-  document.querySelectorAll('#bw-theorist-grid .bw-companion-card, #bw-theorist-grid .bw-theorist-card').forEach(c => c.classList.remove('bw-theorist-selected'));
   window._bwPendingTheorist = null;
   if (activeTheorists.includes(name)) {
     // Deselect current theorist
@@ -2375,14 +1960,6 @@ function performTheoristSwitch(el, name) {
     const _exploreKeys = ['freud','klein','winnicott','ogden'];
     if (_exploreKeys.includes(name)) {
       localStorage.setItem('bw_explore_theorist', name);
-      // If the welcome grid is visible in explore mode, update it immediately
-      const _grid = document.getElementById('bw-theorist-grid');
-      const _card = _grid?.querySelector(`[data-theorist="${name}"].bw-theorist-card`);
-      if (_card) {
-        _grid.querySelectorAll('.bw-theorist-card').forEach(c => c.classList.remove('bw-theorist-selected'));
-        _card.classList.add('bw-theorist-selected');
-        window._bwPendingTheorist = name;
-      }
     }
   }
   updateInputSuggestion();
@@ -2505,15 +2082,23 @@ function appendMessage(role, content, attribution = '', sourceHTML = '') {
     const nm = isHe
       ? {freud:'פרויד',klein:'קליין',winnicott:'ויניקוט',ogden:'אוגדן',loewald:'לוואלד',bion:'ביון',kohut:'קוהוט',heimann:'היימן'}
       : {freud:'Freud',klein:'Klein',winnicott:'Winnicott',ogden:'Ogden',loewald:'Loewald',bion:'Bion',kohut:'Kohut',heimann:'Heimann'};
+    // "הסוכן" הופיע בתמליל במצב מחקר, כי הרשימה החיה לא הכילה בדיוק קול אחד
+    // ואז נפלנו לתווית הגנרית. CORE קובע נוכחות של תיאורטיקן מסוים ולא של
+    // "AI עם ידע", ולכן נוסף מקור נסיגה לבחירה שנשמרה לפני שוויתרנו על השם.
+    const persisted = (function(){
+      try { return localStorage.getItem('bw_explore_theorist') || localStorage.getItem('bw_last_theorist') || ''; }
+      catch (e) { return ''; }
+    })();
     roleLabel = attribution
       || (activeTheorists.length === 1 ? nm[activeTheorists[0]] : null)
+      || nm[persisted]
       || t.agentLabel || 'Agent';
   }
   div.innerHTML = `
-    ${role === 'user' ? '' : `<div class="message-role">${roleLabel}</div>`}
+    <div class="message-role">${role === 'user' ? bwSpeakerLabel(t) : roleLabel}</div>
     <div class="message-body">${(role === 'assistant' ? formatResponse(stripMarkdown(cleanContent)) : cleanContent.replace(/\n/g, '<br>'))}</div>
     ${sourceHTML ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">${sourceHTML}</div>` : ''}
-    ${citationText && role === 'assistant' ? `<div class="attribution" style="margin-top:6px;font-size:11px;">— מתוך: ${citationText}</div>` : ''}
+    ${citationText && role === 'assistant' ? `<div class="attribution" style="margin-top:6px;font-size:13px;">— מתוך: ${citationText}</div>` : ''}
   `;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
@@ -5309,11 +4894,6 @@ ${window.clinicalMode ? '' : (_isEnPrompt
 1. ייחס את המקור: ציין את שם הספר או המאמר הרלוונטי ביותר שממנו נלקח הרעיון המרכזי בתשובה, בפורמט: [מקור: שם הספר/מאמר — שם המחבר, שנה]. אם מדובר ברעיון כללי ממספר מקורות, ציין את המרכזי שבהם.`)}`;
 }
 
-function toggleLangMenu() {
-  const menu = document.getElementById('lang-menu');
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
-
 const UI_TRANSLATIONS = {
   he: {
     title: 'Between',
@@ -5347,7 +4927,6 @@ const UI_TRANSLATIONS = {
     anonymize: 'אנונימיזציה',
     userFeedback: 'פידבק משתמש',
     boardRoom: 'חדר הבורד',
-    disclaimer: 'כלי לימודי ומחקרי בלבד · אינו מהווה תחליף לטיפול פסיכולוגי מקצועי',
     tooltips: { freud:'מה שלא נאמר', klein:'מה שקשה לגעת בו', winnicott:'המרחב להיות', ogden:'מה שנוצר בין שנינו', loewald:'הקשר עצמו כגורם המרפא', bion:'מה שעדיין לא ניתן לומר', kohut:'להרגיש מובן', heimann:'מה שהמפגש מעורר בי' },
     authTitle: 'Between', authSubtitle: 'מה שעלה בפגישה — אפשר להביא לכאן.',
     authPersonaLabel: 'מי אתה/את?', authTherapist: 'מטפל/ת', authPatient: 'בטיפול',
@@ -5486,7 +5065,6 @@ const UI_TRANSLATIONS = {
     anonymize: 'Anonymize',
     userFeedback: 'User feedback',
     boardRoom: 'Board room',
-    disclaimer: 'For educational use only · Not a substitute for professional psychological treatment',
     tooltips: { freud:'What goes unsaid', klein:"What's hard to touch", winnicott:'The space to simply be', ogden:'What emerges between us', loewald:'The relationship itself as healing', bion:'What cannot yet be spoken', kohut:'To feel understood', heimann:'What the encounter stirs in me' },
     authTitle: 'Between', authSubtitle: 'What came up in your session — bring it here.',
     authPersonaLabel: 'Who are you?', authTherapist: 'Therapist', authPatient: 'In therapy',
@@ -5565,20 +5143,12 @@ function applyUITranslation(code) {
   // Title & subtitle
   const h1 = document.querySelector('header h1');
   if (h1) h1.textContent = t.title;
-  const sub = document.getElementById('header-subtitle');
-  if (sub) sub.textContent = t.subtitle;
   // Placeholder
   const input = document.getElementById('user-input');
   if (input) input.placeholder = t.placeholder;
   // Send button
   const sendBtn = document.getElementById('send-btn');
   if (sendBtn) sendBtn.textContent = t.send;
-  // Memory count
-  const memCount = document.getElementById('memory-count');
-  if (memCount) {
-    const n = memCount.textContent.split(' ')[0];
-    memCount.textContent = n + ' ' + t.memories;
-  }
   // Theorist tags
   document.querySelectorAll('.theorist-tag').forEach(tag => {
     const key = tag.getAttribute('data-key');
@@ -5603,8 +5173,6 @@ function applyUITranslation(code) {
   const hint = document.getElementById('input-hint');
   if (hint && t.hint) hint.textContent = t.hint;
   // Sidebar items
-  const sbMemLabel = document.getElementById('sb-memories-label');
-  if (sbMemLabel) sbMemLabel.textContent = t.memories || 'זיכרונות';
   const sbNewChat = document.getElementById('sb-new-chat-label');
   if (sbNewChat) sbNewChat.textContent = t.newChat || 'New chat';
   // Re-sync End Session label (language change may have been called while session is active)
@@ -5617,7 +5185,10 @@ function applyUITranslation(code) {
   // Flip user row direction: RTL langs (he, ar) = avatar right, LTR = avatar left
   const userRow = document.getElementById('sb-user-row');
   if (userRow) userRow.style.flexDirection = (t.dir === 'rtl') ? 'row' : 'row-reverse';
-  const sbUserSub = document.getElementById('sb-user-email');
+  // בעיצוב החדש השורה הראשונה בכרטיס החשבון היא המייל עצמו, ולא תווית.
+  // עד כאן התרגום דרס אותה ב"הגדרות ופרופיל", ולכן המייל לא נראה מעולם.
+  // התווית הקבועה עברה לאלמנט משלה, ו-‎#sb-user-email‎ נשאר בבעלות האימות בלבד.
+  const sbUserSub = document.getElementById('sb-user-sub-label');
   if (sbUserSub) sbUserSub.textContent = t.sbUserSub || 'Settings & profile';
   // These five labels appear twice each — once in the desktop sidebar, once in the mobile
   // #bw-account-menu. Two elements cannot share an ID, so translation targets a shared class
@@ -5626,24 +5197,14 @@ function applyUITranslation(code) {
   document.querySelectorAll('.js-settings-label').forEach(el => { el.textContent = settingsText; });
   const logOutText = t.logOut || 'Log out';
   document.querySelectorAll('.js-signout-label').forEach(el => { el.textContent = logOutText; });
-  // Web search label
-  const wsText = window.webSearch ? (t.webSearchOn || 'Web search: on') : (t.webSearchOff || 'Web search: off');
-  document.querySelectorAll('.js-websearch-label').forEach(el => { el.textContent = wsText; });
+  // שורת חיפוש הרשת בבעלות React · התווית והערך נגזרים אצלה משפת הממשק
   // PDF label
   const pdfText = t.downloadPDF || 'Download PDF';
   document.querySelectorAll('.js-pdf-label').forEach(el => { el.textContent = pdfText; });
   // Theoretical approach label
-  const theoristsLabel = document.getElementById('sb-theorists-label');
-  if (theoristsLabel) theoristsLabel.textContent = t.theoreticalApproach || 'Theoretical approach';
   // Tool labels
-  const sbSupervision = document.getElementById('sb-supervision-label');
-  if (sbSupervision) sbSupervision.textContent = t.supervision || 'Clinical supervision';
   const summaryText = t.sessionSummary || 'Session summary';
   document.querySelectorAll('.js-summary-label').forEach(el => { el.textContent = summaryText; });
-  const sbReflection = document.getElementById('sb-reflection-label');
-  if (sbReflection) sbReflection.textContent = t.reflection || 'What I took from this';
-  const sbAnon = document.getElementById('sb-anon-label');
-  if (sbAnon) sbAnon.textContent = t.anonymize || 'Anonymize';
   const sbFeedback = document.getElementById('sb-feedback-label');
   if (sbFeedback) sbFeedback.textContent = t.userFeedback || 'User feedback';
   const sbBoard = document.getElementById('sb-board-label');
@@ -5653,12 +5214,8 @@ function applyUITranslation(code) {
   if (authTitle && t.authTitle) authTitle.textContent = t.authTitle;
   const authSubtitle = document.getElementById('auth-subtitle');
   if (authSubtitle && t.authSubtitle) authSubtitle.textContent = t.authSubtitle;
-  const authPersonaLabel = document.getElementById('auth-persona-label');
-  if (authPersonaLabel && t.authPersonaLabel) authPersonaLabel.textContent = t.authPersonaLabel;
-  const authTherapistBtn = document.getElementById('persona-auth-therapist');
-  if (authTherapistBtn && t.authTherapist) authTherapistBtn.textContent = t.authTherapist;
-  const authPatientBtn = document.getElementById('persona-auth-patient');
-  if (authPatientBtn && t.authPatient) authPatientBtn.textContent = t.authPatient;
+  // בורר הפרסונה במסך הכניסה בבעלות React · שלושת המזהים שחיפשנו כאן
+  // (auth-persona-label, persona-auth-*) אינם מרונדרים על ידי איש.
   const authEmailInput = document.getElementById('auth-email');
   if (authEmailInput && t.authEmail) authEmailInput.placeholder = t.authEmail;
   const authPasswordInput = document.getElementById('auth-password');
@@ -5673,9 +5230,9 @@ function applyUITranslation(code) {
   if (authSecurity && t.authSecurity) authSecurity.innerHTML = t.authSecurity.replace('\n', '<br>');
   const authDisclaimer = document.getElementById('auth-disclaimer');
   if (authDisclaimer && t.authDisclaimer) authDisclaimer.textContent = t.authDisclaimer;
-  // Bottom disclaimer
-  const disclaimer = document.getElementById('input-disclaimer');
-  if (disclaimer && t.disclaimer) disclaimer.textContent = t.disclaimer;
+  // ‎#input-disclaimer‎ בבעלות React בלבד (פוטר מסך השיחה, שורת botbar בעיצוב).
+  // הכתיבה מכאן דרסה אותו בנוסח ישן בכל החלפת שפה. גבול הבעלות של פריט 17:
+  // vanilla מחזיק אלמנטים עם data-key, React מחזיק את השאר.
   // Notify React components of language change (welcome text, privacy modal, session tooltip)
   window.dispatchEvent(new CustomEvent('langchange', { detail: { code } }));
   // Theorist tooltips
@@ -5759,9 +5316,6 @@ function selectLang(code, flag, name) {
   selectedLang = { code, flag, name };
   window.selectedLang = selectedLang;
   localStorage.setItem('bw_lang', code);
-  const lf = document.getElementById('lang-flag'); if (lf) lf.textContent = flag;
-  const ll = document.getElementById('lang-label'); if (ll) ll.textContent = name;
-  const menu = document.getElementById('lang-menu'); if (menu) menu.style.display = 'none';
   applyUITranslation(code);
   // Re-render flow buttons and analyst badge in new language (welcome screen only)
   if (document.getElementById('welcome') && conversationHistory.length === 0) {
@@ -5771,15 +5325,6 @@ function selectLang(code, flag, name) {
   // Update entry screen headings and toggle labels
   bwUpdateModeLabels();
 }
-
-// Close lang menu on outside click
-document.addEventListener('click', function(e) {
-  const btn = document.getElementById('lang-btn');
-  if (btn && !btn.contains(e.target)) {
-    const menu = document.getElementById('lang-menu');
-    if (menu) menu.style.display = 'none';
-  }
-});
 
 let uploadedFileBase64 = null;
 let uploadedFileMediaType = null;
@@ -5988,7 +5533,7 @@ async function showTheoristOpening(theoristKey, showContext = true) {
   if (showContext) {
     const contextDiv = document.createElement('div');
     contextDiv.style.cssText = 'text-align:center;padding:12px 20px;margin:16px auto;max-width:380px;';
-    contextDiv.innerHTML = `<span style="font-size:11px;color:var(--muted);background:var(--surface-alt,#f8f4f2);border:1px solid var(--border);border-radius:20px;padding:5px 14px;display:inline-block;line-height:1.5;">
+    contextDiv.innerHTML = `<span style="font-size:13px;color:var(--muted);background:var(--surface-alt,#f8f4f2);border:1px solid var(--border);border-radius:6px;padding:5px 14px;display:inline-block;line-height:1.5;">
       ${contextMsg}
     </span>`;
     chat.appendChild(contextDiv);
@@ -6002,6 +5547,14 @@ async function showTheoristOpening(theoristKey, showContext = true) {
     const triggerMsg = _wCtxText
       ? (isEn ? `I wrote:\n\n${_wCtxText}` : `כתבתי:\n\n${_wCtxText}`)
       : (isEn ? 'I wrote.' : 'כתבתי.');
+    // הכתיבה מופיעה כתור הראשון בתמליל, לפני המענה (הכרעת איה 29.08).
+    // עד כאן היא נשלחה למודל בלבד, והשיחה נפתחה במענה לחומר שאינו על המסך:
+    // תשובה בלי מושא, והתיעוד (PDF וסיכום) התחיל באמצע.
+    // מה שנשלח למודל לא השתנה — תצוגה ופרומפט הם שני דברים נפרדים.
+    // הקטעים שסומנו כפרטיים מוצגים כאן, כי זה המסך שלה; החסימה בשיתוף
+    // נשענת על ‎.bw-private‎ ופועלת על התור הזה כמו על הכתיבה עצמה.
+    const _wDisplay = window._bwWriteSessionContext?.display || _wCtxText;
+    if (_wDisplay) appendMessage('user', _wDisplay);
     showThinking();
     try {
       const res = await fetch('/api/chat', {
@@ -6054,10 +5607,12 @@ async function showTheoristOpening(theoristKey, showContext = true) {
 
   const div = document.createElement('div');
   div.className = 'message assistant';
+  // הפתיחה נבנתה כאן ישירות ועקפה את addMessage, ולכן נשאה את התווית הגנרית
+  // "הסוכן" והוסיפה את השם בשורה קטנה מתחת. בעיצוב החדש שם הדובר הוא העמודה
+  // הצרה שלצד התור, ו-CORE קובע נוכחות של תיאורטיקן מסוים ולא של "סוכן".
   div.innerHTML = `
-    <div class="message-role">${t.agentLabel || 'Agent'}</div>
-    <div class="message-body" style="font-style:italic;color:var(--text);">${opening}</div>
-    <div class="attribution">— ${shortMap[theoristKey] || theoristKey}</div>`;
+    <div class="message-role">${shortMap[theoristKey] || t.agentLabel || 'Agent'}</div>
+    <div class="message-body">${opening}</div>`;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
   conversationHistory.push({ role: 'assistant', content: opening });
@@ -6080,13 +5635,13 @@ function showPatientPrivacyModal() {
   overlay.style.cssText = 'position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(45,36,32,0.35);backdrop-filter:blur(5px);direction:rtl;';
 
   overlay.innerHTML = `
-    <div style="background:#fff;border-radius:14px;padding:28px 32px;max-width:440px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.18);direction:rtl;">
-      <div style="font-size:17px;font-weight:700;color:#2d1f1f;margin-bottom:18px;display:flex;align-items:center;gap:8px;">
+    <div style="background:#fff;border-radius:8px;padding:28px 32px;max-width:440px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.18);direction:rtl;">
+      <div style="font-size:18px;font-weight:700;color:#2d1f1f;margin-bottom:18px;display:flex;align-items:center;gap:8px;">
         <span>🛋️</span> מעבר למצב סשן
       </div>
-      <div style="background:#f7f5fb;border:1px solid #d8c8e0;border-radius:10px;padding:14px 16px;margin-bottom:22px;">
-        <div style="font-size:13px;font-weight:700;color:#4a3560;margin-bottom:8px;">🔒 מדיניות פרטיות</div>
-        <ul style="font-size:12px;color:#444;line-height:2.1;margin:0;padding-right:16px;">
+      <div style="background:#f7f5fb;border:1px solid #d8c8e0;border-radius:6px;padding:14px 16px;margin-bottom:22px;">
+        <div style="font-size:16px;font-weight:700;color:#4a3560;margin-bottom:8px;">🔒 מדיניות פרטיות</div>
+        <ul style="font-size:15px;color:#444;line-height:2.1;margin:0;padding-right:16px;">
           <li>שיחות <strong>לא נשמרות</strong> בשרתים שלנו</li>
           <li>הנתונים עוברים דרך <strong>Anthropic API</strong> בלבד</li>
           <li>Anthropic <strong>אינה משתמשת</strong> בנתוני API לאימון מודלים</li>
@@ -6094,8 +5649,8 @@ function showPatientPrivacyModal() {
         </ul>
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end;">
-        <button id="pp-cancel" style="padding:9px 20px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;font-size:13px;cursor:pointer;">ביטול</button>
-        <button id="pp-confirm" style="padding:9px 22px;border-radius:8px;border:none;background:#5b3a5e;color:#fff;font-size:13px;font-weight:600;cursor:pointer;">הבנתי — כנס לסשן</button>
+        <button id="pp-cancel" style="padding:9px 20px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#666;font-size:16px;cursor:pointer;">ביטול</button>
+        <button id="pp-confirm" style="padding:9px 22px;border-radius:6px;border:none;background:#5b3a5e;color:#fff;font-size:16px;font-weight:600;cursor:pointer;">הבנתי — כנס לסשן</button>
       </div>
     </div>`;
 
@@ -6118,21 +5673,21 @@ function requireTherapistConsent(onConfirm) {
   overlay.style.cssText = 'position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(45,36,32,0.35);backdrop-filter:blur(5px);direction:rtl;';
 
   overlay.innerHTML = `
-    <div style="background:#fff;border-radius:14px;padding:28px 32px;max-width:480px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.18);direction:rtl;">
-      <div style="font-size:17px;font-weight:700;color:#2d1f1f;margin-bottom:18px;display:flex;align-items:center;gap:8px;">
+    <div style="background:#fff;border-radius:8px;padding:28px 32px;max-width:480px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.18);direction:rtl;">
+      <div style="font-size:18px;font-weight:700;color:#2d1f1f;margin-bottom:18px;display:flex;align-items:center;gap:8px;">
         <span>🩺</span> כלי מטפל — הצהרת פרטיות
       </div>
-      <div style="background:#fff8f0;border:1px solid #f5c97a;border-radius:10px;padding:14px 16px;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;color:#92600a;margin-bottom:6px;">⚠️ אנונימיזציה — חובה</div>
-        <div style="font-size:12px;color:#6b4a10;line-height:1.8;">
+      <div style="background:#fff8f0;border:1px solid #f5c97a;border-radius:6px;padding:14px 16px;margin-bottom:16px;">
+        <div style="font-size:16px;font-weight:700;color:#92600a;margin-bottom:6px;">⚠️ אנונימיזציה — חובה</div>
+        <div style="font-size:15px;color:#6b4a10;line-height:1.8;">
           אל תשתפו שמות, תאריכים, או פרטים מזהים של מטופלים.<br>
           השתמשו ב <strong>"מטופל א׳"</strong>, <strong>"בת 40"</strong>, <strong>"עיר גדולה בצפון"</strong>.<br>
           <span style="color:#b45309;font-weight:600;">שיתוף חומר מזהה עלול להפר את האתיקה המקצועית, גם אם הטכנולוגיה מאובטחת.</span>
         </div>
       </div>
-      <div style="background:#f7f5fb;border:1px solid #d8c8e0;border-radius:10px;padding:14px 16px;margin-bottom:22px;">
-        <div style="font-size:13px;font-weight:700;color:#4a3560;margin-bottom:8px;">🔒 מדיניות פרטיות</div>
-        <ul style="font-size:12px;color:#444;line-height:2;margin:0;padding-right:16px;">
+      <div style="background:#f7f5fb;border:1px solid #d8c8e0;border-radius:6px;padding:14px 16px;margin-bottom:22px;">
+        <div style="font-size:16px;font-weight:700;color:#4a3560;margin-bottom:8px;">🔒 מדיניות פרטיות</div>
+        <ul style="font-size:15px;color:#444;line-height:2;margin:0;padding-right:16px;">
           <li>שיחות <strong>לא נשמרות</strong> בשרתים שלנו</li>
           <li>הנתונים עוברים דרך <strong>Anthropic API</strong> בלבד</li>
           <li>Anthropic <strong>אינה משתמשת</strong> בנתוני API לאימון מודלים</li>
@@ -6140,8 +5695,8 @@ function requireTherapistConsent(onConfirm) {
         </ul>
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end;">
-        <button id="tc-cancel" style="padding:9px 20px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;font-size:13px;cursor:pointer;">ביטול</button>
-        <button id="tc-confirm" style="padding:9px 22px;border-radius:8px;border:none;background:#5b3a5e;color:#fff;font-size:13px;font-weight:600;cursor:pointer;">הבנתי — המשך</button>
+        <button id="tc-cancel" style="padding:9px 20px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#666;font-size:16px;cursor:pointer;">ביטול</button>
+        <button id="tc-confirm" style="padding:9px 22px;border-radius:6px;border:none;background:#5b3a5e;color:#fff;font-size:16px;font-weight:600;cursor:pointer;">הבנתי — המשך</button>
       </div>
     </div>`;
 
@@ -6170,8 +5725,8 @@ function showWinnicottDefaultTooltip(anchorEl) {
   tip.style.cssText = `
     position:fixed;z-index:400;
     background:#2d1f1f;color:#fff;
-    border-radius:10px;padding:10px 14px;
-    max-width:220px;font-size:12px;line-height:1.6;
+    border-radius:6px;padding:10px 14px;
+    max-width:220px;font-size:15px;line-height:1.6;
     direction:${dir};pointer-events:none;
     box-shadow:0 4px 20px rgba(0,0,0,0.25);
     top:${rect.top - 4}px;
@@ -6195,10 +5750,8 @@ function showWinnicottDefaultTooltip(anchorEl) {
 
 function activateClinicalModeUI(on) {
   window.clinicalMode = on;
-  const btn = document.getElementById('clinical-btn');
   const input = document.getElementById('user-input');
   if (on) {
-    if (btn) btn.classList.add('clinical-active');
     const t2 = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
     input.placeholder = t2.placeholderClinical || 'Describe the situation — what do you feel? what is happening?';
     // Default to Winnicott if no theorist is active
@@ -6217,7 +5770,6 @@ function activateClinicalModeUI(on) {
       showTheoristOpening(activeTheorists[0]);
     }
   } else {
-    if (btn) btn.classList.remove('clinical-active');
     const _td = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
     input.placeholder = _td.placeholderGeneral || 'Ask a psychoanalytic question...';
   }
@@ -6287,45 +5839,6 @@ function removeFile() {
   document.getElementById('user-input').placeholder = _tfc.placeholderGeneral || 'הגדר/י מטרה או שאלה';
 }
 
-async function translateMessage(btn, langCode, langName) {
-  const msgDiv = btn.closest('.message');
-  const bodyDiv = msgDiv.querySelector('.message-body');
-  const originalText = bodyDiv.innerText;
-  const wrapDiv = btn.closest('.translate-wrap');
-
-  // Mark active
-  wrapDiv.querySelectorAll('.lang-btn').forEach(b => {
-    b.style.background = 'none';
-    b.style.borderColor = 'var(--border)';
-    b.style.color = 'var(--muted)';
-  });
-  btn.style.background = 'var(--accent-soft)';
-  btn.style.borderColor = 'var(--accent-dim)';
-  btn.style.color = 'var(--accent)';
-
-  bodyDiv.innerHTML = `<em style="color:var(--muted);font-size:13px;">${(UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he']).translating || 'מתרגם...'}</em>`;
-
-  try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-      body: JSON.stringify({
-        messages: [{
-          role: 'user',
-          content: `Translate the following psychoanalytic text to ${langName}. Keep all technical terms accurate. Return only the translation, nothing else:\n\n${originalText}`
-        }],
-        system: 'You are a precise translator specializing in psychoanalytic terminology.',
-        webSearch: false
-      })
-    });
-    const data = await response.json();
-    const translated = data.content?.[0]?.text || originalText;
-    bodyDiv.innerHTML = stripMarkdown(translated).replace(/\n/g, '<br>');
-  } catch(e) {
-    bodyDiv.innerHTML = originalText.replace(/\n/g, '<br>');
-  }
-}
-
 const CRISIS_KEYWORDS = [
   'להתאבד','התאבדות','מתאבד','מתאבדת','יתאבד','תתאבד',
   'לסיים את החיים','לשים קץ לחיים','לשים קץ','לגמור עם הכל','לגמור עם זה','לסיים הכל',
@@ -6361,15 +5874,15 @@ function showCrisisBanner() {
   banner.id = 'crisis-banner';
   banner.style.cssText = [
     'position:fixed','bottom:90px','left:50%','transform:translateX(-50%)',
-    'background:#2d1a1a','border:1px solid #8b4444','border-radius:10px',
+    'background:#2d1a1a','border:1px solid #8b4444','border-radius:6px',
     'padding:16px 20px','max-width:480px','width:90%','z-index:9999',
-    'box-shadow:0 4px 24px rgba(0,0,0,0.5)','font-family:Rubik,sans-serif'
+    'box-shadow:0 4px 24px rgba(0,0,0,0.5)','font-family:var(--font-assistant),sans-serif'
   ].join(';');
   if (isHe) {
     banner.innerHTML = `
       <button onclick="document.getElementById('crisis-banner').remove()"
-        style="position:absolute;top:8px;left:12px;background:none;border:none;color:#9b7070;font-size:20px;cursor:pointer;line-height:1">×</button>
-      <div style="font-size:14px;color:#e8c4c4;line-height:2;direction:rtl">
+        style="position:absolute;top:8px;left:12px;background:none;border:none;color:#9b7070;font-size:22px;cursor:pointer;line-height:1">×</button>
+      <div style="font-size:16px;color:#e8c4c4;line-height:2;direction:rtl">
         <div style="font-weight:600;margin-bottom:6px;color:#f0d0d0">אם אתה במשבר — יש מי שיקשיב</div>
         <div style="margin-bottom:8px;color:#dbb8b8">אם יש לך מטפל או מטפלת — עכשיו הוא הזמן לפנות אליהם.</div>
         <div>📞 <strong>ער"ן</strong> — <a href="tel:1201" style="color:#c09090">1201</a> (24/7) · <a href="https://www.eran.org.il/online-emotional-help/" target="_blank" style="color:#c09090">צ'אט</a></div>
@@ -6381,8 +5894,8 @@ function showCrisisBanner() {
   } else {
     banner.innerHTML = `
       <button onclick="document.getElementById('crisis-banner').remove()"
-        style="position:absolute;top:8px;right:12px;background:none;border:none;color:#9b7070;font-size:20px;cursor:pointer;line-height:1">×</button>
-      <div style="font-size:14px;color:#e8c4c4;line-height:2;direction:ltr">
+        style="position:absolute;top:8px;right:12px;background:none;border:none;color:#9b7070;font-size:22px;cursor:pointer;line-height:1">×</button>
+      <div style="font-size:16px;color:#e8c4c4;line-height:2;direction:ltr">
         <div style="font-weight:600;margin-bottom:6px;color:#f0d0d0">If you're in crisis — someone is here</div>
         <div style="margin-bottom:8px;color:#dbb8b8">If you have a therapist — current or past — this is the moment to reach out to them.</div>
         <div>📞 <strong>US:</strong> 988 &nbsp;(Suicide & Crisis Lifeline)</div>
@@ -6583,7 +6096,6 @@ async function sendMessage() {
         saveMemory(memories);
         sessionMemorySaved = true;
         updateSessionTitle();
-        updateSidebarMemories();
       }
     }
     // Always strip MEMORY tag — line-based to handle any edge case
@@ -6610,14 +6122,14 @@ async function sendMessage() {
       if (sourceMatch) {
         const sourceText = sourceMatch[1];
         const searchQuery = encodeURIComponent(sourceText.replace(/[—–]/g, '').trim());
-        sourceAttribution = `<a href="https://scholar.google.com/scholar?q=${searchQuery}" target="_blank" style="color:var(--accent);font-size:12px;font-family:'Rubik',sans-serif;text-decoration:none;opacity:0.75;border-bottom:1px dotted var(--accent-dim);" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75">📖 ${sourceText}</a>`;
+        sourceAttribution = `<a href="https://scholar.google.com/scholar?q=${searchQuery}" target="_blank" style="color:var(--accent);font-size:15px;font-family:var(--font-assistant),sans-serif;text-decoration:none;opacity:0.75;border-bottom:1px dotted var(--accent-dim);" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75">📖 ${sourceText}</a>`;
       }
     }
     // Strip all citation tags (both Hebrew and English, with /g to catch multiples)
     reply = reply.replace(/\[(?:מקור|Source): .+?\]/g, '').trim();
     if (webSources && webSources.length > 0) {
       const linksHTML = '<div style="margin-top:4px">' + webSources.slice(0, 5).map((s, i) =>
-        `<a href="${s.url}" target="_blank" style="display:inline-block;margin:3px 4px 3px 0;padding:3px 10px;background:rgba(196,96,122,0.06);border:1px solid var(--accent-dim);border-radius:20px;color:var(--accent);font-size:11px;font-family:'Rubik',sans-serif;text-decoration:none;opacity:0.8;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8">[${i+1}] ${s.title.slice(0,45)}${s.title.length>45?'...':''}</a>`
+        `<a href="${s.url}" target="_blank" style="display:inline-block;margin:3px 4px 3px 0;padding:3px 10px;background:rgba(196,96,122,0.06);border:1px solid var(--accent-dim);border-radius:6px;color:var(--accent);font-size:13px;font-family:var(--font-assistant),sans-serif;text-decoration:none;opacity:0.8;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8">[${i+1}] ${s.title.slice(0,45)}${s.title.length>45?'...':''}</a>`
       ).join('') + '</div>';
       sourceAttribution = (sourceAttribution ? sourceAttribution + '<br>' : '') + linksHTML;
     }
@@ -6647,59 +6159,6 @@ async function sendMessage() {
   resetIdleTimer();
 }
 
-function toggleMemoryDropdown() {
-  const dropdown = document.getElementById('memory-dropdown');
-  const list = document.getElementById('memory-dropdown-list');
-  if (!dropdown) return;
-  if (dropdown.style.display === 'none') {
-    const memories = loadMemory();
-    const _tmT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
-    const _tmLocale = (window._lang === 'en') ? 'en-US' : 'he-IL';
-    if (memories.length === 0) {
-      list.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:8px;">${_tmT.noMemories || 'No memories yet'}</div>`;
-    } else {
-      list.innerHTML = memories.slice().reverse().map((m, i) => {
-        const realIdx = memories.length - 1 - i;
-        const date = new Date(m.ts).toLocaleDateString(_tmLocale);
-        return `<div onclick="restoreConversation(${realIdx});toggleMemoryDropdown()" style="padding:7px 10px;cursor:pointer;border-radius:8px;font-size:12px;color:var(--text);" onmouseover="this.style.background='rgba(196,96,122,0.06)'" onmouseout="this.style.background=''">
-          <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">${date}${m.theorist ? ' · ' + m.theorist : ''}</div>
-          <div>${m.summary ? m.summary.slice(0,60) + '...' : (_tmT.conversation || 'Conversation')}</div>
-        </div>`;
-      }).join('');
-    }
-    dropdown.style.display = 'block';
-    // Close on outside click
-    setTimeout(() => {
-      document.addEventListener('click', function closeDD(e) {
-        if (!dropdown.contains(e.target)) {
-          dropdown.style.display = 'none';
-          document.removeEventListener('click', closeDD);
-        }
-      });
-    }, 100);
-  } else {
-    dropdown.style.display = 'none';
-  }
-}
-
-function openMemory() {
-  const memories = loadMemory();
-  const list = document.getElementById('memory-list');
-  const _omT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
-  const _omLocale = (window._lang === 'en') ? 'en-US' : 'he-IL';
-  if (memories.length === 0) {
-    list.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:12px 0">${_omT.openMemoryEmpty || 'No memories yet. Start a conversation.'}</div>`;
-  } else {
-    list.innerHTML = memories.map((m, i) => `
-      <div class="memory-entry" onclick="restoreConversation(${i})" style="cursor:pointer;" title="${_omT.openMemoryTooltip || 'Click to open this conversation'}">
-        <div class="mem-q">${_omT.openMemoryConv || 'Conversation'} ${i+1} · ${new Date(m.ts).toLocaleDateString(_omLocale)} <span style="float:left;opacity:0.5;font-size:10px;">${_omT.openMemoryClickToOpen || 'Click to open'}</span></div>
-        <div>${m.summary}</div>
-      </div>
-    `).join('');
-  }
-  document.getElementById('memory-panel').classList.add('open');
-}
-
 function closeMemory() {
   document.getElementById('memory-panel').classList.remove('open');
 }
@@ -6710,8 +6169,7 @@ function clearMemory() {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(CONV_KEY);
     conversationHistory = [];
-    updateMemoryCount();
-    closeMemory();
+      closeMemory();
   }
 }
 
@@ -6767,26 +6225,52 @@ async function exportPDF() {
     ? (topic ? `${_verb} ${theoristLabel}${_onWord}${topic}` : `${_verb} ${theoristLabel} · ${date}`)
     : `שיחה פסיכואנליטית · ${date}`;
 
-  let html = `<!DOCTYPE html><html dir="rtl" lang="he"><head>
+  const _esc = s => String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const _dir = _isEnPdf ? 'ltr' : 'rtl';
+
+  let html = `<!DOCTYPE html><html dir="${_dir}" lang="${_isEnPdf ? 'en' : 'he'}"><head>
     <meta charset="UTF-8">
-    <title>${sessionTitle}</title>
+    <title>${_esc(sessionTitle)}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;600;700&display=swap">
     <style>
-      body { font-family: 'Arial', sans-serif; max-width: 700px; margin: 40px auto; padding: 0 24px; color: #3c2d28; background: #fff; direction: rtl; }
-      h1 { font-size: 22px; color: #c4607a; font-weight: 300; font-style: italic; margin-bottom: 4px; }
-      .meta { font-size: 12px; color: #999; margin-bottom: 24px; }
-      hr { border: none; border-top: 1px solid #ede4e0; margin: 20px 0; }
-      .role { font-size: 11px; color: #c4607a; font-weight: 600; letter-spacing: 0.08em; margin-bottom: 6px; }
-      .role.user { color: #8b6060; }
-      .body { font-size: 14px; line-height: 1.75; margin-bottom: 4px; white-space: pre-wrap; }
-      .attr { font-size: 11px; color: #c4607a; margin-top: 6px; }
-      @media print { body { margin: 20px; } }
+      /* הטוקנים מקובץ העיצוב. הקובץ הישן כאן היה אריאל על גוון חום מהעיצוב
+         שהוחלף, ובלי שום שליטה על שבירת עמודים. */
+      :root{
+        --ink:#111111; --mut:#66655F; --line:#D6D6D2; --line-soft:#E6E6E2;
+        --p-500:#C4607A; --p-700:#8E3550; --p-900:#4A1626;
+      }
+      @page { margin: 18mm 16mm; }
+      html,body{ background:#fff }
+      body{
+        font-family:'Assistant',system-ui,sans-serif; color:var(--ink); direction:${_dir};
+        margin:0; font-size:16px;
+        -webkit-print-color-adjust:exact; print-color-adjust:exact;
+      }
+      /* בר עליון, קו שחור, כותרת: שפת המסך של העיצוב */
+      .topbar{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.14em;font-weight:600;margin-bottom:9px}
+      .topbar .ix{color:var(--p-500)}
+      .hr{height:1px;background:var(--ink)}
+      h1.h{font-size:38px;font-weight:200;letter-spacing:-.02em;line-height:1.14;margin:24px 0;max-width:17ch}
+      /* התמליל · הדובר מעל הגוף, כפי שהעיצוב עצמו עושה ברוחב צר.
+         פריסת בלוק מתחלקת נכון בין עמודים, פריסת flex לא. */
+      .turn{padding:14px 0;border-top:1px solid var(--line-soft)}
+      .turn:first-of-type{border-top:none}
+      .spk{font-size:11px;letter-spacing:.1em;font-weight:700;color:var(--mut);margin-bottom:6px;
+           break-after:avoid;page-break-after:avoid}
+      .turn.them .spk{color:var(--p-700)}
+      .bd{font-size:16px;font-weight:300;line-height:1.8;color:var(--ink);white-space:pre-wrap;
+          orphans:3;widows:3}
+      .turn.them .bd{color:var(--p-900)}
+      .attr{font-size:11.5px;color:var(--mut);margin-top:8px}
+      .botbar{margin-top:24px;border-top:1px solid var(--ink);padding-top:12px;font-size:11.5px;color:var(--mut)}
     </style>
   </head><body>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <h1 style="direction:ltr;font-family:'Cormorant Garamond',serif;font-style:italic;">Between</h1>
-    </div>
-    <div class="meta">${topic ? `${sessionTitle} · ${date}` : sessionTitle}</div>
-    <hr>`;
+    <div class="topbar"><span style="direction:ltr">Between</span><span class="ix">${_esc(date)}</span></div>
+    <div class="hr"></div>
+    <h1 class="h">${_esc(sessionTitle)}</h1>`;
 
   // BW: prepend the user's original written text — every hold conversation starts from it.
   // It lives as the first user turn ("כתבתי:\n\n<text>" / "I wrote:\n\n<text>") and survives reload
@@ -6796,11 +6280,8 @@ async function exportPDF() {
   const _seedMatch = /^(?:כתבתי|I wrote)\s*:\s*\n+([\s\S]+)$/.exec(_seedTurn);
   const _seedText = _seedMatch ? _seedMatch[1].trim() : '';
   if (_seedText) {
-    const _escSeed = _seedText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const _seedLabel = _isEnPdf ? 'What I wrote' : 'מה כתבתי';
-    html += `<div class="role user">${_seedLabel}</div>`;
-    html += `<div class="body">${_escSeed}</div>`;
-    html += `<hr>`;
+    html += `<div class="turn"><div class="spk">${_seedLabel}</div><div class="bd">${_esc(_seedText)}</div></div>`;
   }
 
   messages.forEach(msg => {
@@ -6810,12 +6291,11 @@ async function exportPDF() {
       const opts = JSON.parse(msg.dataset.options || '[]');
       if (sel && opts.length) {
         const isEn = selectedLang?.code === 'en';
-        html += `<div class="role user">${isEn ? 'Entry point' : 'נקודת כניסה'}</div>`;
-        html += `<div class="body">`;
+        html += `<div class="turn"><div class="spk">${isEn ? 'Entry point' : 'נקודת כניסה'}</div><div class="bd">`;
         opts.forEach(opt => {
-          html += `${opt === sel ? '● ' : '○ '}${opt}${opt === sel ? ' ←' : ''}<br>`;
+          html += `${opt === sel ? '● ' : '○ '}${_esc(opt)}${opt === sel ? ' ←' : ''}<br>`;
         });
-        html += `</div><hr>`;
+        html += `</div></div>`;
       }
       return;
     }
@@ -6826,19 +6306,35 @@ async function exportPDF() {
     if (!text) return;
     const attr = msg.querySelector('.attribution');
     const tPDF = (typeof UI_TRANSLATIONS !== 'undefined' && selectedLang) ? (UI_TRANSLATIONS[selectedLang.code] || UI_TRANSLATIONS['he']) : UI_TRANSLATIONS['he'];
-    html += `<div class="role ${isUser ? 'user' : ''}">${isUser ? (tPDF.userLabel || 'שאלתך') : (tPDF.agentLabel || 'הסוכן')}</div>`;
-    html += `<div class="body">${text}</div>`;
-    if (attr) html += `<div class="attr">${attr.innerText}</div>`;
-    html += `<hr>`;
+    // שם הדובר נלקח מהתמליל עצמו, ולא ממילון נפרד. קודם ה-PDF כתב
+    // "שאלתך" ו"הסוכן" בזמן שהמסך הראה "את" ואת שם התיאורטיקן.
+    const roleEl = msg.querySelector('.message-role');
+    const spk = (roleEl && roleEl.innerText.trim())
+      || (isUser ? (tPDF.userLabel || 'שאלתך') : (tPDF.agentLabel || 'הסוכן'));
+    html += `<div class="turn${isUser ? '' : ' them'}"><div class="spk">${_esc(spk)}</div>`;
+    html += `<div class="bd">${_esc(text)}</div>`;
+    if (attr) html += `<div class="attr">${_esc(attr.innerText)}</div>`;
+    html += `</div>`;
   });
 
-  html += `</div><!-- end main-content -->
+  html += `<div class="botbar">${_isEnPdf
+    ? 'This conversation lived in this browser only. This PDF is the lasting copy. What becomes clear here belongs in the room.'
+    : 'השיחה חיה בדפדפן הזה בלבד. ה-PDF הזה הוא העותק שנשמר. מה שמתבהר כאן, מקומו בחדר.'}</div>
 </body></html>`;
 
   const win = window.open('', '_blank');
   win.document.write(html);
   win.document.close();
-  setTimeout(() => win.print(), 500);
+  // ממתינים לאסיסטנט לפני ההדפסה. קודם ההדפסה נורתה אחרי חצי שנייה קבועה,
+  // ולכן נתפסה לא פעם על גופן חלופי, וכל העימוד יצא במידות אחרות.
+  let printed = false;
+  const doPrint = () => { if (printed) return; printed = true; try { win.focus(); win.print(); } catch (e) {} };
+  if (win.document.fonts && win.document.fonts.ready) {
+    win.document.fonts.ready.then(doPrint);
+    setTimeout(doPrint, 3000);
+  } else {
+    setTimeout(doPrint, 700);
+  }
   trackEvent('pdf_downloaded');
 }
 
@@ -6858,12 +6354,18 @@ function showConversationEndModal() {
   const modal = document.createElement('div');
   modal.id = 'end-conv-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
+  // מבנה המודל מקובץ העיצוב: כותרת h3, שורת פתיח, וסרגל פעולות תחתון
+  // עם קו מפריד והפעולה הראשית בקצה. קודם זה היה טקסט ממורכז וכפתורים
+  // ממורכזים, כלומר מעטפת חדשה על הרכב ישן.
   modal.innerHTML = `
-    <div style="background:var(--bg);border-radius:16px;padding:36px 32px;max-width:340px;width:90%;text-align:center;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
-      <p style="font-size:16px;color:var(--text);font-family:Rubik,sans-serif;margin:0 0 28px;line-height:1.6;">${isEn ? 'End this conversation?' : 'סיימת את השיחה?'}</p>
-      <div style="display:flex;gap:12px;justify-content:center;">
-        <button onclick="confirmEndConversation()" style="background:var(--accent);color:#fff;border:none;padding:10px 28px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">${isEn ? 'Yes' : 'כן'}</button>
-        <button onclick="document.getElementById('end-conv-modal').remove()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 28px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">${isEn ? 'Go back' : 'לא, חזור'}</button>
+    <div class="n-modal" style="width:420px;direction:${dir}">
+      <h3>${isEn ? 'End this conversation?' : 'סיימת את השיחה?'}</h3>
+      <p class="n-lead">${isEn
+        ? 'The conversation stays in this browser until you start a new one. The PDF is the only lasting copy.'
+        : 'השיחה נשארת בדפדפן הזה עד שמתחילים חדשה. ה-PDF הוא העותק היחיד שנשמר לאורך זמן.'}</p>
+      <div class="n-foot">
+        <button class="n-btn n-ghost" onclick="document.getElementById('end-conv-modal').remove()">${isEn ? 'Go back' : 'לא, חזור'}</button>
+        <button class="n-btn n-solid" onclick="confirmEndConversation()">${isEn ? 'Yes' : 'כן'}</button>
       </div>
     </div>`;
   document.body.appendChild(modal);
@@ -6887,20 +6389,20 @@ function showFeedbackModal() {
   const _isFbEn = (window.selectedLang?.code === 'en');
   const _fbDir = _isFbEn ? 'ltr' : 'rtl';
   modal.innerHTML = `
-    <div style="background:var(--bg);border-radius:16px;padding:36px 32px;max-width:400px;width:90%;text-align:center;direction:${_fbDir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
-      <p style="font-size:15px;color:var(--text);font-family:Rubik,sans-serif;margin:0 0 6px;">${_isFbEn ? 'Before you go —' : 'רגע לפני שממשיכים —'}</p>
-      <p style="font-size:13px;color:var(--muted);font-family:Rubik,sans-serif;margin:0 0 22px;">${_isFbEn ? 'How was the conversation?' : 'איך היתה השיחה?'}</p>
-      <div id="emoji-row" style="display:flex;gap:16px;justify-content:center;font-size:28px;margin-bottom:20px;">
+    <div class="n-modal" style="width:460px;direction:${_fbDir}">
+      <h3>${_isFbEn ? 'How was the conversation?' : 'איך היתה השיחה?'}</h3>
+      <p class="n-lead">${_isFbEn ? 'One moment before you go. Optional.' : 'רגע לפני שממשיכים. לא חובה.'}</p>
+      <div id="emoji-row" style="display:flex;gap:16px;font-size:30px;margin-bottom:20px;">
         <span onclick="selectFeedbackRating(this,'😕')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="😕">😕</span>
         <span onclick="selectFeedbackRating(this,'😐')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="😐">😐</span>
         <span onclick="selectFeedbackRating(this,'🙂')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="🙂">🙂</span>
         <span onclick="selectFeedbackRating(this,'😊')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="😊">😊</span>
         <span onclick="selectFeedbackRating(this,'✨')" style="cursor:pointer;opacity:0.4;transition:all 0.15s;" data-val="✨">✨</span>
       </div>
-      <textarea id="feedback-text" placeholder="${_isFbEn ? 'Anything you\'d like to share? (optional)' : 'משהו שתרצי לשתף? (לא חובה)'}" style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:Rubik,sans-serif;font-size:13px;background:var(--bg);color:var(--text);resize:none;height:68px;margin-bottom:18px;direction:${_fbDir};" dir="${_fbDir}"></textarea>
-      <div style="display:flex;gap:12px;justify-content:center;">
-        <button onclick="submitFeedback('${theorist}')" id="feedback-submit-btn" style="background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;opacity:0.35;pointer-events:none;">${_isFbEn ? 'Send' : 'שלח'}</button>
-        <button onclick="skipFeedback()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 24px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;cursor:pointer;">${_isFbEn ? 'Skip' : 'דלג'}</button>
+      <textarea id="feedback-text" class="n-inp" placeholder="${_isFbEn ? 'Anything you\'d like to share? (optional)' : 'משהו שתרצי לשתף? (לא חובה)'}" style="height:80px;resize:none;direction:${_fbDir}" dir="${_fbDir}"></textarea>
+      <div class="n-foot">
+        <button class="n-btn n-ghost" onclick="skipFeedback()">${_isFbEn ? 'Skip' : 'דלג'}</button>
+        <button class="n-btn n-solid" onclick="submitFeedback('${theorist}')" id="feedback-submit-btn" disabled>${_isFbEn ? 'Send' : 'שלח'}</button>
       </div>
     </div>`;
   document.body.appendChild(modal);
@@ -6913,7 +6415,7 @@ function selectFeedbackRating(el, emoji) {
     s.style.transform = s.dataset.val === emoji ? 'scale(1.35)' : 'scale(1)';
   });
   const btn = document.getElementById('feedback-submit-btn');
-  if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+  if (btn) { btn.disabled = false; }
 }
 
 async function submitFeedback(theorist) {
@@ -6962,11 +6464,11 @@ function showTheoreticalLensOffer() {
   modal.id = 'lens-offer-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.5);display:flex;align-items:center;justify-content:center;';
   modal.innerHTML = `
-    <div style="background:var(--bg);border-radius:16px;padding:36px 32px;max-width:380px;width:90%;text-align:center;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
-      <p style="font-size:16px;color:var(--text);font-family:'Rubik',sans-serif;margin:0 0 28px;line-height:1.6;">${_t.lensOfferTitle || 'רוצה לשמוע מה אנליטיקאי היה אומר על השיחה הזו?'}</p>
+    <div style="background:var(--bg);border-radius:8px;padding:36px 32px;max-width:380px;width:90%;text-align:center;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <p style="font-size:17px;color:var(--text);font-family:var(--font-assistant),sans-serif;margin:0 0 28px;line-height:1.6;">${_t.lensOfferTitle || 'רוצה לשמוע מה אנליטיקאי היה אומר על השיחה הזו?'}</p>
       <div style="display:flex;gap:12px;justify-content:center;">
-        <button onclick="document.getElementById('lens-offer-modal').remove();openTheoreticalLensPicker();" style="background:var(--accent);color:#fff;border:none;padding:10px 28px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:14px;cursor:pointer;">${isEn ? 'Yes' : 'כן'}</button>
-        <button onclick="document.getElementById('lens-offer-modal').remove();performNewChat();" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 28px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:14px;cursor:pointer;">${_t.lensSkip || 'דלג'}</button>
+        <button onclick="document.getElementById('lens-offer-modal').remove();openTheoreticalLensPicker();" style="background:var(--accent-deep);color:#fff;border:none;padding:10px 28px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;cursor:pointer;">${isEn ? 'Yes' : 'כן'}</button>
+        <button onclick="document.getElementById('lens-offer-modal').remove();performNewChat();" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 28px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;cursor:pointer;">${_t.lensSkip || 'דלג'}</button>
       </div>
     </div>`;
   document.body.appendChild(modal);
@@ -6990,17 +6492,17 @@ function openTheoreticalLensPicker() {
     const name = _tNames[key] || key.charAt(0).toUpperCase() + key.slice(1);
     return `<div class="bw-theorist-card" data-key="${key}" onclick="(function(el,k){document.querySelectorAll('#lens-picker-modal .bw-theorist-card').forEach(c=>c.classList.remove('bw-theorist-selected'));el.classList.add('bw-theorist-selected');document.getElementById('lens-confirm-btn').style.opacity='1';document.getElementById('lens-confirm-btn').style.pointerEvents='auto';window._lensSelectedKey=k;})(this,'${key}');"
       style="cursor:pointer;padding:14px 12px;text-align:center;">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);">${name}</div>
+      <div style="font-family:Assistant,sans-serif;font-size:17px;color:var(--text);">${name}</div>
     </div>`;
   }).join('');
 
   modal.innerHTML = `
-    <div style="background:var(--bg);border-radius:16px;padding:32px;max-width:420px;width:90%;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);margin:0 0 20px;text-align:center;">${_t.lensPickerTitle || 'בחר/י תיאורטיקן'}</p>
+    <div style="background:var(--bg);border-radius:8px;padding:32px;max-width:420px;width:90%;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <p style="font-family:Assistant,sans-serif;font-size:22px;color:var(--text);margin:0 0 20px;text-align:center;">${_t.lensPickerTitle || 'בחר/י תיאורטיקן'}</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">${cardsHTML}</div>
       <div style="text-align:center;">
         <button id="lens-confirm-btn"
-          style="background:var(--accent);color:#fff;border:none;padding:11px 32px;border-radius:22px;font-family:'Rubik',sans-serif;font-size:14px;cursor:pointer;opacity:0.35;pointer-events:none;transition:opacity 0.2s;"
+          style="background:var(--accent-deep);color:#fff;border:none;padding:11px 32px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;cursor:pointer;opacity:0.35;pointer-events:none;transition:opacity 0.2s;"
           onclick="(function(){const k=window._lensSelectedKey;if(!k)return;document.getElementById('lens-picker-modal').remove();fetchTheoreticalLens(k);})();">
           ${_t.lensReadBtn || 'פרשן'}
         </button>
@@ -7024,13 +6526,13 @@ async function fetchTheoreticalLens(theoristKey) {
   modal.id = 'lens-result-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.3);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;';
   modal.innerHTML = `
-    <div id="lens-result-box" style="background:#fff;border-radius:14px;width:560px;max-width:92vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:${dir};">
-      <div style="background:#3a2540;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:14px 14px 0 0;position:sticky;top:0;">
-        <span style="color:rgba(255,255,255,0.85);font-size:14px;">${_t.lensHeaderPrefix || 'קריאה של'} ${theoristName}</span>
-        <button id="lens-close-btn" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;line-height:1;">×</button>
+    <div id="lens-result-box" style="background:#fff;border-radius:8px;width:560px;max-width:92vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:${dir};">
+      <div style="background:#3a2540;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:8px 14px 0 0;position:sticky;top:0;">
+        <span style="color:rgba(255,255,255,0.85);font-size:16px;">${_t.lensHeaderPrefix || 'קריאה של'} ${theoristName}</span>
+        <button id="lens-close-btn" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:22px;cursor:pointer;line-height:1;">×</button>
       </div>
       <div id="lens-result-content" style="padding:24px;">
-        <div style="text-align:center;color:var(--muted);font-size:13px;padding:30px 0;">${theoristName} ${_t.lensLoading || 'קורא...'}</div>
+        <div style="text-align:center;color:var(--muted);font-size:16px;padding:30px 0;">${theoristName} ${_t.lensLoading || 'קורא...'}</div>
       </div>
     </div>`;
   document.body.appendChild(modal);
@@ -7060,7 +6562,7 @@ async function fetchTheoreticalLens(theoristKey) {
     if (!content) return;
 
     if (data.error) {
-      content.innerHTML = `<div style="color:var(--accent);text-align:center;padding:20px;font-size:13px;">שגיאה בייצור הניתוח. נסי שוב.</div>`;
+      content.innerHTML = `<div style="color:var(--accent);text-align:center;padding:20px;font-size:16px;">שגיאה בייצור הניתוח. נסי שוב.</div>`;
       return;
     }
 
@@ -7069,26 +6571,26 @@ async function fetchTheoreticalLens(theoristKey) {
 
     content.innerHTML = `
       <div style="${blockStyle('background:rgba(196,96,122,0.08)','border:1px solid var(--accentDim)','')}">
-        <div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:6px;">${_t.lensBlock1Label || 'מה בולט'}</div>
-        <div style="font-size:13px;color:var(--text);line-height:1.7;">${data.block1 || ''}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px;">${_t.lensBlock1Label || 'מה בולט'}</div>
+        <div style="font-size:16px;color:var(--text);line-height:1.7;">${data.block1 || ''}</div>
       </div>
       <div style="${blockStyle('background:var(--thinking)','border:1px solid #f0d8db','')}">
-        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;">${_t.lensBlock2Label || 'מה לא נאמר'}</div>
-        <div style="font-size:13px;color:var(--text);line-height:1.7;">${data.block2 || ''}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px;">${_t.lensBlock2Label || 'מה לא נאמר'}</div>
+        <div style="font-size:16px;color:var(--text);line-height:1.7;">${data.block2 || ''}</div>
       </div>
       <div style="${blockStyle('background:var(--surface)','border:1px solid var(--border)',isEn?'border-left:3px solid var(--accent)':'border-right:3px solid var(--accent)')}">
-        <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:6px;">${_t.lensBlock3Label || 'שאלה לטיפול'}</div>
-        <div style="font-size:13px;color:var(--text);line-height:1.7;">${data.block3 || ''}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">${_t.lensBlock3Label || 'שאלה לטיפול'}</div>
+        <div style="font-size:16px;color:var(--text);line-height:1.7;">${data.block3 || ''}</div>
       </div>
       <div style="text-align:center;margin-top:20px;">
         <button onclick="document.getElementById('lens-result-modal').remove();performNewChat();"
-          style="background:none;border:1px solid var(--border);color:var(--muted);padding:9px 24px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;">
+          style="background:none;border:1px solid var(--border);color:var(--muted);padding:9px 24px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;cursor:pointer;">
           ${_t.lensEndBtn || 'סיים שיחה'}
         </button>
       </div>`;
   } catch {
     const content = document.getElementById('lens-result-content');
-    if (content) content.innerHTML = `<div style="color:var(--accent);text-align:center;padding:20px;font-size:13px;">שגיאת רשת — נסי שוב.</div>`;
+    if (content) content.innerHTML = `<div style="color:var(--accent);text-align:center;padding:20px;font-size:16px;">שגיאת רשת — נסי שוב.</div>`;
   }
 }
 
@@ -7099,9 +6601,9 @@ function showBlockedScreen() {
   if (!chat) return;
   chat.innerHTML = `
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:48px 32px;direction:rtl;">
-      <h2 style="font-family:Rubik,sans-serif;color:var(--text);font-size:20px;font-weight:500;margin-bottom:12px;">סיימת את תקופת הניסיון</h2>
-      <p style="font-family:Rubik,sans-serif;color:var(--muted);font-size:14px;max-width:300px;line-height:1.8;margin-bottom:28px;">השתמשת ב-3 השיחות שעמדו לרשותך בבטא.<br>אשמח לשמוע ממך — כתבי לי ונמשיך משם.</p>
-      <a href="mailto:ayaavivi@gmail.com" style="display:inline-block;background:var(--accent);color:#fff;padding:12px 28px;border-radius:8px;font-family:Rubik,sans-serif;font-size:14px;text-decoration:none;">צרי קשר</a>
+      <h2 style="font-family:var(--font-assistant),sans-serif;color:var(--text);font-size:22px;font-weight:500;margin-bottom:12px;">סיימת את תקופת הניסיון</h2>
+      <p style="font-family:var(--font-assistant),sans-serif;color:var(--muted);font-size:16px;max-width:300px;line-height:1.8;margin-bottom:28px;">השתמשת ב-3 השיחות שעמדו לרשותך בבטא.<br>אשמח לשמוע ממך — כתבי לי ונמשיך משם.</p>
+      <a href="mailto:ayaavivi@gmail.com" style="display:inline-block;background:var(--accent-deep);color:#fff;padding:12px 28px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;text-decoration:none;">צרי קשר</a>
     </div>`;
 }
 
@@ -7130,6 +6632,15 @@ async function checkConversationLimit() {
   }
 }
 
+// איפוס בחירת הגישה. שני הצדדים של הגבול (פריט 17): ‎activeTheorists‎ הוא מקור
+// האמת של vanilla, והצ'יפים נושאים ‎data-key‎ ולכן הם שלו. ‎holdtheoristchange‎ עם
+// ‎null‎ הוא הגשר הקיים, ו-React מאפס דרכו את ‎activeApproach‎ בעצמו.
+function bwResetApproachChoice() {
+  activeTheorists = [];
+  document.querySelectorAll('.theorist-tag[data-key].active').forEach(t => t.classList.remove('active'));
+  try { window.dispatchEvent(new CustomEvent('holdtheoristchange', { detail: { key: null } })); } catch (e) { /* noop */ }
+}
+
 function performNewChat() {
   // FIRST, before anything else can throw. The therapist writing card is React state in page.tsx
   // and no vanilla code here can reach it, so it needs an event. Placing that event at the END of
@@ -7150,6 +6661,7 @@ function performNewChat() {
   }
   conversationHistory = [];
   sessionMemorySaved = false;
+  bwResetApproachChoice(); // אחרי generateInterpretiveMemory, שקורא את activeTheorists
   const _sbNew = document.getElementById('suggestion-bubbles');
   if (_sbNew) _sbNew.classList.remove('subtle');
   saveConversation();
@@ -7191,6 +6703,7 @@ function bwExitChatToHome() {
   clearTimeout(idleTimer); idleTimer = null; idleMessageSent = false;
   conversationHistory = [];
   sessionMemorySaved = false;
+  bwResetApproachChoice();
   try { saveConversation(); } catch (e) { /* noop */ }
   const titleEl = document.getElementById('session-title'); if (titleEl) titleEl.textContent = '';
   const chat = document.getElementById('chat');
@@ -7216,73 +6729,16 @@ function bwExitChatToHome() {
   window.activeFlow = null;
   const ui = document.getElementById('user-input'); if (ui) ui.value = '';
   bwClearDraft(); // BW-135 — exited chat, clear draft
-  window.dispatchEvent(new Event('bwnewchat')); // same React-state gap as performNewChat
+  // "חזרה לכתיבה" מתוך מחקר חוזרת לכתיבה של המחקר ולא למסך ברירת המחדל.
+  // ‎bwnewchat‎ הוא הגשר היחיד לצד של React, ולכן היעד נוסע עליו.
+  // כשמכבים את המחקר, ‎enterExploreModeFromSidebar‎ כותב 'consult' לפני
+  // שהוא קורא לכאן, ולכן הבדיקה כאן מחזירה false והיציאה רגילה.
+  const _backToResearch = _exitTherapist && localStorage.getItem('bw_mode') === 'explore';
+  window.dispatchEvent(new CustomEvent('bwnewchat', {
+    detail: { back: _backToResearch ? 'research' : null }
+  })); // same React-state gap as performNewChat
 }
 window.bwExitChatToHome = bwExitChatToHome;
-
-function restoreConversation(memIndex) {
-  const memories = loadMemory();
-  const mem = memories[memIndex];
-  if (!mem) return;
-  closeMemory();
-  clearTimeout(silenceTimer);
-  silenceResponseSent = false;
-  clearTimeout(idleTimer); idleTimer = null; idleMessageSent = false;
-
-  // Clear current chat — preserve #welcome in DOM (same pattern as performNewChat/signOut)
-  conversationHistory = [];
-  const chat = document.getElementById('chat');
-  Array.from(chat.children).forEach(child => { if (child.id !== 'welcome') child.remove(); });
-  const _rcWelcome = document.getElementById('welcome');
-  if (_rcWelcome) _rcWelcome.style.display = 'none';
-  document.body.classList.remove('bw-selecting');
-
-  // Show memory summary card
-  const div = document.createElement('div');
-  div.style.cssText = 'padding:16px 24px;background:rgba(196,96,122,0.05);border-radius:12px;margin:16px 0;border:1px solid var(--accent-dim);';
-  const _tsc = UI_TRANSLATIONS[selectedLang?.code] || UI_TRANSLATIONS['he'];
-  const _isEnSC = selectedLang?.code === 'en';
-  const _locale = _isEnSC ? 'en-US' : 'he-IL';
-  div.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-family:Rubik,sans-serif;">${_tsc.savedConv || 'שיחה שמורה'} · ${new Date(mem.ts).toLocaleDateString(_locale)}</div>
-    <div style="font-size:14px;color:var(--text);font-family:Rubik,sans-serif;">${mem.summary}</div>
-    <div style="font-size:12px;color:var(--accent);margin-top:8px;font-family:Rubik,sans-serif;">${_isEnSC ? 'You can continue from here' : 'ניתן להמשיך את השיחה מכאן'}</div>`;
-  chat.appendChild(div);
-
-  // Restore theorist selection
-  if (mem.theorists && mem.theorists.length > 0) {
-    activeTheorists = [];
-    document.querySelectorAll('.theorist-tag[data-key]').forEach(el => el.classList.remove('active'));
-    mem.theorists.forEach(t => {
-      activeTheorists.push(t);
-      const el = document.querySelector(`.theorist-tag[data-key="${t}"]`);
-      if (el) el.classList.add('active');
-    });
-  }
-  // Restore clinical mode (bypass consent modal — session already confirmed previously)
-  if (mem.clinical && !window.clinicalMode) { window.clinicalMode = true; activateClinicalModeUI(true); }
-  else if (!mem.clinical && window.clinicalMode) activateClinicalModeUI(false);
-
-  // Set context so next message continues from here
-  conversationHistory = [{ role: 'user', content: mem.q || mem.summary },
-                         { role: 'assistant', content: mem.summary }];
-  chat.scrollTop = chat.scrollHeight;
-  updateReflectionBtn();
-  updateEndSessionBtn();
-  updateSessionTitle(true);
-  // Ensure input is visible after restoring a conversation
-  document.body.classList.remove('bw-selecting');
-}
-
-function sbLangToggle() {
-  const el = document.getElementById('sb-lang-expand');
-  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-
-function toggleUserMenu() {
-  const menu = document.getElementById('sb-user-menu');
-  if (!menu) return;
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
 
 // ── Mobile account menu (#bw-account-menu) — the phone stand-in for the hidden sidebar. ──
 function closeAccountMenu() {
@@ -7312,8 +6768,6 @@ function toggleAccountMenu() {
   const chatEl = document.getElementById('chat');
   const hasRendered = !!(chatEl && Array.from(chatEl.children)
     .some(c => c.id !== 'welcome' && c.id !== 'bw-end-session-cta'));
-  const pdfItem = document.getElementById('bw-acct-pdf');
-  if (pdfItem) pdfItem.style.display = hasRendered ? '' : 'none';
   // Drop any section whose items are all hidden (e.g. patient, no conversation → empty "Tools").
   menu.querySelectorAll('.bw-acct-section').forEach(sec => {
     const anyVisible = Array.from(sec.querySelectorAll('.sb-item'))
@@ -7332,44 +6786,18 @@ document.addEventListener('click', function(e) {
   menu.style.display = 'none';
 });
 
-function toggleLangMenuSB(e) {
-  if (e) e.stopPropagation();
-  const menu = document.getElementById('lang-menu-sb');
-  if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
-
 function selectLangSB(code, flag, name) {
   selectLang(code, flag, name);
-  const lf = document.getElementById('sb-lang-flag');
-  const ll = document.getElementById('sb-lang-label');
-  if (lf) lf.textContent = flag;
-  if (ll) ll.textContent = name;
-  const expand = document.getElementById('sb-lang-expand');
-  if (expand) expand.style.display = 'none';
   const umenu = document.getElementById('sb-user-menu');
   if (umenu) umenu.style.display = 'none';
 }
 
 function toggleWebSearch() {
   window.webSearch = !window.webSearch;
-  const btn = document.getElementById('sb-websearch-btn');
-  const isHe = !selectedLang || selectedLang.code === 'he';
-  const text = isHe
-    ? (window.webSearch ? 'חיפוש רשת: דלוק' : 'חיפוש רשת: כבוי')
-    : (window.webSearch ? 'Web search: on' : 'Web search: off');
-  // Class, not ID: the mobile avatar menu will carry a second copy of this label,
-  // and two elements cannot share an ID — update every instance.
-  document.querySelectorAll('.js-websearch-label').forEach(el => { el.textContent = text; });
-  if (btn) btn.style.color = window.webSearch ? 'var(--accent)' : '';
-}
-
-function toggleSBRecent() {
-  const container = document.getElementById('sb-recent');
-  const arrow = document.getElementById('sb-recent-arrow');
-  if (!container) return;
-  const isOpen = container.style.display !== 'none';
-  container.style.display = isOpen ? 'none' : 'flex';
-  if (arrow) arrow.textContent = isOpen ? '▶' : '▼';
+  // השורה בבעלות React · כאן רק הופכים את הערך ומודיעים. הכתיבה הישירה
+  // שהייתה כאן דרסה את התווית במחרוזת מחוברת ולא נגעה בערך שבקצה, ולכן
+  // השניים סתרו זה את זה על אותה שורה (פריט 17).
+  try { window.dispatchEvent(new CustomEvent('bw-websearch', { detail: window.webSearch })); } catch (e) { /* noop */ }
 }
 
 // מצב הכיווץ עבר לבעלות React ב-page.tsx, שמחליף כאן את window.toggleSidebar באפקט
@@ -7383,8 +6811,6 @@ function toggleSidebar() {
   localStorage.setItem('sidebar_collapsed', sb.classList.contains('collapsed'));
 }
 
-
-
 function openSettings() {
   const existing = document.getElementById('settings-modal');
   if (existing) { existing.style.display = 'flex'; loadSettingsForm(); if (selectedLang?.code !== 'he') applyUITranslation(selectedLang.code); return; }
@@ -7393,48 +6819,57 @@ function openSettings() {
   modal.id = 'settings-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(45,36,32,0.4);display:flex;align-items:center;justify-content:center;';
   modal.innerHTML = `
-    <div id="st-modal-inner" style="background:var(--bg);border-radius:16px;padding:32px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;direction:${selectedLang?.dir || (selectedLang?.code === 'he' ? 'rtl' : 'ltr')};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
-      <h2 id="st-title" style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--accent);margin-bottom:4px;">הגדרות משתמש</h2>
-      <p id="st-sub" style="font-size:12px;color:var(--muted);margin-bottom:24px;">המידע שתשתפי ישפיע על האופן שבו התיאורטיקאים פונים אלייך</p>
+    <div id="st-modal-inner" style="background:var(--bg);border-radius:8px;padding:32px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;direction:${selectedLang?.dir || (selectedLang?.code === 'he' ? 'rtl' : 'ltr')};box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <h2 id="st-title" style="font-family:Assistant,sans-serif;font-size:26px;font-weight:300;color:var(--text);margin-bottom:4px;">הגדרות משתמש</h2>
+      <p id="st-sub" style="font-size:15px;color:var(--muted);margin-bottom:24px;">המידע שתשתפי ישפיע על האופן שבו התיאורטיקאים פונים אלייך</p>
 
       <div style="display:flex;flex-direction:column;gap:16px;">
 
-        <div>
-          <label id="st-name-label" style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">שם / כינוי</label>
-          <input id="pref-name" type="text" id="pref-name-input" placeholder="איך לפנות אלייך?" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;"/>
+        <div id="pref-avatar-row" style="display:flex;align-items:center;gap:16px;">
+          <div id="pref-avatar-preview" style="width:64px;height:64px;border-radius:50%;background:var(--accent-deep, #A8475F);color:#fff;font-size:24px;font-weight:600;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;"></div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <button type="button" id="pref-avatar-pick" style="background:none;border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:14px;cursor:pointer;">העלאת תמונה</button>
+            <button type="button" id="pref-avatar-clear" style="background:none;border:none;color:var(--muted);padding:0;font-family:var(--font-assistant),sans-serif;font-size:13px;cursor:pointer;text-align:start;text-decoration:underline;">הסרה</button>
+          </div>
+          <input type="file" id="pref-avatar-file" accept="image/*" style="display:none"/>
         </div>
 
         <div>
-          <label id="st-gender-label" style="font-size:12px;color:var(--muted);display:block;margin-bottom:8px;">לשון פנייה</label>
+          <label id="st-name-label" style="font-size:15px;color:var(--muted);display:block;margin-bottom:4px;">שם / כינוי</label>
+          <input id="pref-name" type="text" id="pref-name-input" placeholder="איך לפנות אלייך?" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;"/>
+        </div>
+
+        <div>
+          <label id="st-gender-label" style="font-size:15px;color:var(--muted);display:block;margin-bottom:8px;">לשון פנייה</label>
           <div style="display:flex;gap:8px;">
-            <div class="pref-btn" data-group="gender" data-val="female" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;" id="st-female">נקבה</div>
-            <div class="pref-btn" data-group="gender" data-val="male" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;" id="st-male">זכר</div>
-            <div class="pref-btn" data-group="gender" data-val="neutral" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;" id="st-neutral">ניטרלי</div>
+            <div class="pref-btn" data-group="gender" data-val="female" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-female">נקבה</div>
+            <div class="pref-btn" data-group="gender" data-val="male" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-male">זכר</div>
+            <div class="pref-btn" data-group="gender" data-val="neutral" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-neutral">ניטרלי</div>
           </div>
         </div>
 
         <div>
-          <label id="st-level-label" style="font-size:12px;color:var(--muted);display:block;margin-bottom:8px;">רקע בפסיכואנליזה</label>
+          <label id="st-level-label" style="font-size:15px;color:var(--muted);display:block;margin-bottom:8px;">רקע בפסיכואנליזה</label>
           <div style="display:flex;gap:8px;">
-            <div class="pref-btn" data-group="level" data-val="beginner" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;" id="st-beginner">מתחיל/ה</div>
-            <div class="pref-btn" data-group="level" data-val="intermediate" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;" id="st-intermediate">בינוני/ת</div>
-            <div class="pref-btn" data-group="level" data-val="advanced" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;" id="st-advanced">מנוסה</div>
+            <div class="pref-btn" data-group="level" data-val="beginner" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-beginner">מתחיל/ה</div>
+            <div class="pref-btn" data-group="level" data-val="intermediate" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-intermediate">בינוני/ת</div>
+            <div class="pref-btn" data-group="level" data-val="advanced" onclick="selectPref(this)" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-advanced">מנוסה</div>
           </div>
         </div>
 
         <div>
-          <label id="st-purpose-label" style="font-size:12px;color:var(--muted);display:block;margin-bottom:8px;">מה מביא אותך לכאן?</label>
+          <label id="st-purpose-label" style="font-size:15px;color:var(--muted);display:block;margin-bottom:8px;">מה מביא אותך לכאן?</label>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <div class="pref-btn" data-group="purpose" data-val="curiosity" onclick="selectPref(this)" style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;" id="st-curiosity">סקרנות</div>
-            <div class="pref-btn" data-group="purpose" data-val="study" onclick="selectPref(this)" style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;" id="st-study">לימודים</div>
-            <div class="pref-btn" data-group="purpose" data-val="clinical" onclick="selectPref(this)" style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;" id="st-clinical">עבודה קלינית</div>
-            <div class="pref-btn" data-group="purpose" data-val="personal" onclick="selectPref(this)" style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;" id="st-personal">חיפוש אישי</div>
+            <div class="pref-btn" data-group="purpose" data-val="curiosity" onclick="selectPref(this)" style="padding:7px 12px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-curiosity">סקרנות</div>
+            <div class="pref-btn" data-group="purpose" data-val="study" onclick="selectPref(this)" style="padding:7px 12px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-study">לימודים</div>
+            <div class="pref-btn" data-group="purpose" data-val="clinical" onclick="selectPref(this)" style="padding:7px 12px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-clinical">עבודה קלינית</div>
+            <div class="pref-btn" data-group="purpose" data-val="personal" onclick="selectPref(this)" style="padding:7px 12px;border:1px solid var(--border);border-radius:6px;font-size:15px;cursor:pointer;" id="st-personal">חיפוש אישי</div>
           </div>
         </div>
 
         <div>
-          <label id="st-bio-label" style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">משהו שתרצי שהתיאורטיקאים ידעו עלייך <span style="opacity:0.6;">(אופציונלי)</span></label>
-          <textarea id="pref-context" placeholder="למשל: אני מטפלת בהכשרה, מתעניינת בקשר בין אמנות לתיאוריה..." style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none;resize:vertical;min-height:80px;box-sizing:border-box;"></textarea>
+          <label id="st-bio-label" style="font-size:15px;color:var(--muted);display:block;margin-bottom:4px;">משהו שתרצי שהתיאורטיקאים ידעו עלייך <span style="opacity:0.6;">(אופציונלי)</span></label>
+          <textarea id="pref-context" placeholder="למשל: אני מטפלת בהכשרה, מתעניינת בקשר בין אמנות לתיאוריה..." style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;background:var(--surface);color:var(--text);outline:none;resize:vertical;min-height:80px;box-sizing:border-box;"></textarea>
         </div>
 
         <!-- "מי אתה/את?" הוסר 21.08. למטפל/ת הוא מיותר — הפרסונה נקבעה בכניסה ואושרה
@@ -7447,43 +6882,43 @@ function openSettings() {
         <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
             <div>
-              <div id="st-timer-label" style="font-size:13px;color:var(--text);font-weight:400;">טיימר לסשן</div>
-              <div id="st-timer-desc" style="font-size:11px;color:var(--muted);margin-top:2px;">50 דקות · מסגרת טיפולית</div>
+              <div id="st-timer-label" style="font-size:16px;color:var(--text);font-weight:400;">טיימר לסשן</div>
+              <div id="st-timer-desc" style="font-size:13px;color:var(--muted);margin-top:2px;">50 דקות · מסגרת טיפולית</div>
             </div>
             <label class="timer-toggle" style="position:relative;display:inline-block;width:40px;height:22px;cursor:pointer;">
               <input type="checkbox" id="pref-timer-enabled" onchange="toggleTimerWarningVisibility()" style="opacity:0;width:0;height:0;position:absolute;">
-              <span style="position:absolute;inset:0;background:var(--border);border-radius:22px;transition:background 0.2s;" id="timer-toggle-track"></span>
+              <span style="position:absolute;inset:0;background:var(--border);border-radius:6px;transition:background 0.2s;" id="timer-toggle-track"></span>
               <span style="position:absolute;top:3px;right:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);" id="timer-toggle-thumb"></span>
             </label>
           </div>
           <div id="timer-warning-row" style="display:none;align-items:center;gap:8px;flex-direction:${selectedLang?.code === 'he' ? 'row-reverse' : 'row'};">
-            <label id="st-timer-warn-pre" style="font-size:12px;color:var(--muted);">דקות לפני הסיום</label>
-            <input id="pref-timer-warning" type="number" min="1" max="20" value="5" style="width:52px;padding:5px 8px;border:1px solid var(--border);border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none;text-align:center;">
-            <label id="st-timer-warn-suf" style="font-size:12px;color:var(--muted);">אזהרה</label>
+            <label id="st-timer-warn-pre" style="font-size:15px;color:var(--muted);">דקות לפני הסיום</label>
+            <input id="pref-timer-warning" type="number" min="1" max="20" value="5" style="width:52px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;background:var(--surface);color:var(--text);outline:none;text-align:center;">
+            <label id="st-timer-warn-suf" style="font-size:15px;color:var(--muted);">אזהרה</label>
           </div>
         </div>
 
       </div>
 
         <div id="st-intake-row" style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;display:none;align-items:center;justify-content:space-between;">
-          <div id="st-intake-done" style="font-size:13px;color:var(--accent);">שיחת היכרות הושלמה ✓</div>
-          <button id="st-intake-reset" onclick="resetIntake()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:11px;cursor:pointer;">להתחיל מחדש</button>
+          <div id="st-intake-done" style="font-size:16px;color:var(--accent);">שיחת היכרות הושלמה ✓</div>
+          <button id="st-intake-reset" onclick="resetIntake()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:13px;cursor:pointer;">להתחיל מחדש</button>
         </div>
 
         <div id="st-interpret-section" style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;">
             <div style="flex:1;">
-              <div style="font-size:13px;color:var(--text);font-weight:400;margin-bottom:2px;">זיכרון פרשני</div>
-              <div id="st-interpret-count" style="font-size:11px;color:var(--muted);"></div>
+              <div style="font-size:16px;color:var(--text);font-weight:400;margin-bottom:2px;">זיכרון פרשני</div>
+              <div id="st-interpret-count" style="font-size:13px;color:var(--muted);"></div>
             </div>
-            <button onclick="clearInterpretiveMemory()" id="st-interpret-clear" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">מחק</button>
+            <button onclick="clearInterpretiveMemory()" id="st-interpret-clear" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:13px;cursor:pointer;white-space:nowrap;flex-shrink:0;">מחק</button>
           </div>
-          <p style="font-size:11px;color:var(--muted);line-height:1.7;margin:0;">אחרי כל שיחה נרשמות שתי שורות: מה נגע, ומה כדאי להמשיך ממנו. הן משמשות הקשר בשיחה הבאה, כדי שלא תתחילי מאפס. המידע נשמר בדפדפן שלך בלבד ואנחנו לא שומרים אותו אצלנו.</p>
+          <p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0;">אחרי כל שיחה נרשמות שתי שורות: מה נגע, ומה כדאי להמשיך ממנו. הן משמשות הקשר בשיחה הבאה, כדי שלא תתחילי מאפס. המידע נשמר בדפדפן שלך בלבד ואנחנו לא שומרים אותו אצלנו.</p>
         </div>
 
       <div style="display:flex;justify-content:space-between;margin-top:24px;">
-        <button onclick="saveSettings()" style="background:var(--accent);border:none;color:#fff;padding:10px 24px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;" id="st-save">שמור</button>
-        <button onclick="document.getElementById('settings-modal').style.display='none'" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;" id="st-close">סגור</button>
+        <button onclick="saveSettings()" style="background:var(--accent-deep);border:none;color:#fff;padding:10px 24px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;cursor:pointer;" id="st-save">שמור</button>
+        <button onclick="document.getElementById('settings-modal').style.display='none'" style="background:none;border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;cursor:pointer;" id="st-close">סגור</button>
       </div>
     </div>`;
 
@@ -7530,8 +6965,99 @@ function applyPersonaToSettings() {
   if (bio && ph) bio.placeholder = ph;
 }
 
+
+// אווטאר המשתמשת · תמונה או האות הראשונה של השם. התמונה נשמרת מוקטנת
+// ל-256 פיקסלים בתוך user_prefs, באותו אחסון מקומי שבו יושב כל השאר.
+// אין כאן העלאה לשרת, ולכן היא נשארת על המכשיר הזה כמו הכתיבה עצמה.
+const BW_AVATAR_PX = 256;
+
+function bwAvatarLetter() {
+  try {
+    const p = JSON.parse(localStorage.getItem('user_prefs') || '{}');
+    const src = (p.name || '').trim() || (window._userEmail || '');
+    if (src) return src.charAt(0).toUpperCase();
+  } catch (e) { /* noop */ }
+  return 'א';
+}
+
+function bwGetAvatar() {
+  try { return JSON.parse(localStorage.getItem('user_prefs') || '{}').avatar || ''; }
+  catch (e) { return ''; }
+}
+
+function bwRenderAvatarPreview() {
+  const box = document.getElementById('pref-avatar-preview');
+  if (!box) return;
+  const src = bwGetAvatar();
+  const nameNow = (document.getElementById('pref-name')?.value || '').trim();
+  box.innerHTML = src
+    ? `<img src="${src}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`
+    : (nameNow ? nameNow.charAt(0).toUpperCase() : bwAvatarLetter());
+  const clear = document.getElementById('pref-avatar-clear');
+  if (clear) clear.style.display = src ? '' : 'none';
+}
+
+// חיתוך מרכזי לריבוע והקטנה · קובץ מצלמה שלם היה מפוצץ את מכסת האחסון
+function bwReadAvatarFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!file || !/^image\//.test(file.type)) { reject(new Error('not an image')); return; }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('read failed'));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('decode failed'));
+      img.onload = () => {
+        const side = Math.min(img.width, img.height);
+        const sx = (img.width - side) / 2, sy = (img.height - side) / 2;
+        const c = document.createElement('canvas');
+        c.width = c.height = BW_AVATAR_PX;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, sx, sy, side, side, 0, 0, BW_AVATAR_PX, BW_AVATAR_PX);
+        resolve(c.toDataURL('image/jpeg', 0.85));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function bwSetAvatar(dataUrl) {
+  try {
+    const p = JSON.parse(localStorage.getItem('user_prefs') || '{}');
+    if (dataUrl) p.avatar = dataUrl; else delete p.avatar;
+    localStorage.setItem('user_prefs', JSON.stringify(p));
+  } catch (e) {
+    alert('לא הצלחנו לשמור את התמונה. ייתכן שהאחסון בדפדפן מלא.');
+    return false;
+  }
+  bwRenderAvatarPreview();
+  try { window.dispatchEvent(new CustomEvent('bw-avatar', { detail: dataUrl || '' })); } catch (e) { /* noop */ }
+  return true;
+}
+
+function bwWireAvatarRow() {
+  const pick = document.getElementById('pref-avatar-pick');
+  const file = document.getElementById('pref-avatar-file');
+  const clear = document.getElementById('pref-avatar-clear');
+  const nameEl = document.getElementById('pref-name');
+  if (!pick || !file) return;
+  pick.addEventListener('click', () => file.click());
+  file.addEventListener('change', async () => {
+    const f = file.files && file.files[0];
+    file.value = '';
+    if (!f) return;
+    try { bwSetAvatar(await bwReadAvatarFile(f)); }
+    catch (e) { alert('לא הצלחנו לקרוא את הקובץ. אפשר לנסות תמונה אחרת.'); }
+  });
+  if (clear) clear.addEventListener('click', () => bwSetAvatar(''));
+  // האות מתעדכנת בזמן הקלדת השם, כל עוד אין תמונה
+  if (nameEl) nameEl.addEventListener('input', () => { if (!bwGetAvatar()) bwRenderAvatarPreview(); });
+  bwRenderAvatarPreview();
+}
+
 function loadSettingsForm() {
   const prefs = JSON.parse(localStorage.getItem('user_prefs') || '{}');
+  bwWireAvatarRow();
   const nameEl = document.getElementById('pref-name');
   if (nameEl && prefs.name) nameEl.value = prefs.name;
   const ctxEl = document.getElementById('pref-context');
@@ -7582,7 +7108,11 @@ function loadSettingsForm() {
 }
 
 function saveSettings() {
+  // התמונה אינה שדה בטופס אלא נשמרת ברגע הבחירה, ולכן היא נשמרת כאן
+  // מפורשות: הבנייה מאפס הייתה מוחקת אותה בכל שמירה.
+  const _keepAvatar = bwGetAvatar();
   const prefs = {
+    ...(_keepAvatar ? { avatar: _keepAvatar } : {}),
     name: document.getElementById('pref-name')?.value.trim() || '',
     context: document.getElementById('pref-context')?.value.trim() || '',
     gender: document.querySelector('.pref-btn[data-group="gender"][style*="accent"]')?.getAttribute('data-val') || '',
@@ -7592,55 +7122,23 @@ function saveSettings() {
     timerWarningMinutes: parseInt(document.getElementById('pref-timer-warning')?.value) || 5,
   };
   localStorage.setItem('user_prefs', JSON.stringify(prefs));
+  // React מרנדר את השם ואת האווטאר בבר ובתפריט · הוא צריך לדעת שהשתנו
+  try { window.dispatchEvent(new CustomEvent('bw-prefs', { detail: prefs })); } catch (e) { /* noop */ }
 
   // Update sidebar username
   const sbName = document.getElementById('sb-user-name');
   if (sbName && prefs.name) sbName.textContent = prefs.name;
-  const sbAvatar = document.getElementById('sb-avatar');
-  if (sbAvatar && prefs.name) sbAvatar.textContent = prefs.name.charAt(0).toUpperCase();
 
   document.getElementById('settings-modal').style.display = 'none';
 }
 
-function updateSidebarMemories() {
-  const memories = loadMemory();
-  const container = document.getElementById('sb-recent');
-  if (!container) return;
-  const recent = memories.slice(-6).reverse();
-  const _tsb = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
-  if (recent.length === 0) {
-    container.innerHTML = `<div style="font-size:11px;color:var(--muted);padding:4px 14px;">${_tsb.noConversations || 'אין שיחות עדיין'}</div>`;
-    return;
-  }
-  const _sbLocale = (window._lang === 'en') ? 'en-US' : 'he-IL';
-  container.innerHTML = recent.map((m, i) => {
-    const date = new Date(m.ts).toLocaleDateString(_sbLocale);
-    const label = m.summary ? m.summary.slice(0,35) + '...' : (_tsb.savedConv || 'שיחה');
-    return `<div class="sb-item" onclick="restoreConversation(${memories.length - 1 - i})" title="${m.summary || ''}">
-      <span class="sb-icon" style="font-size:12px;">💬</span>
-      <span class="sb-label" style="font-size:12px;">${label}</span>
-    </div>`;
-  }).join('');
-  const sbCount = document.getElementById('sb-memory-count');
-  if (sbCount) sbCount.textContent = memories.length;
-  const memCount = document.getElementById('memory-count');
-  const _mcLang = window._lang || 'he';
-  const _mcT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[_mcLang]) || {};
-  if (memCount) memCount.textContent = `${memories.length} ${_mcT.memories || 'memories'}`;
-}
-
 // Init
 conversationHistory = loadConversation();
-updateMemoryCount();
 updateReflectionBtn();
 updateEndSessionBtn();
 tryInitSupabase();
 // Apply saved language on load (defaults to Hebrew)
 applyUITranslation(selectedLang.code);
-(function() {
-  const lf = document.getElementById('lang-flag'); if (lf) lf.textContent = selectedLang.flag;
-  const ll = document.getElementById('lang-label'); if (ll) ll.textContent = selectedLang.name;
-})();
 window.signIn = signIn;
 window.signUp = signUp;
 window.resetPassword = resetPassword;
@@ -7650,14 +7148,11 @@ window.resetPassword = resetPassword;
 // עבורם. השחזור אינו יכול לחיות כאן, כי React מרנדר את ‎#sidebar עם className משלו ומוחק כל
 // מחלקה שנוספה מבחוץ.
 (function() {
-  updateSidebarMemories();
   // Load user prefs
   const prefs = JSON.parse(localStorage.getItem('user_prefs') || '{}');
   if (prefs.name) {
     const sbName = document.getElementById('sb-user-name');
     if (sbName) sbName.textContent = prefs.name;
-    const sbAvatar = document.getElementById('sb-avatar');
-    if (sbAvatar) sbAvatar.textContent = prefs.name.charAt(0).toUpperCase();
   }
 })();
 
@@ -7671,8 +7166,6 @@ const LANGUAGES = [
   {code:'en',flag:'🇬🇧',name:'English'},
   {code:'he',flag:'🇮🇱',name:'עברית'},
 ];
-
-
 
 // Close memory panel on backdrop click
 document.getElementById('memory-panel')?.addEventListener('click', function(e) {
@@ -7736,14 +7229,14 @@ function createTimerDisplay() {
   el.title = _timerT.timerTooltip || 'Time remaining in session';
   el.style.cssText = [
     'display:flex;align-items:center;gap:8px;flex-shrink:0',
-    'font-family:"Rubik",sans-serif;font-size:12px;color:var(--muted)',
+    'font-family:var(--font-assistant),sans-serif;font-size:15px;color:var(--muted)',
     'transition:color 0.4s;direction:ltr;padding:0 4px'
   ].join(';');
   el.innerHTML = `
-    <div style="width:44px;height:3px;background:var(--border);border-radius:3px;overflow:hidden;">
-      <div id="timer-bar-fill" style="height:100%;width:100%;background:var(--accent);border-radius:3px;transition:width 1s linear;"></div>
+    <div style="width:44px;height:3px;background:var(--border);border-radius:4px;overflow:hidden;">
+      <div id="timer-bar-fill" style="height:100%;width:100%;background:var(--accent);border-radius:4px;transition:width 1s linear;"></div>
     </div>
-    <span id="timer-time-text" style="opacity:0;transition:opacity 0.2s;font-size:11px;">50:00</span>
+    <span id="timer-time-text" style="opacity:0;transition:opacity 0.2s;font-size:13px;">50:00</span>
   `;
   el.addEventListener('mouseenter', () => {
     const t = document.getElementById('timer-time-text');
@@ -7755,8 +7248,7 @@ function createTimerDisplay() {
   });
 
   // Insert into session-actions (next to the sofa/clinical button)
-  const sessionActions = document.querySelector('.session-actions')
-    || document.getElementById('clinical-btn')?.parentElement;
+  const sessionActions = document.querySelector('.session-actions');
   if (sessionActions) {
     sessionActions.insertBefore(el, sessionActions.firstChild);
   } else {
@@ -7808,8 +7300,8 @@ function showTimerWarning(minutes) {
   const w = document.createElement('div');
   w.style.cssText = [
     'position:fixed;top:54px;left:50%;transform:translateX(-50%)',
-    'background:var(--surface);border:1px solid var(--accent-dim);border-radius:10px',
-    'padding:10px 20px;font-family:"Rubik",sans-serif;font-size:13px',
+    'background:var(--surface);border:1px solid var(--accent-dim);border-radius:6px',
+    'padding:10px 20px;font-family:var(--font-assistant),sans-serif;font-size:16px',
     'color:var(--accent);z-index:200;box-shadow:0 4px 16px rgba(196,96,122,0.12)',
     'animation:fadeInDown 0.3s ease;white-space:nowrap'
   ].join(';');
@@ -7828,11 +7320,11 @@ function showSessionEndScreen() {
   screen.id = 'session-end-screen';
   screen.style.cssText = 'position:fixed;inset:0;z-index:400;background:rgba(45,36,32,0.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
   screen.innerHTML = `
-    <div style="background:var(--bg);border-radius:16px;padding:40px 36px;max-width:360px;width:90%;text-align:center;direction:rtl;box-shadow:0 16px 48px rgba(196,96,122,0.15);">
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:10px;">הסשן הסתיים</h3>
-      <p style="font-size:13px;color:var(--muted);line-height:1.9;margin-bottom:28px;">50 הדקות הגיעו לקצן.<br>המסגרת הטיפולית חשובה גם כאן.</p>
-      <button onclick="acknowledgeSessionEnd()" style="background:var(--accent);border:none;color:#fff;padding:11px 0;border-radius:20px;font-size:13px;font-family:'Rubik',sans-serif;cursor:pointer;width:100%;margin-bottom:10px;">הבנתי · אחזור מחר</button>
-      <button onclick="continueAfterEnd()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:9px 0;border-radius:20px;font-size:12px;font-family:'Rubik',sans-serif;cursor:pointer;width:100%;">אני בוחר/ת להמשיך עכשיו</button>
+    <div style="background:var(--bg);border-radius:8px;padding:40px 36px;max-width:360px;width:90%;text-align:center;direction:rtl;box-shadow:0 16px 48px rgba(196,96,122,0.15);">
+      <h3 style="font-family:Assistant,sans-serif;font-size:26px;font-weight:300;color:var(--text);margin-bottom:10px;">הסשן הסתיים</h3>
+      <p style="font-size:16px;color:var(--muted);line-height:1.9;margin-bottom:28px;">50 הדקות הגיעו לקצן.<br>המסגרת הטיפולית חשובה גם כאן.</p>
+      <button onclick="acknowledgeSessionEnd()" style="background:var(--accent-deep);border:none;color:#fff;padding:11px 0;border-radius:6px;font-size:16px;font-family:var(--font-assistant),sans-serif;cursor:pointer;width:100%;margin-bottom:10px;">הבנתי · אחזור מחר</button>
+      <button onclick="continueAfterEnd()" style="background:none;border:1px solid var(--border);color:var(--muted);padding:9px 0;border-radius:6px;font-size:15px;font-family:var(--font-assistant),sans-serif;cursor:pointer;width:100%;">אני בוחר/ת להמשיך עכשיו</button>
     </div>
   `;
   document.body.appendChild(screen);
@@ -8106,7 +7598,7 @@ async function runSupervisionPanel() {
 
   const resultsEl = document.getElementById('sup-results');
   if (resultsEl) {
-    resultsEl.innerHTML = `<div style="text-align:center;color:#7a5080;padding:20px;font-size:13px;">${_supT.supLoading || 'Preparing clinical supervision...'}</div>`;
+    resultsEl.innerHTML = `<div style="text-align:center;color:#7a5080;padding:20px;font-size:16px;">${_supT.supLoading || 'Preparing clinical supervision...'}</div>`;
   }
 
   try {
@@ -8120,14 +7612,14 @@ async function runSupervisionPanel() {
       resultsEl.innerHTML = '';
       if (report.error) {
         resultsEl.innerHTML = `
-          <div style="padding:16px;background:#fff5f5;border:1px solid #fca5a5;border-radius:8px;direction:rtl;">
-            <div style="font-size:13px;font-weight:600;color:#b91c1c;margin-bottom:6px;">⚠️ ${_supT.supFailHeader || 'Supervision could not be created'}</div>
-            <div style="font-size:12px;color:#7f1d1d;line-height:1.7;">
+          <div style="padding:16px;background:#fff5f5;border:1px solid #fca5a5;border-radius:6px;direction:rtl;">
+            <div style="font-size:16px;font-weight:600;color:#b91c1c;margin-bottom:6px;">⚠️ ${_supT.supFailHeader || 'Supervision could not be created'}</div>
+            <div style="font-size:15px;color:#7f1d1d;line-height:1.7;">
               ${report.error === 'parse_failed'
                 ? (_supT.supParseErr || 'The model did not return a valid response. Please try again.')
                 : `${_supT.supNetErr || 'Error'}: ${report.error}`}
             </div>
-            ${report.raw ? `<details style="margin-top:8px;"><summary style="font-size:11px;color:#aaa;cursor:pointer;">raw</summary><pre style="font-size:10px;color:#888;white-space:pre-wrap;margin-top:4px;">${report.raw.slice(0,400)}</pre></details>` : ''}
+            ${report.raw ? `<details style="margin-top:8px;"><summary style="font-size:13px;color:#aaa;cursor:pointer;">raw</summary><pre style="font-size:13px;color:#888;white-space:pre-wrap;margin-top:4px;">${report.raw.slice(0,400)}</pre></details>` : ''}
           </div>`;
       } else {
         resultsEl.appendChild(buildSupervisionCard(report, theorist));
@@ -8135,7 +7627,7 @@ async function runSupervisionPanel() {
       }
     }
   } catch (err) {
-    if (resultsEl) resultsEl.innerHTML = `<div style="color:#b91c1c;padding:12px;font-size:13px;">${_supT.supNetErr || 'Network error'}: ${err?.message || (_supT.supUnknownErr || 'Unknown error')}</div>`;
+    if (resultsEl) resultsEl.innerHTML = `<div style="color:#b91c1c;padding:12px;font-size:16px;">${_supT.supNetErr || 'Network error'}: ${err?.message || (_supT.supUnknownErr || 'Unknown error')}</div>`;
   } finally {
     if (btn) { btn.textContent = _supT.supRunBtn || 'Run supervision'; btn.disabled = false; }
   }
@@ -8156,42 +7648,42 @@ function buildSupervisionCard(r, theoristLabel) {
 
   const missedHTML = (r.missed_moments || []).map(m => `
     <div style="margin-bottom:10px;padding:10px 14px;background:#fff;border-right:3px solid #c4607a;border-radius:0 6px 6px 0;">
-      <div style="font-size:11px;color:#c4607a;font-weight:600;margin-bottom:4px;">רגע שהוחמץ</div>
-      <div style="font-size:12px;color:#555;font-style:italic;margin-bottom:5px;">"${m.patient_quote || ''}"</div>
-      <div style="font-size:12px;color:#444;margin-bottom:4px;"><strong>מה היה בזה:</strong> ${m.what_was_in_it || ''}</div>
-      <div style="font-size:12px;color:#2d8a5e;"><strong>אפשרות:</strong> ${m.alternative || ''}</div>
+      <div style="font-size:13px;color:#c4607a;font-weight:600;margin-bottom:4px;">רגע שהוחמץ</div>
+      <div style="font-size:15px;color:#555;margin-bottom:5px;">"${m.patient_quote || ''}"</div>
+      <div style="font-size:15px;color:#444;margin-bottom:4px;"><strong>מה היה בזה:</strong> ${m.what_was_in_it || ''}</div>
+      <div style="font-size:15px;color:#2d8a5e;"><strong>אפשרות:</strong> ${m.alternative || ''}</div>
     </div>`).join('');
 
   const landedHTML = (r.what_landed || []).map(s =>
-    `<div style="font-size:12px;color:#2d8a5e;padding:4px 0;border-bottom:1px solid #e8f5ed;">✓ ${s}</div>`
+    `<div style="font-size:15px;color:#2d8a5e;padding:4px 0;border-bottom:1px solid #e8f5ed;">✓ ${s}</div>`
   ).join('');
 
   const card = document.createElement('div');
-  card.style.cssText = 'border:1px solid #d8c8e0;border-radius:10px;overflow:hidden;direction:rtl;';
+  card.style.cssText = 'border:1px solid #d8c8e0;border-radius:6px;overflow:hidden;direction:rtl;';
   card.innerHTML = `
     <div style="background:#5b3a5e;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
-      <span style="color:rgba(255,255,255,0.8);font-size:13px;">⚲ פיקוח קליני — ${name}</span>
-      <span style="padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(255,255,255,0.15);color:#fff;">
+      <span style="color:rgba(255,255,255,0.8);font-size:16px;">⚲ פיקוח קליני — ${name}</span>
+      <span style="padding:2px 10px;border-radius:6px;font-size:15px;font-weight:600;background:rgba(255,255,255,0.15);color:#fff;">
         ${OVERALL_LABEL[overall] || overall}
       </span>
     </div>
     <div style="padding:14px 16px;background:#faf7fc;">
       <div style="display:flex;gap:8px;margin-bottom:14px;">
-        <div style="flex:1;background:#fff;border:1px solid #e8e0ec;border-radius:8px;padding:10px 12px;text-align:center;">
-          <div style="font-size:10px;color:#aaa;margin-bottom:4px;">נאמנות לקול</div>
-          <div style="font-size:13px;font-weight:600;color:${FIDELITY_COLOR[fidelity] || '#888'};">${FIDELITY_LABEL[fidelity] || fidelity}</div>
+        <div style="flex:1;background:#fff;border:1px solid #e8e0ec;border-radius:6px;padding:10px 12px;text-align:center;">
+          <div style="font-size:13px;color:#aaa;margin-bottom:4px;">נאמנות לקול</div>
+          <div style="font-size:16px;font-weight:600;color:${FIDELITY_COLOR[fidelity] || '#888'};">${FIDELITY_LABEL[fidelity] || fidelity}</div>
         </div>
-        <div style="flex:1;background:#fff;border:1px solid #e8e0ec;border-radius:8px;padding:10px 12px;text-align:center;">
-          <div style="font-size:10px;color:#aaa;margin-bottom:4px;">עיתוי פרשני</div>
-          <div style="font-size:12px;font-weight:600;color:${OVERALL_COLOR[overall] || '#888'};">${TIMING_LABEL[timing] || timing}</div>
+        <div style="flex:1;background:#fff;border:1px solid #e8e0ec;border-radius:6px;padding:10px 12px;text-align:center;">
+          <div style="font-size:13px;color:#aaa;margin-bottom:4px;">עיתוי פרשני</div>
+          <div style="font-size:15px;font-weight:600;color:${OVERALL_COLOR[overall] || '#888'};">${TIMING_LABEL[timing] || timing}</div>
         </div>
       </div>
-      ${r.voice_fidelity?.notes ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;font-size:12px;color:#444;line-height:1.7;">${r.voice_fidelity.notes}</div>` : ''}
-      ${landedHTML ? `<div style="margin-bottom:14px;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">מה נחת</div>${landedHTML}</div>` : ''}
-      ${missedHTML ? `<div style="margin-bottom:14px;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">רגעים שהוחמצו</div>${missedHTML}</div>` : ''}
-      ${r.relational_field ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:4px;">השדה היחסי</div><div style="font-size:12px;color:#444;line-height:1.7;">${r.relational_field}</div></div>` : ''}
-      ${r.summary ? `<div style="margin-bottom:12px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:4px;">סיכום</div><div style="font-size:12px;color:#333;line-height:1.7;">${r.summary}</div></div>` : ''}
-      ${r.one_thing ? `<div style="padding:10px 14px;background:rgba(91,58,94,0.06);border-radius:6px;border-right:3px solid #5b3a5e;"><div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:4px;">דבר אחד לסשן הבא</div><div style="font-size:12px;color:#333;line-height:1.7;">${r.one_thing}</div></div>` : ''}
+      ${r.voice_fidelity?.notes ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;font-size:15px;color:#444;line-height:1.7;">${r.voice_fidelity.notes}</div>` : ''}
+      ${landedHTML ? `<div style="margin-bottom:14px;"><div style="font-size:13px;color:#aaa;font-weight:600;margin-bottom:6px;">מה נחת</div>${landedHTML}</div>` : ''}
+      ${missedHTML ? `<div style="margin-bottom:14px;"><div style="font-size:13px;color:#aaa;font-weight:600;margin-bottom:6px;">רגעים שהוחמצו</div>${missedHTML}</div>` : ''}
+      ${r.relational_field ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;"><div style="font-size:13px;color:#aaa;font-weight:600;margin-bottom:4px;">השדה היחסי</div><div style="font-size:15px;color:#444;line-height:1.7;">${r.relational_field}</div></div>` : ''}
+      ${r.summary ? `<div style="margin-bottom:12px;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #ede4e0;"><div style="font-size:13px;color:#aaa;font-weight:600;margin-bottom:4px;">סיכום</div><div style="font-size:15px;color:#333;line-height:1.7;">${r.summary}</div></div>` : ''}
+      ${r.one_thing ? `<div style="padding:10px 14px;background:rgba(91,58,94,0.06);border-radius:6px;border-right:3px solid #5b3a5e;"><div style="font-size:13px;color:#7a5080;font-weight:600;margin-bottom:4px;">דבר אחד לסשן הבא</div><div style="font-size:15px;color:#333;line-height:1.7;">${r.one_thing}</div></div>` : ''}
       <div id="sup-download-footer" style="margin-top:14px;padding-top:12px;border-top:1px solid #e8e0ec;text-align:left;"></div>
     </div>`;
 
@@ -8201,7 +7693,7 @@ function buildSupervisionCard(r, theoristLabel) {
     const _supDlT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
     const dlBtn = document.createElement('button');
     dlBtn.textContent = _supDlT.supDownloadBtn || '↓ Download supervision report';
-    dlBtn.style.cssText = 'background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;';
+    dlBtn.style.cssText = 'background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:13px;color:#7a5080;cursor:pointer;';
     dlBtn.addEventListener('click', () => downloadSupervisionReport(r, name));
     footer.appendChild(dlBtn);
   }
@@ -8240,26 +7732,26 @@ function downloadSupervisionReport(r, theoristLabel) {
 <title>דוח פיקוח קליני — ${name}</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #222; background: #fff; padding: 40px; max-width: 720px; margin: 0 auto; direction: rtl; }
-  h1 { font-size: 20px; color: #3a1f3d; margin-bottom: 4px; }
-  .meta { font-size: 12px; color: #888; margin-bottom: 24px; }
-  .badge { display: inline-block; padding: 3px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; color: #fff; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #222; background: #fff; padding: 40px; max-width: 720px; margin: 0 auto; direction: rtl; }
+  h1 { font-size: 22px; color: #3a1f3d; margin-bottom: 4px; }
+  .meta { font-size: 15px; color: #888; margin-bottom: 24px; }
+  .badge { display: inline-block; padding: 3px 12px; border-radius: 6px; font-size: 15px; font-weight: 600; color: #fff; }
   .badges { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-  .badge-box { background: #f5f0f7; border: 1px solid #ddd; border-radius: 8px; padding: 10px 14px; flex: 1; min-width: 140px; }
-  .badge-box .label { font-size: 10px; color: #aaa; font-weight: 600; margin-bottom: 4px; }
-  .badge-box .value { font-size: 14px; font-weight: 700; }
+  .badge-box { background: #f5f0f7; border: 1px solid #ddd; border-radius: 6px; padding: 10px 14px; flex: 1; min-width: 140px; }
+  .badge-box .label { font-size: 13px; color: #aaa; font-weight: 600; margin-bottom: 4px; }
+  .badge-box .value { font-size: 16px; font-weight: 700; }
   section { margin-bottom: 20px; }
-  section h2 { font-size: 12px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-  .landed { color: #2d8a5e; padding: 4px 0; border-bottom: 1px solid #e8f5ed; font-size: 12px; }
+  section h2 { font-size: 15px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+  .landed { color: #2d8a5e; padding: 4px 0; border-bottom: 1px solid #e8f5ed; font-size: 15px; }
   .missed { background: #fff5f7; border-right: 3px solid #c4607a; border-radius: 0 6px 6px 0; padding: 12px; margin-bottom: 10px; }
-  .missed-label { font-size: 10px; color: #c4607a; font-weight: 700; margin-bottom: 6px; }
-  .quote { font-style: italic; color: #555; font-size: 12px; margin-bottom: 6px; }
-  .alt { color: #2d8a5e; font-size: 12px; margin-top: 4px; }
-  .missed p { font-size: 12px; color: #444; margin-top: 4px; line-height: 1.6; }
-  .note-box { background: #f9f6fb; border: 1px solid #e0d4e8; border-radius: 6px; padding: 12px 14px; font-size: 12px; color: #444; line-height: 1.8; }
-  .one-thing { background: rgba(91,58,94,0.07); border-right: 3px solid #5b3a5e; border-radius: 0 6px 6px 0; padding: 12px 14px; font-size: 12px; color: #333; line-height: 1.8; }
-  .one-thing strong { display: block; font-size: 11px; color: #7a5080; margin-bottom: 5px; }
-  .footer { margin-top: 32px; font-size: 10px; color: #bbb; border-top: 1px solid #eee; padding-top: 10px; }
+  .missed-label { font-size: 13px; color: #c4607a; font-weight: 700; margin-bottom: 6px; }
+  .quote {  color: #555; font-size: 15px; margin-bottom: 6px; }
+  .alt { color: #2d8a5e; font-size: 15px; margin-top: 4px; }
+  .missed p { font-size: 15px; color: #444; margin-top: 4px; line-height: 1.6; }
+  .note-box { background: #f9f6fb; border: 1px solid #e0d4e8; border-radius: 6px; padding: 12px 14px; font-size: 15px; color: #444; line-height: 1.8; }
+  .one-thing { background: rgba(91,58,94,0.07); border-right: 3px solid #5b3a5e; border-radius: 0 6px 6px 0; padding: 12px 14px; font-size: 15px; color: #333; line-height: 1.8; }
+  .one-thing strong { display: block; font-size: 13px; color: #7a5080; margin-bottom: 5px; }
+  .footer { margin-top: 32px; font-size: 13px; color: #bbb; border-top: 1px solid #eee; padding-top: 10px; }
   @media print { body { padding: 20px; } }
 </style>
 </head>
@@ -8351,13 +7843,13 @@ async function _openSessionSummary() {
   ].join('');
 
   overlay.innerHTML = `
-    <div id="session-summary-box" style="background:#fff;border-radius:14px;width:580px;max-width:92vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:rtl;">
-      <div style="background:#3a2540;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:14px 14px 0 0;position:sticky;top:0;">
-        <span style="color:rgba(255,255,255,0.85);font-size:14px;">${document.getElementById('sidebar')?.classList.contains('persona-therapist') ? '◎ סיכום התייעצות' : '◎ סיכום סשן'} — ${theorist}</span>
-        <button id="ss-close-btn" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;line-height:1;">×</button>
+    <div id="session-summary-box" style="background:#fff;border-radius:8px;width:580px;max-width:92vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:rtl;">
+      <div style="background:#3a2540;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:8px 14px 0 0;position:sticky;top:0;">
+        <span style="color:rgba(255,255,255,0.85);font-size:16px;">${document.getElementById('sidebar')?.classList.contains('persona-therapist') ? '◎ סיכום התייעצות' : '◎ סיכום סשן'} — ${theorist}</span>
+        <button id="ss-close-btn" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:22px;cursor:pointer;line-height:1;">×</button>
       </div>
       <div id="session-summary-results" style="padding:20px;">
-        <div style="text-align:center;color:#aaa;font-size:13px;padding:30px 0;">מייצר סיכום קליני...</div>
+        <div style="text-align:center;color:#aaa;font-size:16px;padding:30px 0;">מייצר סיכום קליני...</div>
       </div>
     </div>`;
 
@@ -8379,9 +7871,9 @@ async function _openSessionSummary() {
       resultsEl.innerHTML = '';
       if (data.error) {
         resultsEl.innerHTML = `
-          <div style="padding:16px;background:#fff5f5;border:1px solid #fca5a5;border-radius:8px;direction:rtl;">
-            <div style="font-size:13px;font-weight:600;color:#b91c1c;margin-bottom:6px;">⚠️ הסיכום לא הצליח להיווצר</div>
-            <div style="font-size:12px;color:#7f1d1d;">המודל לא החזיר תשובה תקינה. נסה שוב.</div>
+          <div style="padding:16px;background:#fff5f5;border:1px solid #fca5a5;border-radius:6px;direction:rtl;">
+            <div style="font-size:16px;font-weight:600;color:#b91c1c;margin-bottom:6px;">⚠️ הסיכום לא הצליח להיווצר</div>
+            <div style="font-size:15px;color:#7f1d1d;">המודל לא החזיר תשובה תקינה. נסה שוב.</div>
           </div>`;
         return;
       }
@@ -8397,36 +7889,36 @@ async function _openSessionSummary() {
 
 function buildSummaryCard(s, theoristLabel) {
   const wrap = document.createElement('div');
-  wrap.style.cssText = 'font-size:13px;color:#333;line-height:1.8;';
+  wrap.style.cssText = 'font-size:16px;color:#333;line-height:1.8;';
 
   const themesHTML = (s.themes || []).map(t =>
-    `<span style="display:inline-block;background:#f0eaf5;border:1px solid #d4c2e0;border-radius:20px;padding:2px 12px;font-size:11px;color:#5b3a5e;margin:3px 2px;">${t}</span>`
+    `<span style="display:inline-block;background:#f0eaf5;border:1px solid #d4c2e0;border-radius:6px;padding:2px 12px;font-size:13px;color:#5b3a5e;margin:3px 2px;">${t}</span>`
   ).join('');
 
   const momentsHTML = (s.key_moments || []).map(m => `
     <div style="margin-bottom:10px;padding:10px 14px;background:#faf7fc;border-right:3px solid #9b7aab;border-radius:0 6px 6px 0;">
-      ${m.patient_quote ? `<div style="font-style:italic;color:#555;margin-bottom:5px;">"${m.patient_quote}"</div>` : ''}
-      <div style="font-size:12px;color:#444;">${m.clinical_significance || ''}</div>
+      ${m.patient_quote ? `<div style="color:#555;margin-bottom:5px;">"${m.patient_quote}"</div>` : ''}
+      <div style="font-size:15px;color:#444;">${m.clinical_significance || ''}</div>
     </div>`).join('');
 
   wrap.innerHTML = `
-    ${themesHTML ? `<div style="margin-bottom:16px;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">נושאים מרכזיים</div>${themesHTML}</div>` : ''}
-    ${momentsHTML ? `<div style="margin-bottom:16px;"><div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">רגעים קליניים מרכזיים</div>${momentsHTML}</div>` : ''}
-    ${s.what_opened ? `<div style="margin-bottom:14px;padding:10px 14px;background:#f0faf3;border-radius:6px;border:1px solid #c3e6cb;"><div style="font-size:11px;color:#2d8a5e;font-weight:600;margin-bottom:4px;">מה נפתח בסשן זה</div><div style="font-size:12px;color:#333;">${s.what_opened}</div></div>` : ''}
-    ${s.what_remained ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff9f0;border-radius:6px;border:1px solid #f5c97a;"><div style="font-size:11px;color:#92600a;font-weight:600;margin-bottom:4px;">מה נותר פתוח</div><div style="font-size:12px;color:#333;">${s.what_remained}</div></div>` : ''}
-    ${s.theorist_approach ? `<div style="margin-bottom:14px;padding:10px 14px;background:#f7f5fb;border-radius:6px;border:1px solid #d8c8e0;"><div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:4px;">הגישה הטיפולית</div><div style="font-size:12px;color:#333;">${s.theorist_approach}</div></div>` : ''}
-    ${s.next_session_focus ? `<div style="padding:10px 14px;background:rgba(58,37,64,0.07);border-radius:6px;border-right:3px solid #3a2540;"><div style="font-size:11px;color:#3a2540;font-weight:600;margin-bottom:4px;">המוקד לסשן הבא</div><div style="font-size:12px;color:#333;font-weight:500;">${s.next_session_focus}</div></div>` : ''}
+    ${themesHTML ? `<div style="margin-bottom:16px;"><div style="font-size:13px;color:#aaa;font-weight:600;margin-bottom:6px;">נושאים מרכזיים</div>${themesHTML}</div>` : ''}
+    ${momentsHTML ? `<div style="margin-bottom:16px;"><div style="font-size:13px;color:#aaa;font-weight:600;margin-bottom:6px;">רגעים קליניים מרכזיים</div>${momentsHTML}</div>` : ''}
+    ${s.what_opened ? `<div style="margin-bottom:14px;padding:10px 14px;background:#f0faf3;border-radius:6px;border:1px solid #c3e6cb;"><div style="font-size:13px;color:#2d8a5e;font-weight:600;margin-bottom:4px;">מה נפתח בסשן זה</div><div style="font-size:15px;color:#333;">${s.what_opened}</div></div>` : ''}
+    ${s.what_remained ? `<div style="margin-bottom:14px;padding:10px 14px;background:#fff9f0;border-radius:6px;border:1px solid #f5c97a;"><div style="font-size:13px;color:#92600a;font-weight:600;margin-bottom:4px;">מה נותר פתוח</div><div style="font-size:15px;color:#333;">${s.what_remained}</div></div>` : ''}
+    ${s.theorist_approach ? `<div style="margin-bottom:14px;padding:10px 14px;background:#f7f5fb;border-radius:6px;border:1px solid #d8c8e0;"><div style="font-size:13px;color:#7a5080;font-weight:600;margin-bottom:4px;">הגישה הטיפולית</div><div style="font-size:15px;color:#333;">${s.theorist_approach}</div></div>` : ''}
+    ${s.next_session_focus ? `<div style="padding:10px 14px;background:rgba(58,37,64,0.07);border-radius:6px;border-right:3px solid #3a2540;"><div style="font-size:13px;color:#3a2540;font-weight:600;margin-bottom:4px;">המוקד לסשן הבא</div><div style="font-size:15px;color:#333;font-weight:500;">${s.next_session_focus}</div></div>` : ''}
     ${!document.getElementById('sidebar')?.classList.contains('persona-therapist') ? `
     <div style="margin-top:14px;padding:12px 14px;background:#faf7fc;border-radius:6px;border:1px dashed #c4b0cc;">
-      <div style="font-size:11px;color:#7a5080;font-weight:600;margin-bottom:6px;">מה אני רוצה להביא לפגישה הבאה</div>
-      <textarea id="ss-next-session-note" placeholder="כתוב/י כאן בחופשיות..." style="width:100%;min-height:60px;padding:8px 10px;border:1px solid #d4c2e0;border-radius:6px;font-family:'Rubik',sans-serif;font-size:12px;color:#333;background:#fff;resize:vertical;outline:none;box-sizing:border-box;line-height:1.6;"></textarea>
+      <div style="font-size:13px;color:#7a5080;font-weight:600;margin-bottom:6px;">מה אני רוצה להביא לפגישה הבאה</div>
+      <textarea id="ss-next-session-note" placeholder="כתוב/י כאן בחופשיות..." style="width:100%;min-height:60px;padding:8px 10px;border:1px solid #d4c2e0;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:15px;color:#333;background:#fff;resize:vertical;outline:none;box-sizing:border-box;line-height:1.6;"></textarea>
     </div>` : ''}
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid #e8e0ec;display:flex;gap:8px;flex-wrap:wrap;">
-      <button id="ss-download-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
+      <button id="ss-download-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:13px;color:#7a5080;cursor:pointer;">
         ↓ הורד סיכום
       </button>
       ${!document.getElementById('sidebar')?.classList.contains('persona-therapist') ? `
-      <button id="ss-send-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
+      <button id="ss-send-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:13px;color:#7a5080;cursor:pointer;">
         ✉ שלח למטפל/ת
       </button>` : ''}
     </div>
@@ -8452,7 +7944,7 @@ function buildSummaryHTML(s, theoristLabel) {
   const dateStr = new Date().toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const themeTags = (s.themes || []).map(t =>
-    `<span style="display:inline-block;background:#f0eaf5;border:1px solid #d4c2e0;border-radius:20px;padding:2px 12px;font-size:12px;color:#5b3a5e;margin:3px 2px;">${t}</span>`
+    `<span style="display:inline-block;background:#f0eaf5;border:1px solid #d4c2e0;border-radius:6px;padding:2px 12px;font-size:15px;color:#5b3a5e;margin:3px 2px;">${t}</span>`
   ).join('');
 
   const momentsHTML = (s.key_moments || []).map(m => `
@@ -8468,21 +7960,21 @@ function buildSummaryHTML(s, theoristLabel) {
 <title>סיכום סשן — ${name}</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #222; padding: 40px; max-width: 680px; margin: 0 auto; direction: rtl; }
-  h1 { font-size: 20px; color: #3a2540; margin-bottom: 4px; }
-  .meta { font-size: 12px; color: #888; margin-bottom: 24px; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #222; padding: 40px; max-width: 680px; margin: 0 auto; direction: rtl; }
+  h1 { font-size: 22px; color: #3a2540; margin-bottom: 4px; }
+  .meta { font-size: 15px; color: #888; margin-bottom: 24px; }
   section { margin-bottom: 18px; }
-  section h2 { font-size: 11px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px; }
-  .box { border-radius: 6px; padding: 12px 14px; font-size: 12px; line-height: 1.8; }
+  section h2 { font-size: 13px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px; }
+  .box { border-radius: 6px; padding: 12px 14px; font-size: 15px; line-height: 1.8; }
   .box-green  { background: #f0faf3; border: 1px solid #c3e6cb; }
   .box-yellow { background: #fff9f0; border: 1px solid #f5c97a; }
   .box-purple { background: #f7f5fb; border: 1px solid #d8c8e0; }
   .box-dark   { background: rgba(58,37,64,0.07); border-right: 3px solid #3a2540; }
-  .box-dark strong { display: block; font-size: 12px; color: #3a2540; margin-bottom: 4px; }
+  .box-dark strong { display: block; font-size: 15px; color: #3a2540; margin-bottom: 4px; }
   .moment { background: #faf7fc; border-right: 3px solid #9b7aab; border-radius: 0 6px 6px 0; padding: 10px 12px; margin-bottom: 8px; }
-  .quote { font-style: italic; color: #555; margin-bottom: 4px; font-size: 12px; }
-  .sig { font-size: 12px; color: #444; }
-  .footer { margin-top: 32px; font-size: 10px; color: #bbb; border-top: 1px solid #eee; padding-top: 10px; }
+  .quote {  color: #555; margin-bottom: 4px; font-size: 15px; }
+  .sig { font-size: 15px; color: #444; }
+  .footer { margin-top: 32px; font-size: 13px; color: #bbb; border-top: 1px solid #eee; padding-top: 10px; }
   @media print { body { padding: 20px; } }
 </style>
 </head>
@@ -8523,20 +8015,20 @@ function openSendToTherapistForm(container, htmlContent, subject) {
 
   const form = document.createElement('div');
   form.className = 'send-therapist-form';
-  form.style.cssText = 'margin-top:10px;padding:12px 14px;background:#faf7f5;border-radius:8px;border:1px solid #e8d8d0;';
+  form.style.cssText = 'margin-top:10px;padding:12px 14px;background:#faf7f5;border-radius:6px;border:1px solid #e8d8d0;';
   form.innerHTML = `
-    <div style="font-size:12px;color:#888;margin-bottom:8px;">${isHe ? 'מייל המטפל/ת שלך' : 'Your therapist\'s email'}</div>
+    <div style="font-size:15px;color:#888;margin-bottom:8px;">${isHe ? 'מייל המטפל/ת שלך' : 'Your therapist\'s email'}</div>
     <div style="display:flex;gap:8px;align-items:center;">
       <input type="email" class="therapist-email-input"
         placeholder="${isHe ? 'therapist@example.com' : 'therapist@example.com'}"
         value="${saved}"
-        style="flex:1;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:var(--font-rubik),sans-serif;direction:ltr;" />
+        style="flex:1;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:16px;font-family:var(--font-rubik),sans-serif;direction:ltr;" />
       <button class="therapist-send-btn"
-        style="padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:13px;font-family:var(--font-rubik),sans-serif;cursor:pointer;white-space:nowrap;">
+        style="padding:8px 16px;background:var(--accent-deep);color:#fff;border:none;border-radius:6px;font-size:16px;font-family:var(--font-rubik),sans-serif;cursor:pointer;white-space:nowrap;">
         ${isHe ? 'שלח' : 'Send'}
       </button>
     </div>
-    <div class="therapist-send-status" style="font-size:12px;margin-top:6px;min-height:18px;"></div>`;
+    <div class="therapist-send-status" style="font-size:15px;margin-top:6px;min-height:18px;"></div>`;
 
   container.appendChild(form);
 
@@ -8611,25 +8103,25 @@ function _openAnonymizer() {
   ].join('');
 
   overlay.innerHTML = `
-    <div style="background:#fff;border-radius:14px;width:640px;max-width:94vw;max-height:88vh;overflow-y:auto;
+    <div style="background:#fff;border-radius:8px;width:640px;max-width:94vw;max-height:88vh;overflow-y:auto;
       box-shadow:0 8px 40px rgba(0,0,0,0.16);direction:rtl;">
 
       <div style="background:#2a3a2a;padding:14px 20px;display:flex;justify-content:space-between;
-        align-items:center;border-radius:14px 14px 0 0;position:sticky;top:0;">
-        <span style="color:rgba(255,255,255,0.85);font-size:14px;">◌ אנונימיזציה קלינית</span>
-        <button id="anon-close" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;">×</button>
+        align-items:center;border-radius:8px 14px 0 0;position:sticky;top:0;">
+        <span style="color:rgba(255,255,255,0.85);font-size:16px;">◌ אנונימיזציה קלינית</span>
+        <button id="anon-close" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:22px;cursor:pointer;">×</button>
       </div>
 
       <div style="padding:20px;">
-        <div style="font-size:12px;color:#888;margin-bottom:6px;">הדביקו חומר קליני — שמות, מיקומים, תאריכים יוחלפו אוטומטית:</div>
+        <div style="font-size:15px;color:#888;margin-bottom:6px;">הדביקו חומר קליני — שמות, מיקומים, תאריכים יוחלפו אוטומטית:</div>
         <textarea id="anon-input" rows="6"
-          style="width:100%;border:1px solid #ddd;border-radius:8px;padding:10px 12px;font-size:13px;
+          style="width:100%;border:1px solid #ddd;border-radius:6px;padding:10px 12px;font-size:16px;
           direction:rtl;resize:vertical;font-family:inherit;color:#333;margin-bottom:10px;"
           placeholder="מטופלת בת 42 שרה כהן, רופאת עור בבית חולים שיבא בתל אביב. נשואה לדוד מזה 15 שנה..."
         >${prefill.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
         <button id="anon-run"
-          style="width:100%;padding:10px;border-radius:8px;border:none;background:#2a3a2a;
-          color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;">
+          style="width:100%;padding:10px;border-radius:6px;border:none;background:#2a3a2a;
+          color:#fff;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:16px;">
           הרץ אנונימיזציה
         </button>
         <div id="anon-results"></div>
@@ -8652,7 +8144,7 @@ async function runAnonymizer(overlay) {
   const _anonT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
   runBtn.disabled = true;
   runBtn.textContent = _anonT.anonProcessing || 'Processing...';
-  results.innerHTML = `<div style="text-align:center;color:#888;font-size:13px;padding:16px;">${_anonT.anonIdentifying || 'Identifying personal details...'}</div>`;
+  results.innerHTML = `<div style="text-align:center;color:#888;font-size:16px;padding:16px;">${_anonT.anonIdentifying || 'Identifying personal details...'}</div>`;
 
   try {
     const res  = await fetch('/api/anonymize', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) }, body: JSON.stringify({ text }) });
@@ -8661,7 +8153,7 @@ async function runAnonymizer(overlay) {
     results.innerHTML = '';
 
     if (data.error) {
-      results.innerHTML = `<div style="color:#c00;font-size:13px;">${_anonT.anonError || 'Error'}: ${data.error}</div>`;
+      results.innerHTML = `<div style="color:#c00;font-size:16px;">${_anonT.anonError || 'Error'}: ${data.error}</div>`;
       return;
     }
 
@@ -8670,18 +8162,18 @@ async function runAnonymizer(overlay) {
       const changesEl = document.createElement('div');
       changesEl.style.cssText = 'margin-bottom:14px;';
       changesEl.innerHTML = `
-        <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">${_anonT.anonChanges || 'Changes made'} (${data.changes.length})</div>
+        <div style="font-size:13px;color:#aaa;font-weight:600;margin-bottom:6px;">${_anonT.anonChanges || 'Changes made'} (${data.changes.length})</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;">
           ${data.changes.map(c => `
-            <span style="background:#fff3e0;border:1px solid #ffe082;border-radius:12px;padding:2px 10px;font-size:11px;color:#6d4c00;">
+            <span style="background:#fff3e0;border:1px solid #ffe082;border-radius:6px;padding:2px 10px;font-size:13px;color:#6d4c00;">
               <s style="color:#c00;opacity:0.7;">${c.original}</s> → <strong>${c.replacement}</strong>
-              <span style="color:#aaa;font-size:10px;"> · ${c.type}</span>
+              <span style="color:#aaa;font-size:13px;"> · ${c.type}</span>
             </span>`).join('')}
         </div>`;
       results.appendChild(changesEl);
     } else {
       const noChanges = document.createElement('div');
-      noChanges.style.cssText = 'margin-bottom:12px;font-size:12px;color:#2d8a5e;';
+      noChanges.style.cssText = 'margin-bottom:12px;font-size:15px;color:#2d8a5e;';
       noChanges.textContent = _anonT.anonNoChanges || '✓ No identifying details found in the text';
       results.appendChild(noChanges);
     }
@@ -8691,9 +8183,9 @@ async function runAnonymizer(overlay) {
     const anonBox = document.createElement('div');
     anonBox.style.cssText = 'margin-bottom:12px;';
     anonBox.innerHTML = `
-      <div style="font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px;">${_anonT.anonOutputLabel || 'Anonymized text'}</div>
-      <div id="anon-output" style="background:#f6faf6;border:1px solid #c3e6cb;border-radius:8px;padding:12px 14px;
-        font-size:13px;color:#333;line-height:1.8;white-space:pre-wrap;direction:${_anonDir};">
+      <div style="font-size:13px;color:#aaa;font-weight:600;margin-bottom:6px;">${_anonT.anonOutputLabel || 'Anonymized text'}</div>
+      <div id="anon-output" style="background:#f6faf6;border:1px solid #c3e6cb;border-radius:6px;padding:12px 14px;
+        font-size:16px;color:#333;line-height:1.8;white-space:pre-wrap;direction:${_anonDir};">
         ${(data.anonymized || text).replace(/</g,'&lt;').replace(/>/g,'&gt;')}
       </div>`;
     results.appendChild(anonBox);
@@ -8704,7 +8196,7 @@ async function runAnonymizer(overlay) {
 
     const copyBtn = document.createElement('button');
     copyBtn.textContent = _anonT.anonCopy || '📋 Copy anonymized text';
-    copyBtn.style.cssText = 'padding:7px 16px;border-radius:7px;border:1px solid #c3e6cb;background:#f6faf6;color:#2d8a5e;font-size:12px;cursor:pointer;';
+    copyBtn.style.cssText = 'padding:7px 16px;border-radius:6px;border:1px solid #c3e6cb;background:#f6faf6;color:#2d8a5e;font-size:15px;cursor:pointer;';
     copyBtn.addEventListener('click', () => {
       navigator.clipboard.writeText(data.anonymized || text).then(() => {
         copyBtn.textContent = _anonT.anonCopied || '✓ Copied';
@@ -8718,7 +8210,7 @@ async function runAnonymizer(overlay) {
     if (inputEl) {
       const insertBtn = document.createElement('button');
       insertBtn.textContent = _anonT.anonInsert || '→ Insert into chat';
-      insertBtn.style.cssText = 'padding:7px 16px;border-radius:7px;border:1px solid #d4c2e0;background:#f7f5fb;color:#5b3a5e;font-size:12px;cursor:pointer;';
+      insertBtn.style.cssText = 'padding:7px 16px;border-radius:6px;border:1px solid #d4c2e0;background:#f7f5fb;color:#5b3a5e;font-size:15px;cursor:pointer;';
       insertBtn.addEventListener('click', () => {
         inputEl.value = data.anonymized || text;
         inputEl.focus();
@@ -8730,7 +8222,7 @@ async function runAnonymizer(overlay) {
     results.appendChild(btns);
 
   } catch {
-    results.innerHTML = `<div style="color:#c00;text-align:center;font-size:13px;">${_anonT.anonTextError || 'Error processing text.'}</div>`;
+    results.innerHTML = `<div style="color:#c00;text-align:center;font-size:16px;">${_anonT.anonTextError || 'Error processing text.'}</div>`;
   } finally {
     runBtn.disabled = false;
     runBtn.textContent = _anonT.anonRunAgain || 'Run again';
@@ -8795,7 +8287,7 @@ function showEndSessionButton() {
   const cta = document.createElement('div');
   cta.id = 'bw-end-session-cta';
   cta.style.cssText = 'text-align:center;padding:20px 0 8px;';
-  cta.innerHTML = `<button onclick="triggerEndSession()" style="background:none;border:none;color:var(--muted);font-size:12px;font-family:'Rubik',sans-serif;cursor:pointer;padding:4px 12px;opacity:0.65;transition:opacity 0.15s,color 0.15s;letter-spacing:0.03em;" onmouseover="this.style.opacity='1';this.style.color='var(--accent)'" onmouseout="this.style.opacity='0.65';this.style.color='var(--muted)'">${isHe ? 'סיימתי להיום' : "I'm done for now"}</button>`;
+  cta.innerHTML = `<button onclick="triggerEndSession()" style="background:none;border:none;color:var(--muted);font-size:15px;font-family:var(--font-assistant),sans-serif;cursor:pointer;padding:4px 12px;opacity:0.65;transition:opacity 0.15s,color 0.15s;letter-spacing:0.03em;" onmouseover="this.style.opacity='1';this.style.color='var(--accent)'" onmouseout="this.style.opacity='0.65';this.style.color='var(--muted)'">${isHe ? 'סיימתי להיום' : "I'm done for now"}</button>`;
   chat.appendChild(cta);
   chat.scrollTop = chat.scrollHeight;
 }
@@ -8871,8 +8363,8 @@ function showEndSessionActions() {
   wrap.id = 'bw-end-session-actions';
   wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 0 28px;';
 
-  const primaryStyle = `background:var(--accent);border:1px solid var(--accent);border-radius:var(--radius-xl);padding:10px 22px;font-size:var(--fs-body-md);font-family:'Rubik',sans-serif;color:#fff;cursor:pointer;transition:opacity 0.15s;`;
-  const ghostStyle   = `background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:10px 22px;font-size:var(--fs-body-md);font-family:'Rubik',sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s,color 0.15s;`;
+  const primaryStyle = `background:var(--accent-deep);border:1px solid var(--accent-deep);border-radius:var(--radius-sm);padding:10px 22px;font-size:var(--fs-body-md);font-family:var(--font-assistant),sans-serif;color:#fff;cursor:pointer;transition:opacity 0.15s;`;
+  const ghostStyle   = `background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 22px;font-size:var(--fs-body-md);font-family:var(--font-assistant),sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s,color 0.15s;`;
 
   wrap.innerHTML = `
     <button onclick="openPatientReflection()" style="${primaryStyle}" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">${isHe ? 'מה לקחתי מהשיחה' : 'What I took from this session'}</button>
@@ -8890,7 +8382,7 @@ function showEndSessionActions() {
 
 function buildReflectionCard(r) {
   const wrap = document.createElement('div');
-  wrap.style.cssText = 'font-size:13px;color:#333;line-height:1.9;direction:rtl;';
+  wrap.style.cssText = 'font-size:16px;color:#333;line-height:1.9;direction:rtl;';
 
   const forTherapistHTML = (r.for_therapist || []).map(t =>
     `<li style="margin-bottom:6px;">${t}</li>`
@@ -8898,30 +8390,30 @@ function buildReflectionCard(r) {
 
   wrap.innerHTML = `
     ${r.what_came_up ? `<div style="margin-bottom:14px;padding:12px 16px;background:#fdf8f5;border-right:3px solid #c4786a;border-radius:0 8px 8px 0;">
-      <div style="font-size:10px;color:#b06050;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">מה עלה בי</div>
-      <div style="font-size:13px;color:#3d2e28;line-height:1.8;">${r.what_came_up}</div>
+      <div style="font-size:13px;color:#b06050;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">מה עלה בי</div>
+      <div style="font-size:16px;color:#3d2e28;line-height:1.8;">${r.what_came_up}</div>
     </div>` : ''}
     ${r.what_surprised_me ? `<div style="margin-bottom:14px;padding:12px 16px;background:#f5f8fd;border-right:3px solid #6a85c4;border-radius:0 8px 8px 0;">
-      <div style="font-size:10px;color:#4a6090;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">מה הפתיע אותי</div>
-      <div style="font-size:13px;color:#2a3248;line-height:1.8;">${r.what_surprised_me}</div>
+      <div style="font-size:13px;color:#4a6090;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">מה הפתיע אותי</div>
+      <div style="font-size:16px;color:#2a3248;line-height:1.8;">${r.what_surprised_me}</div>
     </div>` : ''}
     ${r.what_stayed ? `<div style="margin-bottom:14px;padding:12px 16px;background:#f5fdf8;border-right:3px solid #6ab87a;border-radius:0 8px 8px 0;">
-      <div style="font-size:10px;color:#3a7a4a;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">מה נשאר איתי</div>
-      <div style="font-size:13px;color:#2a3d2e;line-height:1.8;">${r.what_stayed}</div>
+      <div style="font-size:13px;color:#3a7a4a;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">מה נשאר איתי</div>
+      <div style="font-size:16px;color:#2a3d2e;line-height:1.8;">${r.what_stayed}</div>
     </div>` : ''}
-    ${forTherapistHTML ? `<div style="margin-bottom:14px;padding:12px 16px;background:#fdfaf2;border:1px solid #e8d88a;border-radius:8px;">
-      <div style="font-size:10px;color:#8a6a00;font-weight:700;letter-spacing:0.04em;margin-bottom:8px;text-transform:uppercase;">אני רוצה להביא לטיפול</div>
-      <ul style="margin:0;padding-right:18px;font-size:13px;color:#4a3c00;line-height:1.8;">${forTherapistHTML}</ul>
+    ${forTherapistHTML ? `<div style="margin-bottom:14px;padding:12px 16px;background:#fdfaf2;border:1px solid #e8d88a;border-radius:6px;">
+      <div style="font-size:13px;color:#8a6a00;font-weight:700;letter-spacing:0.04em;margin-bottom:8px;text-transform:uppercase;">אני רוצה להביא לטיפול</div>
+      <ul style="margin:0;padding-right:18px;font-size:16px;color:#4a3c00;line-height:1.8;">${forTherapistHTML}</ul>
     </div>` : ''}
-    ${r.one_question ? `<div style="padding:12px 16px;background:rgba(58,37,64,0.05);border-radius:8px;border-right:3px solid #7a5080;">
-      <div style="font-size:10px;color:#5a3060;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">שאלה שנשארתי איתה</div>
-      <div style="font-size:13px;color:#3a2040;line-height:1.8;font-style:italic;">${r.one_question}</div>
+    ${r.one_question ? `<div style="padding:12px 16px;background:rgba(58,37,64,0.05);border-radius:6px;border-right:3px solid #7a5080;">
+      <div style="font-size:13px;color:#5a3060;font-weight:700;letter-spacing:0.04em;margin-bottom:5px;text-transform:uppercase;">שאלה שנשארתי איתה</div>
+      <div style="font-size:16px;color:#3a2040;line-height:1.8;">${r.one_question}</div>
     </div>` : ''}
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid #ede4e0;display:flex;gap:8px;flex-wrap:wrap;">
-      <button id="pr-download-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
+      <button id="pr-download-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:13px;color:#7a5080;cursor:pointer;">
         ↓ שמור את הרפלקציה
       </button>
-      <button id="pr-send-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:11px;color:#7a5080;cursor:pointer;">
+      <button id="pr-send-btn" style="background:none;border:1px solid #c4b0cc;border-radius:6px;padding:5px 14px;font-size:13px;color:#7a5080;cursor:pointer;">
         ✉ שלח למטפל/ת
       </button>
     </div>
@@ -8950,12 +8442,12 @@ function buildReflectionHTML(r) {
 <title>מה לקחתי מהשיחה</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; color: #222; padding: 48px; max-width: 620px; margin: 0 auto; direction: rtl; line-height: 1.9; }
-  h1 { font-size: 22px; color: #3a2540; margin-bottom: 4px; font-weight: 400; }
-  .date { font-size: 12px; color: #aaa; margin-bottom: 32px; }
-  .block { margin-bottom: 20px; padding: 14px 18px; border-radius: 8px; }
-  .block-label { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; }
-  .block-text { font-size: 13px; line-height: 1.9; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #222; padding: 48px; max-width: 620px; margin: 0 auto; direction: rtl; line-height: 1.9; }
+  h1 { font-size: 26px; color: #3a2540; margin-bottom: 4px; font-weight: 400; }
+  .date { font-size: 15px; color: #aaa; margin-bottom: 32px; }
+  .block { margin-bottom: 20px; padding: 14px 18px; border-radius: 6px; }
+  .block-label { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; }
+  .block-text { font-size: 16px; line-height: 1.9; }
   .warm  { background:#fdf8f5; border-right:3px solid #c4786a; }
   .warm .block-label { color:#b06050; }
   .cool  { background:#f5f8fd; border-right:3px solid #6a85c4; }
@@ -8968,7 +8460,7 @@ function buildReflectionHTML(r) {
   .purple .block-label { color:#5a3060; }
   ul { padding-right: 20px; }
   li { margin-bottom: 6px; }
-  .footer { margin-top: 40px; font-size: 10px; color: #ccc; border-top: 1px solid #eee; padding-top: 12px; }
+  .footer { margin-top: 40px; font-size: 13px; color: #ccc; border-top: 1px solid #eee; padding-top: 12px; }
   @media print { body { padding: 24px; } }
 </style>
 </head>
@@ -8979,7 +8471,7 @@ function buildReflectionHTML(r) {
   ${r.what_surprised_me ? `<div class="block cool"><div class="block-label">מה הפתיע אותי</div><div class="block-text">${r.what_surprised_me}</div></div>` : ''}
   ${r.what_stayed ? `<div class="block green"><div class="block-label">מה נשאר איתי</div><div class="block-text">${r.what_stayed}</div></div>` : ''}
   ${forTherapistHTML ? `<div class="block gold"><div class="block-label">אני רוצה להביא לטיפול</div><ul>${forTherapistHTML}</ul></div>` : ''}
-  ${r.one_question ? `<div class="block purple"><div class="block-label">שאלה שנשארתי איתה</div><div class="block-text" style="font-style:italic;">${r.one_question}</div></div>` : ''}
+  ${r.one_question ? `<div class="block purple"><div class="block-label">שאלה שנשארתי איתה</div><div class="block-text" style="">${r.one_question}</div></div>` : ''}
   <div class="footer">נוצר על ידי Between</div>
 </body>
 </html>`;
@@ -9012,13 +8504,13 @@ async function openPatientReflection() {
   ].join('');
 
   overlay.innerHTML = `
-    <div style="background:#fff;border-radius:16px;width:560px;max-width:92vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.14);direction:rtl;">
-      <div style="background:linear-gradient(135deg,#3d2e28,#5a3a30);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:16px 16px 0 0;position:sticky;top:0;">
-        <span style="color:rgba(255,255,255,0.9);font-size:14px;letter-spacing:0.01em;">◉ מה לקחתי מהשיחה</span>
-        <button id="pr-close-btn" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;line-height:1;">×</button>
+    <div style="background:#fff;border-radius:8px;width:560px;max-width:92vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.14);direction:rtl;">
+      <div style="background:linear-gradient(135deg,#3d2e28,#5a3a30);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:8px 16px 0 0;position:sticky;top:0;">
+        <span style="color:rgba(255,255,255,0.9);font-size:16px;letter-spacing:0.01em;">◉ מה לקחתי מהשיחה</span>
+        <button id="pr-close-btn" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:22px;cursor:pointer;line-height:1;">×</button>
       </div>
       <div id="patient-reflection-results" style="padding:20px;">
-        <div style="text-align:center;color:#aaa;font-size:13px;padding:30px 0;">מזקק את השיחה...</div>
+        <div style="text-align:center;color:#aaa;font-size:16px;padding:30px 0;">מזקק את השיחה...</div>
       </div>
     </div>`;
 
@@ -9038,7 +8530,7 @@ async function openPatientReflection() {
       resultsEl.innerHTML = '';
       const _rfT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
       if (data.error) {
-        resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">${_rfT.errGeneric || 'Something went wrong — please try again.'}</div>`;
+        resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;font-size:16px;">${_rfT.errGeneric || 'Something went wrong — please try again.'}</div>`;
         return;
       }
       resultsEl.appendChild(buildReflectionCard(data));
@@ -9046,7 +8538,7 @@ async function openPatientReflection() {
     .catch(() => {
       const resultsEl = document.getElementById('patient-reflection-results');
       const _rfT = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[window._lang || 'he']) || {};
-      if (resultsEl) resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;font-size:13px;">${_rfT.errNetwork || 'Network error — please try again.'}</div>`;
+      if (resultsEl) resultsEl.innerHTML = `<div style="color:#c00;text-align:center;padding:20px;font-size:16px;">${_rfT.errNetwork || 'Network error — please try again.'}</div>`;
     });
 }
 
@@ -9076,7 +8568,7 @@ const USER_FEEDBACK_THEORISTS = [
 // ── טאב: יומן ניווט בממשק ──────────────────────────────────
 function buildNavLogTab(uxNavLog) {
   const wrap = document.createElement('div');
-  wrap.style.cssText = 'font-size:13px;color:#3d2e28;line-height:1.9;direction:rtl;white-space:pre-wrap;';
+  wrap.style.cssText = 'font-size:16px;color:#3d2e28;line-height:1.9;direction:rtl;white-space:pre-wrap;';
   wrap.textContent = uxNavLog || '(אין יומן ניווט)';
   return wrap;
 }
@@ -9089,13 +8581,13 @@ function buildConvTab(transcript, personaName) {
     const isUser = turn.speaker === 'user';
     const bubble = document.createElement('div');
     bubble.style.cssText = [
-      'padding:10px 14px;border-radius:10px;font-size:12.5px;line-height:1.75;max-width:85%;direction:rtl;',
+      'padding:10px 14px;border-radius:6px;font-size:15px;line-height:1.75;max-width:85%;direction:rtl;',
       isUser
         ? 'align-self:flex-end;background:#f0ebe8;color:#3d2e28;'
         : 'align-self:flex-start;background:#f7f2f9;color:#2a1a30;border:1px solid #e0d4e8;'
     ].join('');
     const lbl = document.createElement('div');
-    lbl.style.cssText = `font-size:9px;color:${isUser?'#80706a':'#8a6a95'};font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px;`;
+    lbl.style.cssText = `font-size:13px;color:${isUser?'#80706a':'#8a6a95'};font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px;`;
     lbl.textContent = isUser ? personaName : 'הסוכן';
     const txt = document.createElement('div');
     txt.textContent = turn.text;
@@ -9115,8 +8607,8 @@ function buildUXFeedbackTab(feedback) {
     if (!value) return;
     const el = document.createElement('div');
     el.style.cssText = `padding:11px 14px;background:${bg};border-right:3px solid ${color};border-radius:0 8px 8px 0;${border?`border:1px solid ${border};`:''}`;
-    el.innerHTML = `<div style="font-size:9px;color:${color};font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:5px;">${label}</div>
-      <div style="font-size:12.5px;color:#2a1a30;line-height:1.75;">${value}</div>`;
+    el.innerHTML = `<div style="font-size:13px;color:${color};font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:5px;">${label}</div>
+      <div style="font-size:15px;color:#2a1a30;line-height:1.75;">${value}</div>`;
     wrap.appendChild(el);
   }
 
@@ -9130,17 +8622,17 @@ function buildUXFeedbackTab(feedback) {
   // Flow steps
   if (Array.isArray(feedback.flow) && feedback.flow.length) {
     const flowEl = document.createElement('div');
-    flowEl.style.cssText = 'padding:11px 14px;background:#f8f6fa;border-radius:8px;border:1px solid #e0d4e8;';
-    flowEl.innerHTML = `<div style="font-size:9px;color:#5a4060;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;">פלואו — מה עשיתי</div>`;
+    flowEl.style.cssText = 'padding:11px 14px;background:#f8f6fa;border-radius:6px;border:1px solid #e0d4e8;';
+    flowEl.innerHTML = `<div style="font-size:13px;color:#5a4060;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;">פלואו — מה עשיתי</div>`;
     feedback.flow.forEach((step, i) => {
       const row = document.createElement('div');
       row.style.cssText = 'display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;';
       const icon = step.found_it !== false ? '✓' : '✗';
       const iconColor = step.found_it !== false ? '#5aaa6a' : '#c45050';
-      row.innerHTML = `<span style="color:${iconColor};font-size:12px;flex-shrink:0;margin-top:2px;">${icon}</span>
+      row.innerHTML = `<span style="color:${iconColor};font-size:15px;flex-shrink:0;margin-top:2px;">${icon}</span>
         <div style="flex:1;">
-          <div style="font-size:12px;color:#2a1a30;line-height:1.6;">${step.step || ''}</div>
-          ${step.friction ? `<div style="font-size:11px;color:#c45050;margin-top:2px;font-style:italic;">${step.friction}</div>` : ''}
+          <div style="font-size:15px;color:#2a1a30;line-height:1.6;">${step.step || ''}</div>
+          ${step.friction ? `<div style="font-size:13px;color:#c45050;margin-top:2px;">${step.friction}</div>` : ''}
         </div>`;
       flowEl.appendChild(row);
     });
@@ -9154,15 +8646,15 @@ function buildUXFeedbackTab(feedback) {
     const btnEl = document.createElement('div');
     btnEl.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:10px;';
     if (found.length) {
-      btnEl.innerHTML += `<div style="padding:10px 12px;background:#f5fdf8;border-radius:8px;border:1px solid #c8e8cc;">
-        <div style="font-size:9px;color:#3a7a4a;font-weight:700;letter-spacing:0.06em;margin-bottom:6px;">כפתורים שמצאתי</div>
-        ${found.map(b=>`<div style="font-size:11.5px;color:#2a4a30;margin-bottom:3px;">✓ ${b}</div>`).join('')}
+      btnEl.innerHTML += `<div style="padding:10px 12px;background:#f5fdf8;border-radius:6px;border:1px solid #c8e8cc;">
+        <div style="font-size:13px;color:#3a7a4a;font-weight:700;letter-spacing:0.06em;margin-bottom:6px;">כפתורים שמצאתי</div>
+        ${found.map(b=>`<div style="font-size:13px;color:#2a4a30;margin-bottom:3px;">✓ ${b}</div>`).join('')}
       </div>`;
     }
     if (missed.length) {
-      btnEl.innerHTML += `<div style="padding:10px 12px;background:#fff5f5;border-radius:8px;border:1px solid #e8c8c8;">
-        <div style="font-size:9px;color:#a03030;font-weight:700;letter-spacing:0.06em;margin-bottom:6px;">כפתורים שלא מצאתי</div>
-        ${missed.map(b=>`<div style="font-size:11.5px;color:#6a2020;margin-bottom:3px;">✗ ${b}</div>`).join('')}
+      btnEl.innerHTML += `<div style="padding:10px 12px;background:#fff5f5;border-radius:6px;border:1px solid #e8c8c8;">
+        <div style="font-size:13px;color:#a03030;font-weight:700;letter-spacing:0.06em;margin-bottom:6px;">כפתורים שלא מצאתי</div>
+        ${missed.map(b=>`<div style="font-size:13px;color:#6a2020;margin-bottom:3px;">✗ ${b}</div>`).join('')}
       </div>`;
     }
     wrap.appendChild(btnEl);
@@ -9170,7 +8662,7 @@ function buildUXFeedbackTab(feedback) {
 
   // Would return
   const returnEl = document.createElement('div');
-  returnEl.style.cssText = 'font-size:12px;color:var(--muted);text-align:center;padding-top:4px;';
+  returnEl.style.cssText = 'font-size:15px;color:var(--muted);text-align:center;padding-top:4px;';
   returnEl.textContent = `חוזרת לאתר: ${feedback.would_return ? '✓ כן' : '✗ לא'}`;
   wrap.appendChild(returnEl);
 
@@ -9187,33 +8679,33 @@ async function openUserFeedback() {
   overlay.style.cssText = 'position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(45,36,32,0.28);backdrop-filter:blur(4px);direction:rtl;';
 
   overlay.innerHTML = `
-    <div style="background:#fff;border-radius:16px;width:680px;max-width:94vw;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.14);overflow:hidden;">
+    <div style="background:#fff;border-radius:8px;width:680px;max-width:94vw;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.14);overflow:hidden;">
       <div style="background:linear-gradient(135deg,#2a1a30,#4a2a5a);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
-        <span style="color:rgba(255,255,255,0.9);font-size:14px;">◈ פידבק UX — משתמש מדומה</span>
-        <button id="uf-close" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;line-height:1;">×</button>
+        <span style="color:rgba(255,255,255,0.9);font-size:16px;">◈ פידבק UX — משתמש מדומה</span>
+        <button id="uf-close" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:22px;cursor:pointer;line-height:1;">×</button>
       </div>
 
       <div id="uf-controls" style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;flex-shrink:0;">
         <div style="display:flex;flex-direction:column;gap:4px;">
-          <label style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:0.04em;">פרסונה</label>
-          <select id="uf-persona" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--surface);color:var(--text);">
+          <label style="font-size:13px;color:var(--muted);font-weight:600;letter-spacing:0.04em;">פרסונה</label>
+          <select id="uf-persona" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:15px;background:var(--surface);color:var(--text);">
             ${Object.entries(USER_FEEDBACK_PERSONAS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}
           </select>
         </div>
         <div style="display:flex;flex-direction:column;gap:4px;">
-          <label style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:0.04em;">תיאורטיקן</label>
-          <select id="uf-theorist" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--surface);color:var(--text);">
+          <label style="font-size:13px;color:var(--muted);font-weight:600;letter-spacing:0.04em;">תיאורטיקן</label>
+          <select id="uf-theorist" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:15px;background:var(--surface);color:var(--text);">
             ${USER_FEEDBACK_THEORISTS.map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}
           </select>
         </div>
-        <button id="uf-run" style="padding:8px 22px;background:#4a2a5a;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;font-family:var(--font-rubik),sans-serif;margin-right:auto;">הרץ</button>
+        <button id="uf-run" style="padding:8px 22px;background:#4a2a5a;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;font-family:var(--font-rubik),sans-serif;margin-right:auto;">הרץ</button>
       </div>
 
       <div style="flex:1;overflow-y:auto;">
         <div id="uf-body" style="padding:20px;">
-          <div style="color:var(--muted);font-size:12px;text-align:center;padding:30px 0;line-height:2;">
+          <div style="color:var(--muted);font-size:15px;text-align:center;padding:30px 0;line-height:2;">
             הסוכן מדמה משתמש שמנסה להשתמש בממשק:<br>
-            <span style="font-size:11px;opacity:0.7;">ניווט · שיחה · פידבק על פלואו וכפתורים</span>
+            <span style="font-size:13px;opacity:0.7;">ניווט · שיחה · פידבק על פלואו וכפתורים</span>
           </div>
         </div>
       </div>
@@ -9231,10 +8723,10 @@ async function openUserFeedback() {
 
     btn.disabled = true;
     btn.textContent = 'מריץ...';
-    body.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:13px;">
-      <div style="font-size:24px;margin-bottom:12px;animation:spin 1.2s linear infinite;display:inline-block;">◈</div><br>
+    body.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:16px;">
+      <div style="font-size:26px;margin-bottom:12px;animation:spin 1.2s linear infinite;display:inline-block;">◈</div><br>
       מדמה משתמש · ניווט + שיחה + פידבק<br>
-      <span style="font-size:11px;opacity:0.6;">בד"כ 30-50 שניות</span>
+      <span style="font-size:13px;opacity:0.6;">בד"כ 30-50 שניות</span>
     </div>
     <style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>`;
 
@@ -9250,7 +8742,7 @@ async function openUserFeedback() {
       body.innerHTML = '';
 
       const meta = document.createElement('div');
-      meta.style.cssText = 'font-size:11px;color:var(--muted);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);';
+      meta.style.cssText = 'font-size:13px;color:var(--muted);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);';
       const theoristLabel = USER_FEEDBACK_THEORISTS.find(([k])=>k===theorist)?.[1] || theorist;
       meta.textContent = `${data.personaName} · ${theoristLabel} · ${data.transcript.length / 2} תורות שיחה`;
       body.appendChild(meta);
@@ -9262,7 +8754,7 @@ async function openUserFeedback() {
       const tabNav  = document.createElement('button');
       const tabConv = document.createElement('button');
       [[tabUX,'פידבק UX'],[tabNav,'יומן ניווט'],[tabConv,'שיחה']].forEach(([btn,lbl]) => {
-        btn.style.cssText = 'padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:var(--font-rubik),sans-serif;border:1px solid var(--border);transition:all 0.15s;background:none;color:var(--muted);';
+        btn.style.cssText = 'padding:5px 14px;border-radius:6px;font-size:15px;cursor:pointer;font-family:var(--font-rubik),sans-serif;border:1px solid var(--border);transition:all 0.15s;background:none;color:var(--muted);';
         btn.textContent = lbl;
         tabs.appendChild(btn);
       });
@@ -9326,17 +8818,17 @@ function parseMemoSections(md) {
 
 function buildAgentCard({ icon, name, role, date, accentColor, emptyMsg, renderContent }) {
   const card = document.createElement('div');
-  card.style.cssText = 'border:1px solid var(--border);border-radius:12px;overflow:hidden;';
+  card.style.cssText = 'border:1px solid var(--border);border-radius:6px;overflow:hidden;';
 
   const hdr = document.createElement('div');
   hdr.style.cssText = `padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid ${accentColor}22;background:${accentColor}10;`;
   hdr.innerHTML = `
     <div style="display:flex;align-items:center;gap:8px;">
-      <span style="font-size:15px;line-height:1;">${icon}</span>
-      <span style="font-weight:700;font-size:13px;color:${accentColor};">${name}</span>
-      <span style="font-size:11px;color:var(--muted);">${role}</span>
+      <span style="font-size:16px;line-height:1;">${icon}</span>
+      <span style="font-weight:700;font-size:16px;color:${accentColor};">${name}</span>
+      <span style="font-size:13px;color:var(--muted);">${role}</span>
     </div>
-    ${date ? `<span style="font-size:10px;color:var(--muted);direction:ltr;">${date}</span>` : ''}`;
+    ${date ? `<span style="font-size:13px;color:var(--muted);direction:ltr;">${date}</span>` : ''}`;
   card.appendChild(hdr);
 
   const body = document.createElement('div');
@@ -9345,7 +8837,7 @@ function buildAgentCard({ icon, name, role, date, accentColor, emptyMsg, renderC
   if (content) {
     body.appendChild(content);
   } else {
-    body.innerHTML = `<div style="color:var(--muted);font-size:12px;text-align:center;padding:10px 0;">${emptyMsg}</div>`;
+    body.innerHTML = `<div style="color:var(--muted);font-size:15px;text-align:center;padding:10px 0;">${emptyMsg}</div>`;
   }
   card.appendChild(body);
   return card;
@@ -9361,7 +8853,7 @@ function buildRanCard(data) {
       if (!data?.content) return null;
       const sec = parseMemoSections(data.content);
       const div = document.createElement('div');
-      div.style.cssText = 'display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.6;';
+      div.style.cssText = 'display:flex;flex-direction:column;gap:12px;font-size:16px;line-height:1.6;';
       const FIELDS = [
         ['השבוע בשלוש שורות',  'השבוע בשלוש שורות'],
         ['הממצא החשוב ביותר',  'הממצא החשוב ביותר'],
@@ -9373,7 +8865,7 @@ function buildRanCard(data) {
         const val = sec[key];
         if (!val) return;
         const row = document.createElement('div');
-        row.innerHTML = `<div style="font-size:10px;font-weight:700;color:${ACC};letter-spacing:.06em;margin-bottom:3px;">${label}</div>
+        row.innerHTML = `<div style="font-size:13px;font-weight:700;color:${ACC};letter-spacing:.06em;margin-bottom:3px;">${label}</div>
           <div style="color:var(--text);">${val}</div>`;
         div.appendChild(row);
       });
@@ -9393,13 +8885,12 @@ function buildNavalCard(data) {
       const clean = data.content.replace(/^#+\s.*\n?/gm, '').trim();
       if (!clean) return null;
       const div = document.createElement('div');
-      div.style.cssText = 'font-size:14px;line-height:1.9;color:var(--text);font-style:italic;white-space:pre-wrap;';
+      div.style.cssText = 'font-size:16px;line-height:1.9;color:var(--text);white-space:pre-wrap;';
       div.textContent = clean;
       return div;
     },
   });
 }
-
 
 function buildShiraCard(data) {
   const ACC = '#7a4a18';
@@ -9411,15 +8902,15 @@ function buildShiraCard(data) {
       if (!data?.content) return null;
       const sec = parseMemoSections(data.content);
       const div = document.createElement('div');
-      div.style.cssText = 'display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.6;';
+      div.style.cssText = 'display:flex;flex-direction:column;gap:12px;font-size:16px;line-height:1.6;';
 
       // weekly cost — highlight box
       const costKey = 'עלות שבועית משוערת';
       if (sec[costKey]) {
         const box = document.createElement('div');
-        box.style.cssText = `padding:10px 14px;border-radius:8px;background:${ACC}12;border:1px solid ${ACC}30;`;
-        box.innerHTML = `<div style="font-size:10px;font-weight:700;color:${ACC};letter-spacing:.06em;margin-bottom:5px;">${costKey}</div>
-          <div style="color:var(--text);font-size:12px;white-space:pre-wrap;">${sec[costKey]}</div>`;
+        box.style.cssText = `padding:10px 14px;border-radius:6px;background:${ACC}12;border:1px solid ${ACC}30;`;
+        box.innerHTML = `<div style="font-size:13px;font-weight:700;color:${ACC};letter-spacing:.06em;margin-bottom:5px;">${costKey}</div>
+          <div style="color:var(--text);font-size:15px;white-space:pre-wrap;">${sec[costKey]}</div>`;
         div.appendChild(box);
       }
 
@@ -9427,8 +8918,8 @@ function buildShiraCard(data) {
       const statusKey = 'סטטוס תקרות חינמיות';
       if (sec[statusKey]) {
         const row = document.createElement('div');
-        row.innerHTML = `<div style="font-size:10px;font-weight:700;color:${ACC};letter-spacing:.06em;margin-bottom:3px;">${statusKey}</div>
-          <div style="color:var(--text);font-size:12px;white-space:pre-wrap;">${sec[statusKey]}</div>`;
+        row.innerHTML = `<div style="font-size:13px;font-weight:700;color:${ACC};letter-spacing:.06em;margin-bottom:3px;">${statusKey}</div>
+          <div style="color:var(--text);font-size:15px;white-space:pre-wrap;">${sec[statusKey]}</div>`;
         div.appendChild(row);
       }
 
@@ -9437,7 +8928,7 @@ function buildShiraCard(data) {
         if (!sec[key]) return;
         const row = document.createElement('div');
         const isFlag = key === 'דגלי סיכון';
-        row.innerHTML = `<div style="font-size:10px;font-weight:700;color:${isFlag ? '#c04a2a' : ACC};letter-spacing:.06em;margin-bottom:3px;">${key}</div>
+        row.innerHTML = `<div style="font-size:13px;font-weight:700;color:${isFlag ? '#c04a2a' : ACC};letter-spacing:.06em;margin-bottom:3px;">${key}</div>
           <div style="color:var(--text);line-height:1.55;">${sec[key]}</div>`;
         div.appendChild(row);
       });
@@ -9456,21 +8947,21 @@ async function openBoardRoom() {
   overlay.style.cssText = 'position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(15,10,25,0.5);backdrop-filter:blur(6px);direction:rtl;';
 
   overlay.innerHTML = `
-    <div style="background:#fff;border-radius:16px;width:740px;max-width:95vw;max-height:90vh;
+    <div style="background:#fff;border-radius:8px;width:740px;max-width:95vw;max-height:90vh;
       display:flex;flex-direction:column;box-shadow:0 16px 60px rgba(0,0,0,0.22);overflow:hidden;">
       <div style="background:linear-gradient(135deg,#0f0a19,#1e1035);padding:16px 22px;
         display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
         <div style="display:flex;align-items:center;gap:10px;">
-          <span style="color:rgba(255,255,255,0.7);font-size:17px;">⬡</span>
-          <span style="color:rgba(255,255,255,0.92);font-size:15px;font-weight:500;">חדר הבורד</span>
-          <span style="color:rgba(255,255,255,0.3);font-size:11px;font-family:'Cormorant Garamond',serif;font-style:italic;">Between</span>
+          <span style="color:rgba(255,255,255,0.7);font-size:18px;">⬡</span>
+          <span style="color:rgba(255,255,255,0.92);font-size:16px;font-weight:500;">חדר הבורד</span>
+          <span style="color:rgba(255,255,255,0.3);font-size:13px;font-family:Assistant,sans-serif;">Between</span>
         </div>
         <button id="br-close" style="background:none;border:none;color:rgba(255,255,255,0.45);
-          font-size:22px;cursor:pointer;line-height:1;padding:0 4px;">×</button>
+          font-size:26px;cursor:pointer;line-height:1;padding:0 4px;">×</button>
       </div>
       <div id="br-body" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;">
-        <div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">
-          <div style="font-size:22px;margin-bottom:8px;opacity:0.3;">⬡</div>
+        <div style="text-align:center;padding:40px;color:var(--muted);font-size:16px;">
+          <div style="font-size:26px;margin-bottom:8px;opacity:0.3;">⬡</div>
           טוען דוחות...
         </div>
       </div>
@@ -9551,7 +9042,7 @@ async function startOnboardingTour() {
     tip.id = 'onboarding-tip';
     tip.style.cssText = `
       position:fixed;z-index:201;
-      background:#fff;border-radius:12px;
+      background:#fff;border-radius:6px;
       box-shadow:0 8px 40px rgba(0,0,0,0.18),0 0 0 1px rgba(0,0,0,0.06);
       padding:16px 18px;max-width:260px;direction:${dir};
       pointer-events:all;
@@ -9575,7 +9066,7 @@ async function startOnboardingTour() {
     const hl = document.createElement('div');
     hl.id = 'onboarding-highlight';
     hl.style.cssText = `
-      position:fixed;z-index:199;border-radius:8px;
+      position:fixed;z-index:199;border-radius:6px;
       box-shadow:0 0 0 4px rgba(196,96,122,0.5),0 0 0 9999px rgba(0,0,0,0.2);
       pointer-events:none;transition:all 0.2s;
       top:${rect.top - 4}px;left:${rect.left - 4}px;
@@ -9586,15 +9077,15 @@ async function startOnboardingTour() {
     document.body.appendChild(hl);
 
     tip.innerHTML = `
-      <div style="font-size:10px;color:rgba(196,96,122,0.8);font-weight:700;letter-spacing:.08em;margin-bottom:6px;direction:ltr;text-align:${dir === 'rtl' ? 'right' : 'left'};">
+      <div style="font-size:13px;color:rgba(196,96,122,0.8);font-weight:700;letter-spacing:.08em;margin-bottom:6px;direction:ltr;text-align:${dir === 'rtl' ? 'right' : 'left'};">
         ${idx + 1} / ${steps.length}
       </div>
-      <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">${title}</div>
-      <div style="font-size:13px;color:#555;line-height:1.6;margin-bottom:14px;">${text}</div>
+      <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">${title}</div>
+      <div style="font-size:16px;color:#555;line-height:1.6;margin-bottom:14px;">${text}</div>
       <div style="display:flex;gap:8px;justify-content:flex-end;">
-        <button id="ob-skip" style="background:none;border:none;color:#aaa;font-size:12px;cursor:pointer;padding:4px 8px;">${skipLabel}</button>
-        <button id="ob-next" style="background:#c4607a;border:none;color:#fff;font-size:13px;
-          cursor:pointer;padding:6px 16px;border-radius:8px;font-weight:600;">
+        <button id="ob-skip" style="background:none;border:none;color:#aaa;font-size:15px;cursor:pointer;padding:4px 8px;">${skipLabel}</button>
+        <button id="ob-next" style="background:#c4607a;border:none;color:#fff;font-size:16px;
+          cursor:pointer;padding:6px 16px;border-radius:6px;font-weight:600;">
           ${nextLabel}
         </button>
       </div>`;
@@ -9682,36 +9173,36 @@ function openSupportModal() {
   modal.id = 'support-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:600;background:rgba(45,36,32,0.45);display:flex;align-items:center;justify-content:center;';
   modal.innerHTML = `
-    <div style="background:var(--bg);border-radius:16px;padding:32px;max-width:420px;width:90%;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);box-sizing:border-box;">
-      <h2 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--accent);margin:0 0 4px;">${T.title}</h2>
-      <p style="font-size:12px;color:var(--muted);margin:0 0 24px;">${T.sub}</p>
+    <div style="background:var(--bg);border-radius:8px;padding:32px;max-width:420px;width:90%;direction:${dir};box-shadow:0 16px 48px rgba(196,96,122,0.15);box-sizing:border-box;">
+      <h2 style="font-family:Assistant,sans-serif;font-size:26px;font-weight:300;color:var(--text);margin:0 0 4px;">${T.title}</h2>
+      <p style="font-size:15px;color:var(--muted);margin:0 0 24px;">${T.sub}</p>
 
       <div style="display:flex;flex-direction:column;gap:14px;">
 
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">${T.emailLabel}</label>
-          <input id="sup-email" type="email" value="${userEmail}" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;" readonly/>
+          <label style="font-size:15px;color:var(--muted);display:block;margin-bottom:4px;">${T.emailLabel}</label>
+          <input id="sup-email" type="email" value="${userEmail}" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;" readonly/>
         </div>
 
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">${T.subjectLabel}</label>
-          <input id="sup-subject" type="text" placeholder="${T.subjectPh}" maxlength="120" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;"/>
+          <label style="font-size:15px;color:var(--muted);display:block;margin-bottom:4px;">${T.subjectLabel}</label>
+          <input id="sup-subject" type="text" placeholder="${T.subjectPh}" maxlength="120" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;"/>
         </div>
 
         <div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">${T.msgLabel}</label>
-          <textarea id="sup-message" placeholder="${T.msgPh}" rows="5" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Rubik',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none;resize:vertical;box-sizing:border-box;"></textarea>
+          <label style="font-size:15px;color:var(--muted);display:block;margin-bottom:4px;">${T.msgLabel}</label>
+          <textarea id="sup-message" placeholder="${T.msgPh}" rows="5" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;background:var(--surface);color:var(--text);outline:none;resize:vertical;box-sizing:border-box;"></textarea>
         </div>
 
-        <div id="sup-status" style="font-size:12px;color:var(--accent);min-height:16px;"></div>
+        <div id="sup-status" style="font-size:15px;color:var(--accent);min-height:16px;"></div>
 
         <div style="display:flex;gap:10px;justify-content:flex-end;flex-direction:${dir === 'rtl' ? 'row-reverse' : 'row'};">
           <button onclick="document.getElementById('support-modal').style.display='none'"
-            style="background:none;border:1px solid var(--border);color:var(--muted);padding:9px 20px;border-radius:22px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;">
+            style="background:none;border:1px solid var(--border);color:var(--muted);padding:9px 20px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;cursor:pointer;">
             ${T.cancel}
           </button>
           <button id="sup-send-btn" onclick="submitSupportForm()"
-            style="background:var(--accent);border:none;color:#fff;padding:9px 22px;border-radius:22px;font-family:'Rubik',sans-serif;font-size:13px;cursor:pointer;">
+            style="background:var(--accent-deep);border:none;color:#fff;padding:9px 22px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:16px;cursor:pointer;">
             ${T.send}
           </button>
         </div>
@@ -9768,3 +9259,53 @@ async function submitSupportForm() {
   }
 }
 window.fillSuggestion = fillSuggestion;
+
+/* ══════════════════════════════════════════════════════════════════════
+   נירמול הדיאלוגים הישנים · 29.08
+   בממשק היו תשעה־עשר חלונות שנבנו ידנית, כל אחד עם סרגל, פינות, ריפוד
+   וכפתורים משלו בסגנון שורה. אחרי מעבר העיצוב הם המשיכו להיראות ישן,
+   וכל אחד מהם התגלה בנפרד כשמישהו נתקל בו. במקום לשכתב תשעה־עשר
+   בנאים, משקיף אחד מזהה חלון שנוסף למסמך ומלביש עליו את שפת המודל
+   החדשה: הוא מקבל ‎.n-ovl.n-open‎ והלוח שבתוכו ‎.n-modal‎, והסגנונות
+   בשורה שמתנגשים עם זה מנוטרלים. חלונות שכבר נכתבו בשפה החדשה,
+   ושכבות שאינן דיאלוג (טוסטים, מסכים מלאים) אינם נוגעים.
+   ══════════════════════════════════════════════════════════════════════ */
+(function normaliseLegacyDialogs() {
+  const SKIP = new Set(['bw-rt-mockup']);
+  function isDialogOverlay(el) {
+    if (!(el instanceof HTMLElement)) return false;
+    if (el.classList.contains('n-ovl') || el.dataset.bwNormalised) return false;
+    if (SKIP.has(el.id)) return false;
+    const s = el.style;
+    if (s.position !== 'fixed') return false;
+    if (s.pointerEvents === 'none') return false;
+    // דיאלוג ממורכז: פלקס עם מרכוז בשני הצירים
+    if (s.display !== 'flex') return false;
+    if (s.alignItems !== 'center' || s.justifyContent !== 'center') return false;
+    return el.children.length === 1;
+  }
+  function normalise(el) {
+    el.dataset.bwNormalised = '1';
+    const z = el.style.zIndex;
+    el.classList.add('n-ovl', 'n-open');
+    // הסרת מה שסותר את ‎.n-ovl‎: רקע הסרגל, טשטוש וריפוד
+    el.style.background = '';
+    el.style.backdropFilter = '';
+    el.style.padding = '';
+    if (z) el.style.zIndex = z;
+    const panel = el.firstElementChild;
+    if (panel instanceof HTMLElement && !panel.classList.contains('n-modal')) {
+      panel.classList.add('n-modal', 'bw-legacy-modal');
+      panel.style.background = '';
+      panel.style.borderRadius = '';
+      panel.style.boxShadow = '';
+      panel.style.border = '';
+    }
+  }
+  try {
+    new MutationObserver(muts => {
+      muts.forEach(m => m.addedNodes.forEach(n => { if (isDialogOverlay(n)) normalise(n); }));
+    }).observe(document.body, { childList: true });
+    document.querySelectorAll('body > div').forEach(el => { if (isDialogOverlay(el)) normalise(el); });
+  } catch (e) { /* noop */ }
+})();

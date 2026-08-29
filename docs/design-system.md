@@ -1,4 +1,11 @@
 # Between — Design System
+
+> ## ⛔ מוחלף · 29.08.2026
+>
+> **המסמך הזה אינו בתוקף כמפרט עיצוב.** מקור האמת היחיד לעיצוב הוא `.impeccable/fork/index.html`, והכללים והערכים מרוכזים ב-`UX-RULES.md`.
+>
+> הוא נשאר כתיעוד של מה שהיה, ולא כהוראה. **אין להסיק ממנו ערך צבע, פונט, רדיוס או מבנה.** בפרט: הפונטים והרקע שכתובים כאן הוחלפו.
+
 _Maya, Head of UX/UI · May 2026_
 
 **Live:** [https://psychoanalytic-space.vercel.app](https://psychoanalytic-space.vercel.app) · [https://chat.getbetween.app](https://chat.getbetween.app)

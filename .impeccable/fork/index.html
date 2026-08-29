@@ -1,0 +1,1510 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Between — אב טיפוס עיצובי, חזית בלבד</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   BETWEEN · אב טיפוס עיצובי · עותק נפרד
+   חזית סטטית בלבד. אין קריאות רשת, אין שרת, אין מצב מתמיד.
+   אינו מיובא על ידי שום קובץ בפרויקט ואינו נבנה על ידי Next.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── טוקנים ─────────────────────────────────────────────────────── */
+:root{
+  /* ורוד המותג. ארבעה מהגוונים כבר קיימים ב-globals.css. */
+  --p-50:#FDF2F5; --p-100:#F8DDE4;
+  --p-200:#ECC7D4;   /* קיים: --thinking */
+  --p-300:#D4899A;   /* קיים: --accent-dim */
+  --p-400:#CE6F87;
+  --p-500:#C4607A;   /* קיים: --accent · מותג, סמן, סימון */
+  --p-hover:#BA536F; /* ריחוף בהיר יותר · 4.61:1 מול לבן */
+  --p-600:#A8475F;   /* קיים: --accent-deep · מילוי · 5.63:1 מול לבן */
+  --p-700:#8E3550;   /* טקסט ורוד על בהיר · 7.57:1 */
+  --p-800:#6B233A; --p-900:#4A1626;
+
+  /* ניטרלים */
+  --bg:#F4F4F2; --surface:#FAFAF9; --zone:#F0F0EE; --zone-off:#E1E1DE;
+  --line:#D6D6D2; --line-soft:#E6E6E2; --off:#9A9A95;
+  --field:#FFFFFF;   /* כל משטח שכותבים לתוכו. בהיר מרקע הדף, ולכן קורא כפתוח */
+  --field-ph:#6E6D69; /* פלייסהולדר · 5.18:1 על לבן */
+  --ink:#111111; --mut:#66655F;      /* --mut נותן 5.31:1 */
+
+  /* רדיוס · קטן מאוד, לא חד */
+  --r-ctl:6px; --r-box:8px;
+
+  /* מרווח */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px;
+
+  /* גבהים */
+  --h-ctl:44px;      /* מינימום מגע */
+  --w-side:248px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:#0d0d0d;font-family:Assistant,system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:var(--ink)}
+button{font-family:inherit}
+
+/* ── הבר השחור · חלק מהמוצר ──────────────────────────────────────
+   הגובה 72 ולא 50, כדי שהלוגו יינשם. הכרעת איה 29.08.2026.
+   ‎.chrome‎ הוא העוטף הדביק, כי מעל הבר יושבת שורת ניווט שאינה
+   חלק מהמוצר, ושתי שכבות ‎sticky‎ נפרדות היו נדבקות זו על זו. */
+.chrome{position:sticky;top:0;z-index:400}
+.proto{--h-topbar:72px;height:var(--h-topbar);background:#151515;border-bottom:1px solid #2a2a2a;
+       padding:10px 18px;display:flex;align-items:center;gap:14px;box-sizing:border-box}
+.proto .sep{width:1px;height:18px;background:#333}
+.proto .grp{display:flex;gap:6px;flex-wrap:wrap}
+.proto button{background:transparent;border:1px solid #333;color:#9a9a9a;font-size:12px;
+              padding:6px 11px;border-radius:var(--r-ctl);cursor:pointer;
+              display:inline-flex;align-items:center;gap:8px}
+.proto button:hover{border-color:#555;color:#ddd}
+.proto button.on{background:var(--p-600);border-color:var(--p-600);color:#fff}
+.proto button.on:hover{border-color:var(--p-600);color:#fff}
+.proto button:focus-visible{outline:2px solid var(--p-500);outline-offset:2px}
+
+/* שורת ניווט של האב-טיפוס · אינה חלק מהמוצר.
+   ישבה קודם בתוך הבר השחור לצד ההגדרות, ולכן הבר לא היה קריא כעיצוב.
+   הופרדה 29.08 לשורה משלה מעל הבר, שקטה ומסומנת. */
+.protonav{background:#0d0d0d;border-bottom:1px solid #1e1e1e;padding:6px 18px;
+          display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.protonav .tag{font-size:10px;letter-spacing:.2em;color:var(--p-300);font-weight:700}
+.protonav button{background:transparent;border:none;color:#6a6a6a;font-family:inherit;
+                 font-size:11px;padding:2px 0;cursor:pointer;text-decoration:underline;
+                 text-underline-offset:3px}
+.protonav button:hover{color:#bdbdbd}
+
+/* ── מסגרת האפליקציה ────────────────────────────────────────────── */
+.app{display:flex;min-height:calc(100vh - 44px);background:var(--bg)}
+.app[hidden]{display:none}
+
+/* ── סייד־בר ────────────────────────────────────────────────────── */
+.side{width:var(--w-side);flex:0 0 auto;background:var(--surface);border-inline-start:1px solid var(--line);
+      display:flex;flex-direction:column;padding:var(--s5) 0 var(--s4)}
+.side.collapsed{width:64px}
+.brand{padding:0 var(--s5) var(--s5);display:flex;align-items:center;gap:9px}
+.side.collapsed .sb-label,.side.collapsed .sb-sub,.side.collapsed .grouphead,
+.side.collapsed .sb .val{display:none}
+
+.sb{display:flex;align-items:center;padding:0 var(--s5);height:40px;cursor:pointer;color:var(--ink);
+    font-size:13.5px;font-weight:500;background:transparent;border:none;width:100%;text-align:start}
+.sb:hover{background:var(--p-50)}
+.sb.on{background:var(--p-100);font-weight:600}
+.sb .ic{width:16px;flex:0 0 16px;text-align:center;font-size:14px;color:var(--mut)}
+.sb.on .ic{color:var(--p-700)}
+.grouphead{padding:var(--s5) var(--s5) var(--s2);font-size:10px;letter-spacing:.18em;color:var(--off);font-weight:700}
+.sb-sub{padding-inline-start:42px;font-size:13px;font-weight:400;height:34px}
+/* ערך המצב בפריט סייד-בר · כבוי / בבחירה / פעיל. אותו משקל של הערך
+   בתפריט הפרופיל, כי זו אותה אמירה: הגדרה נמשכת ולא פעולה. */
+.sb .val{margin-inline-start:auto;font-size:11.5px;font-weight:600;color:var(--mut)}
+.sb.on .val{color:var(--p-700)}
+.side .spacer{flex:1}
+
+.acctmenu{position:absolute;inset-block-end:calc(100% + 6px);inset-inline-start:0;min-width:230px;z-index:60;
+          background:var(--surface);border:1px solid var(--ink);border-radius:var(--r-box);overflow:hidden;display:none}
+
+/* התפריט תלוי בכפתור שבבר, ולכן הוא נפתח כלפי מטה ולא כלפי מעלה,
+   ונצמד לקצה שבו הכפתור יושב. הצל הוא כלל: תפריט שקופץ מעל מסך
+   מקבל צל (הכרעת איה 29.08). */
+.hdrmenu{inset-block-start:calc(100% + 8px);inset-block-end:auto;inset-inline-start:auto;inset-inline-end:0;
+         min-width:268px;z-index:420;border-color:var(--line);
+         box-shadow:0 12px 32px rgba(17,17,17,.18),0 2px 6px rgba(17,17,17,.08)}
+
+/* כרטיס הזהות · בראש התפריט, בצורה של תפריט הפרופיל בכרום, בבקשת
+   איה: אזור מוצל בגוון המותג, סימן עגול, ומתחתיו השם והמייל ממורכזים.
+   אינו כפתור ואין לו יעד: הוא עונה על "באיזה חשבון אני" בלבד.
+   העיגול הוא הצורה היחידה במערכת שאינה בעלת פינה של 6 או 8, והוא
+   כאן משום שזו הצורה שמזהים ככרטיס משתמש.
+   השם הוא מה שנקבע ב"שם או כינוי", והוא גם השם שהתיאורטיקנים פונים בו. */
+.acctmenu .who{background:var(--p-50);border-bottom:1px solid var(--line-soft);
+               padding:22px 16px 19px;text-align:center}
+.acctmenu .who .av{width:56px;height:56px;border-radius:50%;margin:0 auto 12px;
+                   background:var(--p-600);color:#fff;font-size:22px;font-weight:600;
+                   display:flex;align-items:center;justify-content:center;overflow:hidden}
+.acctmenu .who .av img{width:100%;height:100%;object-fit:cover;display:block}
+.acctmenu .who .n{display:block;font-size:15px;font-weight:600;line-height:1.4}
+.acctmenu .who .e{display:block;font-size:12.5px;color:var(--mut);margin-top:2px;
+                  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acctmenu.open{display:block}
+.acctmenu .mi{display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;cursor:pointer;
+              background:transparent;border:none;width:100%;text-align:start}
+.acctmenu .mi:hover{background:var(--p-200)}
+.acctmenu .mi .ic{width:16px;color:var(--mut);font-size:13px}
+.acctmenu .div{height:1px;background:var(--line-soft)}
+.acctmenu .mi .val{margin-inline-start:auto;font-size:11.5px;color:var(--mut);font-weight:600}
+
+/* ── אזור ראשי ──────────────────────────────────────────────────── */
+.main{flex:1;min-width:0;padding:var(--s7) var(--s6) var(--s6);overflow:auto}
+.wrap{max-width:760px;margin:0 auto}
+.screen[hidden]{display:none}
+
+/* ── ברים ───────────────────────────────────────────────────────── */
+.topbar{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.14em;font-weight:600;margin-bottom:9px}
+.topbar .ix{color:var(--p-500)}
+.hr{height:1px;background:var(--ink)}
+.hr-soft{height:1px;background:var(--line)}
+h1.h{font-size:38px;font-weight:200;letter-spacing:-.02em;line-height:1.14;margin:var(--s5) 0 var(--s5);max-width:17ch}
+h2.h2{font-size:22px;font-weight:300;letter-spacing:-.01em;margin:0 0 var(--s4)}
+.botbar{margin-top:var(--s5);border-top:1px solid var(--ink);padding-top:var(--s3);font-size:11.5px;color:var(--mut)}
+
+/* ── פקדים ──────────────────────────────────────────────────────── */
+.btn{height:var(--h-ctl);display:inline-flex;align-items:center;justify-content:center;padding:0 20px;
+     font-size:14px;font-weight:600;cursor:pointer;border:1px solid transparent;border-radius:var(--r-ctl);
+     background:transparent;transition:background-color .3s ease,color .3s ease,border-color .3s ease}
+.btn.ghost{border-color:var(--ink);color:var(--ink)}
+.btn.solid{background:var(--p-600);color:#fff}
+.btn.plain{border-color:var(--line);color:var(--mut)}
+.btn.sm{height:34px;padding:0 13px;font-size:12.5px}
+.btn.solid:hover:not([disabled]){background:var(--p-hover)}
+.btn.ghost:hover:not([disabled]){border-color:var(--p-600);color:var(--p-700)}
+.btn.plain:hover:not([disabled]){border-color:var(--p-500);color:var(--p-700)}
+.btn:focus-visible{outline:2px solid var(--p-500);outline-offset:2px}
+.btn[disabled]{cursor:not-allowed}
+.btn.ghost[disabled],.btn.plain[disabled]{border-color:var(--line);color:var(--off)}
+.btn.solid[disabled]{background:var(--line);color:var(--off)}
+@keyframes wake{0%{box-shadow:0 0 0 0 rgba(196,96,122,.6)}100%{box-shadow:0 0 0 10px rgba(196,96,122,0)}}
+.btn.wake{animation:wake .75s ease-out 1}
+
+.sel{height:var(--h-ctl);display:inline-flex;align-items:center;gap:9px;padding:0 15px;font-size:14px;font-weight:600;
+     background:transparent;border:1px solid var(--ink);border-radius:var(--r-ctl);color:var(--ink);cursor:pointer;
+     transition:border-color .3s ease,color .3s ease}
+.sel .chev{font-size:11px;opacity:.7}
+.sel .sub{font-size:12px;font-weight:400;color:var(--mut)}
+.sel:hover{border-color:var(--p-600)}
+.sel.primed{border:2px solid var(--p-500);color:var(--p-700);padding:0 14px;font-weight:500}
+.sel.primed:hover{border-color:var(--p-hover)}
+.sel:focus-visible{outline:2px solid var(--p-500);outline-offset:3px}
+.hintstart{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--p-700)}
+
+/* הרשימה מרחפת מעל אזור הכתיבה. הוחזר במפורש בהחלטת איה, 28.08,
+   אחרי שנוסתה גרסה בתוך הזרימה שדחפה את הכתיבה מטה. */
+.menu{position:absolute;inset-block-start:calc(var(--h-ctl) + 8px);inset-inline-start:0;z-index:50;min-width:268px;
+      background:var(--surface);border:1px solid var(--ink);border-radius:var(--r-box);overflow:hidden;
+      display:none;flex-direction:column}
+.menu.open{display:flex}
+.menu .mi{padding:11px 15px;cursor:pointer;display:flex;flex-direction:column;gap:2px;border:none;background:transparent;text-align:start}
+.menu .mi .nm{font-size:14px;font-weight:600}
+.menu .mi .ds{font-size:12px;color:var(--mut)}
+.menu .mi:hover,.menu .mi:focus-visible{background:var(--p-200);outline:none}
+.menu .mi[aria-selected="true"]{background:var(--p-600)}
+.menu .mi[aria-selected="true"] .nm,.menu .mi[aria-selected="true"] .ds{color:#fff}
+
+/* ── לוח הכתיבה · שני אזורים, קו מקצה לקצה ─────────────────────── */
+.plate{background:var(--zone);border:1px solid var(--line);border-radius:var(--r-box);padding:0}
+.zone-head{display:flex;align-items:center;gap:10px;padding:20px 23px 15px;border-bottom:1px solid var(--line);
+           position:relative;flex-wrap:wrap}
+.zone-head .lbl{font-size:12px;letter-spacing:.06em;color:var(--mut);font-weight:600}
+.zone-write{position:relative;padding:20px 23px;background:var(--field);border-end-start-radius:7px;border-end-end-radius:7px;
+            transition:background-color .35s ease}
+.plate.locked .zone-write{background:var(--zone-off)}
+.ta{width:100%;min-height:180px;border:none;background:transparent;outline:none;padding:0;display:block;
+    font-family:inherit;font-size:16px;font-weight:300;line-height:1.85;color:var(--ink);caret-color:var(--p-500);
+    white-space:pre-wrap;word-break:break-word}
+.ta:empty::before{content:attr(data-ph);color:var(--field-ph)}
+.ta[contenteditable="false"]{color:var(--off);cursor:not-allowed}
+.ta[contenteditable="false"]:empty::before{color:#B4B4B0}
+
+/* ── סימון קטע שנשמר רק למטופלת ──────────────────────────────────
+   רקע ניטרלי וקו מקווקו. אפור ולא ורוד, כי הוורוד הוא צבע המותג
+   ולא צבע של מצב, ופרטיות אינה הדגשה. */
+.ta .private{background:var(--zone-off);border-bottom:1px dotted var(--mut);
+             border-radius:3px;padding:1px 3px;cursor:pointer}
+.marktip{position:absolute;z-index:80}
+.marktip .btn{height:36px;padding:0 14px;font-size:13px;background:var(--ink);color:#fff;
+              border:none;border-radius:var(--r-ctl);box-shadow:0 4px 14px rgba(0,0,0,.22)}
+.marktip .btn:hover{background:var(--p-600)}
+.privhint{font-size:12px;color:var(--mut);margin-top:10px;display:none}
+.privhint.on{display:block}
+
+/* ── תצוגת מה נשלח למטפל/ת ── */
+.share .prev{background:var(--field);border:1px solid var(--line);border-radius:var(--r-box);
+             padding:20px 22px;font-size:15.5px;font-weight:300;line-height:1.85;white-space:pre-wrap}
+.share .prev .redact{display:inline-block;background:var(--zone-off);color:var(--mut);border-radius:3px;
+                     padding:1px 9px;font-size:12.5px;font-weight:600;letter-spacing:.04em}
+.share .opt{display:flex;align-items:flex-start;gap:11px;padding:14px 0;border-top:1px solid var(--line-soft)}
+.share .opt input{width:19px;height:19px;margin-top:2px;accent-color:var(--p-600);flex:0 0 auto}
+.share .opt .t{font-size:15px;font-weight:600}
+.share .opt .d{font-size:13px;color:var(--mut);line-height:1.7;margin-top:3px}
+.locknote{font-size:12.5px;color:var(--off);padding-top:6px;line-height:1.7}
+.actions{display:flex;align-items:center;gap:10px;margin-top:var(--s4);flex-wrap:wrap}
+.actions .sp{flex:1}
+
+/* ── כרטיסים / רשימות ───────────────────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-box);padding:var(--s4) var(--s5);
+      cursor:pointer;transition:border-color .25s ease}
+.card:hover{border-color:var(--p-500)}
+.card + .card{margin-top:10px}
+.card .t{font-size:15px;font-weight:600}
+.card .m{font-size:12px;color:var(--mut);margin-top:3px;display:flex;align-items:baseline;flex-wrap:wrap}
+.card .tag{float:inline-end;font-size:10.5px;letter-spacing:.14em;font-weight:700;color:var(--p-700)}
+.empty{border:1px dashed var(--line);border-radius:var(--r-box);padding:var(--s7) var(--s6);text-align:center}
+.empty .t{font-size:19px;font-weight:300;color:var(--ink);margin-bottom:9px}
+.empty .d{font-size:14px;color:var(--mut);line-height:1.8;max-width:44ch;margin:0 auto var(--s5)}
+
+/* ── תיבת הגבול הקליני. אינה טקסט עזרה אלא כלל, ולכן אינה אפורה. ── */
+.bound{background:var(--p-50);border:1px solid var(--p-100);border-radius:var(--r-ctl);
+       padding:13px 15px;margin-top:11px}
+.bound .t{font-size:13.5px;font-weight:700;color:var(--p-700);margin-bottom:4px}
+.bound .d{font-size:13px;color:var(--p-900);line-height:1.7}
+
+/* ── תפריט לכל מקרה ── */
+.card{position:relative}
+.card .more{position:absolute;inset-block-start:12px;inset-inline-end:12px;width:32px;height:32px;
+            border:1px solid transparent;border-radius:var(--r-ctl);background:transparent;cursor:pointer;
+            color:var(--mut);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center}
+.card .more:hover{border-color:var(--line);color:var(--ink)}
+.cardmenu{position:absolute;inset-block-start:46px;inset-inline-end:12px;z-index:40;min-width:170px;
+          background:var(--surface);border:1px solid var(--ink);border-radius:var(--r-box);overflow:hidden;display:none}
+.cardmenu.open{display:block}
+.cardmenu button{display:block;width:100%;text-align:start;padding:11px 14px;font-size:13.5px;
+                 background:transparent;border:none;cursor:pointer;font-family:inherit;color:var(--ink)}
+.cardmenu button:hover{background:var(--p-200)}
+.card.archived{opacity:.55}
+.card.archived .t::after{content:" · בארכיון";font-size:12px;color:var(--mut);font-weight:400}
+
+/* ── שיחה ───────────────────────────────────────────────────────── */
+/* ── השיחה כתמליל · הכרעת איה, אפשרות 05 ─────────────────────────
+   שתי קופסאות בלבד: התמליל, ומה שנכתב עכשיו. אין בועות ואין צדדים.
+   ההבחנה בין שני הקולות היא בצבע הדיו בלבד: הכתיבה שלה בשחור,
+   התיאורטיקן בדיו כהה בגוון ורוד־חום. 18.88:1 מול 14.65:1, שניהם קריאים. */
+.doc{background:var(--field);border:1px solid var(--line);border-radius:var(--r-box);overflow:hidden;margin:var(--s5) 0}
+.turn{display:flex;gap:20px;padding:17px 30px}
+.turn + .turn{border-top:1px solid var(--line-soft)}
+.turn .spk{width:74px;flex:0 0 74px;font-size:11px;letter-spacing:.1em;font-weight:700;color:var(--mut);padding-top:5px}
+.turn .bd{flex:1;font-size:16px;font-weight:300;line-height:1.8;max-width:60ch}
+.turn.them .spk{color:var(--p-700)}
+.turn.them .bd{color:var(--p-900)}
+.composer{border:1px solid var(--line);border-radius:var(--r-box);background:var(--field);padding:16px 18px}
+.composer .ta{min-height:74px;font-size:16px;line-height:1.75}
+
+/* ── מודל ───────────────────────────────────────────────────────── */
+.ovl{position:fixed;inset:0;z-index:300;background:rgba(30,22,26,.42);display:none;align-items:center;justify-content:center;padding:var(--s5)}
+.ovl.open{display:flex}
+.modal{--modal-pad:var(--s6);
+       background:var(--surface);border:1px solid var(--ink);border-radius:var(--r-box);width:600px;max-width:100%;
+       max-height:86vh;overflow:auto;padding:var(--modal-pad)}
+.modal h3{font-size:21px;font-weight:300;margin:0 0 6px}
+.modal .lead{font-size:12.5px;color:var(--mut);margin:0 0 var(--s5);line-height:1.7}
+.fieldrow{margin-bottom:var(--s5)}
+.fieldrow label{display:block;font-size:11.5px;letter-spacing:.08em;font-weight:700;color:var(--mut);margin-bottom:7px}
+.inp{width:100%;height:var(--h-ctl);border:1px solid var(--line);border-radius:var(--r-ctl);background:var(--field);
+     padding:0 13px;font-family:inherit;font-size:14px;color:var(--ink);caret-color:var(--p-500)}
+.inp:focus{outline:none;border-color:var(--p-500)}
+textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
+.segs{display:flex;gap:8px;flex-wrap:wrap}
+.seg{height:38px;padding:0 15px;display:inline-flex;align-items:center;font-size:13px;font-weight:500;
+     border:1px solid var(--line);border-radius:var(--r-ctl);background:transparent;cursor:pointer;color:var(--ink)}
+.seg:hover{border-color:var(--p-500)}
+.seg.on{background:var(--p-600);border-color:var(--p-600);color:#fff;font-weight:600}
+/* שורת הפעולות של המודל נדבקת לתחתיתו. בהגדרות התוכן גבוה מהמודל,
+   וכפתורי שמור וביטול היו מתחת לקו הקיפול בלי שום סימן שיש עוד. */
+.modal .foot{position:sticky;inset-block-end:calc(var(--modal-pad) * -1);z-index:2;
+             display:flex;gap:10px;align-items:center;justify-content:flex-end;
+             margin:var(--s6) calc(var(--modal-pad) * -1) calc(var(--modal-pad) * -1);
+             padding:var(--s4) var(--modal-pad) var(--modal-pad);
+             background:var(--surface);border-top:1px solid var(--line-soft)}
+.modal .foot .sp{flex:1}
+/* סימן ההצלחה במודל "צרי קשר". ורוד ולא ירוק: אין במערכת צבע סמנטי,
+   והוספת ירוק כאן הייתה מכניסה משפחת צבע שלמה בשביל מצב אחד. */
+.donemark{width:46px;height:46px;border-radius:50%;background:var(--p-100);color:var(--p-700);
+          display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:var(--s4)}
+
+/* ── סיכום התייעצות ──────────────────────────────────────────────
+   עשרת השדות מגיעים מ-lib/summary-prompt.ts ולא הומצאו.
+   נקרא כמסמך ולא כלוח מחוונים, כי זה הדבר שיורד כ-PDF ונשמר. */
+.sum .meta{display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center;margin:0 0 var(--s5)}
+.chip{font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:var(--r-ctl);
+      background:var(--p-50);color:var(--p-700);border:1px solid var(--p-100)}
+.chip.n{background:transparent;color:var(--mut);border-color:var(--line)}
+.sum .sec{padding:var(--s5) 0;border-top:1px solid var(--line-soft)}
+.sum .sec h4{font-size:10.5px;letter-spacing:.18em;font-weight:700;color:var(--mut);margin:0 0 10px}
+.sum .sec p{font-size:15.5px;font-weight:300;line-height:1.8;margin:0;max-width:58ch}
+.sum .moment + .moment{margin-top:var(--s5)}
+.sum .quote{font-size:16px;font-weight:400;line-height:1.7;color:var(--ink);
+            border-inline-start:2px solid var(--p-300);padding-inline-start:15px;margin:0 0 8px;max-width:56ch}
+.sum .why{font-size:13.5px;font-weight:300;line-height:1.75;color:var(--mut);margin:0;max-width:58ch}
+/* מה להביא לחדר · הקצה של המסמך, ולפי CORE גם הסיבה שהוא קיים */
+.sum .bring{background:var(--p-50);border:1px solid var(--p-100);border-radius:var(--r-box);
+            padding:var(--s5);margin-top:var(--s5)}
+.sum .bring h4{color:var(--p-700)}
+.sum .bring p{font-size:17px;font-weight:400;line-height:1.7;color:var(--p-900)}
+
+/* ── מסך כניסה ──────────────────────────────────────────────────── */
+.auth{min-height:calc(100vh - 44px);background:var(--bg);display:flex;align-items:center;justify-content:center;padding:var(--s5)}
+.auth[hidden]{display:none}
+.authbox{width:400px;max-width:100%}
+.authbox .n{font-size:34px;font-weight:200;letter-spacing:.01em}
+.authbox .s{font-size:13px;color:var(--mut);line-height:1.8;margin:10px 0 var(--s6)}
+
+/* ── מסך מערכת העיצוב ───────────────────────────────────────────── */
+.sysgrid{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:var(--r-box);overflow:hidden;margin-bottom:var(--s5)}
+.sw{flex:1 1 88px;min-width:88px;min-height:104px;padding:14px 11px;display:flex;flex-direction:column;gap:4px}
+.sw .k{font-size:10px;font-family:ui-monospace,monospace}
+.sw .h{font-size:10px;font-family:ui-monospace,monospace;opacity:.75}
+.sw .u{font-size:10.5px;font-weight:600;margin-top:auto;line-height:1.35}
+.specrow{display:flex;gap:var(--s4);align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.specrow .k{font-size:11px;font-family:ui-monospace,monospace;color:var(--mut);min-width:120px}
+.specrow .v{font-size:13px}
+.demo{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:var(--s4) 0 var(--s5)}
+
+
+/* לוח הלוגו במערכת העיצוב · שתי גרסאות זו לצד זו, כל אחת על הרקע
+   שהיא נועדה לו. הרקע הוא חלק מהמפרט ולא תפאורה: גרסת הלבן קיימת
+   בגלל הבר השחור, וגרסת הכהה בגלל כל השאר. */
+.logogrid{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:var(--s4)}
+.logobox{flex:1 1 240px;min-height:132px;border-radius:var(--r-box);
+         display:flex;align-items:center;justify-content:center;padding:24px;position:relative}
+.logobox img{height:52px;width:auto;display:block}
+.logobox .k{position:absolute;inset-block-start:9px;inset-inline-start:11px;
+            font-size:10px;font-family:ui-monospace,monospace}
+.logobox.on-dark{background:#151515;border:1px solid #2A2A2A}
+.logobox.on-dark .k{color:var(--off)}
+.logobox.on-light{background:var(--surface);border:1px solid var(--line)}
+.logobox.on-light .k{color:var(--mut)}
+
+.note{font-size:12.5px;color:var(--mut);line-height:1.85;margin-top:var(--s4)}
+.note b{color:var(--ink);font-weight:600}
+
+/* ── סרגל מובייל · כפתור התפריט ומסך העמעום ─────────────────────── */
+.mobbar{display:none;align-items:center;gap:12px;margin-bottom:var(--s5)}
+.iconbtn{width:var(--h-ctl);height:var(--h-ctl);flex:0 0 auto;border:1px solid var(--line);border-radius:var(--r-ctl);
+         background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+         font-size:15px;color:var(--ink);transition:border-color .25s ease}
+.iconbtn:hover{border-color:var(--p-500)}
+.iconbtn:focus-visible{outline:2px solid var(--p-500);outline-offset:2px}
+.mobbar .t{font-size:13px;font-weight:600;letter-spacing:.02em}
+.scrim{position:fixed;inset:0;z-index:150;background:rgba(30,22,26,.42);display:none}
+.scrim.on{display:block}
+.sideclose{display:none}
+
+@media (max-width:900px){
+  /* הסייד־בר נשאר בצד ימין כמו בדסקטופ, ונדחף החוצה לאותו צד.
+     הכיוון מוצהר לשתי השפות, כי transform אינו מודע לכיוון הקריאה. */
+  .side{position:fixed;inset-block:0;inset-inline-start:0;z-index:200;overflow:auto;
+        transform:translateX(-100%);transition:transform .28s ease;box-shadow:none}
+  [dir="rtl"] .side{transform:translateX(100%)}
+  .side.mobopen,[dir="rtl"] .side.mobopen{transform:none;box-shadow:0 0 40px rgba(0,0,0,.18)}
+  .side.collapsed{width:var(--w-side)}   /* כיווץ הוא מושג של דסקטופ בלבד */
+  .sideclose{display:flex}
+  .mobbar{display:flex}
+  .main{padding:var(--s5) var(--s4) var(--s6)}
+  h1.h{font-size:28px}
+  .modal{--modal-pad:var(--s5)}
+  .turn{flex-direction:column;gap:6px;padding:15px 18px}
+  .turn .spk{width:auto;flex:none}
+}
+@media (min-width:901px){ .scrim{display:none !important} }
+
+/* מסך הכניסה · מייל וסיסמה, הכרעת איה 29.08. שיטת הכניסה נשארת כפי
+   שהיא בממשק, ומה שהעיצוב קובע הוא שרואים פעולה ראשית אחת בלבד. */
+.authbox .seg{display:flex;gap:8px;margin-bottom:var(--s5)}
+.authbox .seg .opt{flex:1;height:var(--h-ctl);border:1px solid var(--line);border-radius:var(--r-ctl);
+  background:transparent;color:var(--ink);font-family:inherit;font-size:14px;font-weight:500;cursor:pointer}
+.authbox .seg .opt.on{background:var(--p-600);border-color:var(--p-600);color:#fff;font-weight:600}
+.authbox .btn{margin-top:var(--s2)}
+.lnk{color:var(--p-700);font-weight:600;text-decoration:underline;text-underline-offset:4px}
+
+/* ── הבר העליון ─────────────────────────────────────────────────── */
+/* הלוגו · יונק הדבש עם המילה Between. הכרעת איה 29.08.2026.
+   הבר כהה ולכן נטענת גרסת הלבן. הקובץ נכנס כתמונה מהמקור בלבד:
+   ציור ביד נפסל 28.08 אחרי שני ניסיונות שעיוותו את הרפרנס.
+   גובה 44 בתוך בר של 72. אם הקובץ חסר, ‎onerror‎ מסתיר את התמונה
+   והמילה נשארת כטקסט, כך שהבר לעולם אינו ריק. */
+/* הלוגו ממורכז מעל עמודת הסייד־בר · הועתק מהממשק 29.08.2026 בבקשת איה.
+   רוחב הסימן הוא רוחב הסייד־בר, וההזחה השלילית מבטלת את ריפוד הבר
+   באותו צד, כך שמרכז הלוגו יושב בדיוק על מרכז העמודה שמתחתיו.
+   מתחת ל-900 אין סייד־בר בזרימה, ולכן הוא חוזר להיצמד לקצה. */
+.proto .mark{display:inline-flex;align-items:center;gap:10px;
+             width:var(--w-side);margin-inline-start:-18px;justify-content:center;
+             font-family:inherit;font-size:19px;font-weight:200;letter-spacing:.02em;color:#fff}
+.proto .mark img{height:52px;width:auto;display:block}
+@media (max-width:900px){
+  .proto .mark{width:auto;margin-inline-start:0;justify-content:flex-start}
+}
+/* המותג לבדו בקצה שלו · מתג הפרסונות וההגדרות נדחפים יחד לקצה הנגדי,
+   כדי שהמתג לא ייצמד ללוגו ולא יזיז אותו. */
+.proto .grp.end{gap:6px}
+.proto .grp:first-of-type{margin-inline-start:auto}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+
+  <!-- ═══ ניווט של האב-טיפוס. אינו חלק מהמוצר. ═══
+       שלושת הקיצורים ישבו עד 29.08 בתוך הבר השחור עצמו, ולכן הבר
+       לא הראה את ההדר האמיתי אלא הדר ועוד כרום. הופרדו לשורה משלהם. -->
+  <div class="protonav">
+    <span class="tag">אב טיפוס</span>
+    <button data-goto="auth">מסך כניסה</button>
+    <button data-goto="system">מערכת העיצוב</button>
+    <button id="btnReset">איפוס</button>
+  </div>
+
+  <!-- ═══ הבר העליון ═══
+       עודכן 29.08.2026 בהכרעת איה, מהממשק המקומי חזרה לקובץ.
+       הלוגו בהתחלה, ומתג הפרסונות וההגדרות נדחפים יחד לקצה הנגדי,
+       כדי שהמתג לא ייצמד ללוגו. בעברית הלוגו בימין וההגדרות בשמאל,
+       ובאנגלית להפך, כי הבר יורש את כיוון הממשק.
+       מתג הפרסונות הוא כלי פיתוח: בממשק הוא מגודר ל-localhost. -->
+  <div class="proto">
+    <span class="mark">
+      <img src="../../public/between-logo-light.svg" alt="Between"
+           onerror="var m=this.parentNode;this.remove();m.textContent='Between'">
+    </span>
+    <div class="grp" id="personaGrp">
+      <button data-persona="patient">מטופלת</button>
+      <button data-persona="therapist" class="on">מטפלת</button>
+    </div>
+    <div class="grp end" style="position:relative">
+      <button id="btnSettings" aria-haspopup="menu" aria-expanded="false">⚙ הגדרות</button>
+
+      <!-- תפריט הפרופיל · נפתח מהבר כלפי מטה, עם צל.
+           בראשו כרטיס הזהות, בצורה של כרום: סימן, שם, מייל, ממורכזים
+           על אזור בגוון המותג. אינו כפתור, כי הוא עונה על שאלה אחת
+           בלבד, באיזה חשבון אני. בלעדיו השם והמייל אינם מופיעים בשום
+           מקום בדסקטופ, בעוד שבמובייל כן יש שורת חשבון. -->
+      <div class="acctmenu hdrmenu" id="acctmenu" role="menu">
+        <div class="who">
+          <span class="av">א</span>
+          <span class="n">איה</span>
+          <span class="e"><bdi>ayaavivi@gmail.com</bdi></span>
+        </div>
+        <button class="mi" data-persona-only="therapist" id="miWeb">חיפוש רשת<span class="val" id="webVal">כבוי</span></button>
+        <button class="mi" id="miLang">שפה<span class="val">עברית</span></button>
+        <button class="mi" data-open="contact">צרי קשר</button>
+        <div class="div"></div>
+        <button class="mi" data-open="settings">הגדרות ופרופיל</button>
+        <button class="mi" data-goto="auth">התנתק</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ מסך כניסה ═══ -->
+<div class="auth" id="screen-auth" hidden>
+  <div class="authbox">
+    <div class="n">Between</div>
+    <p class="s">המרחב שבין הפגישות. מה שנכתב כאן חי בדפדפן שלך בלבד.</p>
+
+    <!-- מי משתמש במרחב · קובע את הפרסונה, לא את שיטת הכניסה -->
+    <div class="seg" id="authWho">
+      <button class="opt on" data-persona="patient">בטיפול</button>
+      <button class="opt" data-persona="therapist">מטפל/ת</button>
+    </div>
+
+    <div class="fieldrow">
+      <label for="auth-email">כתובת מייל</label>
+      <input class="inp" id="auth-email" type="email" dir="ltr" placeholder="you@example.com">
+    </div>
+    <div class="fieldrow">
+      <label for="auth-password">סיסמה</label>
+      <input class="inp" id="auth-password" type="password" dir="ltr" placeholder="••••••••">
+    </div>
+
+    <!-- פעולה ראשית אחת בלבד. הכרעת איה 28.08: שני כפתורים באותו משקל
+         מבקשים החלטה שהמשתמש אינו יכול לקבל, ושני משתמשים אמיתיים ניסו
+         כניסה לפני שנרשמו. משתמש חדש רואה הרשמה, וחוזר רואה כניסה,
+         לפי הדגל bw_has_account שנשמר בדפדפן אחרי אימות מוצלח. -->
+    <button class="btn solid" id="btnSignup" style="width:100%">הרשמה</button>
+    <button class="btn solid" id="btnSignin" style="width:100%;display:none">כניסה</button>
+
+    <!-- שורת המעבר · אישור איה 28.08. בלעדיה משתמשת קיימת שמנקה עוגיות
+         או עוברת מכשיר נתקעת בלי דרך להיכנס. שקטה, לא כפתור. -->
+    <p class="note" id="authSwitch" style="margin-top:14px">כבר יש לך חשבון? <a href="#" class="lnk">כניסה</a></p>
+    <p class="note" id="authForgot" style="margin-top:8px;display:none"><a href="#" class="lnk">שכחתי סיסמה</a></p>
+
+    <p class="note" style="margin-top:16px">השיחות נשמרות רק על המכשיר שלך ואינן נשמרות אצלנו. פרטי הכניסה מוצפנים.</p>
+  </div>
+</div>
+
+<!-- ═══ האפליקציה ═══ -->
+<div class="app" id="app">
+
+  <!-- ── סייד־בר ── -->
+  <div class="scrim" id="scrim"></div>
+
+  <aside class="side" id="side">
+    <!-- השם ירד מכאן 29.08.2026 בהכרעת איה · הבר השחור נושא את הלוגו,
+         והמילה בסייד־בר הייתה מופע שני של אותו דבר. הכפתור נשאר, והוא
+         גלוי במובייל בלבד, ולכן בדסקטופ נשאר כאן רק המרווח שמעל הפריט
+         הראשון. -->
+    <div class="brand">
+      <button class="iconbtn sideclose" id="btnSideClose" aria-label="סגירת התפריט"
+              style="margin-inline-start:auto;width:34px;height:34px">✕</button>
+    </div>
+
+        <button class="sb" data-goto="write"><span class="sb-label">שיחה חדשה</span></button>
+
+    <!-- מצב עבודה · מחקר הוא מצב ולא מקרה. הכרעת איה 29.08.2026:
+         כשהוא ישב בתחתית קבוצת "מקרים" הוא נקרא כשם של מטופל נוסף
+         ברשימה. קבוצה משלו, מעל הרשימה.
+         בממשק הוא מגודר ל-localhost ומשתמשת אמיתית אינה רואה אותו. -->
+    <div data-persona-only="therapist">
+      <div class="grouphead">מצב עבודה</div>
+      <button class="sb sb-nav" id="sbResearch" data-goto="research">
+        <span class="sb-label">מחקר</span><span class="val" id="resVal">כבוי</span>
+      </button>
+    </div>
+
+    <div data-persona-only="therapist">
+      <div class="grouphead">מקרים</div>
+      <button class="sb sb-nav" data-goto="cases"><span class="sb-label">כל המקרים</span></button>
+      <button class="sb sb-sub" data-goto="write">מקרה ו׳</button>
+      <button class="sb sb-sub" data-goto="write">מקרה ד׳</button>
+      <button class="sb sb-sub" data-goto="write">מקרה א׳</button>
+    </div>
+
+    <div data-persona-only="patient">
+      <div class="grouphead">שלי</div>
+      <button class="sb sb-nav" data-goto="archive"><span class="sb-label">מה כתבתי</span></button>
+    </div>
+
+    <!-- כרטיס החשבון ותפריט הפרופיל ירדו מכאן 29.08.2026 ועברו לכפתור
+         ההגדרות שבבר. הסייד־בר נשאר לניווט בלבד. -->
+  </aside>
+
+  <!-- ── אזור ראשי ── -->
+  <main class="main">
+    <div class="wrap">
+
+      <!-- סרגל מובייל · מופיע רק מתחת ל-900 -->
+      <div class="mobbar">
+        <button class="iconbtn" id="btnMenu" aria-label="פתיחת התפריט" aria-controls="side" aria-expanded="false">☰</button>
+        <span class="t" id="mobTitle">Between</span>
+      </div>
+
+
+      <!-- ══ מסך: רשימת מקרים ══ -->
+      <section class="screen" id="screen-cases" hidden>
+        <div class="topbar"><span>המקרים שלי</span><span>28.08</span></div>
+        <div class="hr"></div>
+        <h1 class="h">על מה נעבוד היום?</h1>
+
+        <div id="caselist">
+          <div class="card"><button class="more" aria-label="עוד">⋯</button>
+            <div class="cardmenu"><button data-act="rename">שינוי שם</button><button data-act="archive">העברה לארכיון</button></div>
+            <div class="t" data-goto="write">מקרה ו׳</div>
+            <div class="m"><span class="tag">3 התייעצויות</span>עודכן לפני יומיים · אחרונה דרך הגישה של ויניקוט</div>
+          </div>
+          <div class="card"><button class="more" aria-label="עוד">⋯</button>
+            <div class="cardmenu"><button data-act="rename">שינוי שם</button><button data-act="archive">העברה לארכיון</button></div>
+            <div class="t" data-goto="write">מקרה ד׳</div>
+            <div class="m"><span class="tag">1 התייעצות</span>עודכן לפני שבוע · אחרונה דרך הגישה של קליין</div>
+          </div>
+          <div class="card"><button class="more" aria-label="עוד">⋯</button>
+            <div class="cardmenu"><button data-act="rename">שינוי שם</button><button data-act="archive">העברה לארכיון</button></div>
+            <div class="t" data-goto="write">מקרה א׳</div>
+            <div class="m">נפתח היום · עוד לא נכתב דבר</div>
+          </div>
+        </div>
+
+        <div class="empty" id="caseempty" hidden>
+          <div class="t">עדיין אין מקרים</div>
+          <div class="d">מקרה הוא תווית שמארגנת התייעצויות. אפשר לפתוח את הראשון עכשיו, ואפשר גם למחוק אותו אחר כך.</div>
+          <button class="btn solid" data-open="newcase">פתיחת מקרה ראשון</button>
+        </div>
+
+        <div class="actions" style="margin-top:20px">
+          <button class="btn ghost" data-open="newcase">מקרה חדש</button>
+          <span class="sp"></span>
+        </div>
+        <div class="botbar">הערות רפלקציה, לא רשומה קלינית. התוויות הן כינויים, וההתייעצויות מאונמזות לפני שמירה.</div>
+      </section>
+
+      <!-- ══ מסך: מחקר ══
+           אותה זרימה כמו הכתיבה: בוחרים גישה, ורק אז נכנסים. הלחיצה
+           אינה קופצת ישר לשיחה עם ברירת מחדל, כי בחירה שלא נשאלה
+           היא בחירה שלא נעשתה.
+           הלוח כאן הוא ‎.plate‎ של הכתיבה בלי שינוי מבנה: אותו נעילה,
+           אותו בורר, אותה הצתה. מה שמשתנה הוא מה שכותבים לתוכו. -->
+      <section class="screen" id="screen-research" hidden>
+        <div class="topbar"><span>מחקר</span><span>28.08</span></div>
+        <div class="hr"></div>
+        <h1 class="h">דרך איזו גישה נחקור?</h1>
+
+        <div class="plate locked" id="rplate">
+          <div class="zone-head">
+            <span class="lbl">דרך הגישה של</span>
+            <button class="sel primed" id="rsel" aria-haspopup="listbox" aria-expanded="false">
+              <span id="rselName">בחרי גישה</span><span class="chev" id="rchev">⌄</span>
+            </button>
+            <span class="hintstart" id="rhint"><span>&#8594;</span>מתחילים כאן</span>
+            <div class="menu" id="rmenu" role="listbox" aria-label="בחירת גישה"></div>
+          </div>
+          <div class="zone-write">
+            <div class="ta" id="rta" contenteditable="false" role="textbox" aria-multiline="true"
+                 aria-label="מה לחקור" data-ph="בחרי גישה כדי להתחיל לכתוב."></div>
+            <div class="locknote" id="rlocknote">המחקר נפתח אחרי בחירת הגישה, כי הוא נעשה מתוכה.</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn ghost" data-goto="cases">ביטול</button>
+          <span class="sp"></span>
+          <button class="btn solid" id="rGo" disabled>המשך למחקר</button>
+        </div>
+        <div class="botbar">מחקר הוא חשיבה על החומר התיאורטי עצמו. הוא נפרד מהתייעצות על מקרה, ואינו נשמר תחת מקרה.</div>
+      </section>
+
+      <!-- ══ מסך: כתיבה ══ -->
+      <section class="screen" id="screen-write" hidden>
+        <div class="topbar"><span id="wCase">מקרה ו׳</span><span>28.08</span></div>
+        <div class="hr"></div>
+        <h1 class="h" id="wHead">מה עלה לך מהפגישה?</h1>
+
+        <div class="plate locked" id="plate">
+          <div class="zone-head" id="zoneHead">
+            <span class="lbl">דרך הגישה של</span>
+            <button class="sel primed" id="sel" aria-haspopup="listbox" aria-expanded="false">
+              <span id="selName">בחרי גישה</span><span class="chev" id="chev">⌄</span>
+            </button>
+            <span class="hintstart" id="hint"><span>&#8594;</span>מתחילים כאן</span>
+            <div class="menu" id="menu" role="listbox" aria-label="בחירת גישה"></div>
+          </div>
+          <div class="zone-write">
+            <div class="ta" id="ta" contenteditable="false" role="textbox" aria-multiline="true"
+                 aria-label="מה עלה מהפגישה" data-ph="בחרי גישה כדי להתחיל לכתוב."></div>
+            <div class="marktip" id="marktip" hidden><button class="btn sm" id="btnMark">לשמור רק לעצמי</button></div>
+            <div class="locknote" id="locknote">שדה הכתיבה נפתח אחרי בחירת הגישה, כי הניתוח והשיחה נעשים מתוכה.</div>
+          </div>
+        </div>
+
+        <div class="privhint" id="privhint">אפשר לסמן קטע בכתיבה ולשמור אותו רק לעצמך. מה שסומן לא ייכלל בשיתוף עם המטפל/ת.</div>
+
+        <!-- השיתוף יושב בשורת הפעולות, ראשון, כמו בממשק. שורה נפרדת
+             נוסתה ונפסלה על ידי איה, 29.08.2026. -->
+        <div class="actions">
+          <button class="btn ghost" id="bShare" data-persona-only="patient" data-open="share" disabled>שיתוף עם המטפל/ת</button>
+          <span class="sp"></span>
+          <button class="btn ghost" id="bSave" disabled>שמור</button>
+          <button class="btn ghost" id="bAnalyze" disabled>נתח</button>
+          <button class="btn solid" id="bTalk" disabled>המשך לשיחה</button>
+        </div>
+        <div class="botbar" id="wFoot">הערות רפלקציה, לא רשומה קלינית.</div>
+      </section>
+
+      <!-- ══ מסך: שיחה ══ -->
+      <section class="screen" id="screen-talk" hidden>
+        <div class="topbar"><span id="tWho">שיחה עם פרויד</span><span class="ix" id="tCtx">מקרה ו׳</span><span>28.08</span></div>
+        <div class="hr"></div>
+
+        <div class="doc">
+          <div class="turn me"><div class="spk">את</div><div class="bd">היא הגיעה עשר דקות מאוחר ואמרה שזה בגלל התנועה. אחר כך שתקה כמעט את כל השעה. משהו בשתיקה הזאת לא היה כמו בפעם הקודמת, ואני לא הצלחתי להבין מה.</div></div>
+          <div class="turn them"><div class="spk" data-name>פרויד</div><div class="bd">האיחור והשתיקה הגיעו יחד, ואת מתארת אותם כשני דברים נפרדים. מה היה בשתיקה הזאת ששונה מהקודמת, לא בתוכן שלה אלא באיך שהיא נשמעה לך באותו רגע?</div></div>
+          <div class="turn me"><div class="spk">את</div><div class="bd">הקודמת הרגישה כמו הפסקה. הזאת הרגישה כמו סירוב.</div></div>
+          <div class="turn them"><div class="spk" data-name>פרויד</div><div class="bd">סירוב הוא כבר פנייה אלייך. בהפסקה אפשר לשבת לבד, אבל סירוב דורש מישהו שמסרבים לו. אולי כדאי שתביאי לחדר בדיוק את ההבחנה הזו, בלשון שלך.</div></div>
+        </div>
+
+        <div class="composer">
+          <textarea class="ta" placeholder="להמשיך לכתוב…"></textarea>
+        </div>
+        <!-- שורת הפעולות מגודרת לפי פרסונה. עד עכשיו לא הייתה מגודרת כלל,
+             ולכן מטופלת ראתה "סיכום התייעצות" שהוא כלי של מטפלת (BRAIN),
+             ולא הייתה לה דרך לשלוח למטפלת את מה שהתבהר. הכתיבה במסך הזה
+             היא ההודעה, ולכן אין כאן "צרף את הכתיבה". -->
+        <div class="actions">
+          <button class="btn plain sm">הורד PDF</button>
+          <button class="btn plain sm" data-persona-only="therapist" data-open="summary">סיכום התייעצות</button>
+          <button class="btn plain sm" data-persona-only="patient" data-open="share">שיתוף עם המטפל/ת</button>
+          <span class="sp"></span>
+          <button class="btn ghost" data-goto="write">חזרה לכתיבה</button>
+          <button class="btn solid">שלח</button>
+        </div>
+        <div class="botbar">השיחה חיה בדפדפן הזה בלבד ואינה נשמרת בשרת. ה-PDF הוא הדרך היחידה לשמור אותה.</div>
+      </section>
+
+      <!-- ══ מסך: מה כתבתי (מטופלת) ══ -->
+      <section class="screen" id="screen-archive" hidden>
+        <div class="topbar"><span>מה כתבתי</span><span>28.08</span></div>
+        <div class="hr"></div>
+        <h1 class="h">מה שכבר עלה</h1>
+        <div class="card" data-goto="talk"><div class="t">שיחה עם ויניקוט</div><div class="m">לפני 3 ימים · המרחב להיות</div></div>
+        <div class="card" data-goto="talk"><div class="t">שיחה עם אוגדן</div><div class="m">לפני שבועיים · מה שנוצר בין שנינו</div></div>
+        <div class="empty" style="margin-top:14px">מה שנכתב לפני כן כבר לא כאן.<br>המרחב אינו שומר, וההורדה היא הדרך היחידה לזכור.</div>
+        <div class="botbar">המרחב משרת את הטיפול. מה שמתבהר כאן, מקומו בחדר.</div>
+      </section>
+
+      <!-- ══ מסך: מערכת העיצוב ══ -->
+      <section class="screen" id="screen-system" hidden>
+        <div class="topbar"><span>מערכת העיצוב</span><span>גרסה 1</span></div>
+        <div class="hr"></div>
+        <h1 class="h">מה שכל מסך כאן בנוי ממנו</h1>
+
+        <h2 class="h2">לוגו</h2>
+        <div class="logogrid">
+          <div class="logobox on-dark">
+            <span class="k">between-logo-light</span>
+            <img src="../../public/between-logo-light.svg" alt="Between">
+          </div>
+          <div class="logobox on-light">
+            <span class="k">between-logo-dark</span>
+            <img src="../../public/between-logo-dark.svg" alt="Between">
+          </div>
+        </div>
+        <div class="specrow"><span class="k">גובה</span><span class="v">52 פיקסלים בבר העליון, בתוך בר של 72 בריפוד אנכי 10</span></div>
+        <div class="specrow"><span class="k">מרווח</span><span class="v">10 בין הסימן למילה · הסימן והמילה הם קובץ אחד</span></div>
+        <div class="specrow"><span class="k">גרסאות</span><span class="v">לבן לרקע כהה · כהה לרקע בהיר. אין גרסה שלישית</span></div>
+        <div class="specrow"><span class="k">השם</span><span class="v">Between בכל שפה, גם בממשק עברי</span></div>
+        <p class="note"><b>מה שנקבע כאן:</b> הלוגו הוא יונק דבש עם המילה Between, והוא נכנס כקובץ מהמקור בלבד. אין לשרטט אותו, לא ב-SVG ולא בקוד, ואין לוקאפ בעברית. אם הקובץ אינו נטען, המילה נשארת כטקסט לבן במשקל 200, כך שהבר לעולם אינו ריק. גרסת ה-SVG הגיעה 29.08 והיא שמוצגת כאן ובממשק. קבצי ה-PNG נשארו בתיקייה כגיבוי בלבד.</p>
+
+        <h2 class="h2" style="margin-top:36px">צבע · ורוד המותג</h2>
+        <div class="sysgrid">
+          <div class="sw" style="background:#FDF2F5;color:#4A1626"><span class="k">p-50</span><span class="h">#FDF2F5</span><span class="u">רקע רמז</span></div>
+          <div class="sw" style="background:#F8DDE4;color:#4A1626"><span class="k">p-100</span><span class="h">#F8DDE4</span><span class="u">פריט נבחר בתפריט</span></div>
+          <div class="sw" style="background:#ECC7D4;color:#4A1626"><span class="k">p-200</span><span class="h">#ECC7D4</span><span class="u">ריחוף ברשימה</span></div>
+          <div class="sw" style="background:#D4899A;color:#4A1626"><span class="k">p-300</span><span class="h">#D4899A</span><span class="u">מפריד, גרף</span></div>
+          <div class="sw" style="background:#CE6F87;color:#fff"><span class="k">p-400</span><span class="h">#CE6F87</span><span class="u">ביניים</span></div>
+          <div class="sw" style="background:#C4607A;color:#fff"><span class="k">p-500</span><span class="h">#C4607A</span><span class="u">המותג · הסמן</span></div>
+          <div class="sw" style="background:#BA536F;color:#fff"><span class="k">hover</span><span class="h">#BA536F</span><span class="u">ריחוף · בהיר יותר</span></div>
+          <div class="sw" style="background:#A8475F;color:#fff"><span class="k">p-600</span><span class="h">#A8475F</span><span class="u">מילוי · טקסט לבן</span></div>
+          <div class="sw" style="background:#8E3550;color:#fff"><span class="k">p-700</span><span class="h">#8E3550</span><span class="u">טקסט ורוד</span></div>
+          <div class="sw" style="background:#4A1626;color:#fff"><span class="k">p-900</span><span class="h">#4A1626</span><span class="u">טקסט על ורוד בהיר</span></div>
+        </div>
+        <p class="note"><b>ההכרעה שמחזיקה את כל המערכת:</b> #C4607A נותן 3.96:1 מול לבן ואינו יכול לשאת טקסט לבן. הוא נשאר צבע המותג בכל מקום גרפי, ומילוי הפקדים עובר ל-#A8475F שנותן 5.63:1. הריחוף בהיר יותר ולא כהה יותר, #BA536F, ועדיין עובר ב-4.61:1.</p>
+
+        <h2 class="h2" style="margin-top:36px">ניטרלים</h2>
+        <div class="sysgrid">
+          <div class="sw" style="background:#F4F4F2"><span class="k">bg</span><span class="h">#F4F4F2</span><span class="u">רקע המסך</span></div>
+          <div class="sw" style="background:#FAFAF9"><span class="k">surface</span><span class="h">#FAFAF9</span><span class="u">סייד־בר, כרטיס</span></div>
+          <div class="sw" style="background:#F0F0EE"><span class="k">zone</span><span class="h">#F0F0EE</span><span class="u">אזור פעיל</span></div>
+          <div class="sw" style="background:#E1E1DE"><span class="k">zone-off</span><span class="h">#E1E1DE</span><span class="u">אזור כבוי</span></div>
+          <div class="sw" style="background:#D6D6D2"><span class="k">line</span><span class="h">#D6D6D2</span><span class="u">מסגרת</span></div>
+          <div class="sw" style="background:#66655F;color:#fff"><span class="k">mut</span><span class="h">#66655F</span><span class="u">טקסט משני · 5.31:1</span></div>
+          <div class="sw" style="background:#111111;color:#fff"><span class="k">ink</span><span class="h">#111111</span><span class="u">טקסט וקו</span></div>
+        </div>
+
+        <h2 class="h2" style="margin-top:36px">טיפוגרפיה</h2>
+        <div class="specrow"><span class="k">Assistant 200 · 38</span><span class="v" style="font-size:30px;font-weight:200">מה עלה לך מהפגישה?</span></div>
+        <div class="specrow"><span class="k">Assistant 300 · 16</span><span class="v" style="font-size:16px;font-weight:300">גוף הכתיבה והשיחה, גובה שורה 1.85</span></div>
+        <div class="specrow"><span class="k">Assistant 600 · 14</span><span class="v" style="font-size:14px;font-weight:600">טקסט של פקדים</span></div>
+        <div class="specrow"><span class="k">Assistant 600 · 11</span><span class="v" style="font-size:11px;font-weight:600;letter-spacing:.14em">בר עליון · מרווח אותיות 0.14</span></div>
+        <div class="specrow"><span class="k">Assistant 400 · 11.5</span><span class="v" style="font-size:11.5px;color:#66655F">טקסט משני והצהרות</span></div>
+
+        <h2 class="h2" style="margin-top:36px">פקדים</h2>
+        <div class="demo">
+          <button class="btn solid">פעולה ראשית</button>
+          <button class="btn ghost">פעולה משנית</button>
+          <button class="btn plain sm">פעולה שקטה</button>
+          <button class="btn solid" disabled>כבוי</button>
+          <button class="btn ghost" disabled>כבוי</button>
+        </div>
+        <div class="specrow"><span class="k">גובה</span><span class="v">44 פיקסלים · מינימום מגע שנקבע בפרויקט</span></div>
+        <div class="specrow"><span class="k">רדיוס</span><span class="v">6 לפקד · 8 לקופסה · קטן מאוד, לא חד</span></div>
+        <div class="specrow"><span class="k">ריחוף</span><span class="v">בהיר יותר מהמצב הרגיל, לא כהה יותר</span></div>
+        <div class="specrow"><span class="k">כבוי</span><span class="v">אפור ולא ורוד בהיר. ורוד מעומעם עדיין קורא לעצמו</span></div>
+
+        <h2 class="h2" style="margin-top:36px">אזור כתיבה · שני מצבים</h2>
+        <div class="plate locked" style="margin-bottom:12px">
+          <div class="zone-head"><span class="lbl">דרך הגישה של</span><button class="sel primed">בחרי גישה<span class="chev">⌄</span></button></div>
+          <div class="zone-write" style="min-height:70px"><div class="locknote" style="padding:0">כבוי · רק אזור הכתיבה מחשיך</div></div>
+        </div>
+        <div class="plate">
+          <div class="zone-head"><span class="lbl">דרך הגישה של</span><button class="sel">פרויד<span class="sub">מה שלא נאמר</span><span class="chev">⌄</span></button></div>
+          <div class="zone-write" style="min-height:70px"><div style="font-size:15px;font-weight:300">פעיל · הקו בין האזורים רץ מקצה לקצה</div></div>
+        </div>
+        <p class="note"><b>מה שנקבע כאן:</b> הלוח מחולק לשניים. אזור הבחירה פעיל תמיד, אזור הכתיבה הוא היחיד שמשנה מצב, והקו ביניהם נוגע בשתי הדפנות.</p>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- ═══ מודל: ניתוח ═══ -->
+<div class="ovl" id="ovl-analysis">
+  <div class="modal">
+    <h3>הניתוח</h3>
+    <p class="lead" id="anLead">דרך הגישה של פרויד · אינו נושא את שמו בגוף הטקסט</p>
+    <div class="fieldrow">
+      <label>מה שחוזר</label>
+      <p style="font-size:15px;font-weight:300;line-height:1.85;margin:0">האיחור והשתיקה מופיעים יחד, ואת מתארת אותם כשני אירועים. ייתכן שהם אירוע אחד.</p>
+    </div>
+    <div class="fieldrow">
+      <label>מה שנשאר בחוץ</label>
+      <p style="font-size:15px;font-weight:300;line-height:1.85;margin:0">לא נאמר מה קרה בפגישה הקודמת, וההשוואה נשענת עליה.</p>
+    </div>
+    <div class="fieldrow">
+      <label>מה להביא לחדר</label>
+      <p style="font-size:15px;font-weight:300;line-height:1.85;margin:0">ההבחנה בין הפסקה לסירוב, בלשון שלך.</p>
+    </div>
+    <div class="foot">
+      <button class="btn plain sm" data-close>הורד PDF</button>
+      <span class="sp"></span>
+      <button class="btn ghost" data-close>חזרה לכתיבה</button>
+      <button class="btn solid" data-goto="talk" data-close>המשך לשיחה</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ מודל: מקרה חדש ═══
+     שדה יחיד, בדיוק כמו POST /api/cases שמקבל label בלבד ודוחה בקשה בלעדיו. -->
+<div class="ovl" id="ovl-newcase">
+  <div class="modal" style="width:520px">
+    <h3>מקרה חדש</h3>
+    <p class="lead">מקרה הוא תווית שמארגנת התייעצויות. אין בו שדות נוספים, ואין בו תיק.</p>
+
+    <div class="fieldrow">
+      <label for="nc-label">תווית למקרה</label>
+      <input class="inp" id="nc-label" placeholder="למשל: מקרה ו׳" autocomplete="off">
+      <div class="bound">
+        <div class="t">פסבדונים, לא שם אמיתי</div>
+        <div class="d">אלה הערות רפלקציה ולא רשומה קלינית. אל תכתבי כאן שם, ראשי תיבות או פרט מזהה. ההתייעצויות עצמן מאונמזות לפני שמירה.</div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <button class="btn ghost" data-close>ביטול</button>
+      <button class="btn solid" id="nc-create" disabled>צור</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ מודל: שינוי שם ═══ -->
+<div class="ovl" id="ovl-rename">
+  <div class="modal" style="width:520px">
+    <h3>שינוי שם</h3>
+    <p class="lead">שינוי התווית אינו נוגע בהתייעצויות שכבר נשמרו תחתיה.</p>
+    <div class="fieldrow">
+      <label for="rn-label">תווית למקרה</label>
+      <input class="inp" id="rn-label" autocomplete="off">
+      <div class="bound">
+        <div class="t">פסבדונים, לא שם אמיתי</div>
+        <div class="d">אותו כלל חל גם בשינוי שם.</div>
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" data-close>ביטול</button>
+      <button class="btn solid" id="rn-save">שמירה</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ מודל: שיתוף עם המטפל/ת · מסלול המטופלת ═══
+     מציג בדיוק את מה שיישלח. קטע שסומן כפרטי מוחלף בחסימה,
+     כדי שההשמטה תהיה נראית ולא משתמעת. -->
+<div class="ovl" id="ovl-share">
+  <div class="modal share" style="width:640px">
+    <h3>שיתוף עם המטפל/ת</h3>
+    <p class="lead">זה בדיוק מה שיישלח. מה שסימנת כפרטי לא נכלל, ומופיע כאן כחסימה כדי שתראי איפה הוא היה.</p>
+
+    <div class="prev" id="share-prev"></div>
+
+    <div class="opt" style="margin-top:var(--s5)">
+      <input type="checkbox" id="share-analysis" checked>
+      <div>
+        <div class="t">לצרף גם את הניתוח</div>
+        <div class="d">הניתוח נכתב דרך הגישה שבחרת. הוא מתייחס למה שכתבת, כולל לקטעים שסימנת כפרטיים.</div>
+      </div>
+    </div>
+
+    <p class="note" id="share-warn" style="color:var(--p-700);font-weight:600"></p>
+
+    <div class="foot">
+      <button class="btn solid" data-close>שליחה</button>
+      <button class="btn ghost" data-close>ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ מודל: סיכום התייעצות ═══
+     עשרת השדות הם בדיוק אלה ש-lib/summary-prompt.ts מחזיר:
+     theorist · theorist_approach · session_length · themes ·
+     key_moments[patient_quote, clinical_significance] ·
+     what_opened · what_remained · next_session_focus -->
+<div class="ovl" id="ovl-summary">
+  <div class="modal sum" style="width:660px">
+    <h3>סיכום התייעצות</h3>
+    <p class="lead">מקרה ו׳ · 28.08 · דרך הגישה של <b id="sum-theorist">ויניקוט</b></p>
+
+    <div class="meta">
+      <span class="chip">שיחה בינונית</span>
+      <span class="chip n">איחור</span>
+      <span class="chip n">שתיקה</span>
+      <span class="chip n">סירוב כפנייה</span>
+    </div>
+
+    <div class="sec">
+      <h4>מה אפיין את הגישה</h4>
+      <p>הגישה לא חיפשה את הסיבה לאיחור אלא את מה שהשתיקה עשתה בחדר. היא החזיקה את ההבחנה שעלתה מהכתיבה במקום להציע לה פירוש.</p>
+    </div>
+
+    <div class="sec">
+      <h4>רגעים מרכזיים</h4>
+      <div class="moment">
+        <p class="quote">הקודמת הרגישה כמו הפסקה. הזאת הרגישה כמו סירוב.</p>
+        <p class="why">כאן ההבחנה נעשתה בלשון שלך, ולא התקבלה מבחוץ. זה הרגע שבו החומר הפך לניתן להבאה.</p>
+      </div>
+      <div class="moment">
+        <p class="quote">ואני לא הצלחתי להבין מה.</p>
+        <p class="why">אי־ההבנה נאמרה כחוסר אצלך, ולא כמשהו שקרה ביניכן. שווה לשים לב לניסוח הזה.</p>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h4>מה נפתח</h4>
+      <p>ההפרדה בין שתיקה שהיא הפסקה לשתיקה שהיא סירוב, וההבנה שסירוב הוא כבר פנייה ולא נסיגה.</p>
+    </div>
+
+    <div class="sec">
+      <h4>מה נשאר פתוח</h4>
+      <p>מה קרה בפגישה הקודמת, זו שאליה ההשוואה נשענת. היא הוזכרה ולא תוארה, וההבחנה כולה עומדת עליה.</p>
+    </div>
+
+    <div class="bring">
+      <h4>מה להביא לפגישה הבאה</h4>
+      <p>אני רוצה להביא את ההבחנה בין הפסקה לסירוב, ולומר אותה במילים שלי.</p>
+    </div>
+
+    <div class="foot">
+      <!-- במוצר האמיתי הפעולה היא /api/send-to-therapist, ניסוח של מסלול
+           המטופלת. במסלול המטפלת "שליחה למטפלת" חסר היגיון, ולכן ניטרלי כאן. -->
+      <button class="btn plain sm" data-close>שליחה במייל</button>
+      <span class="sp"></span>
+      <button class="btn ghost" data-close>סגירה</button>
+      <button class="btn solid" data-close>הורד PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ מודל: צרי קשר ═══
+     השדות והמצבים נלקחו מ-openSupportModal ב-chat.js ומ-/api/support,
+     ולא הומצאו: נושא · הודעה · המייל שלך, ושלושה מצבים אחרי שליחה. -->
+<div class="ovl" id="ovl-contact">
+  <div class="modal">
+    <div id="contact-form">
+      <h3>צרי קשר</h3>
+      <p class="lead">נשמח לשמוע. נחזור אלייך בהקדם, לכתובת שמופיעה למטה.</p>
+
+      <div class="fieldrow">
+        <label for="c-subj">נושא</label>
+        <input class="inp" id="c-subj" placeholder="תארי בקצרה את הבעיה">
+      </div>
+
+      <div class="fieldrow">
+        <label for="c-msg">הודעה</label>
+        <textarea class="inp" id="c-msg" style="height:150px" placeholder="פרטי כאן…"></textarea>
+      </div>
+
+      <div class="fieldrow">
+        <label for="c-mail">המייל שלך</label>
+        <input class="inp" id="c-mail" type="email" value="ayaavivi@gmail.com">
+        <p class="note" style="margin-top:8px">נחזור לכתובת הזו. אפשר לשנות אותה כאן בלי לשנות את חשבון הכניסה.</p>
+      </div>
+
+      <div class="foot">
+        <button class="btn solid" id="c-send">שלחי</button>
+        <button class="btn ghost" data-close>ביטול</button>
+      </div>
+    </div>
+
+    <!-- מצב אחרי שליחה. קיים בקוד האמיתי וכאן לא היה לו עיצוב. -->
+    <div id="contact-done" hidden>
+      <div class="donemark">✓</div>
+      <h3>ההודעה נשלחה</h3>
+      <p class="lead" id="c-done-lead">נחזור אלייך לכתובת ayaavivi@gmail.com. אין צורך לעשות דבר נוסף.</p>
+      <div class="foot">
+        <button class="btn ghost" data-close>סגירה</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ מודל: הגדרות ═══ -->
+<div class="ovl" id="ovl-settings">
+  <div class="modal">
+    <h3>הגדרות משתמש</h3>
+    <p class="lead">המידע שתשתפי ישפיע על האופן שבו התיאורטיקנים פונים אלייך. שום שדה אינו חובה.</p>
+
+    <div class="fieldrow"><label>שם או כינוי</label><input class="inp" value="איה"></div>
+
+    <div class="fieldrow"><label>לשון פנייה</label>
+      <div class="segs"><button class="seg on">נקבה</button><button class="seg">זכר</button><button class="seg">ניטרלי</button></div>
+    </div>
+
+    <!-- "רקע בפסיכואנליזה" הוסר בהחלטת איה, 28.08. השדה קיים במודל ההגדרות
+         האמיתי ב-chat.js, ולכן ההסרה תצטרך לקרות גם שם אם אב הטיפוס ייושם. -->
+
+    <div class="fieldrow"><label>מה מביא אותך לכאן</label>
+      <div class="segs"><button class="seg">סקרנות</button><button class="seg">לימודים</button><button class="seg on">עבודה קלינית</button><button class="seg">חיפוש אישי</button></div>
+    </div>
+
+    <div class="fieldrow"><label>משהו שתרצי שהתיאורטיקנים ידעו (אופציונלי)</label>
+      <textarea class="inp" placeholder="לא חובה למלא."></textarea>
+    </div>
+
+    <div class="fieldrow"><label>טיימר לסשן</label>
+      <div class="segs"><button class="seg on">50 דקות · מסגרת טיפולית</button><button class="seg">ללא</button></div>
+      <p class="note" style="margin-top:9px">אזהרה חמש דקות לפני הסיום.</p>
+    </div>
+
+    <div class="foot">
+      <button class="btn solid" data-close>שמור</button>
+      <button class="btn ghost" data-close>ביטול</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var THEORISTS=[
+    {k:'freud',n:'פרויד',d:'מה שלא נאמר'},
+    {k:'klein',n:'קליין',d:'מה שקשה לגעת בו'},
+    {k:'winnicott',n:'ויניקוט',d:'המרחב להיות'},
+    {k:'ogden',n:'אוגדן',d:'מה שנוצר בין שנינו'}
+  ];
+  var $=function(s){return document.querySelector(s)};
+  var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+
+  var persona='therapist', chosen=null;
+
+  /* מסך הכניסה · פעולה ראשית אחת בלבד. משתמש חדש רואה הרשמה, ומשתמש
+     חוזר רואה כניסה, לפי דגל שנשמר בדפדפן אחרי אימות מוצלח. */
+  var authMode = 'signup';
+  try { if (localStorage.getItem('bw_has_account') === '1') authMode = 'signin'; } catch(e) {}
+  function renderAuthMode(){
+    var up=document.getElementById('btnSignup'), inb=document.getElementById('btnSignin');
+    var sw=document.getElementById('authSwitch'), fg=document.getElementById('authForgot');
+    if(!up) return;
+    var signup = authMode==='signup';
+    up.style.display  = signup ? 'inline-flex' : 'none';
+    inb.style.display = signup ? 'none' : 'inline-flex';
+    fg.style.display  = signup ? 'none' : 'block';
+    sw.innerHTML = signup
+      ? 'כבר יש לך חשבון? <a href="#" class="lnk">כניסה</a>'
+      : 'אין לך עדיין חשבון? <a href="#" class="lnk">הרשמה</a>';
+  }
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('#authSwitch .lnk')){
+      e.preventDefault();
+      authMode = (authMode==='signup') ? 'signin' : 'signup';
+      renderAuthMode();
+      return;
+    }
+    if(e.target.closest && e.target.closest('#btnSignup, #btnSignin')){
+      try { localStorage.setItem('bw_has_account','1'); } catch(x){}
+      goto('app');
+      return;
+    }
+    var opt = e.target.closest && e.target.closest('#authWho .opt');
+    if(opt){
+      document.querySelectorAll('#authWho .opt').forEach(function(o){ o.classList.remove('on'); });
+      opt.classList.add('on');
+      persona = opt.getAttribute('data-persona');
+    }
+  });
+  renderAuthMode();
+
+
+  /* ---- ניווט בין מסכים ---- */
+  function goto(id){
+    if(id==='auth'){ $('#app').hidden=true; $('#screen-auth').hidden=false; return; }
+    if(id==='app'){ $('#screen-auth').hidden=true; $('#app').hidden=false; id=persona==='therapist'?'cases':'write'; }
+    $('#screen-auth').hidden=true; $('#app').hidden=false;
+    $$('.screen').forEach(function(s){ s.hidden = s.id!=='screen-'+id; });
+    $$('.sb-nav').forEach(function(b){ b.classList.toggle('on', b.dataset.goto===id); });
+    /* הכניסה למסך המחקר היא בחירה שטרם נעשתה, ולכן "בבחירה" ולא "פעיל".
+       מצב פעיל נשאר פעיל גם כשעוברים למסך אחר, כי הוא מצב עבודה. */
+    if(id==='research' && researchState!=='on') setResearch('pick');
+    /* מצב פעיל נשאר מסומן גם כשהמסך הפעיל הוא השיחה · הלולאה שמעל
+       מסמנת לפי המסך בלבד, והייתה מכבה את הסימון ברגע המעבר. */
+    if(researchState==='on') $('#sbResearch').classList.add('on');
+    $('#side').classList.remove('mobopen');
+    $('#scrim').classList.remove('on');
+    $('#btnMenu').setAttribute('aria-expanded','false');
+    var titles={cases:'המקרים שלי',research:'מחקר',write:'כתיבה',talk:'שיחה',archive:'מה כתבתי',system:'מערכת העיצוב'};
+    $('#mobTitle').textContent = titles[id] || 'Between';
+    closeAcct();
+    window.scrollTo(0,0);
+  }
+  document.addEventListener('click',function(e){
+    var g=e.target.closest('[data-goto]'); if(g){ goto(g.dataset.goto); }
+    var o=e.target.closest('[data-open]'); if(o){ $('#ovl-'+o.dataset.open).classList.add('open'); closeAcct(); }
+    var c=e.target.closest('[data-close]'); if(c){ $$('.ovl').forEach(function(v){v.classList.remove('open')}); }
+    if(e.target.classList.contains('ovl')){ e.target.classList.remove('open'); }
+  });
+
+  /* ---- פרסונה ---- */
+  function setPersona(p){
+    persona=p;
+    $$('#personaGrp button').forEach(function(b){ b.classList.toggle('on', b.dataset.persona===p); });
+    $$('[data-persona-only]').forEach(function(el){ el.style.display = el.dataset.personaOnly===p ? '' : 'none'; });
+    $('#wHead').textContent = p==='therapist' ? 'מה עלה לך מהפגישה?' : 'מה נשאר לך מהפגישה?';
+    $('#wCase').textContent = p==='therapist' ? 'מקרה ו׳' : 'הפגישה האחרונה';
+    $('#wFoot').textContent = p==='therapist'
+      ? 'הערות רפלקציה, לא רשומה קלינית.'
+      : 'מה שמתבהר כאן, מקומו בחדר. המרחב אינו תחליף לטיפול.';
+    goto(p==='therapist' ? 'cases' : 'write');
+  }
+  $$('#personaGrp button').forEach(function(b){ b.addEventListener('click',function(){ setPersona(b.dataset.persona); }); });
+  /* כפתור ההגדרות שבבר פותח את תפריט הפרופיל · מודל ההגדרות נפתח
+     מתוך התפריט, מהפריט "הגדרות ופרופיל", ולא מהכפתור עצמו. */
+  $('#btnSettings').addEventListener('click',function(e){
+    e.stopPropagation();
+    var open=$('#acctmenu').classList.toggle('open');
+    this.setAttribute('aria-expanded', open?'true':'false');
+  });
+
+  /* ---- סייד־בר ---- */
+
+  /* פתיחה וסגירה במובייל. בלי זה אין ניווט בכלל מתחת ל-900. */
+  function setSide(open){
+    $('#side').classList.toggle('mobopen',open);
+    $('#scrim').classList.toggle('on',open);
+    $('#btnMenu').setAttribute('aria-expanded',open?'true':'false');
+    if(open){ $('#btnSideClose').focus(); } else { $('#btnMenu').focus(); }
+  }
+  /* סרגל האב-טיפוס דביק ויושב מעל הכל, ולכן הוא הסתיר את ראש הסייד־בר
+     ואיתו את כפתור הסגירה. גובהו משתנה עם הגלישה, ולכן הוא נמדד ולא מנוחש. */
+  function fitSide(){
+    /* נמדד ‎.chrome‎ ולא ‎.proto‎: מעל הבר יושבת שורת הניווט של האב-טיפוס,
+       ומדידת הבר לבדו הייתה מחזירה את הסייד־בר מתחת אליה. */
+    var h=document.querySelector('.chrome').getBoundingClientRect().height;
+    $('#side').style.insetBlockStart = (innerWidth<=900 ? h+'px' : '');
+    $('#scrim').style.insetBlockStart = (innerWidth<=900 ? h+'px' : '');
+  }
+  addEventListener('resize',fitSide);
+  fitSide();
+
+  $('#btnMenu').addEventListener('click',function(e){ e.stopPropagation(); fitSide(); setSide(true); });
+  $('#btnSideClose').addEventListener('click',function(e){ e.stopPropagation(); setSide(false); });
+  $('#scrim').addEventListener('click',function(){ setSide(false); });
+  function closeAcct(){
+    $('#acctmenu').classList.remove('open');
+    $('#btnSettings').setAttribute('aria-expanded','false');
+  }
+  document.addEventListener('click',function(e){ if(!e.target.closest('#acctmenu')&&!e.target.closest('#btnSettings')) closeAcct(); });
+  $('#miWeb').addEventListener('click',function(e){
+    e.stopPropagation();
+    var v=$('#webVal'); v.textContent = v.textContent==='כבוי' ? 'דלוק' : 'כבוי';
+  });
+  $('#miLang').addEventListener('click',function(e){ e.stopPropagation(); });
+
+  /* ---- בורר התיאורטיקן ---- */
+  var menu=$('#menu'), sel=$('#sel');
+  THEORISTS.forEach(function(t,i){
+    var b=document.createElement('button');
+    b.className='mi'; b.type='button'; b.setAttribute('role','option'); b.setAttribute('aria-selected','false');
+    b.dataset.k=t.k;
+    b.innerHTML='<span class="nm">'+t.n+'</span><span class="ds">'+t.d+'</span>';
+    b.addEventListener('click',function(ev){ ev.stopPropagation(); choose(t); });
+    b.addEventListener('keydown',function(ev){
+      if(ev.key==='ArrowDown'){ev.preventDefault();(menu.children[i+1]||menu.children[0]).focus();}
+      if(ev.key==='ArrowUp'){ev.preventDefault();(menu.children[i-1]||menu.children[menu.children.length-1]).focus();}
+      if(ev.key==='Escape'){ev.preventDefault();closeMenu();sel.focus();}
+    });
+    menu.appendChild(b);
+  });
+  function openMenu(){ menu.classList.add('open'); sel.setAttribute('aria-expanded','true'); $('#chev').textContent='⌃';
+    var f=menu.querySelector('[aria-selected="true"]')||menu.children[0]; if(f) f.focus(); }
+  function closeMenu(){ menu.classList.remove('open'); sel.setAttribute('aria-expanded','false'); $('#chev').textContent='⌄'; }
+  sel.addEventListener('click',function(e){ e.stopPropagation(); menu.classList.contains('open')?closeMenu():openMenu(); });
+  document.addEventListener('click',function(e){ if(!menu.contains(e.target)&&!sel.contains(e.target)) closeMenu(); });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){
+      closeMenu(); closeAcct();
+      $$('.ovl').forEach(function(v){v.classList.remove('open')});
+      if($('#side').classList.contains('mobopen')) setSide(false);
+    }
+  });
+
+  function choose(t){
+    var was=!chosen; chosen=t;
+    $('#selName').innerHTML=t.n+' <span class="sub">'+t.d+'</span>';
+    sel.classList.remove('primed');
+    Array.prototype.forEach.call(menu.children,function(c){ c.setAttribute('aria-selected', c.dataset.k===t.k?'true':'false'); });
+    closeMenu(); render();
+    $('#tWho').textContent='שיחה עם '+t.n;
+    /* כל החתימות בשרשור, לא רק הראשונה */
+    $$('#screen-talk [data-name]').forEach(function(w){ w.textContent=t.n; });
+    var st=$('#sum-theorist'); if(st) st.textContent=t.n;
+    $('#anLead').textContent='דרך הגישה של '+t.n+' · אינו נושא את שמו בגוף הטקסט';
+    if(was){ [$('#bAnalyze'),$('#bTalk')].forEach(function(b){
+      b.classList.remove('wake'); void b.offsetWidth; b.classList.add('wake');
+      setTimeout(function(){ b.classList.remove('wake'); },800); }); }
+    $('#ta').focus();
+  }
+
+  function render(){
+    var has=!!chosen, len=$('#ta').textContent.trim().length;
+    $('#ta').setAttribute('contenteditable', has?'true':'false');
+    $('#ta').dataset.ph = has ? 'בלי לסדר את זה קודם.' : 'בחרי גישה כדי להתחיל לכתוב.';
+    $('#hint').style.display = has?'none':'inline-flex';
+    $('#locknote').style.display = has?'none':'block';
+    $('#plate').classList.toggle('locked',!has);
+    sel.classList.toggle('primed',!has);
+    $('#bAnalyze').disabled=!has; $('#bTalk').disabled=!has; $('#bSave').disabled = len===0;
+    $('#bShare').disabled = len===0;
+    $('#privhint').classList.toggle('on', persona==='patient' && has);
+  }
+  $('#ta').addEventListener('input',render);
+  $('#bAnalyze').addEventListener('click',function(){ $('#ovl-analysis').classList.add('open'); });
+  $('#bTalk').addEventListener('click',function(){ goto('talk'); });
+  $('#bSave').addEventListener('click',function(){});
+
+  /* ═══ מחקר · מצב עבודה של המטפלת ═══
+     נפרד מהתייעצות על מקרה: אין כאן חומר של מטופלת אלא שאלה על
+     התיאוריה עצמה. שלושה מצבים בסייד־בר, כבוי · בבחירה · פעיל,
+     כדי שיהיה אפשר לצאת מהמצב באותו מקום שנכנסים אליו. */
+  var researchState='off', rChosen=null;
+
+  function setResearch(st){
+    researchState=st;
+    $('#resVal').textContent = st==='on' ? 'פעיל' : st==='pick' ? 'בבחירה' : 'כבוי';
+    $('#sbResearch').classList.toggle('on', st==='on');
+  }
+
+  function rRender(){
+    var has=!!rChosen;
+    $('#rta').setAttribute('contenteditable', has?'true':'false');
+    $('#rta').dataset.ph = has
+      ? 'מה את רוצה לחקור? אפשר גם רק להיכנס ולהתחיל משם.'
+      : 'בחרי גישה כדי להתחיל לכתוב.';
+    $('#rhint').style.display = has?'none':'inline-flex';
+    $('#rlocknote').style.display = has?'none':'block';
+    $('#rplate').classList.toggle('locked',!has);
+    $('#rsel').classList.toggle('primed',!has);
+    /* הכניסה נפתחת על הגישה ולא על הטקסט · אפשר להיכנס בלי שאלה כתובה */
+    $('#rGo').disabled=!has;
+  }
+
+  var rmenu=$('#rmenu'), rsel=$('#rsel');
+  THEORISTS.forEach(function(t,i){
+    var b=document.createElement('button');
+    b.className='mi'; b.type='button'; b.setAttribute('role','option'); b.setAttribute('aria-selected','false');
+    b.dataset.k=t.k;
+    b.innerHTML='<span class="nm">'+t.n+'</span><span class="ds">'+t.d+'</span>';
+    b.addEventListener('click',function(ev){ ev.stopPropagation(); rChoose(t); });
+    b.addEventListener('keydown',function(ev){
+      if(ev.key==='ArrowDown'){ev.preventDefault();(rmenu.children[i+1]||rmenu.children[0]).focus();}
+      if(ev.key==='ArrowUp'){ev.preventDefault();(rmenu.children[i-1]||rmenu.children[rmenu.children.length-1]).focus();}
+      if(ev.key==='Escape'){ev.preventDefault();rCloseMenu();rsel.focus();}
+    });
+    rmenu.appendChild(b);
+  });
+  function rOpenMenu(){ rmenu.classList.add('open'); rsel.setAttribute('aria-expanded','true'); $('#rchev').textContent='⌃';
+    var f=rmenu.querySelector('[aria-selected="true"]')||rmenu.children[0]; if(f) f.focus(); }
+  function rCloseMenu(){ rmenu.classList.remove('open'); rsel.setAttribute('aria-expanded','false'); $('#rchev').textContent='⌄'; }
+  rsel.addEventListener('click',function(e){ e.stopPropagation(); rmenu.classList.contains('open')?rCloseMenu():rOpenMenu(); });
+  document.addEventListener('click',function(e){ if(!rmenu.contains(e.target)&&!rsel.contains(e.target)) rCloseMenu(); });
+
+  function rChoose(t){
+    var was=!rChosen; rChosen=t;
+    $('#rselName').innerHTML=t.n+' <span class="sub">'+t.d+'</span>';
+    Array.prototype.forEach.call(rmenu.children,function(c){ c.setAttribute('aria-selected', c.dataset.k===t.k?'true':'false'); });
+    rCloseMenu(); rRender();
+    if(was){ var b=$('#rGo'); b.classList.remove('wake'); void b.offsetWidth; b.classList.add('wake');
+      setTimeout(function(){ b.classList.remove('wake'); },800); }
+    $('#rta').focus();
+  }
+  $('#rta').addEventListener('input',rRender);
+
+  $('#rGo').addEventListener('click',function(){
+    if(!rChosen) return;
+    setResearch('on');
+    /* אותו מסך שיחה · מה שמשתנה הוא ההקשר בבר: מחקר ולא מקרה */
+    $('#tWho').textContent='שיחה עם '+rChosen.n;
+    $$('#screen-talk [data-name]').forEach(function(w){ w.textContent=rChosen.n; });
+    $('#tCtx').textContent='מחקר';
+    goto('talk');
+  });
+
+  /* יציאה מהמצב באותו פריט שנכנסים בו · בלי זה "פעיל" הוא מצב בלי דלת.
+     ‎stopPropagation‎ עוצר את המאזין הכללי של ‎data-goto‎, אחרת היציאה
+     הייתה מחזירה מיד למסך המחקר. */
+  $('#sbResearch').addEventListener('click',function(e){
+    if(researchState==='on'){
+      e.stopPropagation();
+      setResearch('off'); $('#tCtx').textContent='מקרה ו׳';
+      goto('cases');
+    }
+  });
+  rRender(); setResearch('off');
+
+  /* ---- צרי קשר ---- */
+  /* אב טיפוס: אין שליחה בפועל. הכפתור מחליף למצב ההצלחה כדי שאפשר יהיה
+     לראות אותו, כי המצב הזה קיים בקוד האמיתי ולא היה לו עיצוב. */
+  $('#c-send').addEventListener('click',function(){
+    var mail=$('#c-mail').value.trim();
+    $('#c-done-lead').textContent = mail
+      ? 'נחזור אלייך לכתובת '+mail+'. אין צורך לעשות דבר נוסף.'
+      : 'נחזור אלייך בהקדם. אין צורך לעשות דבר נוסף.';
+    $('#contact-form').hidden=true; $('#contact-done').hidden=false;
+  });
+  $('#ovl-contact').addEventListener('click',function(e){
+    /* איפוס כשסוגרים, אחרת המודל נפתח בפעם הבאה על מסך ההצלחה */
+    if(e.target===this||e.target.closest('[data-close]')){
+      setTimeout(function(){ $('#contact-form').hidden=false; $('#contact-done').hidden=true; },200);
+    }
+  });
+
+
+  /* ═══ סימון קטעים פרטיים · מסלול המטופלת ═══
+     contenteditable ולא textarea, כי טקסט מסומן דורש span.
+     האפור הוא צבע הסימון, לא הוורוד: הוורוד הוא צבע המותג
+     ופרטיות אינה הדגשה. */
+  var taEl=$('#ta'), tip=$('#marktip');
+
+  function hideTip(){ tip.hidden=true; }
+  function showTipAt(rect){
+    /* צמוד לקטע המסומן: מעליו, וממורכז עליו. קודם הוא נמדד ביחס
+       לאב קדמון רחוק ולכן נחת הרחק מהטקסט. */
+    var host=taEl.closest('.zone-write').getBoundingClientRect();
+    tip.hidden=false;
+    var w=tip.offsetWidth||150;
+    var left=(rect.left+rect.width/2)-host.left-w/2;
+    left=Math.max(4,Math.min(left,host.width-w-4));
+    tip.style.left=left+'px';
+    tip.style.insetInlineStart='auto';
+    /* לפי הגובה האמיתי ולא לפי הערכה, אחרת היא יושבת על הטקסט.
+       אין מקום למעלה, היא עוברת מתחת. כלל 8: לא מכסים טקסט. */
+    var h=tip.offsetHeight||36, gap=8;
+    var above=(rect.top-host.top)-h-gap;
+    tip.style.top=(above>=2 ? above : (rect.bottom-host.top)+gap)+'px';
+  }
+
+  document.addEventListener('selectionchange',function(){
+    if(persona!=='patient'){ hideTip(); return; }
+    var sel=document.getSelection();
+    if(!sel||sel.isCollapsed||!sel.rangeCount){ hideTip(); return; }
+    var r=sel.getRangeAt(0);
+    if(!taEl.contains(r.commonAncestorContainer)){ hideTip(); return; }
+    if(!sel.toString().trim()){ hideTip(); return; }
+    showTipAt(r.getBoundingClientRect());
+  });
+
+  $('#btnMark').addEventListener('mousedown',function(e){ e.preventDefault(); });
+  $('#btnMark').addEventListener('click',function(){
+    var sel=document.getSelection();
+    if(!sel||sel.isCollapsed||!sel.rangeCount) return;
+    var r=sel.getRangeAt(0);
+    if(!taEl.contains(r.commonAncestorContainer)) return;
+    var span=document.createElement('span');
+    span.className='private';
+    span.title='סומן כפרטי. לחיצה מבטלת.';
+    try{ r.surroundContents(span); }
+    catch(err){ span.appendChild(r.extractContents()); r.insertNode(span); }
+    sel.removeAllRanges(); hideTip(); render();
+  });
+
+  /* לחיצה על קטע מסומן מבטלת את הסימון */
+  taEl.addEventListener('click',function(e){
+    var p=e.target.closest('.private'); if(!p) return;
+    var parent=p.parentNode;
+    while(p.firstChild) parent.insertBefore(p.firstChild,p);
+    parent.removeChild(p); parent.normalize(); render();
+  });
+
+  /* בניית התצוגה של מה שיישלח */
+  function buildShare(){
+    var out=document.createElement('div');
+    Array.prototype.forEach.call(taEl.childNodes,function(n){
+      if(n.nodeType===1 && n.classList && n.classList.contains('private')){
+        var b=document.createElement('span'); b.className='redact';
+        b.textContent='הושמט · '+n.textContent.trim().length+' תווים';
+        out.appendChild(b);
+      } else {
+        out.appendChild(n.cloneNode(true));
+      }
+    });
+    var prev=$('#share-prev');
+    prev.innerHTML=''; prev.appendChild(out);
+    var n=taEl.querySelectorAll('.private').length;
+    $('#share-warn').textContent = n
+      ? (n===1 ? 'שימי לב: קטע אחד לא יישלח. הניתוח, אם יצורף, מתייחס גם אליו.'
+               : 'שימי לב: ' + n + ' קטעים לא יישלחו. הניתוח, אם יצורף, מתייחס גם אליהם.')
+      : '';
+  }
+  $('#bShare').addEventListener('click',buildShare);
+
+
+  /* ═══ מקרים: יצירה, שינוי שם, ארכוב ═══ */
+  var activeCard=null;
+
+  function closeCardMenus(){ $$('.cardmenu').forEach(function(m){ m.classList.remove('open'); }); }
+  document.addEventListener('click',function(e){
+    var more=e.target.closest('.card .more');
+    if(more){ e.stopPropagation();
+      var menu=more.parentElement.querySelector('.cardmenu');
+      var wasOpen=menu.classList.contains('open');
+      closeCardMenus(); if(!wasOpen) menu.classList.add('open');
+      activeCard=more.parentElement; return; }
+    if(!e.target.closest('.cardmenu')) closeCardMenus();
+  });
+
+  document.addEventListener('click',function(e){
+    var act=e.target.closest('.cardmenu button'); if(!act||!activeCard) return;
+    closeCardMenus();
+    if(act.dataset.act==='rename'){
+      $('#rn-label').value=activeCard.querySelector('.t').textContent.replace(' · בארכיון','').trim();
+      $('#ovl-rename').classList.add('open'); $('#rn-label').focus();
+    } else {
+      activeCard.classList.toggle('archived');
+      act.textContent = activeCard.classList.contains('archived') ? 'החזרה מהארכיון' : 'העברה לארכיון';
+      refreshEmpty();
+    }
+  });
+
+  $('#rn-save').addEventListener('click',function(){
+    var v=$('#rn-label').value.trim();
+    if(v&&activeCard) activeCard.querySelector('.t').textContent=v;
+    $('#ovl-rename').classList.remove('open');
+  });
+
+  /* יצירה · "צור" נעול עד שיש תווית, בדיוק כמו שהשרת דוחה בקשה בלעדיה */
+  var ncInput=$('#nc-label'), ncBtn=$('#nc-create');
+  ncInput.addEventListener('input',function(){ ncBtn.disabled = ncInput.value.trim().length===0; });
+  $('[data-open="newcase"]')&&null;
+  document.addEventListener('click',function(e){
+    if(e.target.closest('[data-open="newcase"]')){ ncInput.value=''; ncBtn.disabled=true; setTimeout(function(){ncInput.focus();},60); }
+  });
+  ncBtn.addEventListener('click',function(){
+    var v=ncInput.value.trim(); if(!v) return;
+    var el=document.createElement('div');
+    el.className='card';
+    el.innerHTML='<button class="more" aria-label="עוד">⋯</button>'
+      +'<div class="cardmenu"><button data-act="rename">שינוי שם</button><button data-act="archive">העברה לארכיון</button></div>'
+      +'<div class="t" data-goto="write"></div><div class="m">נפתח היום · עוד לא נכתב דבר</div>';
+    el.querySelector('.t').textContent=v;
+    $('#caselist').prepend(el);
+    $('#ovl-newcase').classList.remove('open');
+    refreshEmpty();
+  });
+
+  /* מצב ריק · נגזר מהרשימה ולא ממתג */
+  function refreshEmpty(){
+    var live=$$('#caselist .card').filter(function(c){ return !c.classList.contains('archived'); }).length;
+    $('#caseempty').hidden = live>0;
+    $('#caselist').hidden = live===0;
+  }
+  refreshEmpty();
+
+  $('#btnReset').addEventListener('click',function(){
+    chosen=null; $('#ta').textContent=''; $('#selName').textContent='בחרי גישה';
+    /* גם מצב המחקר חוזר לכבוי, אחרת האיפוס משאיר "פעיל" בלי שיחה */
+    rChosen=null; $('#rta').textContent=''; $('#rselName').textContent='בחרי גישה';
+    Array.prototype.forEach.call(rmenu.children,function(c){ c.setAttribute('aria-selected','false'); });
+    setResearch('off'); rRender(); $('#tCtx').textContent='מקרה ו׳';
+    Array.prototype.forEach.call(menu.children,function(c){ c.setAttribute('aria-selected','false'); });
+    $$('.ovl').forEach(function(v){v.classList.remove('open')});
+    /* גם רשימת המקרים חוזרת למצב ההתחלתי, אחרת האיפוס משאיר רשימה ריקה */
+    var cards=$$('#caselist .card');
+    cards.slice(0, Math.max(0, cards.length-3)).forEach(function(c){ c.remove(); });
+    $$('#caselist .card').forEach(function(c){
+      c.classList.remove('archived');
+      var a=c.querySelector('[data-act="archive"]'); if(a) a.textContent='העברה לארכיון';
+    });
+    refreshEmpty();
+    render(); setPersona(persona);
+  });
+
+  setPersona('therapist');
+  render();
+})();
+</script>
+</body>
+</html>

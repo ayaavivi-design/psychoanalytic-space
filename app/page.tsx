@@ -18,6 +18,8 @@ export default function Home() {
   // לשון פנייה לפי ההגדרה של המשתמש/ת. עד 21.08 המסכים האלה היו בלשון נקבה קבועה,
   // כך שמטפל גבר נפגש ב"כתבי" ו"בחרי" כבר במסך הראשון. כשאין הגדרה — צורת הלוכסן.
   const [userGender, setUserGender] = useState('');
+  // המייל בכרטיס החשבון · בבעלות React, ראה ההערה ב-chat.js ליד bw-user-email
+  const [userEmail, setUserEmail] = useState('');
   const gv = (fem: string, masc: string, both: string) =>
     userGender === 'male' ? masc : userGender === 'female' ? fem : both;
   const [showHoldTheoristPicker, setShowHoldTheoristPicker] = useState(false);
@@ -113,6 +115,13 @@ export default function Home() {
     },
   };
   const [authLangOpen, setAuthLangOpen] = useState(false);
+  /* מסך הכניסה מציג פעולה אחת בלבד. שתי פעולות שוות משקל גרמו לשני משתמשים
+     לנסות כניסה לפני שנרשמו (דיווח איה, 28.08). דפדפן שכבר התחבר פעם נושא
+     את bw_has_account, וכל השאר נחשב חדש. */
+  const [authMode, setAuthMode] = useState<'signup' | 'signin'>('signup');
+  useEffect(() => {
+    try { if (localStorage.getItem('bw_has_account') === '1') setAuthMode('signin'); } catch {}
+  }, []);
   // BW-104 — sidebar persona. Production: set from login choice (user_prefs.persona).
   // Local: driven by the dev tabs below so Aya can preview both interfaces.
   const [devPersona, setDevPersona] = useState<'patient' | 'therapist'>('patient');
@@ -152,6 +161,64 @@ export default function Home() {
   const [casesLoaded, setCasesLoaded] = useState(false);
   const [newCaseLabel, setNewCaseLabel] = useState('');
   const [showNewCase, setShowNewCase] = useState(false);
+  // הרשימה הנפתחת של בורר הגישה · העיצוב החדש, 28.08
+  const [selOpen, setSelOpen] = useState(false);
+  // תפריט החשבון · נפתח בזרימה מעל הכרטיס ודוחף את הרשימה, ראה globals.css
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  // תפריט ההגדרות עבר מהסייד-בר לפינה הימנית של הבר השחור (הכרעת איה 29.08)
+  const [headerMenuOpen, setHeaderMenuOpen] = useState(false);
+  // גיבוי הלוגו · אם קובץ הסימן נכשל, הבר מציג את המילה ולא נשאר ריק
+  const [logoFailed, setLogoFailed] = useState(false);
+  // "מה כתבתי" הוא מסך בעיצוב, לא שכבה. שתי שפות המכל בעיצוב נפרדות:
+  // מסך נבנה מבר עליון, קו, כותרת גדולה ופוטר; מודל מכותרת קטנה, פתיח וסרגל.
+  type WriteEntry = { id: number | string; date?: string; fullText?: string; publicText?: string };
+  const [patientView, setPatientView] = useState<'write' | 'archive'>('write');
+  // מסך המחקר · בוחרים גישה לפני הכניסה, כמו במסך הכתיבה (הכרעת איה 29.08)
+  const [researchPicking, setResearchPicking] = useState(false);
+  const [researchApproach, setResearchApproach] = useState<string | null>(null);
+  const [researchSelOpen, setResearchSelOpen] = useState(false);
+  // מצב המחקר בפועל · chat.js משדר, React מרנדר
+  const [researchOn, setResearchOn] = useState(false);
+  // חיפוש רשת · השורה בעיצוב היא תווית קבועה וערך בקצה. ‎toggleWebSearch‎ כתב
+  // מחרוזת מחוברת ("חיפוש רשת: דלוק") לתוך התווית ולא נגע בערך, ולכן התווית
+  // אמרה דלוק והערך לידה נשאר כבוי. אותו דפוס של שני מקורות (פריט 17).
+  const [webSearchOn, setWebSearchOn] = useState(false);
+  // השם מ"שם או כינוי" · נקרא כשתפריט החשבון נפתח, כי saveSettings כותב
+  // ל-localStorage ואין אירוע שמודיע על כך.
+  const [profileName, setProfileName] = useState('');
+  const [avatarSrc, setAvatarSrc] = useState('');
+  const [researchText, setResearchText] = useState('');
+  const [writeEntries, setWriteEntries] = useState<WriteEntry[]>([]);
+  // טקסט שממתין להיכתב לשדה הכתיבה אחרי שהמסך נטען (פתיחת רשומה מהארכיון)
+  const [pendingWrite, setPendingWrite] = useState<string | null>(null);
+  const loadWriteEntries = () => {
+    try { setWriteEntries(JSON.parse(localStorage.getItem('bw_writes') || '[]')); }
+    catch { setWriteEntries([]); }
+  };
+  // קריאות ישנות ל-openWriteArchive (קישור בתוך מסך הכתיבה) מנותבות למסך
+  useEffect(() => {
+    const open = () => { loadWriteEntries(); setPatientView('archive'); };
+    window.addEventListener('bw-open-write-archive', open);
+    return () => window.removeEventListener('bw-open-write-archive', open);
+  }, []);
+  // שלושת המודלים מהעיצוב החדש · שיתוף, סיכום התייעצות, צרי קשר
+  type SummaryData = {
+    theorist?: string; session_length?: string; themes?: string[];
+    key_moments?: { patient_quote?: string; clinical_significance?: string }[];
+    what_opened?: string; what_remained?: string; theorist_approach?: string; next_session_focus?: string;
+  };
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareEmail, setShareEmail] = useState('');
+  const [shareWithAnalysis, setShareWithAnalysis] = useState(true);
+  const [shareState, setShareState] = useState<'' | 'sending' | 'sent' | 'error'>('');
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const [summaryData, setSummaryData] = useState<SummaryData | null>(null);
+  const [summaryState, setSummaryState] = useState<'' | 'loading' | 'error'>('');
+  const [contactOpen, setContactOpen] = useState(false);
+  const [contactSubject, setContactSubject] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactState, setContactState] = useState<'' | 'sending' | 'sent' | 'error'>('');
   const [selectedCase, setSelectedCase] = useState<TherapistCase | null>(null);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [consultsLoaded, setConsultsLoaded] = useState(false);
@@ -194,12 +261,11 @@ export default function Home() {
   }, []);
   useEffect(() => {
     setMounted(true);
-    // ברירת המחדל היא מכווץ, חוץ מבלוקאל: שם איה עובדת מול הסייד-בר עצמו וכיווץ מפריע
-    // (הכרעת איה). העדפה מפורשת של מי שפתח את התפריט מבטלת גם היא.
-    try {
-      const local = window.location.hostname === 'localhost';
-      if (local || localStorage.getItem('sidebar_collapsed') === 'false') setSidebarCollapsed(false);
-    } catch { /* ignore */ }
+    // העיצוב החדש הסיר את האייקונים, ואיתם את כפתור הכיווץ: בסרגל מכווץ לא נשאר
+    // מה להראות. הסייד-בר פתוח תמיד, והעדפה שמורה מהעבר אינה משוחזרת, אחרת מי
+    // שכיווץ פעם היה נתקע ב-52 פיקסלים בלי שום דרך לפתוח. 28.08.2026.
+    setSidebarCollapsed(false);
+    try { localStorage.removeItem('sidebar_collapsed'); } catch { /* ignore */ }
     (window as any).toggleSidebar = () => setSidebarCollapsed(v => {
       const next = !v;
       try { localStorage.setItem('sidebar_collapsed', String(next)); } catch { /* ignore */ }
@@ -305,17 +371,30 @@ export default function Home() {
   // holdtheoristchange was the only event crossing the boundary. So the text simply stayed, and a
   // new conversation opened on top of the previous case's writing.
   useEffect(() => {
-    const clearWritingSurface = () => {
+    const clearWritingSurface = (e?: Event) => {
+      // "חזרה לכתיבה" מתוך מחקר מחזירה למסך הכתיבה של המחקר. היעד מגיע
+      // מ-chat.js על האירוע עצמו, כי הוא זה שיודע באיזה מצב היינו.
+      setResearchPicking((e as CustomEvent | undefined)?.detail?.back === 'research');
       setDailyText('');
       setConsultText('');
       setHubTheorists([]);
       setConsultPickerOpen(false);
+      // בחירת הגישה מתאפסת גם היא. בלי זה שיחה חדשה נפתחה על התיאורטיקן
+      // האחרון, כלומר על בחירה שהמטופלת לא עשתה הפעם, והלוח נראה פתוח
+      // בזמן שהרמז "מתחילים כאן" כבר לא מוצג.
+      setActiveApproach(null);
+      setResearchApproach(null);
+      setSelOpen(false);
+      setResearchSelOpen(false);
       setNoteAnalysis(prev => { const n = { ...prev }; delete n['draft']; return n; });
       setAnalysisModalOpen(false);
       // שדה הכתיבה של המטופלת נשכח כאן בפעם הראשונה. הוא contentEditable ולא נשלט על ידי
       // React, ולכן setHoldText לבדו לא מרוקן את המסך: צריך לגעת ב-DOM דרך ה-ref.
       // ובלי לבטל את טיימר הדיבאונס ולמחוק את bw_hold_draft, הטקסט חוזר בטעינה הבאה.
       // אותן ארבע שורות בדיוק שכבר קיימות ב-handleEnterConversation.
+      // מסך "מה כתבתי" נסגר · בלעדיו הוא נשאר פתוח אחרי שיחה חדשה, מסך
+      // הכתיבה נשאר מוסתר, והכפתורים שבתוכו נראים כמתים.
+      setPatientView('write');
       if (holdDraftTimerRef.current) clearTimeout(holdDraftTimerRef.current);
       if (holdTextareaRef.current) holdTextareaRef.current.innerHTML = '';
       setHoldText('');
@@ -327,9 +406,75 @@ export default function Home() {
   }, []);
 
   const isHe = currentLang === 'he';
+  useEffect(() => {
+    const take = (e: Event) => setResearchOn(!!(e as CustomEvent).detail);
+    window.addEventListener('bw-explore-mode', take);
+    try { setResearchOn(localStorage.getItem('bw_mode') === 'explore'); } catch { /* ignore */ }
+    return () => window.removeEventListener('bw-explore-mode', take);
+  }, []);
+  useEffect(() => {
+    const take = (e: Event) => setWebSearchOn(!!(e as CustomEvent).detail);
+    window.addEventListener('bw-websearch', take);
+    setWebSearchOn(!!(window as any).webSearch);
+    return () => window.removeEventListener('bw-websearch', take);
+  }, []);
+  // chat.js משדר את המייל אחרי אימות מוצלח. גם קריאה ראשונית, למקרה
+  // שהאימות הסתיים לפני שהמאזין נרשם.
+  useEffect(() => {
+    const take = (e: Event) => setUserEmail(((e as CustomEvent).detail as string) || '');
+    window.addEventListener('bw-user-email', take);
+    const now = (window as any)._userEmail;
+    if (now) setUserEmail(now);
+    return () => window.removeEventListener('bw-user-email', take);
+  }, []);
+  // במה כל תיאורטיקן עוסק · מוצג לצד השם, כי מטופלת אינה מכירה את השמות (פריט 18)
+  const THEORIST_DESC: Record<string, string> = isHe
+    ? { freud: 'מה שלא נאמר', klein: 'מה שקשה לגעת בו', winnicott: 'המרחב להיות', ogden: 'מה שנוצר בין שנינו' }
+    : { freud: 'what goes unsaid', klein: 'what is hard to touch', winnicott: 'the space to be', ogden: 'what forms between us' };
   const isDev = process.env.NODE_ENV !== 'production';
   // Local preview uses the dev tabs; production follows the login choice.
   const activePersona = isLocalhost ? devPersona : prodPersona;
+
+  // רענון השם בכל פתיחה של התפריט
+  useEffect(() => {
+    if (!headerMenuOpen) return;
+    try {
+      const p = JSON.parse(localStorage.getItem('user_prefs') || '{}');
+      setProfileName((p.name || '').trim());
+      setAvatarSrc(p.avatar || '');
+    } catch { /* ignore */ }
+  }, [headerMenuOpen]);
+  // ‎chat.js‎ משדר ברגע שהתמונה מתחלפת בהגדרות, כדי שהעיגול יתעדכן
+  // בלי לסגור ולפתוח את התפריט.
+  useEffect(() => {
+    const readPrefs = () => {
+      try {
+        const p = JSON.parse(localStorage.getItem('user_prefs') || '{}');
+        setProfileName((p.name || '').trim());
+        setAvatarSrc(p.avatar || '');
+      } catch { /* ignore */ }
+    };
+    const takeAvatar = (e: Event) => setAvatarSrc(((e as CustomEvent).detail as string) || '');
+    window.addEventListener('bw-avatar', takeAvatar);
+    window.addEventListener('bw-prefs', readPrefs);
+    readPrefs();
+    return () => { window.removeEventListener('bw-avatar', takeAvatar); window.removeEventListener('bw-prefs', readPrefs); };
+  }, []);
+
+  // ‎#bw-mode-select‎ (שורת הפעולות של מסך הכתיבה) מוסתר ב-CSS כברירת מחדל,
+  // ו-‎showModeSelect()‎ הוא שמציב לו ‎flex‎. הוא רץ פעם אחת בעליית העמוד, ורק
+  // אם הפרסונה כבר הייתה מטופלת באותו רגע. לכן כל מעבר מאוחר יותר למטופלת
+  // השאיר את השורה מוסתרת: גם מתג הפיתוח, וגם המרוץ בפרודקשן, שבו
+  // ‎__resolvePersona‎ עונה מהשרת אחרי שהבדיקה כבר רצה כמטפלת.
+  // כאן React מודיע ברגע שעץ המטופלת קיים, ורק כשאין שיחה על המסך.
+  useEffect(() => {
+    if (!mounted || activePersona !== 'patient') return;
+    const chatEl = document.getElementById('chat');
+    const hasTurns = !!chatEl?.querySelector('.message');
+    if (hasTurns) return;
+    (window as any).showModeSelect?.();
+  }, [activePersona, mounted]);
+
 
   // Mirror holdTheorist onto the sidebar highlight — but only once the patient has actually
   // written something (same gate as the continue button: holdText.trim()). Before any writing
@@ -337,11 +482,15 @@ export default function Home() {
   // entering a conversation (handleEnterConversation blanks holdText for a tick before the
   // opening text fills it). Uses the existing .active mechanism (bwSetActiveTheorist). No loop —
   // it re-dispatches holdtheoristchange with the same key, so setHoldTheorist is a no-op.
+  // ‎holdTheorist‎ נושא ברירת מחדל ('winnicott') ולכן אינו עדות לבחירה. כשהמראה
+  // רצה עליו, כל טעינה עם טיוטה שמורה שידרה ‎holdtheoristchange‎ עם ויניקוט,
+  // ‎activeApproach‎ נדלק, הרמז "מתחילים כאן" נעלם, והלוח נפתח על תיאורטיקן
+  // שהמטופלת לא בחרה. המראה רצה עכשיו על ‎activeApproach‎, שנקבע רק בבחירה.
   useEffect(() => {
-    if (mounted && activePersona === 'patient' && holdText.trim()) {
-      (window as any).bwSetActiveTheorist?.(holdTheorist);
+    if (mounted && activePersona === 'patient' && activeApproach && holdText.trim()) {
+      (window as any).bwSetActiveTheorist?.(activeApproach);
     }
-  }, [holdTheorist, activePersona, mounted, holdText]);
+  }, [activeApproach, activePersona, mounted, holdText]);
 
   // Analytics (event-only, anonymous). app_opened = retention anchor; fires once per load.
   const appOpenedRef = useRef(false);
@@ -384,6 +533,89 @@ export default function Home() {
       if (res.ok) { const d = await res.json(); setCases(Array.isArray(d.cases) ? d.cases : []); }
     } catch { /* ignore */ }
     setCasesLoaded(true);
+  };
+  // ── שלושת המודלים · מחוברים לראוטים שכבר קיימים בריפו ──
+  // השיתוף בונה את גוף המייל מהכתיבה עצמה. מה שסומן כפרטי מוחלף בחסימה
+  // ולא נשלח, וזה מה שהמסך מבטיח למטופלת.
+  const buildShareHtml = () => {
+    const el = holdTextareaRef.current;
+    if (!el) return '';
+    const clone = el.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll('.bw-private').forEach(n => {
+      const b = document.createElement('span');
+      b.textContent = '▉▉▉▉▉';
+      b.setAttribute('style', 'color:#9A9A95;letter-spacing:1px');
+      n.replaceWith(b);
+    });
+    return clone.innerHTML;
+  };
+  // הניתוח שמצורף הוא זה שכבר רץ על הטיוטה. אם לא רץ, אין מה לצרף.
+  const draftAnalysisHtml = () => {
+    const a = noteAnalysis['draft'];
+    if (!a) return '';
+    const rows: [string, string | null | undefined][] = [
+      [isHe ? 'מה נפתח' : 'What opened', a.what_opened],
+      [isHe ? 'מה נשאר' : 'What remained', a.what_remained],
+      [isHe ? 'מה להביא לפגישה' : 'To bring to the session', a.next_session_focus],
+    ];
+    return '<h3 style="font-weight:400">' + (isHe ? 'הניתוח' : 'The analysis') + '</h3>'
+      + rows.filter(([, v]) => !!v).map(([k, v]) => '<p><b>' + k + '</b><br>' + v + '</p>').join('');
+  };
+  const sendShare = async () => {
+    const mail = shareEmail.trim();
+    if (!mail) return;
+    setShareState('sending');
+    try {
+      const gh = (window as any).getAuthHeaders;
+      const headers = { 'Content-Type': 'application/json', ...(gh ? await gh() : {}) };
+      const body = '<div style="font-family:sans-serif;line-height:1.8;direction:rtl">'
+        + '<h2 style="font-weight:400">מה נשאר איתי מהפגישה</h2>'
+        + buildShareHtml()
+        + (shareWithAnalysis && draftAnalysisHtml() ? '<hr style="margin:24px 0;border:none;border-top:1px solid #D6D6D2">' + draftAnalysisHtml() : '')
+        + '</div>';
+      const res = await fetch('/api/send-to-therapist', {
+        method: 'POST', headers,
+        body: JSON.stringify({ email: mail, subject: 'מהמרחב שבין הפגישות', html: body }),
+      });
+      setShareState(res.ok ? 'sent' : 'error');
+    } catch { setShareState('error'); }
+  };
+  // הסיכום קורא ל-/api/session-summary עם התמליל החי ומרנדר את עשרת השדות
+  // ש-lib/summary-prompt.ts מחזיר. אין כאן שדה שהומצא.
+  const readGender = () => {
+    try { return JSON.parse(localStorage.getItem('intake_completed') || '{}').gender || ''; } catch { return ''; }
+  };
+  const openSummary = async () => {
+    setSummaryOpen(true); setSummaryState('loading'); setSummaryData(null);
+    try {
+      const turns = Array.from(document.querySelectorAll('#chat .message')).map(m => {
+        const who = m.classList.contains('user') ? (isHe ? 'מטופל/ת' : 'Patient') : (m.querySelector('.message-role')?.textContent || '');
+        return who + ': ' + (m.querySelector('.message-body')?.textContent || '').trim();
+      }).filter(t => t.length > 3);
+      if (!turns.length) { setSummaryState('error'); return; }
+      const gh = (window as any).getAuthHeaders;
+      const headers = { 'Content-Type': 'application/json', ...(gh ? await gh() : {}) };
+      const res = await fetch('/api/session-summary', {
+        method: 'POST', headers,
+        body: JSON.stringify({ transcript: turns.join('\n\n'), theorist: activeApproach || holdTheorist, gender: readGender() }),
+      });
+      if (!res.ok) { setSummaryState('error'); return; }
+      const j = await res.json();
+      setSummaryData((j.summary || j) as SummaryData); setSummaryState('');
+    } catch { setSummaryState('error'); }
+  };
+  const sendContact = async () => {
+    if (!contactSubject.trim() || !contactMessage.trim()) return;
+    setContactState('sending');
+    try {
+      const gh = (window as any).getAuthHeaders;
+      const headers = { 'Content-Type': 'application/json', ...(gh ? await gh() : {}) };
+      const res = await fetch('/api/support', {
+        method: 'POST', headers,
+        body: JSON.stringify({ subject: contactSubject.trim(), message: contactMessage.trim(), userEmail: contactEmail.trim() }),
+      });
+      setContactState(res.ok ? 'sent' : 'error');
+    } catch { setContactState('error'); }
   };
   const createCase = async (label: string) => {
     const l = label.trim();
@@ -682,40 +914,40 @@ export default function Home() {
   const renderNoteAnalysisBody = (a: any) => {
     const section = (label: string, body: React.ReactNode) => (
       <div style={{ marginTop: 12 }}>
-        <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{label}</div>
+        <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{label}</div>
         {body}
       </div>
     );
-    const txt = (s: string) => <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6 }}>{s}</div>;
+    const txt = (s: string) => <div style={{ fontSize: 16, color: 'var(--text)', lineHeight: 1.6 }}>{s}</div>;
     return (
       <>
         {a.countertransference && section(isHe ? 'מה עלה בך' : 'What moved in you', txt(a.countertransference))}
         {a.what_opened && section(isHe ? 'מה נפתח' : 'What opened', txt(a.what_opened))}
         {a.what_remained && section(isHe ? 'מה נותר פתוח' : 'What remained', txt(a.what_remained))}
-        {a.invitation && section(isHe ? 'הזמנה' : 'Invitation', <div style={{ fontSize: 13, color: 'var(--accent)', lineHeight: 1.6 }}>{a.invitation}</div>)}
+        {a.invitation && section(isHe ? 'הזמנה' : 'Invitation', <div style={{ fontSize: 16, color: 'var(--accent)', lineHeight: 1.6 }}>{a.invitation}</div>)}
         {a.next_session_focus && section(isHe ? 'לפגישה הבאה' : 'Next session', txt(a.next_session_focus))}
       </>
     );
   };
   const renderNoteAnalysis = (key: string) => {
     if (analyzingNoteId === key) {
-      return <div style={{ marginTop: 12, fontSize: 12, color: 'var(--muted)', fontStyle: 'italic' }}>{isHe ? 'רגע…' : 'One moment…'}</div>;
+      return <div style={{ marginTop: 12, fontSize: 15, color: 'var(--muted)', fontStyle: 'italic' }}>{isHe ? 'רגע…' : 'One moment…'}</div>;
     }
     const a = noteAnalysis[key];
     if (!a) return null;
     const section = (label: string, body: React.ReactNode) => (
       <div style={{ marginTop: 12 }}>
-        <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{label}</div>
+        <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{label}</div>
         {body}
       </div>
     );
-    const txt = (s: string) => <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6 }}>{s}</div>;
+    const txt = (s: string) => <div style={{ fontSize: 16, color: 'var(--text)', lineHeight: 1.6 }}>{s}</div>;
     return (
       <div style={{ marginTop: 12, padding: 12, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
         {a.countertransference && section(isHe ? 'מה עלה בך' : 'What moved in you', txt(a.countertransference))}
         {a.what_opened && section(isHe ? 'מה נפתח' : 'What opened', txt(a.what_opened))}
         {a.what_remained && section(isHe ? 'מה נותר פתוח' : 'What remained', txt(a.what_remained))}
-        {a.invitation && section(isHe ? 'הזמנה' : 'Invitation', <div style={{ fontSize: 13, color: 'var(--accent)', lineHeight: 1.6 }}>{a.invitation}</div>)}
+        {a.invitation && section(isHe ? 'הזמנה' : 'Invitation', <div style={{ fontSize: 16, color: 'var(--accent)', lineHeight: 1.6 }}>{a.invitation}</div>)}
         {a.next_session_focus && section(isHe ? 'לפגישה הבאה' : 'Next session', txt(a.next_session_focus))}
       </div>
     );
@@ -763,13 +995,49 @@ export default function Home() {
 
   const getHoldContent = () => {
     const el = holdTextareaRef.current;
-    if (!el) return { full: '', public: '' };
+    if (!el) return { full: '', public: '', display: '' };
     const full = el.innerText?.trim() || '';
     const clone = el.cloneNode(true) as HTMLDivElement;
     clone.querySelectorAll('.bw-private').forEach(s => s.remove());
     const pub = clone.innerText?.trim() || full;
-    return { full, public: pub };
+    // גרסת התצוגה · אותו טקסט כמו זה שנשלח, אבל הקטעים שהוסרו מסומנים
+    // בחסימה במקום להיעלם בשקט. אותה מחווה כמו בתצוגה המקדימה של השיתוף:
+    // רואים איפה היה משהו, ולא מה היה.
+    const dclone = el.cloneNode(true) as HTMLDivElement;
+    dclone.querySelectorAll('.bw-private').forEach(sp => sp.replaceWith(document.createTextNode('▉▉▉▉▉')));
+    const display = dclone.innerText?.trim() || pub;
+    return { full, public: pub, display };
   };
+
+  // לחיצה על רשומה ב"מה כתבתי" מחזירה את הכתיבה למסך הכתיבה. לכרטיס לא היה
+  // מאזין כלל, רק לכפתור המחיקה שבתוכו, ולכן לחיצה עליו לא עשתה דבר.
+  // שדה הכתיבה הוא contentEditable ואינו נשלט על ידי React, ולכן כותבים
+  // אליו דרך ה-ref, אותו דפוס שכבר קיים בניקוי המסך.
+  const openWriteEntry = (entry: WriteEntry) => {
+    const text = entry.fullText || entry.publicText || '';
+    if (!text) return;
+    setPatientView('write');
+    setHoldText(text);
+    // ‎requestAnimationFrame‎ כאן רץ לפני שמסך הכתיבה הספיק להירנדר, ולכן
+    // ה-ref היה עדיין ריק והטקסט לא נחת. הכתיבה עוברת לאפקט שרץ אחרי
+    // שהמסך קיים.
+    setPendingWrite(text);
+  };
+
+  // הכתיבה לשדה נעשית אחרי שמסך הכתיבה קיים. השדה הוא contentEditable
+  // ואינו נשלט על ידי React, ולכן הוא נכתב דרך ה-ref ולא דרך value.
+  useEffect(() => {
+    if (pendingWrite === null || patientView !== 'write') return;
+    const el = holdTextareaRef.current;
+    if (!el) return;
+    // הטיוטה נשמרת כ-HTML והרשומה בארכיון נשמרת כטקסט. הצבה ל-innerText
+    // איבדה את שבירות השורה, ולכן ההמרה נעשית כאן במפורש: בריחה מתווי HTML
+    // ואז שורה לכל <br>, אותו מבנה שהשדה כותב לעצמו.
+    el.innerHTML = pendingWrite
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .split('\n').join('<br>');
+    setPendingWrite(null);
+  }, [pendingWrite, patientView]);
 
   const handleHoldSave = () => {
     const { full, public: pub } = getHoldContent();
@@ -789,7 +1057,7 @@ export default function Home() {
 
   const handleEnterConversation = (theorist: string) => {
     setShowHoldTheoristPicker(false);
-    const { full, public: pub } = getHoldContent();
+    const { full, public: pub, display } = getHoldContent();
     // Crisis check scans FULL text (incl. .bw-private) so distress marked
     // private still triggers the banner. Privacy preserved: only `pub` is
     // passed to the theorist below — bw-private content never reaches the model.
@@ -798,7 +1066,7 @@ export default function Home() {
     }
     // Default save: commit the writing to the local archive once, on continue.
     if (full) (window as any).saveWriteEntry?.(full, pub);
-    (window as any).enterHoldConversation?.(theorist, pub);
+    (window as any).enterHoldConversation?.(theorist, pub, display);
     window.bwTrack?.('conversation_entered', { theorist });
     if (holdTextareaRef.current) holdTextareaRef.current.innerHTML = '';
     setHoldText('');
@@ -871,19 +1139,19 @@ export default function Home() {
           {/* Language selector — top right */}
           <div style={{ position: 'absolute', top: 16, left: 16 }}>
             <div onClick={() => setAuthLangOpen(o => !o)}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', color: 'var(--muted)', padding: '6px 10px', borderRadius: 8, border: '1px solid transparent', transition: 'all 0.15s' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', color: 'var(--muted)', padding: '6px 10px', borderRadius: 6, border: '1px solid transparent', transition: 'all 0.15s' }}
               onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--border)')}
               onMouseLeave={e => (e.currentTarget.style.borderColor = 'transparent')}>
               <Globe size={15} strokeWidth={1.75} />
             </div>
             {authLangOpen && (
-              <div style={{ position: 'absolute', top: '100%', left: 0, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '4px', boxShadow: '0 4px 16px rgba(45,36,32,0.1)', zIndex: 210, minWidth: 130 }}>
+              <div style={{ position: 'absolute', top: '100%', left: 0, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, padding: '4px', boxShadow: '0 4px 16px rgba(45,36,32,0.1)', zIndex: 210, minWidth: 130 }}>
                 {([
                   ['en','🇬🇧','English'],['he','🇮🇱','עברית']
                 ] as [string,string,string][]).map(([code, flag, name]) => (
                   <div key={code}
                     onClick={() => { (window as any).selectLangSB(code, flag, name); setAuthLangOpen(false); }}
-                    style={{ padding: '7px 12px', borderRadius: 7, cursor: 'pointer', fontSize: 13, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' }}
+                    style={{ padding: '7px 12px', borderRadius: 6, cursor: 'pointer', fontSize: 16, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'var(--accent-soft)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'none')}>
                     {flag} {name}
@@ -892,28 +1160,36 @@ export default function Home() {
               </div>
             )}
           </div>
-        <div style={{ textAlign: 'center', maxWidth: 420, width: '90%', padding: '0 20px' }}>
-          <h2 id="auth-title" dir="ltr" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 28, fontWeight: 300, fontStyle: 'italic', color: 'var(--accent)', marginBottom: 8, direction: 'ltr' }} suppressHydrationWarning>Between</h2>
-          <p id="auth-subtitle" style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8, marginBottom: 12 }}>מרחב לחשוב על מה שנשאר בין מפגש למפגש.</p>
+        {/* מסך הכניסה בעיצוב החדש · 28.08.2026.
+            השם ב-Assistant ולא בסריף איטלקי, לפי הכרעת הלוגו.
+            הפריסה מיושרת לתחילת השורה ולא ממורכזת, כי בעברית זה נקרא טוב יותר. */}
+        <div style={{ textAlign: 'start', maxWidth: 420, width: '90%', padding: '0 20px' }}>
+          <h2 id="auth-title" dir="ltr" style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 40, fontWeight: 200, letterSpacing: '.02em', color: 'var(--text)', marginBottom: 10, direction: 'ltr', textAlign: 'start' }} suppressHydrationWarning>Between</h2>
+          <p id="auth-subtitle" style={{ fontSize: 'var(--fs-body-lg)', color: 'var(--muted)', lineHeight: 1.8, marginBottom: 28 }}>מרחב לחשוב על מה שנשאר בין מפגש למפגש.</p>
 
           {/* BW-111 — login persona CHOICE. The choice is a request; therapist is granted only if the
               account is on the allowlist (server-gated via /api/me in __resolvePersona). Else → patient. */}
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 8, opacity: 0.8 }}>כניסה כ:</div>
+            {/* הטקסטים כאן היו קבועים בעברית, ו-applyUITranslation חיפש מזהים
+                אחרים (persona-auth-*) שאיש אינו מרנדר, ולכן בממשק האנגלי
+                נשארה עברית. React מרנדר, ולכן React גם בוחר את השפה. */}
+            <div style={{ fontSize: 'var(--fs-caption)', letterSpacing: '.08em', fontWeight: 700, color: 'var(--muted)', marginBottom: 9 }}>{isHe ? 'כניסה כ' : 'Sign in as'}</div>
             <div style={{ display: 'flex', gap: 6 }}>
-              {([['patient','בטיפול'],['therapist','מטפל/ת']] as [string,string][]).map(([key, label]) => (
+              {([['patient', isHe ? 'בטיפול' : 'In therapy'],['therapist', isHe ? 'מטפל/ת' : 'Therapist']] as [string,string][]).map(([key, label]) => (
                 <button key={key} id={`persona-choice-${key}`}
                   onClick={() => {
                     try { localStorage.setItem('bw_persona_choice', key); } catch {}
                     ['patient','therapist'].forEach(k => {
                       const btn = document.getElementById(`persona-choice-${k}`);
                       if (!btn) return;
-                      btn.style.background = k === key ? 'var(--accent-soft)' : 'none';
-                      btn.style.borderColor = k === key ? 'var(--accent)' : 'var(--border)';
-                      btn.style.color = k === key ? 'var(--accent)' : 'var(--muted)';
+                      const on = k === key;
+                      btn.style.background = on ? 'var(--accent-deep)' : 'transparent';
+                      btn.style.borderColor = on ? 'var(--accent-deep)' : 'var(--border)';
+                      btn.style.color = on ? '#fff' : 'var(--text)';
+                      btn.style.fontWeight = on ? '600' : '500';
                     });
                   }}
-                  style={{ flex: 1, background: 'none', border: '1px solid var(--border)', borderRadius: 8, padding: '9px 8px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)', cursor: 'pointer', transition: 'all 0.15s' }}>
+                  style={{ flex: 1, height: 44, background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontSize: 'var(--fs-body-md)', fontWeight: 500, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)', cursor: 'pointer', transition: 'all 0.25s' }}>
                   {label}
                 </button>
               ))}
@@ -922,36 +1198,44 @@ export default function Home() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
             <input id="auth-email" type="email" placeholder="כתובת מייל" dir="ltr"
-              style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', fontFamily: 'var(--font-rubik), sans-serif', fontSize: 'var(--fs-body-md)', color: 'var(--text)', background: 'var(--surface)', outline: 'none', textAlign: 'left' }}
+              style={{ width: '100%', height: 44, padding: '0 14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-rubik), sans-serif', fontSize: 'var(--fs-body-md)', color: 'var(--text)', background: 'var(--field)', outline: 'none', textAlign: 'left' }}
               onKeyDown={undefined}
             />
             <input id="auth-password" type="password" placeholder="סיסמה" dir="ltr"
-              style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', fontFamily: 'var(--font-rubik), sans-serif', fontSize: 'var(--fs-body-md)', color: 'var(--text)', background: 'var(--surface)', outline: 'none', textAlign: 'left' }}
+              style={{ width: '100%', height: 44, padding: '0 14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-rubik), sans-serif', fontSize: 'var(--fs-body-md)', color: 'var(--text)', background: 'var(--field)', outline: 'none', textAlign: 'left' }}
             />
           </div>
 
-          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+          {/* פעולה ראשית אחת. השנייה נשארת ב-DOM כי chat.js כותב לתוכה בהחלפת שפה. */}
+          <div style={{ marginBottom: 12 }}>
             <button id="signin-btn"
               onClick={() => (window as any).signIn?.()}
-              style={{ flex: 1, background: 'var(--accent)', border: 'none', color: '#fff', padding: '10px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', borderRadius: 'var(--radius-xl)', cursor: 'pointer' }}>
+              style={{ display: authMode === 'signin' ? 'block' : 'none', width: '100%', height: 44, background: 'var(--accent-deep)', border: '1px solid var(--accent-deep)', color: '#fff', fontSize: 'var(--fs-body-md)', fontWeight: 600, fontFamily: 'var(--font-rubik), sans-serif', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}>
               כניסה
             </button>
             <button id="signup-btn"
               onClick={() => (window as any).signUp?.()}
-              style={{ flex: 1, background: 'none', border: '1px solid var(--border)', color: 'var(--text)', padding: '10px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', borderRadius: 'var(--radius-xl)', cursor: 'pointer' }}>
+              style={{ display: authMode === 'signup' ? 'block' : 'none', width: '100%', height: 44, background: 'var(--accent-deep)', border: '1px solid var(--accent-deep)', color: '#fff', fontSize: 'var(--fs-body-md)', fontWeight: 600, fontFamily: 'var(--font-rubik), sans-serif', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}>
               הרשמה
             </button>
           </div>
-          <div id="auth-error" style={{ display: 'none', fontSize: 12, color: '#c06060', marginTop: 8 }}></div>
-          <div style={{ marginTop: 10, textAlign: 'center' }}>
-            <span id="auth-forgot" onClick={() => (window as any).resetPassword?.()} style={{ fontSize: 12, color: 'var(--muted)', cursor: 'pointer', textDecoration: 'underline' }}>שכחתי סיסמה</span>
+          <div id="auth-error" style={{ display: 'none', fontSize: 15, color: '#c06060', marginTop: 8 }}></div>
+          <div style={{ marginTop: 14, textAlign: 'start', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span id="auth-forgot" onClick={() => (window as any).resetPassword?.()}
+              style={{ display: authMode === 'signin' ? 'inline' : 'none', fontSize: 'var(--fs-body-sm)', color: 'var(--muted)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 4 }}>שכחתי סיסמה</span>
+            <span onClick={() => setAuthMode(m => m === 'signup' ? 'signin' : 'signup')}
+              style={{ fontSize: 'var(--fs-body-sm)', color: 'var(--muted)', cursor: 'pointer' }}>
+              {authMode === 'signup'
+                ? <>כבר יש לך חשבון? <span style={{ color: 'var(--accent-deep)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: 4 }}>כניסה</span></>
+                : <>אין לך עדיין חשבון? <span style={{ color: 'var(--accent-deep)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: 4 }}>הרשמה</span></>}
+            </span>
           </div>
-          <p id="auth-security" style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.8, marginTop: 17, opacity: 0.7 }}>
+          <p id="auth-security" style={{ fontSize: 'var(--fs-caption)', color: 'var(--muted)', lineHeight: 1.8, marginTop: 18 }}>
             השיחות נשמרות רק על המכשיר שלך. אנחנו לא שומרים אותן אצלנו.
             <br />
             פרטי הכניסה מוצפנים ומאובטחים.
           </p>
-          <p id="auth-disclaimer" style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.85, marginTop: 12, opacity: 0.6, borderTop: '1px solid var(--border)', paddingTop: 14, width: 'calc(100% + 320px)', marginLeft: '-160px', marginRight: '-160px' }}>
+          <p id="auth-disclaimer" style={{ fontSize: 'var(--fs-caption)', color: 'var(--muted)', lineHeight: 1.85, marginTop: 22, borderTop: '1px solid var(--border)', paddingTop: 14 }}>
 מרחב לחשיבה בין מפגשים — לא תחליף לטיפול ולא לסופרוויז'ן. העבודה קורית בין שני בני אדם: בנוכחות, בקשר, בזמן.
           </p>
         </div>
@@ -971,46 +1255,22 @@ export default function Home() {
               מהכותרת, שם ישב מעל אזור הכתיבה בלי קשר לשיחה. נשאר ‎.sb-item כדי שיתיישר עם
               עמודת האייקונים שמתחתיו ויקבל את אותו ריחוף, רק בלי ‎.sb-label. בטוח במצב מכווץ:
               הסייד-בר מתכווץ ל-52px ואינו נעלם, ולכן האייקון נשאר גלוי ולחיץ. */}
-          <div style={{ padding: '8px 8px 0' }}>
-            <div className="sb-item" data-persona="both" id="sb-toggle-btn" onClick={() => (window as any).toggleSidebar()} title={currentLang === 'he' ? 'כיווץ התפריט' : 'Collapse menu'}>
-              <span className="sb-icon">
-                <svg width="15" height="15" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
-                  <rect x="1" y="1" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                  <line x1="6" y1="1" x2="6" y2="17" stroke="currentColor" strokeWidth="1.3"/>
-                </svg>
-              </span>
-            </div>
+          {/* המותג · Between תמיד, גם בממשק עברי (הכרעת איה 28.08), בלי סימן גרפי */}
+          <div className="n-brand">
+            <span className="n-n">Between</span>
+            <button className="n-iconbtn n-sideclose" id="sb-toggle-btn" aria-label={isHe ? 'סגירת התפריט' : 'Close menu'}
+              onClick={() => (window as any).toggleSidebar()}>✕</button>
           </div>
-          {/* BW-104 — dev-only persona preview tabs. Never rendered in production.
-              הגובה היה 67px כדי שקו התוויות יישב על קו הבסיס של הכותרת. מאז שהמתג עלה לראש
-              התפריט (25.08) ההתיישרות הזו לא מתקיימת, וזו רהיטות לוקאל בלבד. */}
-          {isLocalhost && (
-            <div style={{ marginTop: 6, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-              <div style={{ fontSize: 9, color: 'var(--muted)', opacity: 0.6, letterSpacing: 0.3, padding: '0 10px 4px' }}>{isHe ? 'תצוגת פיתוח' : 'Dev preview'}</div>
-              <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
-                {([['patient', isHe ? 'בטיפול' : 'In therapy'], ['therapist', isHe ? 'מטפל/ת' : 'Therapist']] as ['patient' | 'therapist', string][]).map(([key, label]) => (
-                  <div key={key} onClick={() => { if (key !== devPersona) { (window as any).bwExitChatToHome?.(); setDevPersona(key); } }}
-                    style={{
-                      flex: 1, textAlign: 'center', padding: '8px 0', fontSize: 13, cursor: 'pointer',
-                      color: devPersona === key ? 'var(--accent)' : 'var(--muted)',
-                      fontWeight: devPersona === key ? 500 : 400,
-                      borderBottom: devPersona === key ? '2px solid var(--accent)' : '2px solid transparent',
-                      marginBottom: -1, transition: 'color 0.15s',
-                    }}>
-                    {label}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* BW-104 · מתג הפרסונות עבר לבר העליון, כמו בקובץ העיצוב. */}
           <div style={{ padding: '16px 8px 6px', display: 'flex', flexDirection: 'column', gap: 1 }}>
             {/* end-session moved out of sidebar — appears inline at bottom of chat */}
-            <div className="sb-item" data-persona="both" onClick={() => (window as any).newChat()}>
+            <div className="sb-item" data-persona="both" onClick={() => { setResearchPicking(false); setPatientView('write'); (window as any).newChat(); }}>
               <span className="sb-icon"><PenLine size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-new-chat-label">שיחה חדשה</span>
             </div>
             {/* חיפוש רשת ירד מכאן לתפריט הפרופיל (הכרעת איה, פריט 2) — הוא הגדרה נמשכת, לא פעולה. */}
-            <div className="sb-item" data-persona="patient" onClick={() => (window as any).openWriteArchive?.()}>
+            {activePersona === 'patient' && <div className="sb-section-label">{isHe ? 'שלי' : 'Mine'}</div>}
+            <div className={`sb-item${patientView === 'archive' ? ' active' : ''}`} data-persona="patient" onClick={() => { loadWriteEntries(); setPatientView('archive'); }}>
               <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
               <span className="sb-label" id="sb-write-archive-label">{currentLang === 'he' ? 'מה כתבתי' : 'What I wrote'}</span>
             </div>
@@ -1023,28 +1283,47 @@ export default function Home() {
                 מציג מקרים, וההתייעצויות נשארות בתוך המקרה; רשימה מקוננת בסייד-בר צר
                 היא מלכודת. ומרונדר רק כשיש מקרה — דרופדאון שנפתחת אל כלום אומרת
                 למשתמש חדש שהוא פספס משהו. אותו רכיב של "גישה תיאורטית". */}
-            {false && activePersona === 'therapist' && cases.length > 0 && (
+            {/* BW-113 — מחקר הוא מצב עבודה ולא מקרה. הכרעת איה 29.08: הוא ישב
+                בתחתית קבוצת "מקרים" ונקרא כשם של מטופל נוסף ברשימה. הועבר
+                לקבוצה משלו, מעל הרשימה. */}
+            {isLocalhost && activePersona === 'therapist' && (
               <>
-                <div className="sb-item" onClick={() => setCasesOpen(o => !o)}>
-                  <span className="sb-icon"><ScrollText size={15} strokeWidth={1.75} /></span>
-                  <span className="sb-label" style={{ flex: 1 }}>{isHe ? 'המקרים שלי' : 'My cases'}</span>
-                  <ChevronDown size={13} strokeWidth={1.75} style={{ color: 'var(--muted)', flexShrink: 0, transition: 'transform 0.2s', transform: casesOpen ? 'rotate(180deg)' : 'none' }} />
+                <div className="sb-section-label">{isHe ? 'מצב עבודה' : 'Mode'}</div>
+                <div id="sb-explore-btn" className={`sb-item${researchPicking || researchOn ? ' active' : ''}`} data-persona="therapist"
+                  onClick={() => {
+                    // פעיל -> יציאה דרך אותה פונקציה שמנקה את השיחה.
+                    // כבוי -> מסך בחירת גישה, ולא כניסה מיידית לברירת מחדל.
+                    if (localStorage.getItem('bw_mode') === 'explore') { (window as any).enterExploreModeFromSidebar?.(); setResearchPicking(false); return; }
+                    setResearchApproach(null); setResearchSelOpen(false); setResearchPicking(true);
+                  }}>
+                  <span className="sb-icon"><BookOpen size={15} strokeWidth={1.75} /></span>
+                  <span className="sb-label">{currentLang === 'he' ? 'מחקר' : 'Research'}</span>
+                  {/* "בבחירה" גובר על "פעיל": בזמן בחירה אין שיחה, ולומר עליה
+                      פעיל הוא לתאר מצב שאינו קיים. קרה גם כשחוזרים לכתיבת
+                      המחקר, שם bw_mode נשאר explore בכוונה (הוא מגדר את הקול). */}
+                  <span className="n-val" id="sb-explore-val">{researchPicking ? (isHe ? 'בבחירה' : 'Choosing') : researchOn ? (isHe ? 'פעיל' : 'On') : (isHe ? 'כבוי' : 'Off')}</span>
                 </div>
-                {casesOpen && cases.map(c => (
-                  <div key={c.id} className="sb-item" style={{ paddingRight: 10, fontSize: 13 }}
-                    onClick={() => openCase(c)}>
+              </>
+            )}
+            {activePersona === 'therapist' && (
+              <>
+                <div className="sb-section-label">{isHe ? 'מקרים' : 'Cases'}</div>
+                <div className={`sb-item${!researchPicking && therapistView === 'cases' ? ' active' : ''}`}
+                  onClick={() => { setResearchPicking(false); setTherapistView('cases'); setCasesLoaded(false); }}>
+                  <span className="sb-label">{isHe ? 'כל המקרים' : 'All cases'}</span>
+                </div>
+                {cases.map(c => (
+                  <div key={c.id} className={`sb-item sb-sub${!researchPicking && !researchOn && selectedCase?.id === c.id && therapistView === 'caseDetail' ? ' active' : ''}`} onClick={() => { setResearchPicking(false); openCase(c); }}>
                     <span className="sb-label">{c.label}</span>
                   </div>
                 ))}
+                {/* הארכיון היה קיים במלואו בקוד ולא הייתה אליו שום כניסה:
+                    "העברה לארכיון" הזיזה מקרה למקום שאי אפשר לראות. */}
+                <div className={`sb-item${!researchPicking && therapistView === 'archive' ? ' active' : ''}`}
+                  onClick={() => { setResearchPicking(false); setArchivedLoaded(false); setTherapistView('archive'); }}>
+                  <span className="sb-label">{isHe ? 'ארכיון' : 'Archive'}</span>
+                </div>
               </>
-            )}
-            {/* BW-113 — מחקר חזר לסייד-בר כפריט עצמאי (לא קשור למקרה). */}
-            {isLocalhost && (
-              <div id="sb-explore-btn" className="sb-item" data-persona="therapist" onClick={() => (window as any).enterExploreModeFromSidebar?.()}>
-                <span className="sb-icon"><BookOpen size={15} strokeWidth={1.75} /></span>
-                <span className="sb-label">{currentLang === 'he' ? 'מחקר' : 'Research'}</span>
-                <span style={{ fontSize: 9, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(לוקאל)' : '(local)'}</span>
-              </div>
             )}
             {/* פיקוח קליני הוסר מה-UI (קו אדום CORE: לא תחליף לסופרוויזיה; ההתייעצות מכסה את הצורך). הראוט/הפונקציה נשארו בקוד — הפיך. BW-112. */}
             {/* "מה לקחתי מהשיחה" ירד מכאן לשורת כלי השיחה (הכרעת איה). הוא היה כפתור של שיחה
@@ -1052,19 +1331,21 @@ export default function Home() {
                 conversationHistory >= 2, כלומר התלות בשיחה הייתה קיימת והמיקום בלבד סתר אותה. */}
             {/* אנונימיזציה ופידבק — גלויים רק ב-localhost */}
             {/* anonymization removed from UI */}
+            {/* פריטי פיתוח · אותו נימוק כמו מחקר, אסור שייקראו כפריט ברשימת המקרים */}
+            {isLocalhost && <div className="sb-section-label">{isHe ? 'פיתוח' : 'Dev'}</div>}
             {isLocalhost && (
               <div className="sb-item admin-only" data-persona="admin" onClick={() => (window as any).openUserFeedback()}>
-                <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>◈</span>
+                <span className="sb-icon" style={{ fontSize: 16, lineHeight: 1 }}>◈</span>
                 <span className="sb-label" id="sb-feedback-label">פידבק משתמש</span>
-                <span style={{ fontSize: 9, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(בטא)' : '(Beta)'}</span>
+                <span style={{ fontSize: 13, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(בטא)' : '(Beta)'}</span>
               </div>
             )}
             {/* חדר הבורד — גלוי רק ב-localhost */}
             {isLocalhost && (
               <div className="sb-item admin-only" data-persona="admin" onClick={() => (window as any).openBoardRoom()}>
-                <span className="sb-icon" style={{ fontSize: 14, lineHeight: 1 }}>⬡</span>
+                <span className="sb-icon" style={{ fontSize: 16, lineHeight: 1 }}>⬡</span>
                 <span className="sb-label" id="sb-board-label">חדר הבורד</span>
-                <span style={{ fontSize: 9, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(בטא)' : '(Beta)'}</span>
+                <span style={{ fontSize: 13, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(בטא)' : '(Beta)'}</span>
               </div>
             )}
           </div>
@@ -1075,43 +1356,111 @@ export default function Home() {
               הגידור isMobile על בורר הקול ירד באותו קומיט, אחרת מטופלת בדסקטופ הייתה
               נשארת נעולה על ויניקוט בלי שום דרך לשנות. */}
         </div>
-        <div style={{ borderTop: '1px solid var(--border)', padding: 8 }}>
-          <div className="sb-user-row" onClick={() => (window as any).toggleUserMenu()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8, direction: 'rtl' }} id="sb-user-row">
-            <div className="sb-avatar" id="sb-avatar" style={{ flexShrink: 0 }}>A</div>
-            <div className="sb-user-info" style={{ flex: 1 }}>
-              <div className="sb-user-name" id="sb-user-name">משתמש</div>
-              <div className="sb-user-sub" id="sb-user-email">הגדרות ופרופיל</div>
-            </div>
-          </div>
-          <div id="sb-user-menu" style={{ display: 'none', padding: '2px 0' }}>
+        <div style={{ borderTop: '1px solid var(--border)', padding: 8, position: 'relative' }}>
+          {userMenuOpen && (
+          <div id="sb-user-menu" className="n-acctmenu">
             {/* חיפוש רשת, שפה וצור קשר רוכזו כאן מהסייד-בר ומהכותרת (הכרעת איה, פריטים 2 ו-4).
                 אותם מזהים ואותן מחלקות ‎js-*-label כמו קודם, כדי ש-applyUITranslation ימשיך לעדכן. */}
-            <div className="sb-item" data-persona="therapist" onClick={() => (window as any).toggleWebSearch()} id="sb-websearch-btn" title="חיפוש באינטרנט">
-              <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label js-websearch-label">חיפוש רשת: כבוי</span>
-            </div>
-            <div className="sb-item" onClick={(e) => { e.stopPropagation(); const nl = currentLang === 'he' ? 'en' : 'he'; setCurrentLang(nl); (window as any).selectLang?.(nl, nl === 'en' ? '🇬🇧' : '🇮🇱', nl === 'en' ? 'English' : 'עברית'); }}>
-              <span className="sb-icon"><Languages size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label">{currentLang === 'he' ? 'שפה: עברית' : 'Language: English'}</span>
-            </div>
-            <div className="sb-item" onClick={() => (window as any).openSupportModal?.()}>
-              <span className="sb-icon"><HelpCircle size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label">{currentLang === 'he' ? 'צור קשר' : 'Contact'}</span>
-            </div>
-            <div className="sb-item" onClick={() => (window as any).openSettings()}>
-              <span className="sb-icon"><Settings size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label js-settings-label">הגדרות</span>
-            </div>
-            <div className="sb-item" onClick={() => (window as any).signOut()}>
-              <span className="sb-icon"><LogOut size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label js-signout-label">התנתק</span>
-            </div>
+            <button className="n-mi" data-persona="therapist" onClick={() => (window as any).toggleWebSearch()} id="sb-websearch-btn">
+              <span>{isHe ? 'חיפוש רשת' : 'Web search'}</span>
+              <span className="n-val">{webSearchOn ? (isHe ? 'דלוק' : 'On') : (isHe ? 'כבוי' : 'Off')}</span>
+            </button>
+            <button className="n-mi" onClick={(e) => { e.stopPropagation(); const nl = currentLang === 'he' ? 'en' : 'he'; setCurrentLang(nl); (window as any).selectLang?.(nl, nl === 'en' ? '🇬🇧' : '🇮🇱', nl === 'en' ? 'English' : 'עברית'); }}>
+              <span>{isHe ? 'שפה' : 'Language'}</span>
+              <span className="n-val">{currentLang === 'he' ? 'עברית' : 'English'}</span>
+            </button>
+            <button className="n-mi" onClick={() => { setContactState(''); setContactEmail((window as any)._userEmail || ''); setContactOpen(true); }}>
+              <span>{isHe ? 'צרי קשר' : 'Contact'}</span>
+            </button>
+            <div className="n-div" />
+            <button className="n-mi js-settings-label" onClick={() => (window as any).openSettings()}>{isHe ? 'הגדרות' : 'Settings'}</button>
+            <button className="n-mi js-signout-label" onClick={() => (window as any).signOut()}>{isHe ? 'התנתק' : 'Sign out'}</button>
           </div>
+          )}
+          {/* כרטיס החשבון · מהעיצוב החדש: המייל בשורה הראשית ו"הגדרות ופרופיל"
+              מתחתיו, בלי עיגול אווטאר.
+              ‎#sb-user-name‎ נשאר בעץ ומוסתר: הוא אינו מוצג בעיצוב החדש, אבל
+              ייצוא ה-PDF ומודל התמיכה קוראים ממנו את שם המשתמש. */}
+          <button className="n-acct sb-user-row" onClick={() => setUserMenuOpen(v => !v)} id="sb-user-row" aria-expanded={userMenuOpen}>
+            <span className="n-e" id="sb-user-email">{userEmail || (isHe ? 'משתמש' : 'User')}</span>
+            <span className="n-r" id="sb-user-sub-label">{isHe ? 'הגדרות ופרופיל' : 'Settings and profile'}</span>
+            <span id="sb-user-name" hidden />
+          </button>
         </div>
       </div>
 
       {/* Main content */}
       <div id="main-content">
+        {/* ═══ הבר השחור ═══
+            נשמר מקובץ העיצוב (‎.proto‎). Between בצד שמאל, ההגדרות בצד ימין.
+            ‎direction:ltr‎ על הבר קובע ששמאל הוא שמאל פיזי גם בממשק עברי. */}
+        <div className="bw-topbar">
+          {/* הלוגו · יונק הדבש עם מילת Between. הבר כהה ולכן נטענת גרסת
+              הלבן. אם הקובץ חסר, הדפדפן מסתיר את התמונה והמילה נשארת
+              כטקסט, כך שהבר לעולם אינו ריק. */}
+          <span className="bw-topbar-mark">
+            {/* ברירת המחדל היא שהסימן מוצג · רק כשל טעינה מחליף אותו במילה.
+                ‎onLoad‎ אינו אמין כאן: תמונה שכבר במטמון נטענת לפני ש-React
+                מחבר את המטפל, והאירוע לא נורה כלל. */}
+            {!logoFailed && (
+              <img src="/between-logo-light.svg" alt="Between"
+                onError={() => setLogoFailed(true)} />
+            )}
+            {logoFailed && <span className="bw-topbar-wordmark">Between</span>}
+          </span>
+          {isLocalhost && (
+            <div className="bw-topbar-grp">
+              {([['patient', isHe ? 'מטופלת' : 'Patient'], ['therapist', isHe ? 'מטפלת' : 'Therapist']] as ['patient' | 'therapist', string][]).map(([key, label]) => (
+                <button key={key} className={`bw-topbar-btn${devPersona === key ? ' on' : ''}`}
+                  onClick={() => { if (key !== devPersona) { (window as any).bwExitChatToHome?.(); setDevPersona(key); } }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="bw-topbar-end">
+            <button className="bw-topbar-btn" aria-haspopup="menu" aria-expanded={headerMenuOpen}
+              onClick={() => setHeaderMenuOpen(v => !v)}>
+              <Settings size={14} strokeWidth={1.75} />
+              <span>{isHe ? 'הגדרות' : 'Settings'}</span>
+            </button>
+            {headerMenuOpen && (<>
+              <div className="bw-topbar-scrim" onClick={() => setHeaderMenuOpen(false)} />
+              <div className="bw-topbar-menu n-acctmenu" dir={isHe ? 'rtl' : 'ltr'}>
+                <div className="n-who">
+                  <span className="n-av">
+                    {avatarSrc
+                      ? <img src={avatarSrc} alt="" />
+                      : (profileName || userEmail || 'A').charAt(0).toUpperCase()}
+                  </span>
+                  {profileName && <span className="n-n">{profileName}</span>}
+                  <span className="n-e"><bdi>{userEmail}</bdi></span>
+                </div>
+                {/* חיפוש רשת הוא כלי של מטפלת בלבד (BRAIN). הגידור ב-CSS מכוון
+                    ל-‎#sidebar‎ ול-‎#bw-account-menu‎, ותפריט הבר אינו אף אחד מהם,
+                    ולכן מטופלת ראתה אותו. הגידור כאן הוא ב-React, שמרנדר את
+                    התפריט ויודע מי הפרסונה. זה חשוב במיוחד כי במצב הזה אימות
+                    הפלט מדולג והקול אינו מובטח. */}
+                {activePersona === 'therapist' && (
+                <button className="n-mi" onClick={() => { (window as any).toggleWebSearch?.(); }}>
+                  <span>{isHe ? 'חיפוש רשת' : 'Web search'}</span>
+                  <span className="n-val">{webSearchOn ? (isHe ? 'דלוק' : 'On') : (isHe ? 'כבוי' : 'Off')}</span>
+                </button>
+                )}
+                <button className="n-mi" onClick={() => { const nl = currentLang === 'he' ? 'en' : 'he'; setCurrentLang(nl); (window as any).selectLang?.(nl, nl === 'en' ? '🇬🇧' : '🇮🇱', nl === 'en' ? 'English' : 'עברית'); }}>
+                  <span>{isHe ? 'שפה' : 'Language'}</span>
+                  <span className="n-val">{currentLang === 'he' ? 'עברית' : 'English'}</span>
+                </button>
+                <button className="n-mi" onClick={() => { setHeaderMenuOpen(false); setContactState(''); setContactEmail((window as any)._userEmail || ''); setContactOpen(true); }}>
+                  <span>{isHe ? 'צרי קשר' : 'Contact'}</span>
+                </button>
+                <div className="n-div" />
+                <button className="n-mi" onClick={() => { setHeaderMenuOpen(false); (window as any).openSettings?.(); }}>{isHe ? 'הגדרות ופרופיל' : 'Settings and profile'}</button>
+                <button className="n-mi" onClick={() => { setHeaderMenuOpen(false); (window as any).signOut?.(); }}>{isHe ? 'התנתק' : 'Sign out'}</button>
+              </div>
+            </>)}
+          </div>
+        </div>
         <header>
           <div className="header-top" style={{ padding: '16px 24px', direction: 'ltr' }}>
             {/* הכותרת התרוקנה משלושה אייקונים (הכרעת איה, פריטים 4 ו-5): מתג הסייד-בר עבר לתוך
@@ -1138,15 +1487,17 @@ export default function Home() {
               </div>
               {/* שיחת היכרות (intake) — patient onboarding only; not rendered for therapists (BW-112). */}
               {activePersona === 'patient' && (
-              <div id="header-intake-btn" onClick={() => (window as any).startIntake()} style={{ display: 'none', cursor: 'pointer', fontSize: 12, color: '#fff', background: 'var(--accent-deep)', borderRadius: 20, padding: '6px 16px', fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 500, transition: 'opacity 0.2s', whiteSpace: 'nowrap' }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}>
+              <div id="header-intake-btn" onClick={() => (window as any).startIntake()} style={{ display: 'none', alignItems: 'center', justifyContent: 'center', lineHeight: 1, cursor: 'pointer', height: 'var(--h-ctl)', fontSize: 'var(--fs-body-md)', color: 'var(--text)', background: 'transparent', border: '1px solid var(--text)', borderRadius: 'var(--radius-sm)', padding: '0 18px', fontFamily: 'var(--font-rubik), sans-serif', fontWeight: 600, transition: 'all 0.25s', whiteSpace: 'nowrap' }}
+                onMouseEnter={(e) => { const t = e.currentTarget as HTMLElement; t.style.borderColor = 'var(--accent-deep)'; t.style.color = 'var(--accent700)'; }}
+                onMouseLeave={(e) => { const t = e.currentTarget as HTMLElement; t.style.borderColor = 'var(--text)'; t.style.color = 'var(--text)'; }}>
                 שיחת היכרות
               </div>
               )}
               {/* Mobile-only account entry — opens #bw-account-menu (tools + account), the phone stand-in for the hidden sidebar. */}
               <div className="bw-header-avatar" onClick={(e) => { e.stopPropagation(); (window as any).toggleAccountMenu(); }} title="חשבון" style={{ cursor: 'pointer', minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}>
-                <div className="sb-avatar">A</div>
+                <div className="sb-avatar">{avatarSrc
+                  ? <img src={avatarSrc} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '50%' }} />
+                  : (profileName || userEmail || 'A').charAt(0).toUpperCase()}</div>
               </div>
             </div>
             {/* Mobile account menu — mirrors the sidebar's tools + account, persona-scoped exactly like #sidebar.
@@ -1154,7 +1505,9 @@ export default function Home() {
             <div id="bw-account-menu" className={`persona-${activePersona}`} style={{ display: 'none' }}>
               {/* 1. Account row — avatar + name + email. Name/email copied from #sb-user-* at open (toggleAccountMenu). */}
               <div className="bw-acct-account-row">
-                <div className="sb-avatar">A</div>
+                <div className="sb-avatar">{avatarSrc
+                  ? <img src={avatarSrc} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '50%' }} />
+                  : (profileName || userEmail || 'A').charAt(0).toUpperCase()}</div>
                 <div style={{ overflow: 'hidden' }}>
                   <div className="bw-acct-name">{currentLang === 'he' ? 'משתמש' : 'User'}</div>
                   <div className="bw-acct-email"></div>
@@ -1174,7 +1527,7 @@ export default function Home() {
                 {/* צור קשר — ירד מסימן השאלה שבכותרת (הכרעת איה, פריט 4). */}
                 <div className="sb-item" onClick={() => { (window as any).openSupportModal?.(); (window as any).closeAccountMenu?.(); }}>
                   <span className="sb-icon"><HelpCircle size={15} strokeWidth={1.75} /></span>
-                  <span className="sb-label">{currentLang === 'he' ? 'צור קשר' : 'Contact'}</span>
+                  <span className="sb-label">{currentLang === 'he' ? 'צרי קשר' : 'Contact'}</span>
                 </div>
                 <div className="sb-item" onClick={() => { (window as any).signOut(); (window as any).closeAccountMenu?.(); }}>
                   <span className="sb-icon"><LogOut size={15} strokeWidth={1.75} /></span>
@@ -1185,7 +1538,8 @@ export default function Home() {
               <div className="bw-acct-section">
                 <div className="sb-item" data-persona="therapist" onClick={() => { (window as any).toggleWebSearch(); (window as any).closeAccountMenu?.(); }}>
                   <span className="sb-icon"><Globe size={15} strokeWidth={1.75} /></span>
-                  <span className="sb-label js-websearch-label">חיפוש רשת: כבוי</span>
+                  <span className="sb-label">{isHe ? 'חיפוש רשת' : 'Web search'}</span>
+                  <span className="n-val">{webSearchOn ? (isHe ? 'דלוק' : 'On') : (isHe ? 'כבוי' : 'Off')}</span>
                 </div>
                 {/* סיכום התייעצות ירד גם מכאן: שורת כלי השיחה גלויה במובייל, ולכן הסיכום
                     נגיש שם בזמן שיחה, וזה המקום היחיד שבו הוא רלוונטי. */}
@@ -1224,7 +1578,7 @@ export default function Home() {
                   title={isHe ? 'סיכום התייעצות' : 'Consultation summary'}
                   className="bw-session-tool"
                 >
-                  <span style={{ fontSize: 13, lineHeight: 1 }}>◎</span>
+                  <span style={{ fontSize: 16, lineHeight: 1 }}>◎</span>
                   <span>{isHe ? 'סיכום' : 'Summary'}</span>
                 </button>
                 )}
@@ -1233,18 +1587,18 @@ export default function Home() {
                     ולכן הוא נולד מוסתר ו-chat.js הוא שמדליק, בדיוק כמו קודם. */}
                 {activePersona === 'patient' && (
                 <button
-                  id="patient-reflection-btn"
+                  id="patient-reflection-btn-old"
                   onClick={() => (window as any).openPatientReflection?.()}
                   title={isHe ? 'מה לקחתי מהשיחה' : 'What I took from the conversation'}
                   className="bw-session-tool"
                   style={{ display: 'none' }}
                 >
-                  <span style={{ fontSize: 13, lineHeight: 1 }}>◉</span>
+                  <span style={{ fontSize: 16, lineHeight: 1 }}>◉</span>
                   <span>{isHe ? 'מה לקחתי' : 'What I took'}</span>
                 </button>
                 )}
                 <button
-                  id="bw-session-pdf"
+                  id="bw-session-pdf-old"
                   onClick={() => (window as any).exportPDF?.()}
                   title={isHe ? 'הורד PDF' : 'Download PDF'}
                   className="bw-session-tool"
@@ -1260,7 +1614,7 @@ export default function Home() {
                   <div style={{ position: 'absolute', top: 'calc(100% + 6px)', insetInlineStart: 0, zIndex: 60, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', boxShadow: '0 8px 24px rgba(45,36,32,0.12)', padding: 'var(--space-xs)', display: 'flex', flexDirection: 'column', gap: 1, minWidth: 150 }}>
                     {THEORIST_LIST.map(([key, label]) => (
                       <div key={key} className={`theorist-tag with-sub sb-item${activeApproach === key ? ' active' : ''}`} data-key={key}
-                        style={{ fontSize: 13 }}
+                        style={{ fontSize: 16 }}
                         onClick={(e) => { (window as any).toggleTheorist(e.currentTarget, key); setSessionApproachOpen(false); }}>
                         <span>{label}{activeApproach === key ? ' ✓' : ''}</span>
                         <span className="tt-sub">{THEORIST_LABELS[key]?.[1]}</span>
@@ -1274,29 +1628,199 @@ export default function Home() {
         </header>
 
 
+        {/* הבר העליון של השיחה · מהעיצוב החדש. מוצג רק כשיש שיחה חיה, כלומר
+            כשמסך הפתיחה מוסתר. ‎:has()‎ עושה את הגידור בלי לשכפל מצב מ-chat.js. */}
+        <div className="n-topbar" id="bw-talk-topbar">
+          <span>{isHe ? '\u05e9\u05d9\u05d7\u05d4 \u05e2\u05dd ' : 'A conversation with '}{(activeApproach && THEORIST_LABELS[activeApproach]?.[0]) || (isHe ? '\u05ea\u05d9\u05d0\u05d5\u05e8\u05d8\u05d9\u05e7\u05df' : 'a theorist')}</span>
+          {selectedCase && <span className="n-ix">{selectedCase.label}</span>}
+          <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+        </div>
+        <div className="n-hr" id="bw-talk-hr" />
         <div id="chat">
           {mounted && (
-            <div className="welcome" id="welcome">
+            <div className={`welcome${patientView === 'archive' ? ' bw-archive-open' : ''}`} id="welcome">
               {/* BW-41: back button — top-left corner of content area */}
-              <span id="bw-back-btn" onClick={() => (window as any).goBackToChat()} style={{ position: 'absolute', top: 20, left: 24, fontSize: 12, color: 'var(--muted)', cursor: 'pointer', opacity: 0.7, display: 'none' }}>← חזרה</span>
+              <span id="bw-back-btn" onClick={() => (window as any).goBackToChat()} style={{ position: 'absolute', top: 20, left: 24, fontSize: 15, color: 'var(--muted)', cursor: 'pointer', opacity: 0.7, display: 'none' }}>← חזרה</span>
               {/* BW-111 — chose "therapist" at login but not on the allowlist → entered as patient. */}
               {personaNotice && !isLocalhost && (
-                <div style={{ width: '100%', background: 'var(--thinking)', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ flex: 1, fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{isHe ? 'גישת מטפלים בהזמנה בלבד כרגע — נכנסת כמטופל/ת.' : 'Therapist access is invite-only for now — you\'re in as a patient.'}</span>
-                  <span onClick={() => setPersonaNotice(false)} style={{ fontSize: 14, color: 'var(--muted)', cursor: 'pointer', userSelect: 'none' }}>✕</span>
+                <div style={{ width: '100%', background: 'var(--thinking)', border: '1px solid var(--border)', borderRadius: 6, padding: '10px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ flex: 1, fontSize: 15, color: 'var(--text)', lineHeight: 1.6 }}>{isHe ? 'גישת מטפלים בהזמנה בלבד כרגע, נכנסת כמטופל/ת.' : 'Therapist access is invite-only for now — you\'re in as a patient.'}</span>
+                  <span onClick={() => setPersonaNotice(false)} style={{ fontSize: 16, color: 'var(--muted)', cursor: 'pointer', userSelect: 'none' }}>✕</span>
                 </div>
               )}
+              {/* ═══ מסך: מחקר ═══
+                  אותה זרימה כמו הכתיבה: בוחרים גישה, ורק אז נכנסים. עד היום
+                  הלחיצה קפצה ישר לשיחה עם ברירת מחדל, בלי לשאול. */}
+              {activePersona === 'therapist' && researchPicking && (
+              <div style={{ width: '100%' }}>
+                <div className="n-topbar">
+                  <span>{isHe ? 'מחקר' : 'Research'}</span>
+                  <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+                </div>
+                <div className="n-hr" />
+                <h1 className="n-h">{isHe ? 'דרך איזו גישה נחקור?' : 'Through which approach?'}</h1>
+
+                <div className={`n-plate${researchApproach ? '' : ' n-locked'}`}>
+                  <div className="n-zone-head">
+                    <span className="n-lbl">{isHe ? 'דרך הגישה של' : 'Through the approach of'}</span>
+                    <button className={`n-sel${researchApproach ? '' : ' n-primed'}`} aria-haspopup="listbox" aria-expanded={researchSelOpen}
+                      onClick={() => setResearchSelOpen(v => !v)}>
+                      {researchApproach
+                        ? <span>{getHoldTheoristName(researchApproach)}{' '}<span className="n-sub">{THEORIST_DESC[researchApproach]}</span></span>
+                        : <span>{isHe ? 'בחרי גישה' : 'Choose an approach'}</span>}
+                      <span className={`n-chev${researchSelOpen ? ' n-open' : ''}`}>⌄</span>
+                    </button>
+                    {!researchApproach && <span className="n-hintstart"><span>{isHe ? '\u2192' : '\u2190'}</span>{isHe ? 'מתחילים כאן' : 'Start here'}</span>}
+                    <div className={`n-menu${researchSelOpen ? ' n-open' : ''}`} role="listbox">
+                      {(['freud', 'klein', 'winnicott', 'ogden'] as const).map(key => (
+                        <button key={key} className="n-mi" role="option" aria-selected={researchApproach === key}
+                          onClick={() => { setResearchApproach(key); setResearchSelOpen(false); }}>
+                          <span className="n-nm">{getHoldTheoristName(key)}</span>
+                          <span className="n-ds">{THEORIST_DESC[key]}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {/* אזור הכתיבה · שדה אמיתי ולא הערה בתוך מלבן לבן. במחקר יש
+                      שאלה, והיא מה שנכנס לשיחה. נעול עד שנבחרה גישה, כמו בכתיבה. */}
+                  <div className="n-zone-write">
+                    <textarea
+                      value={researchText}
+                      disabled={!researchApproach}
+                      onChange={e => setResearchText(e.target.value)}
+                      placeholder={researchApproach
+                        ? (isHe ? 'מה את רוצה לחקור? אפשר גם רק להיכנס ולהתחיל משם.' : 'What do you want to explore? You can also just enter and start there.')
+                        : (isHe ? 'בחרי גישה כדי להתחיל לכתוב.' : 'Choose an approach to start writing.')}
+                      style={{ width: '100%', minHeight: 140, maxHeight: '40vh', overflowY: 'auto', boxSizing: 'border-box', border: 'none', padding: 0, fontSize: 16, fontWeight: 300, lineHeight: 1.85, fontFamily: 'var(--font-rubik), sans-serif', background: 'transparent', color: researchApproach ? 'var(--text)' : 'var(--off)', caretColor: 'var(--accent)', resize: 'vertical', outline: 'none', display: 'block' }}
+                    />
+                    {!researchApproach && (
+                      <div className="n-locknote">{isHe ? 'המחקר נפתח אחרי בחירת הגישה, כי הוא נעשה מתוכה.' : 'Research opens once an approach is chosen. It is done from within it.'}</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="n-actions">
+                  <button className="n-btn n-ghost" onClick={() => setResearchPicking(false)}>{isHe ? 'ביטול' : 'Cancel'}</button>
+                  <span className="n-sp" />
+                  <button className="n-btn n-solid" disabled={!researchApproach}
+                    onClick={() => {
+                      const q = researchText.trim();
+                      setResearchPicking(false);
+                      (window as any).bwStartExplore?.(researchApproach);
+                      // השאלה שנכתבה נכנסת לשיחה. ההמתנה נותנת לפתיחה של
+                      // התיאורטיקן להירנדר לפני שהשאלה נשלחת.
+                      if (q) setTimeout(() => {
+                        const inp = document.getElementById('user-input') as HTMLTextAreaElement | null;
+                        if (!inp) return;
+                        inp.value = q;
+                        inp.dispatchEvent(new Event('input', { bubbles: true }));
+                        (window as any).sendMessage?.();
+                        setResearchText('');
+                      }, 900);
+                    }}>
+                    {isHe ? 'המשך למחקר' : 'Continue to research'}
+                  </button>
+                </div>
+                <div className="n-botbar">{isHe
+                  ? 'מחקר הוא חשיבה על החומר התיאורטי עצמו. הוא נפרד מהתייעצות על מקרה, ואינו נשמר תחת מקרה.'
+                  : 'Research is thinking about the theory itself. It is separate from a case consultation and is not saved under a case.'}</div>
+              </div>
+              )}
+              {/* ═══ מסך: מה כתבתי ═══
+                  מסך ולא שכבה, כמו בעיצוב. כרום של מסך בלבד: בר עליון, קו,
+                  כותרת גדולה, כרטיסים, הערת ארעיות ופוטר. */}
+              {activePersona === 'patient' && patientView === 'archive' && (
+              <div style={{ width: '100%' }}>
+                <div className="n-topbar">
+                  <span>{isHe ? 'מה כתבתי' : 'What I wrote'}</span>
+                  <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+                </div>
+                <div className="n-hr" />
+                <h1 className="n-h">{isHe ? 'מה שכבר עלה' : 'What has already come up'}</h1>
+
+                {writeEntries.length === 0 ? (
+                  <div className="n-empty">
+                    <div className="n-t">{isHe ? 'עדיין לא כתבת כאן' : 'Nothing here yet'}</div>
+                    <div className="n-d">{isHe
+                      ? 'מה שנכתב במסך הכתיבה ונשמר מופיע כאן, בדפדפן הזה בלבד ולכמה ימים.'
+                      : 'What you write and save appears here, in this browser only and for a few days.'}</div>
+                  </div>
+                ) : (<>
+                  {writeEntries.map(e => (
+                    <div key={String(e.id)} className="n-card" role="button" tabIndex={0}
+                      onClick={() => openWriteEntry(e)}
+                      onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openWriteEntry(e); } }}>
+                      <button className="n-more" aria-label={isHe ? 'מחיקה' : 'Delete'}
+                        onClick={ev => {
+                          ev.stopPropagation(); // אחרת המחיקה פותחת גם את הרשומה
+                          if (!window.confirm(isHe ? 'למחוק את הרשומה הזו?' : 'Delete this entry?')) return;
+                          (window as any).deleteWriteEntry?.(e.id);
+                          loadWriteEntries();
+                        }}>×</button>
+                      <div className="n-t">{(e.publicText || e.fullText || '—').split('\n')[0].slice(0, 90)}</div>
+                      <div className="n-m">{e.date || ''}</div>
+                    </div>
+                  ))}
+                  <div className="n-empty" style={{ marginTop: 14, border: 'none', padding: '14px 0' }}>
+                    {isHe
+                      ? <>מה שנכתב לפני כן כבר לא כאן.<br />המרחב אינו שומר, וההורדה היא הדרך היחידה לזכור.</>
+                      : <>What was written before is no longer here.<br />The space does not keep, and downloading is the only way to remember.</>}
+                  </div>
+                </>)}
+
+                <div className="n-actions">
+                  <span className="n-sp" />
+                  <button className="n-btn n-ghost" onClick={() => setPatientView('write')}>{isHe ? 'חזרה לכתיבה' : 'Back to writing'}</button>
+                </div>
+                <div className="n-botbar">{isHe
+                  ? 'המרחב משרת את הטיפול. מה שמתבהר כאן, מקומו בחדר.'
+                  : 'The space serves the therapy. What becomes clear here belongs in the room.'}</div>
+              </div>
+              )}
               {/* Hold entry — patient only (therapist lands on direct conversation, no Hold) */}
+              {/* ה-display של המסך הזה בבעלות chat.js (showModeSelect מציב flex בשורה).
+                  כשהצבתי אותו מ-React, undefined מחק את הערך שלו והמסך נשאר מוסתר
+                  אחרי "שיחה חדשה". ההסתרה נעשית עכשיו במחלקה על האב. */}
               {activePersona === 'patient' && (
-              <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
-                <p id="bw-hold-heading" style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 'var(--fs-heading-lg)', fontWeight: 400, color: 'var(--text)', margin: 0, alignSelf: 'flex-start' }}>{isHe ? 'מה נשאר איתך?' : 'What stayed with you?'}</p>
-                {/* Single card — everything inside (option ו) */}
-                <div style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-                  {/* Textarea — contenteditable for private-marking support */}
-                  <div style={{ position: 'relative', width: '100%' }}>
+                <div id="bw-mode-select" style={{ flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
+                {/* בר עליון וקו שחור · מהעיצוב החדש, 28.08 */}
+                <div className="n-topbar" style={{ width: '100%' }}>
+                  <span>{isHe ? 'הפגישה האחרונה' : 'Last session'}</span>
+                  <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+                </div>
+                <div className="n-hr" style={{ width: '100%' }}></div>
+                {/* ‎h1‎ ולא ‎p‎ · הכלל בקובץ הוא ‎h1.h‎, בורר שמוגבל לסוג האלמנט, ולכן
+                    פסקה לא קיבלה אותו וזה היה המסך היחיד עם כותרת קטנה. */}
+                <h1 id="bw-hold-heading" className="n-h" style={{ alignSelf: 'flex-start' }}>{isHe ? 'מה נשאר איתך?' : 'What stayed with you?'}</h1>
+                {/* משטח הכתיבה · מבנה העיצוב החדש, 28.08: אזור בחירת גישה מעל,
+                    אזור כתיבה מתחת, והכתיבה נעולה עד שנבחרה גישה. */}
+                <div className={`n-plate${activeApproach ? '' : ' n-locked'}`} style={{ width: '100%' }}>
+                  {/* אזור 1 · בחירת הגישה, פעיל תמיד */}
+                  <div className="n-zone-head">
+                    <span className="n-lbl">{isHe ? 'דרך הגישה של' : 'Through the approach of'}</span>
+                    <button className={`n-sel${activeApproach ? '' : ' n-primed'}`} aria-haspopup="listbox" aria-expanded={selOpen}
+                      onClick={() => setSelOpen(v => !v)}>
+                      {activeApproach
+                        ? <span>{getHoldTheoristName(activeApproach)}{' '}<span className="n-sub">{THEORIST_DESC[activeApproach]}</span></span>
+                        : <span>{isHe ? 'בחרי גישה' : 'Choose an approach'}</span>}
+                      <span className={`n-chev${selOpen ? ' n-open' : ''}`}>⌄</span>
+                    </button>
+                    {!activeApproach && <span className="n-hintstart"><span>{isHe ? '\u2192' : '\u2190'}</span>{isHe ? 'מתחילים כאן' : 'Start here'}</span>}
+                    <div className={`n-menu${selOpen ? ' n-open' : ''}`} role="listbox" aria-label={isHe ? 'בחירת גישה' : 'Choose an approach'}>
+                      {(['freud', 'klein', 'winnicott', 'ogden'] as const).map(key => (
+                        <button key={key} className="n-mi" role="option" aria-selected={activeApproach === key}
+                          onClick={() => { setHoldTheorist(key); setActiveApproach(key); setSelOpen(false); }}>
+                          <span className="n-nm">{getHoldTheoristName(key)}</span>
+                          <span className="n-ds">{THEORIST_DESC[key]}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {/* אזור 2 · הכתיבה, האזור היחיד שמשנה מצב */}
+                  <div className="n-zone-write">
                     <div
                       id="bw-hold-textarea"
-                      contentEditable
+                      contentEditable={!!activeApproach}
                       suppressContentEditableWarning
                       ref={holdTextareaRef}
                       onInput={e => {
@@ -1312,10 +1836,12 @@ export default function Home() {
                         }, 400);
                       }}
                       style={{
-                        width: '100%', minHeight: 200, padding: '20px 20px 48px',
+                        width: '100%', minHeight: 200, padding: '0 0 44px',
                         background: 'transparent',
-                        color: 'var(--text)', fontSize: 15,
-                        fontFamily: 'var(--font-rubik), sans-serif', lineHeight: 1.7,
+                        color: activeApproach ? 'var(--text)' : 'var(--off)',
+                        fontSize: 16, fontWeight: 300, lineHeight: 1.85,
+                        fontFamily: 'var(--font-rubik), sans-serif',
+                        caretColor: 'var(--accent)',
                         direction: isHe ? 'rtl' : 'ltr', textAlign: isHe ? 'right' : 'left',
                         boxSizing: 'border-box', outline: 'none',
                         display: 'block', wordBreak: 'break-word', whiteSpace: 'pre-wrap',
@@ -1327,18 +1853,20 @@ export default function Home() {
                         aria-hidden="true"
                         style={{
                           position: 'absolute', top: 20,
-                          right: isHe ? 20 : undefined, left: isHe ? undefined : 20,
+                          right: isHe ? 23 : undefined, left: isHe ? undefined : 23,
                           textAlign: isHe ? 'right' : 'left',
-                          color: 'var(--muted)', fontSize: 15,
+                          color: 'var(--field-ph)', fontSize: 'var(--fs-body-lg)',
                           fontFamily: 'var(--font-rubik), sans-serif',
-                          pointerEvents: 'none', userSelect: 'none', lineHeight: 1.6,
+                          pointerEvents: 'none', userSelect: 'none', lineHeight: 1.85,
                         }}
                       >
-                        {isHe ? 'גם אם עוד אין לזה מילים.' : "Even if there aren't words for it yet."}
+                        {activeApproach
+                          ? (isHe ? 'גם אם עוד אין לזה מילים.' : "Even if there aren't words for it yet.")
+                          : (isHe ? 'בחרי גישה כדי להתחיל לכתוב.' : 'Choose an approach to start writing.')}
                       </span>
                     )}
                     {/* המיקרופון עבר לתוך השדה (הכרעת איה, פריט 1), כמו אצל המטפלת. */}
-                    {speechSupported && (
+                    {speechSupported && activeApproach && (
                       <button
                         onClick={handleToggleVoice}
                         className={`bw-mic${isRecording ? ' bw-mic-recording' : ''}`}
@@ -1348,374 +1876,218 @@ export default function Home() {
                         <Mic size={15} />
                       </button>
                     )}
-                  </div>
-                  {/* בורר הקול. היה מגודר על מובייל בלבד, כי בדסקטופ הסייד-בר עשה את זה
-                      וכפילות שוברת היררכיה (UX-RULE 9). מרגע שרשימת התיאורטיקנים ירדה
-                      מהסייד-בר (הכרעת איה), אין יותר כפילות ואין בדסקטופ שום דרך אחרת
-                      לבחור קול לפני שיחה. הגידור על מובייל ירד, וזה מה שמונע נעילה על ויניקוט.
-                      עכשיו הוא מגודר על כתיבה במקום (הכרעת איה): הדף נקי, והצ'יפים עולים
-                      כשמתחילים לכתוב, כמו במסך המטפלת. הדיבור מכוסה, כי onresult קורא
-                      ל-setHoldText גם על תוצאה חלקית, ולכן הם עולים במילה המדוברת הראשונה.
-                      בדיוק אחד פעיל תמיד (ברירת מחדל ויניקוט); משתמש ב-‎.theorist-tag.
-                      שורה משל עצמו מעל הפוטר, כדי שלא יצטרף לשורת הפלקס שלו
-                      (זה היה מחמיר את קפיצת הכפתור הראשי, באג 6). */}
-                  {/* רצועה אחת במקום שתיים (מדידת מאיה, הכרעת איה). קודם היו כאן שתי
-                      שורות עם שני קווים מפרידים, והתוכן שלהן נצמד לקצוות מנוגדים: הצ'יפים
-                      לצד אחד, והכפתורים נפרשים על כל הרוחב בגלל מרווח flex:1 שדחף אותם
-                      זה מזה. העין קפצה מקצה לקצה בין שתי שורות שמופרדות בקו.
-                      הרצועה כולה מגודרת על טקסט (הכרעת איה): מרגע שהכפתור הראשי חדל להיות
-                      מעומעם, לפני כתיבה לא נשאר בה דבר, ורצועה ריקה עם קו מפריד גרועה
-                      מכפתור.
-                      **עדכון (הכרעת איה): הפרדה בין הצ'יפים לכפתורים.** שבעה פקדים בשורה
-                      אחת ערבבו מצב (מי הקול) עם פעולה (מה עושים), ושם התיאורטיקן הופיע
-                      בשתי דרגות שונות. הפתרון הוא שתי שורות בתוך אותה רצועה, בלי קו מפריד
-                      שני: הזיגזג שנמדד קודם נבע משתי רצועות מגודרות בקו שהתוכן שלהן נצמד
-                      לקצוות מנוגדים, ולא מההפרדה עצמה. שתיהן מיושרות לאותו קצה. */}
-                  {!!holdText.trim() && (
-                  <div style={{ borderTop: '1px solid var(--border)', padding: 'var(--space-sm) var(--space-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
-                    {(['freud', 'klein', 'winnicott', 'ogden'] as const).map(key => (
-                      <span
-                        key={key}
-                        className={`theorist-tag with-sub${holdTheorist === key ? ' active' : ''}`}
-                        onClick={() => setHoldTheorist(key)}
-                      >
-                        <span>{getHoldTheoristName(key)}{holdTheorist === key ? ' ✓' : ''}</span>
-                        <span className="tt-sub">{THEORIST_LABELS[key]?.[1]}</span>
-                      </span>
-                    ))}
-                  </div>
-                  {/* שורת הפעולות מיושרת לקצה הנגדי (הכרעת איה). זה אינו מחזיר את הזיגזג
-                      שנמדד קודם: שם היו שתי רצועות מגודרות בקו שכל אחת הכילה תוכן מעורב,
-                      וכאן שורה אחת היא מצב טהור והשנייה פעולה טהורה, ולכן היישור המנוגד
-                      מחזק את ההבחנה במקום להילחם בה. הפעולה הראשית נוחתת בקצה שבו העין
-                      מסיימת את השורה. */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap', minHeight: 44, justifyContent: 'flex-end' }}>
-                    {/* רוחב אחיד לשלושת הכפתורים (הכרעת איה): אורך התווית אינו משפיע
-                        על ההיקף. 110 נגזר מהרחב שבהם, שנמדד 92px, ועוד מרווח כדי שתווית
-                        שתתארך לא תיחתך. minWidth ולא width, כך שתווית חריגה תגדיל את
-                        הכפתור במקום לגלוש ממנו.
-                        שמירה למה כתבתי. handleHoldSave היה קיים במלואו ולא חובר לאף כפתור,
-                        וגם שורת "נשמר." שמחכה לו לא יכלה לירות. אותו סגנון רפאים של
-                        "מה יש כאן", כדי ששניהם ייקראו כאותה דרגה מול הפעולה הראשית. */}
-                    <button
-                      onClick={handleHoldSave}
-                      style={{
-                        background: 'transparent', border: 'none', padding: 0, height: 44,
-                        cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
-                        transition: 'opacity 0.15s', flexShrink: 0, marginInlineEnd: 8,
-                      }}
-                    >
-                      <span style={{
-                        background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', height: 30, minWidth: 110, justifyContent: 'center', padding: '0 var(--space-md)',
-                        fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)',
-                        display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
-                      }}>
-                        {holdSaveStatus === 'saved' ? (isHe ? 'נשמר ✓' : 'Saved ✓') : (isHe ? 'שמור' : 'Save')}
-                      </span>
-                    </button>
-                    {/* Secondary action — analyze the writing. Gated on written text (BW-122:
-                        no fixed discharge-button from frame one; the gesture appears only
-                        after the patient has written). Calls chat.js's openWriteSummary(),
-                        which since BW-129 hits /api/analyze-note in patient mode (merged with
-                        the old write-summary tool — see lib/analyze-note-prompt.ts). */}
-                    {(
-                      <button
-                        onClick={() => (window as any).openWriteSummary?.()}
-                        style={{
-                          background: 'transparent', border: 'none', padding: 0, height: 44,
-                          cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
-                          transition: 'opacity 0.15s', flexShrink: 0, marginInlineEnd: 8,
-                        }}
-                      >
-                        <span style={{
-                          background: 'transparent', border: '1px solid var(--accent)', borderRadius: 'var(--radius-xl)', height: 30, minWidth: 110, justifyContent: 'center', padding: '0 var(--space-md)',
-                          fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)',
-                          display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
-                        }}>
-                          {isHe ? 'מה יש כאן' : "What's here"}
-                        </span>
-                      </button>
+                    {!activeApproach && (
+                      <div className="n-locknote">{isHe ? 'שדה הכתיבה נפתח אחרי בחירת הגישה, כי הניתוח והשיחה נעשים מתוכה.' : 'Writing opens once an approach is chosen. The analysis and the talk come from it.'}</div>
                     )}
-                    {/* Primary action — continue into a held conversation with the theorist.
-                        שם התיאורטיקן ירד מהתווית (הכרעת איה). הוא נוסף כשהסייד-בר היה הבורר
-                        היחיד והצ'יפים לא היו על המסך, ומאז שהם יושבים באותה שורה השם מופיע
-                        פעמיים בשני פקדים סמוכים. אותו נימוק שפג כמו הגידור isMobile.
-                        היה מרונדר תמיד עם disabled ו-opacity 0.4, וזו הייתה ההפרה היחידה
-                        שנותרה של ההחלטה מ-09.07 (appear/disappear, never disabled-and-greyed),
-                        דווקא במסך שבשבילו הנימוק שלה נכתב. עכשיו הוא בתוך הגייט ואינו מעומעם. */}
-                    <button
-                      onClick={() => handleEnterConversation(holdTheorist)}
-                      style={{
-                        background: 'transparent', border: 'none', padding: 0, height: 44,
-                        cursor: 'pointer',
-                        display: 'inline-flex', alignItems: 'center',
-                        // flexShrink 0 ולא 1: עם כפתור השמירה הנוסף בשורה הוא התכווץ לרוחב
-                        // אפס במקום לרדת שורה, כלומר הפעולה הראשית נעלמה מהמסך. השורה
-                        // ממילא flexWrap, ולכן גלישה לשורה הבאה היא ההתנהגות הנכונה.
-                        transition: 'opacity 0.15s', flexShrink: 0,
-                      }}
-                    >
-                      <span style={{
-                        background: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 'var(--radius-xl)', height: 30, minWidth: 110, justifyContent: 'center', padding: '0 var(--space-md)',
-                        fontSize: 'var(--fs-body-sm)', fontFamily: 'var(--font-rubik), sans-serif', color: '#fff',
-                        display: 'inline-flex', alignItems: 'center', whiteSpace: 'normal',
-                      }}>
-                        {isHe ? 'המשך לשיחה' : 'Continue'}
-                      </span>
-                    </button>
                   </div>
-                  </div>
-                  )}
                 </div>
-                {/* המשפט של שון, במקום הכפתור המעומעם. הוא עונה על מה שמאיה העלתה, שדף
-                    ריק אינו מגלה שהכתיבה מובילה לאנשהו, ועל מה שליה חידדה, שריק אינו
-                    ניטרלי ועלול להיקרא כ"אף אחד לא מחכה לזה". המשפט השני הופך את היעדר
-                    הפקדים מהיעדר להחלטה. נעלם ברגע שיש כתיבה, כי אז ההמשך כבר על המסך
-                    והמשפט היה סותר את מה שרואים. */}
-                {!holdText.trim() && (
-                  <p style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', margin: 0, width: '100%', lineHeight: 1.7, textAlign: isHe ? 'right' : 'left' }}>
-                    {isHe
-                      ? 'אפשר לכתוב בלי לדעת לאן זה הולך. ההמשך מגיע מהכתיבה, לא לפניה.'
-                      : 'No need to know where it goes. What comes next comes from the writing.'}
-                  </p>
-                )}
-                {/* סעיף ד' (מדידת מאיה, הכרעת איה). "מה כתבתי" ירד: הוא קיים בסייד-בר
-                    ופתח את אותה openWriteArchive, כלומר כפילות (UX-RULE 9), והוא גם נשא
-                    את תבנית היישור השלישית על המסך, שורה מפוצלת לשני צדדים.
-                    ההוראה על סימון פרטי מגודרת על טקסט: לפני שנכתב משהו אין מה לסמן.
-                    היא ממשיכה לרחף כי מנגנון הסימון עצמו, ‎#bw-hold-private-bubble,
-                    מכריז על עצמו בבועה ברגע שבוחרים טקסט. */}
+                {/* ההוראה על סימון פרטי · מגודרת על טקסט, כי לפני שנכתב משהו אין מה לסמן */}
                 {!!holdText.trim() && (
-                  <p style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', margin: 0, width: '100%', textAlign: isHe ? 'right' : 'left' }}>
-                    {isHe ? 'סמן טקסט כדי לסמן פרטי, לפני שמשתפים.' : 'Highlight text to mark private, before sharing.'}
-                  </p>
+                  <div className="n-privhint">{isHe ? 'אפשר לסמן קטע בכתיבה ולשמור אותו רק לעצמך. מה שסומן לא ייכלל בשיתוף עם המטפל/ת.' : 'You can mark part of the writing to keep to yourself. What is marked is left out of what you share.'}</div>
                 )}
+                {/* שורת הפעולות · מתחת ללוח, מהעיצוב החדש */}
+                <div className="n-actions">
+                  <button className="n-btn n-ghost" disabled={!activeApproach || !holdText.trim()}
+                    onClick={() => { setShareState(''); setShareOpen(true); }}>{isHe ? 'שיתוף עם המטפל/ת' : 'Share with therapist'}</button>
+                  <span className="n-sp" />
+                  <button className="n-btn n-ghost" disabled={!activeApproach || !holdText.trim()} onClick={handleHoldSave}>
+                    {holdSaveStatus === 'saved' ? (isHe ? 'נשמר ✓' : 'Saved ✓') : (isHe ? 'שמור' : 'Save')}
+                  </button>
+                  <button className="n-btn n-ghost" disabled={!activeApproach || !holdText.trim()}
+                    onClick={() => (window as any).openWriteSummary?.()}>{isHe ? 'נתח' : 'Analyse'}</button>
+                  <button className="n-btn n-solid" disabled={!activeApproach || !holdText.trim()}
+                    onClick={() => handleEnterConversation(holdTheorist)}>{isHe ? 'המשך לשיחה' : 'Continue'}</button>
+                </div>
                 {/* Ephemerality — stated as a value, not read as a failure. Content is never
                     persisted server-side by design (MEMORY.md, "תוכן שיחות לא נשמר בשרת").
                     Left unsaid it reads as "my history got deleted"; PDF is the only keeping.
                     <bdi> isolates the Latin run so the bidi algorithm can't break the RTL line. */}
-                <p style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', margin: 0, textAlign: isHe ? 'right' : 'left', lineHeight: 1.7 }}>
+                <p style={{ fontSize: 13, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif', margin: 0, textAlign: isHe ? 'right' : 'left', lineHeight: 1.7 }}>
                   {isHe
-                    ? <>מה שנכתב כאן לא נשמר אצלנו. זה מרחב לכתוב בו בחופשיות. אם משהו חשוב לך לשמור, אפשר להוריד קובץ (<bdi>PDF</bdi>) ולשמור אותו אצלך.</>
-                    : 'Nothing written here is kept by us. This is a space to write freely. If you want to keep something, download it as a PDF.'}
+                    ? <>מה שנכתב כאן לא נשמר אצלנו. &quot;שמור&quot; מחזיק אותו בדפדפן הזה בלבד, ואפשר למצוא אותו ב&quot;מה כתבתי&quot; לכמה ימים, עד שהדפדפן מנקה. אם משהו חשוב לך לאורך זמן, אפשר להוריד קובץ (<bdi>PDF</bdi>) ולשמור אותו אצלך.</>
+                    : <>Nothing written here is kept by us. &quot;Save&quot; holds it in this browser only, and you&apos;ll find it under &quot;What I wrote&quot; for a few days, until the browser clears it. If something matters for longer, download it as a <bdi>PDF</bdi>.</>}
                 </p>
                 {holdSaveStatus === 'saved' && (
-                  <p style={{ fontSize: 13, color: 'var(--muted)', fontFamily: 'var(--font-cormorant), serif', fontStyle: 'italic', margin: 0 }}>{isHe ? 'נשמר.' : 'Saved.'}</p>
+                  <p style={{ fontSize: 16, color: 'var(--muted)', fontFamily: 'var(--font-assistant), sans-serif', margin: 0 }}>{isHe ? 'נשמר.' : 'Saved.'}</p>
                 )}
               </div>
               )}
               {/* BW-113 — therapist case-first landing: "My Cases". Hidden during step-1 auto-entry to land on the writing page. */}
-              {activePersona === 'therapist' && therapistView === 'cases' && therapistReady && (
-              <div style={{ width: '100%', maxWidth: 720, margin: '0 auto' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-                  <h2 style={{ fontFamily: 'var(--font-cormorant), Georgia, serif', fontSize: 24, color: 'var(--text)', margin: 0 }}>{isHe ? 'המקרים שלי' : 'My cases'}</h2>
-                  <button onClick={() => setShowNewCase(v => !v)} style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 22, padding: '9px 20px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer' }}>{isHe ? '+ מקרה חדש' : '+ New case'}</button>
+              {activePersona === 'therapist' && !researchPicking && therapistView === 'cases' && therapistReady && (
+              <div className="n-wrap">
+                {/* מסך המקרים · מבנה העיצוב החדש, 28.08 */}
+                <div className="n-topbar">
+                  <span>{isHe ? 'המקרים שלי' : 'My cases'}</span>
+                  <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
                 </div>
-                {showNewCase && (
-                  <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-                    <input value={newCaseLabel} onChange={e => setNewCaseLabel(e.target.value)} placeholder={isHe ? 'תווית למקרה (פסבדונים — לא שם אמיתי)' : 'Case label (pseudonym, not a real name)'} style={{ flex: 1, border: '1px solid var(--border)', borderRadius: 16, padding: '10px 16px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--surface)', color: 'var(--text)' }} />
-                    <button onClick={() => createCase(newCaseLabel)} style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 22, padding: '9px 18px', fontSize: 13, cursor: 'pointer' }}>{isHe ? 'צור' : 'Create'}</button>
-                  </div>
-                )}
+                <div className="n-hr" />
+                <h1 className="n-h">{isHe ? 'על מה נעבוד היום?' : 'What are we working on today?'}</h1>
+
                 {cases.length === 0 ? (
-                  <p style={{ fontSize: 13, color: 'var(--muted)', textAlign: 'center', padding: '40px 0', lineHeight: 1.7 }}>{isHe ? `עדיין אין מקרים. ${gv('צרי','צור','צור/י')} מקרה ראשון כדי להתחיל לארגן התייעצויות.` : 'No cases yet. Create your first case to start organizing consultations.'}</p>
+                  <div className="n-empty">
+                    <div className="n-t">{isHe ? 'עדיין אין מקרים' : 'No cases yet'}</div>
+                    <div className="n-d">{isHe ? 'מקרה הוא תווית שמארגנת התייעצויות. אפשר לפתוח את הראשון עכשיו, ואפשר גם למחוק אותו אחר כך.' : 'A case is a label that organizes consultations. You can open the first one now, and delete it later.'}</div>
+                    <button className="n-btn n-solid" onClick={() => setShowNewCase(true)}>{isHe ? 'פתיחת מקרה ראשון' : 'Open first case'}</button>
+                  </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div>
                     {cases.map(c => (
-                      <div key={c.id} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, position: 'relative', display: 'flex', alignItems: 'stretch', direction: 'ltr' }}>
-                        {/* accent strip — physical left, ltr-first */}
-                        <div style={{ width: 3, background: 'var(--accent)', flexShrink: 0, borderTopLeftRadius: 11, borderBottomLeftRadius: 11 }} />
-                        {/* card body */}
-                        <div onClick={() => renamingCaseId !== c.id ? openCase(c) : undefined}
-                          style={{ flex: 1, padding: '14px 16px', cursor: renamingCaseId === c.id ? 'default' : 'pointer', display: 'flex', flexDirection: 'column', gap: 3, direction: 'rtl', textAlign: 'start' }}>
-                          {renamingCaseId === c.id ? (
-                            <input autoFocus value={renamingLabel} onChange={e => setRenamingLabel(e.target.value)}
-                              onKeyDown={e => { if (e.key === 'Enter') renameCase(c.id, renamingLabel); if (e.key === 'Escape') setRenamingCaseId(null); }}
-                              style={{ width: '100%', fontFamily: 'var(--font-cormorant), Georgia, serif', fontSize: 19, fontWeight: 500, border: 'none', borderBottom: '1px solid var(--accent)', background: 'transparent', color: 'var(--text)', outline: 'none', padding: '0 0 2px', boxSizing: 'border-box', direction: 'rtl' }} />
-                          ) : (
-                            <>
-                              <span style={{ fontFamily: 'var(--font-cormorant), Georgia, serif', fontSize: 19, fontWeight: 500, color: 'var(--text)', lineHeight: 1.2 }}>{c.label}</span>
-                              <span style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif' }}>{new Date(c.created_at).toLocaleDateString(isHe ? 'he-IL' : 'en-US', { month: 'short', day: 'numeric' })}</span>
-                            </>
-                          )}
-                        </div>
-                        {/* three-dot menu — physical right */}
-                        <span onClick={e => { e.stopPropagation(); setOpenMenuCaseId(id => id === c.id ? null : c.id); }}
-                          style={{ fontSize: 16, color: 'var(--muted)', cursor: 'pointer', lineHeight: 1, padding: '4px 14px 4px 10px', alignSelf: 'center', userSelect: 'none', flexShrink: 0 }}>⋮</span>
+                      <div key={c.id} className="n-card" onClick={() => renamingCaseId !== c.id ? openCase(c) : undefined}>
+                        <button className="n-more" aria-label={isHe ? 'עוד' : 'More'}
+                          onClick={e => { e.stopPropagation(); setOpenMenuCaseId(id => id === c.id ? null : c.id); }}>⋯</button>
                         {openMenuCaseId === c.id && (<>
-                          <div onClick={() => setOpenMenuCaseId(null)} style={{ position: 'fixed', inset: 0, zIndex: 99 }} />
-                          <div style={{ position: 'absolute', top: 42, right: 8, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', zIndex: 100, minWidth: 160, overflow: 'hidden', direction: 'rtl' }}>
-                            <div onClick={e => { e.stopPropagation(); setRenamingCaseId(c.id); setRenamingLabel(c.label); setOpenMenuCaseId(null); }} style={{ padding: '10px 16px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)', cursor: 'pointer' }}>{isHe ? 'ערוך שם' : 'Rename'}</div>
-                            <div onClick={e => { e.stopPropagation(); archiveCase(c.id, true).then(() => setCasesLoaded(false)); setOpenMenuCaseId(null); }} style={{ padding: '10px 16px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)', cursor: 'pointer', borderTop: '1px solid var(--border)' }}>{isHe ? 'העבר לארכיון' : 'Archive'}</div>
-                            <div onClick={e => { e.stopPropagation(); setOpenMenuCaseId(null); deleteCaseById(c.id, c.label); }} style={{ padding: '10px 16px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)', cursor: 'pointer', borderTop: '1px solid var(--border)' }}>{isHe ? 'מחק מקרה' : 'Delete case'}</div>
+                          {/* שכבת הסגירה חייבת לשבת מתחת לתפריט. ב-99 היא ישבה מעליו
+                              (התפריט הוא 40), ולכן כל לחיצה אמיתית פגעה בה וסגרה את
+                              התפריט במקום להפעיל את הפריט. לחיצה תכנותית עקפה את זה
+                              ולכן הבדיקה הראשונה לא תפסה את הכשל. */}
+                          <div onClick={e => { e.stopPropagation(); setOpenMenuCaseId(null); }} style={{ position: 'fixed', inset: 0, zIndex: 30 }} />
+                          <div className="n-cardmenu n-open" onClick={e => e.stopPropagation()}>
+                            <button onClick={() => { setRenamingCaseId(c.id); setRenamingLabel(c.label); setOpenMenuCaseId(null); }}>{isHe ? 'שינוי שם' : 'Rename'}</button>
+                            <button onClick={() => { archiveCase(c.id, true).then(() => setCasesLoaded(false)); setOpenMenuCaseId(null); }}>{isHe ? 'העברה לארכיון' : 'Archive'}</button>
+                            <button onClick={() => { setOpenMenuCaseId(null); deleteCaseById(c.id, c.label); }}>{isHe ? 'מחיקת המקרה' : 'Delete case'}</button>
                           </div>
                         </>)}
+                        {renamingCaseId === c.id ? (
+                          <input className="n-rename" autoFocus value={renamingLabel} onClick={e => e.stopPropagation()}
+                            onBlur={() => renameCase(c.id, renamingLabel)}
+                            onChange={e => setRenamingLabel(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') renameCase(c.id, renamingLabel); if (e.key === 'Escape') setRenamingCaseId(null); }} />
+                        ) : (
+                          <div className="n-t">{c.label}</div>
+                        )}
+                        <div className="n-m">{new Date(c.created_at).toLocaleDateString(isHe ? 'he-IL' : 'en-US', { month: 'long', day: 'numeric' })}</div>
                       </div>
                     ))}
                   </div>
                 )}
-                <div style={{ marginTop: 24, textAlign: 'center' }}>
-                  <button onClick={() => { setTherapistView('hub'); setHubMode(null); setHubTheorists([]); }} style={{ background: 'none', border: '1px solid var(--border)', color: 'var(--muted)', borderRadius: 22, padding: '8px 18px', fontSize: 13, cursor: 'pointer' }}>{isHe ? 'התייעצות חדשה' : 'New consultation'}</button>
+
+                {/* בקובץ העיצוב יש כאן פעולה אחת בלבד. "התייעצות חדשה" פתח את
+                    מסך ה-hub הישן, שאינו חלק מהעיצוב, והוסר בהכרעת איה 29.08. */}
+                <div className="n-actions">
+                  <button className="n-btn n-ghost" onClick={() => { setNewCaseLabel(''); setShowNewCase(true); }}>{isHe ? 'מקרה חדש' : 'New case'}</button>
+                  <span className="n-sp" />
                 </div>
-                <p style={{ fontSize: 11, color: 'var(--muted)', opacity: 0.6, textAlign: 'center', marginTop: 16, lineHeight: 1.6 }}>{isHe ? 'הערות רפלקציה, לא רשומה קלינית. ההערות נשארות אצלך; התייעצויות מאונמזות לפני שמירה. התוויות הן כינויים.' : 'Reflection notes, not a clinical record. Notes stay on your device; consultations are anonymized before saving. Labels are pseudonyms.'}</p>
+                <div className="n-botbar">{isHe ? 'הערות רפלקציה, לא רשומה קלינית. התוויות הן כינויים, וההתייעצויות מאונמזות לפני שמירה.' : 'Reflection notes, not a clinical record. Labels are pseudonyms; consultations are anonymized before saving.'}</div>
               </div>
               )}
               {/* BW-113 — case detail: consultation timeline. */}
-              {activePersona === 'therapist' && therapistView === 'caseDetail' && selectedCase && (
-              <div style={{ width: '100%', maxWidth: 720, margin: '0 auto' }}>
-                <p style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 'var(--fs-heading-lg)', fontWeight: 400, color: 'var(--text)', margin: '0 0 16px' }}>{isHe ? 'מה עלה לך מהפגישה?' : 'What came up in the session?'}</p>
+              {activePersona === 'therapist' && !researchPicking && therapistView === 'caseDetail' && selectedCase && (
+              <div className="n-wrap">
+                {/* בר עליון וקו שחור · מהעיצוב החדש, 28.08 */}
+                <div className="n-topbar">
+                  <span>{selectedCase?.label}</span>
+                  <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+                </div>
+                <div className="n-hr"></div>
+                <h1 className="n-h">{isHe ? 'מה עלה לך מהפגישה?' : 'What came up in the session?'}</h1>
                 {/* BW-116 — daily update section */}
-                <div style={{ marginBottom: 24, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '16px 18px' }}>
-                  {/* המיקרופון עבר לתוך השדה (הכרעת איה, פריט 1). הריפוד התחתון פונה לו מקום
-                      כדי שהטקסט לא ייכתב מתחתיו, והעוטף relative כי ‎.bw-mic מוחלט. */}
-                  <div style={{ position: 'relative', width: '100%' }}>
-                    <textarea
-                      value={dailyText}
-                      onChange={e => setDailyText(e.target.value)}
-                      placeholder={isHe ? 'בלי לסדר את זה קודם.' : 'No need to tidy it first.'}
-                      /* השדה היה נושא מסגרת ורקע משלו בתוך כרטיס שכבר יש לו מסגרת ורקע,
-                         כלומר קופסה בתוך קופסה. אצל המטופלת השדה שקוף וחסר מסגרת בתוך
-                         הכרטיס, ולכן הכרטיס נקרא כיחידה אחת עם אזורים. אותו כלל כאן.
-                         הריפוד האופקי אופס: הכרטיס כבר נותן 18px, ושכבה שנייה של ריפוד
-                         הייתה מזיזה את הטקסט פנימה ביחס לשאר תוכן הכרטיס. */
-                      style={{ width: '100%', minHeight: 240, maxHeight: '50vh', overflowY: 'auto', boxSizing: 'border-box', border: 'none', padding: '0 0 44px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'transparent', color: 'var(--text)', resize: 'vertical', outline: 'none', display: 'block' }}
-                    />
-                    <button
-                      onClick={handleDailyVoice}
-                      className={`bw-mic${isDailyRecording ? ' bw-mic-recording' : ''}`}
-                      aria-pressed={isDailyRecording}
-                      title={isDailyRecording ? (isHe ? 'עצור הקלטה' : 'Stop recording') : (isHe ? 'הקלט קול' : 'Record voice')}
-                    >
-                      <Mic size={15} />
-                    </button>
-                  </div>
-                  {/* The "saved on your device" line came down with "שמור" (Aya, 22.08). dailyText is
-                      state only — with no save action nothing is stored anywhere, so the sentence
-                      would have claimed a save that no longer happens. Replacement copy: Shaun. */}
-                  {/* Single aligned action row — mic + buttons flush to the start side (mirrors patient footer).
-                      Hidden once an analysis exists: the analysis is the destination, not a step. */}
-                  {!noteAnalysis['draft'] && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, flexWrap: 'wrap', flexDirection: isHe ? 'row-reverse' : 'row' }}>
-                    {/* המיקרופון ירד מכאן לתוך השדה. השורה נשארת כעוגן לפעולות שמופיעות אחרי כתיבה. */}
-                    {/* Gating is appear/disappear, never disabled-and-greyed — a visible-but-dimmed
-                        control reads as "you are not enough for this yet". Decision 09.07. */}
-                    {/* "שמור" removed from the UI (Aya, 22.08) — an archive contradicts the ephemeral
-                        promise this space makes. The two ways out are: analyze, or go on to a
-                        conversation. saveDailyUpdate() is kept in the code, unwired — reversible. */}
-                    <div style={{ flex: 1 }} />
-                  </div>
-                  )}
-                  {/* רק מצב הטעינה נשאר כאן. התוצאה עצמה עברה למודל (הכרעת איה, פריט 10). */}
-                  {analyzingNoteId === 'draft' && (
-                    <div style={{ marginTop: 12, fontSize: 12, color: 'var(--muted)', fontStyle: 'italic' }}>{isHe ? 'רגע…' : 'One moment…'}</div>
-                  )}
-                  {/* הכישלון נאמר במקום להיבלע. עד עכשיו המסך חזר מ"רגע…" לשקט מוחלט. */}
-                  {analyzingNoteId !== 'draft' && !!noteError['draft'] && (
-                    <div style={{ marginTop: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 'var(--fs-body-sm)', color: 'var(--accent-deep)', fontFamily: 'var(--font-rubik), sans-serif' }}>
-                        {analyzeErrorText(noteError['draft'])}
-                      </span>
-                      <span style={{ fontSize: 'var(--fs-caption)', color: 'var(--muted)', fontFamily: 'var(--font-rubik), sans-serif' }}>
-                        ({noteError['draft']})
-                      </span>
-                      <button
-                        onClick={() => analyzeNote(dailyText, 'draft')}
-                        style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', fontSize: 'var(--fs-body-sm)', color: 'var(--accent)', fontFamily: 'var(--font-rubik), sans-serif', textDecoration: 'underline' }}
-                      >
-                        {isHe ? 'לנסות שוב' : 'Try again'}
-                      </button>
-                    </div>
-                  )}
-                  {/* Mode 2א — the analysis landed. Two quiet, equal actions behind a hairline;
-                      neither is accent-filled, so the analysis stays the strongest thing here. */}
-                  {!!noteAnalysis['draft'] && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)', flexDirection: isHe ? 'row-reverse' : 'row' }}>
-                    <span
-                      onClick={() => setConsultPickerOpen(o => !o)}
-                      style={{ fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)', cursor: 'pointer' }}>
-                      {isHe ? 'לחשוב על זה עם מישהו' : 'Think it through with someone'} {consultPickerOpen ? '⌃' : '⌄'}
-                    </span>
-                    {/* בלי זה, סגירת המודל מאבדת את הניתוח בלי דרך חזרה. */}
-                    <span
-                      onClick={() => setAnalysisModalOpen(true)}
-                      style={{ fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)', cursor: 'pointer', marginInlineStart: 12 }}>
-                      {isHe ? 'הצג את הניתוח' : 'Show the reflection'}
-                    </span>
-                    <div style={{ flex: 1 }} />
-                    <span
-                      onClick={() => { setNoteAnalysis(prev => { const n = { ...prev }; delete n['draft']; return n; }); setConsultPickerOpen(false); setAnalysisModalOpen(false); }}
-                      style={{ fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)', cursor: 'pointer' }}>
-                      {isHe ? 'חזרה לכתיבה' : 'Back to writing'}
-                    </span>
-                  </div>
-                  )}
-                  {/* Ephemeral consultation — theorist pills live INSIDE the writing card and are
-                      gated on its text, because that is what they act on (startConsultation(dailyText)).
-                      As a floating sibling they survived "שמור" — which empties dailyText — and sat
-                      wedged between an empty box and the saved note, inert, while the note below
-                      carried its own working נתח/התייעץ. Anchored to the text, they leave with it.
-                      Once an analysis exists they collapse behind the "think it through" line above,
-                      so the output is not immediately followed by a second, unasked-for decision. */}
-                  {!!dailyText.trim() && (!noteAnalysis['draft'] || consultPickerOpen) && (() => {
+                {/* ── לוח דו־אזורי · הזרימה שאושרה 28.08 ──────────────────────
+                    הגישה נבחרת למעלה, לפני הכתיבה, והכתיבה נעולה עד שנבחרה.
+                    קודם הצ׳יפים הופיעו מתחת לטקסט, כלומר הבחירה נעשתה אחרי
+                    שכבר נכתב, והניתוח היה נגזר מקול שנבחר בדיעבד. */}
+                {(() => {
                   const HUB_THEORISTS: [string, string][] = [['freud', isHe ? 'פרויד' : 'Freud'], ['klein', isHe ? 'קליין' : 'Klein'], ['winnicott', isHe ? 'ויניקוט' : 'Winnicott'], ['ogden', isHe ? 'אוגדן' : 'Ogden']];
+                  const picked = hubTheorists.length >= 1;
+                  const isRoundtable = hubTheorists.length >= 2;
                   const chipStyle = (on: boolean): React.CSSProperties => ({
-                    border: '1px solid ' + (on ? 'var(--accent)' : 'var(--border)'),
-                    borderRadius: 'var(--radius-xl)', padding: '8px 12px', fontSize: 13, cursor: 'pointer',
-                    color: on ? '#fff' : 'var(--text)', background: on ? 'var(--accent)' : 'var(--surface)',
+                    border: '1px solid ' + (on ? 'var(--accent-deep)' : 'var(--border)'),
+                    borderRadius: 'var(--radius-sm)', padding: '0 14px', height: 44,
+                    display: 'inline-flex', alignItems: 'center',
+                    fontSize: 'var(--fs-body-md)', fontWeight: on ? 600 : 500, cursor: 'pointer',
+                    color: on ? '#fff' : 'var(--text)', background: on ? 'var(--accent-deep)' : 'transparent',
                   });
                   const openRoundtableMockup = () => {
                     document.getElementById('bw-rt-mockup')?.remove();
                     const ov = document.createElement('div');
                     ov.id = 'bw-rt-mockup';
-                    ov.style.cssText = 'position:fixed;inset:0;z-index:900;background:rgba(45,36,32,0.55);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);';
+                    ov.style.cssText = 'position:fixed;inset:0;z-index:900;background:rgba(17,17,17,0.55);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);';
                     ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
-                    ov.innerHTML = '<div style="position:relative;width:640px;max-width:94vw;height:88vh;background:var(--bg);border-radius:16px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.22);">'
-                      + '<button onclick="document.getElementById(\'bw-rt-mockup\').remove()" style="position:absolute;top:8px;left:12px;z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:50%;width:30px;height:30px;font-size:17px;color:var(--muted);cursor:pointer;line-height:1;">×</button>'
+                    ov.innerHTML = '<div style="position:relative;width:640px;max-width:94vw;height:88vh;background:var(--bg);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 16px 48px rgba(17,17,17,0.18);">'
+                      + '<button onclick="document.getElementById(\'bw-rt-mockup\').remove()" style="position:absolute;top:8px;left:12px;z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);width:32px;height:32px;font-size:17px;color:var(--muted);cursor:pointer;line-height:1;">×</button>'
                       + '<iframe src="/roundtable-mockup.html" style="width:100%;height:100%;border:none;"></iframe>'
                       + '</div>';
                     document.body.appendChild(ov);
                   };
-                  const isRoundtable = hubTheorists.length >= 2;
                   return (
-                    <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <div className="hub-helpcap">{isHe ? <>מאיזו גישה?<br/>אחד לעומק, או כמה יחד לשולחן עגול.</> : <>From which approach?<br/>One in depth, or several at a round table.</>}</div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 12, maxWidth: 560 }}>
-                        {HUB_THEORISTS.map(([k, name]) => {
-                          const on = hubTheorists.includes(k);
-                          return <span key={k} onClick={() => setHubTheorists(on ? hubTheorists.filter(x => x !== k) : [...hubTheorists, k])} style={chipStyle(on)}>{name}{on ? ' ✓' : ''}</span>;
-                        })}
-                      </div>
-                      {hubTheorists.length > 0 && (
-                        <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', marginTop: 12 }}>{hubTheorists.length === 1 ? (isHe ? 'נבחר אחד — התייעצות ממוקדת.' : 'One selected — focused consultation.') : (isHe ? `נבחרו ${hubTheorists.length} — שולחן עגול.` : `${hubTheorists.length} selected — round table.`)}</div>
-                      )}
-                      {/* Both actions live here, after the approach is chosen (Aya, 25.08). The trigger
-                          for showing them is a DECISION, not a character count — which is why this
-                          satisfies the 09.07 rule (appear/disappear, never disabled-and-greyed) without
-                          bending it: nothing is dimmed, and nothing appears before she has chosen who.
-                          "נתח" moved down from the row above for the same reason. It was already
-                          voice-dependent — /api/analyze-note prepends the chosen theorist's block — the
-                          choice was simply being made silently for her. */}
-                      {hubTheorists.length >= 1 && (
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
-                          {!isRoundtable && analyzingNoteId !== 'draft' && (
-                            <button
-                              onClick={() => analyzeNote(dailyText, 'draft')}
-                              style={{ padding: '12px 20px', borderRadius: 'var(--radius-xl)', border: '1px solid var(--accent)', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'transparent', color: 'var(--accent)', cursor: 'pointer' }}>
-                              {isHe ? 'נתח' : 'Analyze'}
+                  <>
+                    <div className={`n-plate${picked ? '' : ' n-locked'}`} style={{ marginBottom: 16 }}>
+                      {/* אזור 1 · בחירת הגישה, פעיל תמיד */}
+                      <div className="n-zone-head">
+                        <span className="n-lbl">{isHe ? 'דרך הגישה של' : 'Through the approach of'}</span>
+                        <button className={`n-sel${picked ? '' : ' n-primed'}`} aria-haspopup="listbox" aria-expanded={selOpen}
+                          onClick={() => setSelOpen(v => !v)}>
+                          {picked
+                            ? <span>{HUB_THEORISTS.find(([k]) => k === hubTheorists[0])?.[1]}{' '}<span className="n-sub">{THEORIST_DESC[hubTheorists[0]]}</span></span>
+                            : <span>{isHe ? 'בחרי גישה' : 'Choose an approach'}</span>}
+                          <span className={`n-chev${selOpen ? ' n-open' : ''}`}>⌄</span>
+                        </button>
+                        {!picked && <span className="n-hintstart"><span>{isHe ? '\u2192' : '\u2190'}</span>{isHe ? 'מתחילים כאן' : 'Start here'}</span>}
+                        {isRoundtable &&<span style={{ fontSize: 'var(--fs-body-sm)', color: 'var(--muted)' }}>{isHe ? `נבחרו ${hubTheorists.length}, שולחן עגול` : `${hubTheorists.length} selected, round table`}</span>}
+                        <div className={`n-menu${selOpen ? ' n-open' : ''}`} role="listbox" aria-label={isHe ? 'בחירת גישה' : 'Choose an approach'}>
+                          {HUB_THEORISTS.map(([k, name]) => (
+                            <button key={k} className="n-mi" role="option" aria-selected={hubTheorists.includes(k)}
+                              onClick={() => { setHubTheorists([k]); setSelOpen(false); }}>
+                              <span className="n-nm">{name}</span>
+                              <span className="n-ds">{THEORIST_DESC[k]}</span>
                             </button>
-                          )}
-                          <button
-                            onClick={isRoundtable ? openRoundtableMockup : () => startConsultation(dailyText)}
-                            style={{ padding: '12px 20px', borderRadius: 'var(--radius-xl)', border: '1px solid var(--accent)', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--accent)', color: '#fff', cursor: 'pointer' }}>
-                            {isRoundtable ? (isHe ? 'שולחן עגול' : 'Round table') : (isHe ? 'שיחה' : 'Talk')}
-                          </button>
+                          ))}
                         </div>
-                      )}
+                      </div>
+                      {/* אזור 2 · הכתיבה, האזור היחיד שמשנה מצב */}
+                      <div className="n-zone-write" style={{ position: 'relative' }}>
+                        <textarea
+                          value={dailyText}
+                          disabled={!picked}
+                          onChange={e => setDailyText(e.target.value)}
+                          placeholder={picked ? (isHe ? 'בלי לסדר את זה קודם.' : 'No need to tidy it first.') : (isHe ? 'בחרי גישה כדי להתחיל לכתוב.' : 'Choose an approach to start writing.')}
+                          style={{ width: '100%', minHeight: 220, maxHeight: '50vh', overflowY: 'auto', boxSizing: 'border-box', border: 'none', padding: '0 0 44px', fontSize: 16, fontWeight: 300, lineHeight: 1.85, fontFamily: 'var(--font-rubik), sans-serif', background: 'transparent', color: picked ? 'var(--text)' : 'var(--off)', caretColor: 'var(--accent)', resize: 'vertical', outline: 'none', display: 'block' }}
+                        />
+                        {picked && (
+                          <button
+                            onClick={handleDailyVoice}
+                            className={`bw-mic${isDailyRecording ? ' bw-mic-recording' : ''}`}
+                            aria-pressed={isDailyRecording}
+                            title={isDailyRecording ? (isHe ? 'עצור הקלטה' : 'Stop recording') : (isHe ? 'הקלט קול' : 'Record voice')}
+                          >
+                            <Mic size={15} />
+                          </button>
+                        )}
+                        {!picked && (
+                          <div className="n-locknote">{isHe ? 'שדה הכתיבה נפתח אחרי בחירת הגישה, כי הניתוח והשיחה נעשים מתוכה.' : 'Writing opens once an approach is chosen. The analysis and the talk come from it.'}</div>
+                        )}
+                      </div>
                     </div>
+                    {/* שלוש הפעולות · מתחת ללוח, כמו בקובץ העיצוב:
+                        שמור · נתח · המשך לשיחה. "שמור" חסר עד כה, ו-saveDailyUpdate
+                        היה קיים במלואו בלי שאף כפתור קרא לו. */}
+                    <div className="n-actions">
+                      <span className="n-sp" />
+                      <button
+                        disabled={!picked || !dailyText.trim() || !selectedCase}
+                        onClick={saveDailyUpdate}
+                        className="n-btn n-ghost">
+                        {isHe ? 'שמור' : 'Save'}
+                      </button>
+                      {!isRoundtable && (
+                        <button
+                          disabled={!picked || !dailyText.trim() || analyzingNoteId === 'draft'}
+                          onClick={() => analyzeNote(dailyText, 'draft')}
+                          className="n-btn n-ghost">
+                          {isHe ? 'נתח' : 'Analyze'}
+                        </button>
+                      )}
+                      <button
+                        disabled={!picked || !dailyText.trim()}
+                        onClick={isRoundtable ? openRoundtableMockup : () => startConsultation(dailyText)}
+                        className="n-btn n-solid">
+                        {isRoundtable ? (isHe ? 'שולחן עגול' : 'Round table') : (isHe ? 'המשך לשיחה' : 'Continue to talk')}
+                      </button>
+                    </div>
+                    {/* הפוטר · קיים בקובץ העיצוב ולא היה במסך הזה */}
+                    <div className="n-botbar">{isHe ? 'הערות רפלקציה, לא רשומה קלינית.' : 'Reflection notes, not a clinical record.'}</div>
+                  </>
                   );
-                  })()}
-                </div>
+                })()}
                 {/* BW-116 — past updates from localStorage.
                     REMOVED FROM THE UI (Aya, 22.08): an archive of clinical writing contradicts the
                     ephemeral promise. The reading/writing code and the localStorage keys are left
@@ -1723,37 +2095,37 @@ export default function Home() {
                     entries on a device are not deleted, only no longer shown. */}
                 {false && caseUpdates.length > 0 && (
                   <div style={{ marginBottom: 24 }}>
-                    <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{isHe ? 'עדכונים קודמים' : 'Past updates'}</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{isHe ? 'עדכונים קודמים' : 'Past updates'}</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {caseUpdates.map(u => (
-                        <div key={u.id} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '12px 16px' }}>
+                        <div key={u.id} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: '12px 16px' }}>
                           {editingDailyId === u.id ? (
                             <>
                               <textarea autoFocus value={editingDailyText} onChange={e => setEditingDailyText(e.target.value)}
-                                style={{ width: '100%', minHeight: 80, boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 12px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--surface)', color: 'var(--text)', resize: 'vertical' }} />
+                                style={{ width: '100%', minHeight: 80, boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 6, padding: '8px 12px', fontSize: 16, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--surface)', color: 'var(--text)', resize: 'vertical' }} />
                               <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
-                                <button onClick={() => setEditingDailyId(null)} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '5px 14px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)', cursor: 'pointer' }}>{isHe ? 'ביטול' : 'Cancel'}</button>
-                                <button onClick={() => saveDailyEdit(u.id)} style={{ background: 'var(--accent)', border: 'none', borderRadius: 22, padding: '5px 14px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: '#fff', cursor: 'pointer' }}>{isHe ? 'שמור' : 'Save'}</button>
+                                <button onClick={() => setEditingDailyId(null)} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 6, padding: '5px 14px', fontSize: 15, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--muted)', cursor: 'pointer' }}>{isHe ? 'ביטול' : 'Cancel'}</button>
+                                <button onClick={() => saveDailyEdit(u.id)} style={{ background: 'var(--accent)', border: 'none', borderRadius: 6, padding: '5px 14px', fontSize: 15, fontFamily: 'var(--font-rubik), sans-serif', color: '#fff', cursor: 'pointer' }}>{isHe ? 'שמור' : 'Save'}</button>
                               </div>
                             </>
                           ) : (
                             <>
                               <div style={{ display: 'flex', alignItems: 'center', marginBottom: 6 }}>
-                                <span style={{ fontSize: 11, color: 'var(--muted)', flex: 1 }}>{new Date(u.created_at).toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                                <span onClick={() => { setEditingDailyId(u.id); setEditingDailyText(u.text); }} style={{ fontSize: 13, color: 'var(--muted)', cursor: 'pointer', opacity: 0.6, marginInlineEnd: 10 }} title={isHe ? 'ערוך' : 'Edit'}>✎</span>
-                                <span onClick={() => deleteCaseUpdate(u.id)} style={{ fontSize: 11, color: 'var(--muted)', cursor: 'pointer', opacity: 0.6 }} title={isHe ? 'מחק' : 'Delete'}>✕</span>
+                                <span style={{ fontSize: 13, color: 'var(--muted)', flex: 1 }}>{new Date(u.created_at).toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                <span onClick={() => { setEditingDailyId(u.id); setEditingDailyText(u.text); }} style={{ fontSize: 16, color: 'var(--muted)', cursor: 'pointer', opacity: 0.6, marginInlineEnd: 10 }} title={isHe ? 'ערוך' : 'Edit'}>✎</span>
+                                <span onClick={() => deleteCaseUpdate(u.id)} style={{ fontSize: 13, color: 'var(--muted)', cursor: 'pointer', opacity: 0.6 }} title={isHe ? 'מחק' : 'Delete'}>✕</span>
                               </div>
-                              <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6 }}>{u.text}</div>
+                              <div style={{ fontSize: 16, color: 'var(--text)', lineHeight: 1.6 }}>{u.text}</div>
                               <div style={{ display: 'flex', gap: 8, marginTop: 10, justifyContent: 'flex-end' }}>
                                 <button
                                   disabled={analyzingNoteId === u.id}
                                   onClick={() => analyzeNote(u.text, u.id)}
-                                  style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '5px 14px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)', cursor: 'pointer' }}>
+                                  style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 6, padding: '5px 14px', fontSize: 15, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)', cursor: 'pointer' }}>
                                   {isHe ? 'נתח' : 'Analyze'}
                                 </button>
                                 <button
                                   onClick={() => consultFromText(u.text)}
-                                  style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '5px 14px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)', cursor: 'pointer' }}>
+                                  style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 6, padding: '5px 14px', fontSize: 15, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--accent)', cursor: 'pointer' }}>
                                   {isHe ? 'התייעץ' : 'Consult'}
                                 </button>
                               </div>
@@ -1771,7 +2143,7 @@ export default function Home() {
                 {false && consultations.length > 0 && (
                   <div className="sb-item" onClick={() => setConsultsOpen(o => !o)}
                     style={{ alignSelf: 'flex-start', padding: '6px 0', cursor: 'pointer', background: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 11, color: 'var(--muted)' }}>
+                    <span style={{ fontSize: 13, color: 'var(--muted)' }}>
                       {isHe ? `התייעצויות קודמות · ${consultations.length}` : `Previous consultations · ${consultations.length}`}
                     </span>
                     <ChevronDown size={12} strokeWidth={1.75} style={{ color: 'var(--muted)', transition: 'transform 0.2s', transform: consultsOpen ? 'rotate(180deg)' : 'none' }} />
@@ -1784,21 +2156,21 @@ export default function Home() {
                       return (
                         <div key={co.id}
                           onClick={() => setExpandedConsultId(id => id === co.id ? null : co.id)}
-                          style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '14px 18px', cursor: 'pointer' }}>
+                          style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 18px', cursor: 'pointer' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                            <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 22, background: 'var(--accent-soft, rgba(196,96,122,0.07))', color: 'var(--accent)', border: '1px solid var(--border)' }}>{modeLabel}</span>
-                            <span style={{ fontSize: 11, color: 'var(--muted)' }}>{(co.theorists || []).join(' · ')}</span>
-                            <span style={{ fontSize: 11, color: 'var(--muted)', marginInlineStart: 'auto' }}>{new Date(co.created_at).toLocaleDateString('he-IL', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                            <span onClick={e => { e.stopPropagation(); deleteConsultation(co.id); }} style={{ fontSize: 13, color: 'var(--muted)', cursor: 'pointer', opacity: 0.5, lineHeight: 1 }} title={isHe ? 'מחק' : 'Delete'}>✕</span>
+                            <span style={{ fontSize: 13, padding: '3px 10px', borderRadius: 6, background: 'var(--accent-soft, rgba(196,96,122,0.07))', color: 'var(--accent)', border: '1px solid var(--border)' }}>{modeLabel}</span>
+                            <span style={{ fontSize: 13, color: 'var(--muted)' }}>{(co.theorists || []).join(' · ')}</span>
+                            <span style={{ fontSize: 13, color: 'var(--muted)', marginInlineStart: 'auto' }}>{new Date(co.created_at).toLocaleDateString('he-IL', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                            <span onClick={e => { e.stopPropagation(); deleteConsultation(co.id); }} style={{ fontSize: 16, color: 'var(--muted)', cursor: 'pointer', opacity: 0.5, lineHeight: 1 }} title={isHe ? 'מחק' : 'Delete'}>✕</span>
                           </div>
-                          <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6, opacity: 0.85, whiteSpace: expandedConsultId === co.id ? 'pre-wrap' : 'normal' }}>
+                          <div style={{ fontSize: 15, color: 'var(--text)', lineHeight: 1.6, opacity: 0.85, whiteSpace: expandedConsultId === co.id ? 'pre-wrap' : 'normal' }}>
                             {expandedConsultId === co.id
                               ? co.anonymized_text
                               : <>{co.anonymized_text.slice(0, 160)}{co.anonymized_text.length > 160 ? <span style={{ color: 'var(--accent)' }}> קרא עוד</span> : ''}</>
                             }
                           </div>
                           {co.mode === 'note' && expandedConsultId === co.id && (
-                            <span onClick={e => { e.stopPropagation(); openEditNote(co); }} style={{ display: 'inline-block', marginTop: 8, fontSize: 11, color: 'var(--accent)', cursor: 'pointer' }}>{isHe ? 'ערוך' : 'Edit'}</span>
+                            <span onClick={e => { e.stopPropagation(); openEditNote(co); }} style={{ display: 'inline-block', marginTop: 8, fontSize: 13, color: 'var(--accent)', cursor: 'pointer' }}>{isHe ? 'ערוך' : 'Edit'}</span>
                           )}
                         </div>
                       );
@@ -1808,42 +2180,70 @@ export default function Home() {
               </div>
               )}
               {/* BW-113 — therapist archive: archived cases (patients), with restore. */}
-              {activePersona === 'therapist' && therapistView === 'archive' && (
-              <div style={{ width: '100%', maxWidth: 720, margin: '0 auto' }}>
-                <span onClick={() => { setTherapistView('cases'); setCasesLoaded(false); }} style={{ fontSize: 12, color: 'var(--accent)', cursor: 'pointer', display: 'inline-block', marginBottom: 14 }}>{isHe ? '← המקרים שלי' : '← My cases'}</span>
-                <h2 style={{ fontFamily: 'var(--font-cormorant), Georgia, serif', fontSize: 24, color: 'var(--text)', margin: '0 0 24px' }}>{isHe ? 'ארכיון' : 'Archive'}</h2>
+              {activePersona === 'therapist' && !researchPicking && therapistView === 'archive' && (
+              /* המסך היחיד שנשאר במבנה הישן: h2 בסגנון שורה, פונט רוביק, ורשת
+                 שתי עמודות. עכשיו הוא בשפת המסך של הקובץ, כמו כל השאר:
+                 בר עליון, קו שחור, כותרת h1, כרטיסים, ופוטר. */
+              <div className="n-wrap">
+                <div className="n-topbar">
+                  <span>{isHe ? 'ארכיון' : 'Archive'}</span>
+                  <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+                </div>
+                <div className="n-hr" />
+                <h1 className="n-h">{isHe ? 'מקרים שנסגרו' : 'Closed cases'}</h1>
+
                 {archivedCases.length === 0 ? (
-                  <p style={{ fontSize: 13, color: 'var(--muted)', textAlign: 'center', padding: '40px 0' }}>{isHe ? 'אין מקרים בארכיון.' : 'No archived cases.'}</p>
-                ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                    {archivedCases.map(c => (
-                      <div key={c.id} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '18px 20px' }}>
-                        <div style={{ fontFamily: 'var(--font-cormorant), Georgia, serif', fontSize: 19, fontWeight: 500, color: 'var(--text)', marginBottom: 10 }}>{c.label}</div>
-                        <button onClick={async () => { await archiveCase(c.id, false); setArchivedLoaded(false); setCasesLoaded(false); }} style={{ background: 'none', color: 'var(--accent)', border: '1px solid var(--border)', borderRadius: 22, padding: '6px 14px', fontSize: 12, fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer' }}>{isHe ? 'שחזר' : 'Restore'}</button>
-                      </div>
-                    ))}
+                  <div className="n-empty">
+                    <div className="n-t">{isHe ? 'אין מקרים בארכיון' : 'No archived cases'}</div>
+                    <div className="n-d">{isHe
+                      ? 'מקרה שמועבר לארכיון יופיע כאן, ואפשר להחזיר אותו לרשימה בכל רגע.'
+                      : 'A case you archive appears here, and can be restored to the list at any time.'}</div>
                   </div>
+                ) : (
+                  archivedCases.map(c => (
+                    /* בלי n-archived · המחלקה מוסיפה "· בארכיון" אחרי הכותרת,
+                       וזה מיותר במסך שכולו ארכיון, וגם קבוע בעברית */
+                    <div key={c.id} className="n-card">
+                      <div className="n-t">{c.label}</div>
+                      <div className="n-m">
+                        <button className="n-btn n-plain n-sm" style={{ marginTop: 10 }}
+                          onClick={async () => { await archiveCase(c.id, false); setArchivedLoaded(false); setCasesLoaded(false); }}>
+                          {isHe ? 'שחזור' : 'Restore'}
+                        </button>
+                      </div>
+                    </div>
+                  ))
                 )}
+
+                <div className="n-actions">
+                  <span className="n-sp" />
+                  <button className="n-btn n-ghost" onClick={() => { setTherapistView('cases'); setCasesLoaded(false); }}>
+                    {isHe ? 'המקרים שלי' : 'My cases'}
+                  </button>
+                </div>
+                <div className="n-botbar">{isHe
+                  ? 'הערות רפלקציה, לא רשומה קלינית. התוויות הן כינויים, וההתייעצויות מאונמזות לפני שמירה.'
+                  : 'Reflection notes, not a clinical record. Labels are nicknames, and consultations are anonymised before saving.'}</div>
               </div>
               )}
               {/* BW-112 — Therapist hub: mode selection. Reached from a case ("New consultation"). */}
-              {activePersona === 'therapist' && therapistView === 'hub' && (() => {
+              {activePersona === 'therapist' && !researchPicking && therapistView === 'hub' && (() => {
                 const HUB_THEORISTS: [string, string][] = [['freud', isHe ? 'פרויד' : 'Freud'], ['klein', isHe ? 'קליין' : 'Klein'], ['winnicott', isHe ? 'ויניקוט' : 'Winnicott'], ['ogden', isHe ? 'אוגדן' : 'Ogden']];
                 const chipStyle = (on: boolean): React.CSSProperties => ({
-                  border: '1px solid ' + (on ? 'var(--accent)' : 'var(--border)'),
-                  borderRadius: 22, padding: '7px 16px', fontSize: 13, cursor: 'pointer',
+                  border: '1px solid ' + (on ? 'var(--accent-deep)' : 'var(--border)'),
+                  borderRadius: 6, padding: '7px 16px', fontSize: 16, cursor: 'pointer',
                   color: on ? '#fff' : 'var(--text)', background: on ? 'var(--accent)' : 'var(--surface)',
                 });
                 return (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-                  <button onClick={() => setTherapistView(selectedCase ? 'caseDetail' : 'cases')} style={{ alignSelf: 'flex-start', background: 'none', border: '1px solid var(--border)', borderRadius: 22, padding: '6px 14px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)', cursor: 'pointer', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ color: 'var(--accent)' }}>←</span>{selectedCase ? selectedCase.label : (isHe ? 'המקרים שלי' : 'My cases')}</button>
+                  <button onClick={() => setTherapistView(selectedCase ? 'caseDetail' : 'cases')} style={{ alignSelf: 'flex-start', background: 'none', border: '1px solid var(--border)', borderRadius: 6, padding: '6px 14px', fontSize: 16, fontFamily: 'var(--font-rubik), sans-serif', color: 'var(--text)', cursor: 'pointer', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ color: 'var(--accent)' }}>←</span>{selectedCase ? selectedCase.label : (isHe ? 'המקרים שלי' : 'My cases')}</button>
                   <p style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 'var(--fs-heading-lg)', fontWeight: 400, color: 'var(--text)', margin: '0 0 16px' }}>{isHe ? 'נחשוב על זה יחד.' : "Let's think this through together."}</p>
                   {/* הערת ליה: "(יאונמז לפני שמירה)" ישבה בתוך הפתיח, כלומר הודעה משפטית
                       בתוך מחווה של הזמנה לכתוב, ומי שקוראת אותה עוברת מקשב לזהירות באותה
                       שורה. ההערה ירדה לשורה שקטה מתחת לשדה. היא לא רוככה ולא הוסתרה.
                       הגובה עלה מ-90 ל-200: זה היה השדה הקטן ביותר מבין שלושת מסכי הכתיבה
                       ודווקא הוא מיועד לחומר הקליני הארוך ביותר (מדידת מאיה). */}
-                  <textarea value={consultText} onChange={e => setConsultText(e.target.value)} placeholder={isHe ? 'מה שעלה בפגישה, כמו שעלה.' : 'What came up in the session, as it came up.'} style={{ width: '100%', maxWidth: 560, minHeight: 200, boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 16, padding: '12px 16px', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--surface)', color: 'var(--text)', resize: 'vertical', marginBottom: 'var(--space-sm)' }} />
+                  <textarea value={consultText} onChange={e => setConsultText(e.target.value)} placeholder={isHe ? 'מה שעלה בפגישה, כמו שעלה.' : 'What came up in the session, as it came up.'} style={{ width: '100%', maxWidth: 560, minHeight: 200, boxSizing: 'border-box', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 16px', fontSize: 16, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--surface)', color: 'var(--text)', resize: 'vertical', marginBottom: 'var(--space-sm)' }} />
                   <div style={{ maxWidth: 560, width: '100%', fontSize: 'var(--fs-caption)', color: 'var(--muted)', marginBottom: 'var(--space-lg)', textAlign: isHe ? 'right' : 'left' }}>
                     {isHe ? 'החומר עובר אנונימיזציה לפני שמירה.' : 'The material is anonymized before saving.'}
                   </div>
@@ -1855,7 +2255,7 @@ export default function Home() {
                     })}
                   </div>
                   {hubTheorists.length > 0 && (
-                    <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', marginTop: 12 }}>{hubTheorists.length === 1 ? (isHe ? 'נבחר אחד — התייעצות ממוקדת.' : 'One selected — focused consultation.') : (isHe ? `נבחרו ${hubTheorists.length} — שולחן עגול.` : `${hubTheorists.length} selected — round table.`)}</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted)', textAlign: 'center', marginTop: 12 }}>{hubTheorists.length === 1 ? (isHe ? 'נבחר אחד, התייעצות ממוקדת.' : 'One selected, focused consultation.') : (isHe ? `נבחרו ${hubTheorists.length} — שולחן עגול.` : `${hubTheorists.length} selected — round table.`)}</div>
                   )}
                   {hubTheorists.length >= 1 && (() => {
                     const isRoundtable = hubTheorists.length >= 2;
@@ -1877,7 +2277,7 @@ export default function Home() {
                       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
                         <button
                           onClick={isRoundtable ? openRoundtableMockup : () => startConsultation()}
-                          style={{ padding: '10px 28px', borderRadius: 22, border: 'none', fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--accent)', color: '#fff', cursor: 'pointer' }}>
+                          style={{ padding: '10px 28px', borderRadius: 6, border: 'none', fontSize: 16, fontFamily: 'var(--font-rubik), sans-serif', background: 'var(--accent)', color: '#fff', cursor: 'pointer' }}>
                           {label}
                         </button>
                       </div>
@@ -1889,7 +2289,7 @@ export default function Home() {
 
 
               {/* flow buttons injected here by renderFlowButtons() */}
-              <p id="welcome-api-text" style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.6, margin: 0, marginTop: 'auto', paddingTop: 52 }}>
+              <p id="welcome-api-text" style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6, margin: 0, marginTop: 'auto', paddingTop: 52 }}>
                 {(WELCOME_I18N[currentLang] || WELCOME_I18N['he']).apiText}{' '}
                 <span id="privacy-link" onClick={() => { const m = document.getElementById('privacy-modal'); if(m) m.style.display='flex'; }}
                   style={{ color: 'var(--accent)', cursor: 'pointer', textDecoration: 'underline' }}>
@@ -1915,8 +2315,8 @@ export default function Home() {
         <div id="supervision-panel" onClick={(e) => { if (e.target === e.currentTarget) (window as any).closeSupervision(); }}>
           <div id="supervision-box">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <h2 style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 22, fontWeight: 300, fontStyle: 'italic', color: '#7a5080', margin: 0 }}>⚲ פיקוח קליני</h2>
-              <span onClick={() => (window as any).closeSupervision()} style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 18, lineHeight: 1, padding: 4 }}>✕</span>
+              <h2 style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 26, fontWeight: 300, color: '#7a5080', margin: 0 }}>⚲ פיקוח קליני</h2>
+              <span onClick={() => (window as any).closeSupervision()} style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 20, lineHeight: 1, padding: 4 }}>✕</span>
             </div>
 
             {/* Mode tabs */}
@@ -1927,14 +2327,14 @@ export default function Home() {
 
             {/* Active conversation mode */}
             <div id="sup-mode-active">
-              <div id="sup-active-info" style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8, padding: '10px 14px', background: 'rgba(91,58,94,0.05)', borderRadius: 6, marginBottom: 4 }}>
+              <div id="sup-active-info" style={{ fontSize: 16, color: 'var(--muted)', lineHeight: 1.8, padding: '10px 14px', background: 'rgba(91,58,94,0.05)', borderRadius: 6, marginBottom: 4 }}>
                 אין שיחה פעילה
               </div>
             </div>
 
             {/* Paste mode */}
             <div id="sup-mode-paste" style={{ display: 'none' }}>
-              <select id="sup-theorist-select" style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 13, marginBottom: 10, direction: 'rtl' }}>
+              <select id="sup-theorist-select" style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 16, marginBottom: 10, direction: 'rtl' }}>
                 <option value="freud">פרויד</option>
                 <option value="klein">קליין</option>
                 <option value="winnicott">ויניקוט</option>
@@ -1945,11 +2345,11 @@ export default function Home() {
                 <option value="heimann">היימן</option>
               </select>
               <textarea id="sup-paste-input" placeholder="הדבק שיחה — כל פורמט מתקבל"
-                style={{ width: '100%', minHeight: 150, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 12, resize: 'vertical', direction: 'rtl', lineHeight: 1.7, boxSizing: 'border-box', fontFamily: 'var(--font-rubik), sans-serif' }}></textarea>
+                style={{ width: '100%', minHeight: 150, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)', fontSize: 15, resize: 'vertical', direction: 'rtl', lineHeight: 1.7, boxSizing: 'border-box', fontFamily: 'var(--font-rubik), sans-serif' }}></textarea>
             </div>
 
             <button id="sup-run-btn" onClick={() => (window as any).runSupervisionPanel()}
-              style={{ width: '100%', padding: '10px', background: '#5b3a5e', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 14, marginTop: 14, transition: 'opacity 0.2s', fontFamily: 'var(--font-rubik), sans-serif' }}>
+              style={{ width: '100%', padding: '10px', background: '#5b3a5e', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 16, marginTop: 14, transition: 'opacity 0.2s', fontFamily: 'var(--font-rubik), sans-serif' }}>
               הרץ פיקוח
             </button>
 
@@ -1964,41 +2364,217 @@ export default function Home() {
 
         <div className="input-area-outer">
           <div className="input-area">
-            <div id="file-indicator" style={{ display: 'none', background: 'rgba(196,96,122,0.06)', border: '1px solid var(--accent-dim)', borderRadius: 10, padding: '8px 14px', marginBottom: 8, alignItems: 'center', gap: 10, fontSize: 12, color: 'var(--accent)' }}>
+            <div id="file-indicator" style={{ display: 'none', background: 'rgba(196,96,122,0.06)', border: '1px solid var(--accent-dim)', borderRadius: 6, padding: '8px 14px', marginBottom: 8, alignItems: 'center', gap: 10, fontSize: 15, color: 'var(--accent)' }}>
               <span>📄</span>
               <span id="file-name" style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}></span>
-              <span onClick={() => (window as any).removeFile()} style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 14, padding: '0 4px' }} title="הסר קובץ">✕</span>
+              <span onClick={() => (window as any).removeFile()} style={{ cursor: 'pointer', color: 'var(--muted)', fontSize: 16, padding: '0 4px' }} title="הסר קובץ">✕</span>
             </div>
+            {/* תיבת הכתיבה · מהעיצוב החדש: מלבן לבן בלבד, בלי פקדים בתוכו.
+                הפעולות ירדו לשורה מתחתיו, שם הן נקראות כפעולות ולא כקישוט של השדה. */}
             <div className="input-wrap">
               <input type="file" id="file-upload" accept=".txt,.pdf,.md,.doc,.docx,.rtf" style={{ display: 'none' }}
                 onChange={(e) => (window as any).handleFileUpload(e.nativeEvent)} />
-              <button onClick={() => document.getElementById('file-upload')?.click()} title="העלי מסמך"
-                style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 20, padding: '6px 10px', cursor: 'pointer', fontSize: 14, color: 'var(--muted)', transition: 'all 0.2s', flexShrink: 0 }}>📎</button>
-              <textarea id="user-input" placeholder="הגדר/י מטרה או שאלה" rows={1}
+              <textarea id="user-input" placeholder={isHe ? 'להמשיך לכתוב…' : 'Keep writing…'} rows={1}
                 onKeyDown={(e) => (window as any).handleKey(e.nativeEvent)}
                 onInput={(e) => (window as any).autoResize(e.currentTarget)}></textarea>
-              <button id="send-btn" onClick={() => (window as any).sendMessage()}>
-                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7.5 12V3M7.5 3L3 7M7.5 3L12 7" stroke="rgba(255,255,255,0.88)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
             </div>
             <div id="suggestion-bubbles" suppressHydrationWarning></div>
-            <div className="hint" id="input-hint">Enter לשליחה · Shift+Enter לשורה חדשה</div>
-            <div id="input-disclaimer" style={{ fontSize: 10, color: 'var(--muted)', opacity: 0.55, textAlign: 'center', paddingTop: 6, lineHeight: 1.5 }}>
-              For educational use only · Not a substitute for professional psychological treatment
+            {/* שורת הפעולות של השיחה · מהעיצוב החדש. הכלים שישבו בכותרת ירדו לכאן,
+                כי הם נוגעים לשיחה הנוכחית בלבד. הצד השקט משמאל, הפעולה הראשית בקצה. */}
+            <div className="n-actions" id="bw-talk-actions">
+              <button className="n-btn n-plain n-sm" onClick={() => document.getElementById('file-upload')?.click()}
+                title={isHe ? 'העלאת מסמך' : 'Upload document'}>{isHe ? 'צרף מסמך' : 'Attach'}</button>
+              <button className="n-btn n-plain n-sm" id="bw-session-pdf" onClick={() => (window as any).exportPDF?.()}>{isHe ? 'הורד PDF' : 'Download PDF'}</button>
+              {activePersona === 'therapist' && (
+                <button className="n-btn n-plain n-sm" onClick={openSummary}>{isHe ? 'סיכום התייעצות' : 'Consultation summary'}</button>
+              )}
+              {activePersona === 'patient' && (
+                <button className="n-btn n-plain n-sm" id="patient-reflection-btn" style={{ display: 'none' }}
+                  onClick={() => (window as any).openPatientReflection?.()}>{isHe ? 'מה לקחתי' : 'What I took'}</button>
+              )}
+              <span className="n-sp" />
+              <button className="n-btn n-ghost" onClick={() => (window as any).bwExitChatToHome?.()}>{isHe ? 'חזרה לכתיבה' : 'Back to writing'}</button>
+              <button className="n-btn n-solid" id="send-btn" onClick={() => (window as any).sendMessage()}>{isHe ? 'שלח' : 'Send'}</button>
             </div>
+            <div className="n-botbar" id="input-disclaimer">
+              {isHe
+                ? 'השיחה חיה בדפדפן הזה בלבד ואינה נשמרת בשרת. ה-PDF הוא הדרך היחידה לשמור אותה.'
+                : 'This conversation lives in this browser only and is not stored on a server. The PDF is the only way to keep it.'}
+            </div>
+            <div className="hint" id="input-hint" style={{ display: 'none' }}>Enter לשליחה · Shift+Enter לשורה חדשה</div>
           </div>
         </div>
 
+        {/* ═══ מודל: מקרה חדש ═══
+            מבנה הקובץ אחד לאחד: כותרת, שורת פתיח, שדה עם תווית, קופסת
+            האזהרה על פסבדונים, וסרגל פעולות תחתון. עד כה זו הייתה שורת
+            קלט מוטבעת במסך, וזה לא מה שעוצב. */}
+        {showNewCase && (
+          <div className="n-ovl n-open" onClick={e => { if (e.target === e.currentTarget) setShowNewCase(false); }}>
+            <div className="n-modal" style={{ width: 520 }}>
+              <h3>{isHe ? 'מקרה חדש' : 'New case'}</h3>
+              <p className="n-lead">{isHe
+                ? 'מקרה הוא תווית שמארגנת התייעצויות. אין בו שדות נוספים, ואין בו תיק.'
+                : 'A case is a label that organizes consultations. It has no other fields and no file.'}</p>
+              <div className="n-fieldrow">
+                <label htmlFor="nc-label">{isHe ? 'תווית למקרה' : 'Case label'}</label>
+                <input className="n-inp" id="nc-label" autoFocus autoComplete="off" value={newCaseLabel}
+                  onChange={e => setNewCaseLabel(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && newCaseLabel.trim()) createCase(newCaseLabel); if (e.key === 'Escape') setShowNewCase(false); }}
+                  placeholder={isHe ? 'למשל: מקרה ו׳' : 'e.g. Case F'} />
+                <div className="n-bound">
+                  <div className="n-t">{isHe ? 'פסבדונים, לא שם אמיתי' : 'A pseudonym, not a real name'}</div>
+                  <div className="n-d">{isHe
+                    ? 'אלה הערות רפלקציה ולא רשומה קלינית. אל תכתבי כאן שם, ראשי תיבות או פרט מזהה. ההתייעצויות עצמן מאונמזות לפני שמירה.'
+                    : 'These are reflection notes, not a clinical record. Do not write a name, initials or any identifying detail. Consultations are anonymized before saving.'}</div>
+                </div>
+              </div>
+              <div className="n-foot">
+                <button className="n-btn n-ghost" onClick={() => setShowNewCase(false)}>{isHe ? 'ביטול' : 'Cancel'}</button>
+                <button className="n-btn n-solid" disabled={!newCaseLabel.trim()} onClick={() => createCase(newCaseLabel)}>{isHe ? 'צור' : 'Create'}</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══ מודל: שיתוף עם המטפל/ת ═══ */}
+        {shareOpen && (
+          <div className="n-ovl n-open" onClick={e => { if (e.target === e.currentTarget) setShareOpen(false); }}>
+            <div className="n-modal n-share" style={{ width: 640 }}>
+              <h3>{isHe ? 'שיתוף עם המטפל/ת' : 'Share with your therapist'}</h3>
+              <p className="n-lead">{isHe
+                ? 'זה בדיוק מה שיישלח. מה שסימנת כפרטי לא נכלל, ומופיע כאן כחסימה כדי שתראי איפה הוא היה.'
+                : 'This is exactly what will be sent. What you marked private is left out, and shown here as a block so you can see where it was.'}</p>
+              <div className="n-prev" dangerouslySetInnerHTML={{ __html: buildShareHtml() }} />
+              <div className="n-fieldrow" style={{ marginTop: 'var(--s5)' }}>
+                <label htmlFor="share-mail">{isHe ? 'המייל של המטפל/ת' : "Therapist's email"}</label>
+                <input className="n-inp" id="share-mail" type="email" value={shareEmail}
+                  onChange={e => { setShareEmail(e.target.value); setShareState(''); }}
+                  placeholder={isHe ? 'name@example.com' : 'name@example.com'} />
+              </div>
+              {!!noteAnalysis['draft'] && (
+                <div className="n-opt" style={{ marginTop: 'var(--s5)' }}>
+                  <input type="checkbox" id="share-analysis" checked={shareWithAnalysis} onChange={e => setShareWithAnalysis(e.target.checked)} />
+                  <div>
+                    <div className="n-t">{isHe ? 'לצרף גם את הניתוח' : 'Attach the analysis too'}</div>
+                    <div className="n-d">{isHe
+                      ? 'הניתוח נכתב דרך הגישה שבחרת. הוא מתייחס למה שכתבת, כולל לקטעים שסימנת כפרטיים.'
+                      : 'The analysis was written through the approach you chose. It refers to what you wrote, including the parts you marked private.'}</div>
+                  </div>
+                </div>
+              )}
+              {shareState === 'error' && <p className="n-note" style={{ color: 'var(--accent-deep)', fontWeight: 600 }}>{isHe ? 'השליחה נכשלה. אפשר לנסות שוב.' : 'Sending failed. You can try again.'}</p>}
+              {shareState === 'sent' && <p className="n-note" style={{ fontWeight: 600 }}>{isHe ? 'נשלח.' : 'Sent.'}</p>}
+              <div className="n-foot">
+                <button className="n-btn n-solid" disabled={!shareEmail.trim() || shareState === 'sending' || shareState === 'sent'} onClick={sendShare}>
+                  {shareState === 'sending' ? (isHe ? 'שולח…' : 'Sending…') : (isHe ? 'שליחה' : 'Send')}
+                </button>
+                <button className="n-btn n-ghost" onClick={() => setShareOpen(false)}>{isHe ? 'סגירה' : 'Close'}</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══ מודל: סיכום התייעצות ═══
+            עשרת השדות הם בדיוק אלה ש-lib/summary-prompt.ts מחזיר. */}
+        {summaryOpen && (
+          <div className="n-ovl n-open" onClick={e => { if (e.target === e.currentTarget) setSummaryOpen(false); }}>
+            <div className="n-modal n-sum" style={{ width: 660 }}>
+              <h3>{isHe ? 'סיכום התייעצות' : 'Consultation summary'}</h3>
+              {summaryState === 'loading' && <p className="n-lead">{isHe ? 'קורא את השיחה…' : 'Reading the conversation…'}</p>}
+              {summaryState === 'error' && <p className="n-lead">{isHe ? 'לא הצלחנו להפיק סיכום. צריך שיחה עם כמה תורות.' : 'Could not produce a summary. A conversation with a few turns is needed.'}</p>}
+              {summaryData && (<>
+                <p className="n-lead">
+                  {selectedCase ? selectedCase.label + ' · ' : ''}
+                  {new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}
+                  {summaryData.theorist ? ' · ' + (isHe ? 'דרך הגישה של ' : 'through the approach of ') : ''}
+                  {summaryData.theorist ? <b>{summaryData.theorist}</b> : null}
+                </p>
+                <div className="n-meta">
+                  {summaryData.session_length && <span className="n-chip">{summaryData.session_length}</span>}
+                  {(summaryData.themes || []).map((t, i) => <span key={i} className="n-chip n-n">{t}</span>)}
+                </div>
+                {summaryData.theorist_approach && (
+                  <div className="n-sec"><h4>{isHe ? 'מה אפיין את הגישה' : 'What characterized the approach'}</h4><p>{summaryData.theorist_approach}</p></div>
+                )}
+                {!!(summaryData.key_moments || []).length && (
+                  <div className="n-sec">
+                    <h4>{isHe ? 'רגעים מרכזיים' : 'Key moments'}</h4>
+                    {(summaryData.key_moments || []).map((m, i) => (
+                      <div className="n-moment" key={i}>
+                        <p className="n-quote">{m.patient_quote}</p>
+                        <p className="n-why">{m.clinical_significance}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {summaryData.what_opened && <div className="n-sec"><h4>{isHe ? 'מה נפתח' : 'What opened'}</h4><p>{summaryData.what_opened}</p></div>}
+                {summaryData.what_remained && <div className="n-sec"><h4>{isHe ? 'מה נשאר פתוח' : 'What remained open'}</h4><p>{summaryData.what_remained}</p></div>}
+                {summaryData.next_session_focus && (
+                  <div className="n-bring"><h4>{isHe ? 'מה להביא לפגישה הבאה' : 'To bring to the next session'}</h4><p>{summaryData.next_session_focus}</p></div>
+                )}
+              </>)}
+              <div className="n-foot">
+                <span className="n-sp" />
+                <button className="n-btn n-ghost" onClick={() => setSummaryOpen(false)}>{isHe ? 'סגירה' : 'Close'}</button>
+                <button className="n-btn n-solid" disabled={!summaryData} onClick={() => (window as any).exportPDF?.()}>{isHe ? 'הורד PDF' : 'Download PDF'}</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══ מודל: צרי קשר ═══
+            השדות והמצבים נלקחו מ-/api/support ולא הומצאו. */}
+        {contactOpen && (
+          <div className="n-ovl n-open" onClick={e => { if (e.target === e.currentTarget) setContactOpen(false); }}>
+            <div className="n-modal">
+              {contactState !== 'sent' ? (<>
+                <h3>{isHe ? 'צרי קשר' : 'Contact us'}</h3>
+                <p className="n-lead">{isHe ? 'נשמח לשמוע. נחזור אלייך בהקדם, לכתובת שמופיעה למטה.' : "We'd love to hear from you. We'll get back to you at the address below."}</p>
+                <div className="n-fieldrow">
+                  <label htmlFor="c-subj">{isHe ? 'נושא' : 'Subject'}</label>
+                  <input className="n-inp" id="c-subj" value={contactSubject} onChange={e => setContactSubject(e.target.value)}
+                    placeholder={isHe ? 'תארי בקצרה' : 'Describe it briefly'} />
+                </div>
+                <div className="n-fieldrow">
+                  <label htmlFor="c-msg">{isHe ? 'הודעה' : 'Message'}</label>
+                  <textarea className="n-inp" id="c-msg" style={{ height: 150 }} value={contactMessage}
+                    onChange={e => setContactMessage(e.target.value)} placeholder={isHe ? 'פרטי כאן…' : 'Tell us more…'} />
+                </div>
+                <div className="n-fieldrow">
+                  <label htmlFor="c-mail">{isHe ? 'המייל שלך' : 'Your email'}</label>
+                  <input className="n-inp" id="c-mail" type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} />
+                  <p className="n-note" style={{ marginTop: 8 }}>{isHe
+                    ? 'נחזור לכתובת הזו. אפשר לשנות אותה כאן בלי לשנות את חשבון הכניסה.'
+                    : "We'll reply to this address. You can change it here without changing your login."}</p>
+                </div>
+                {contactState === 'error' && <p className="n-note" style={{ color: 'var(--accent-deep)', fontWeight: 600 }}>{isHe ? 'השליחה נכשלה. אפשר לנסות שוב.' : 'Sending failed. You can try again.'}</p>}
+                <div className="n-foot">
+                  <button className="n-btn n-solid" disabled={!contactSubject.trim() || !contactMessage.trim() || contactState === 'sending'} onClick={sendContact}>
+                    {contactState === 'sending' ? (isHe ? 'שולח…' : 'Sending…') : (isHe ? 'שליחה' : 'Send')}
+                  </button>
+                  <button className="n-btn n-ghost" onClick={() => setContactOpen(false)}>{isHe ? 'ביטול' : 'Cancel'}</button>
+                </div>
+              </>) : (<>
+                <div className="n-donemark">✓</div>
+                <h3>{isHe ? 'ההודעה נשלחה' : 'Message sent'}</h3>
+                <p className="n-lead">{isHe ? `נחזור אלייך לכתובת ${contactEmail}. אין צורך לעשות דבר נוסף.` : `We'll get back to you at ${contactEmail}. Nothing else is needed.`}</p>
+                <div className="n-foot">
+                  <button className="n-btn n-ghost" onClick={() => { setContactOpen(false); setContactState(''); setContactSubject(''); setContactMessage(''); }}>{isHe ? 'סגירה' : 'Close'}</button>
+                </div>
+              </>)}
+            </div>
+          </div>
+        )}
+
         {/* Privacy modal */}
         <div id="privacy-modal" style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(45,36,32,0.4)', display: 'none', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-          <div id="privacy-modal-inner" suppressHydrationWarning style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 16, padding: 32, maxWidth: 460, width: '90%', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', direction: currentLang === 'he' ? 'rtl' : 'ltr' }}>
-            <h3 id="privacy-title" suppressHydrationWarning style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 20, fontWeight: 300, color: 'var(--accent)', marginBottom: 20, textAlign: 'center' }}>
+          <div id="privacy-modal-inner" suppressHydrationWarning style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, padding: 32, maxWidth: 460, width: '90%', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', direction: currentLang === 'he' ? 'rtl' : 'ltr' }}>
+            <h3 id="privacy-title" suppressHydrationWarning style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 22, fontWeight: 300, color: 'var(--accent)', marginBottom: 20, textAlign: 'center' }}>
               {(PRIVACY_I18N[currentLang] || PRIVACY_I18N['he']).title}
             </h3>
 
-            <div id="privacy-content" suppressHydrationWarning style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.9, fontFamily: 'var(--font-rubik), sans-serif' }}>
+            <div id="privacy-content" suppressHydrationWarning style={{ fontSize: 16, color: 'var(--text)', lineHeight: 1.9, fontFamily: 'var(--font-rubik), sans-serif' }}>
               {(PRIVACY_I18N[currentLang] || PRIVACY_I18N['he']).paragraphs.map((p, i, arr) => (
                 <p key={i} style={{ marginBottom: i === arr.length - 1 ? 20 : 12 }}>
                   <strong>{p.label}</strong>{` — ${p.text}`}
@@ -2007,7 +2583,7 @@ export default function Home() {
             </div>
 
             <button id="privacy-btn-ok" suppressHydrationWarning onClick={() => { const m = document.getElementById('privacy-modal'); if(m) m.style.display='none'; }}
-              style={{ display: 'block', margin: '0 auto', background: 'var(--accent)', border: 'none', color: '#fff', padding: '10px 32px', borderRadius: 20, fontSize: 13, fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer' }}>
+              style={{ display: 'block', margin: '0 auto', background: 'var(--accent)', border: 'none', color: '#fff', padding: '10px 32px', borderRadius: 6, fontSize: 16, fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer' }}>
               {(PRIVACY_I18N[currentLang] || PRIVACY_I18N['he']).btnOk}
             </button>
           </div>
@@ -2015,11 +2591,11 @@ export default function Home() {
 
         {/* Choose theorist popup */}
         <div id="choose-popup" style={{ position: 'fixed', inset: 0, zIndex: 150, background: 'rgba(45,36,32,0.35)', display: 'none', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(3px)' }}>
-          <div style={{ background: 'var(--surface, #fffaf8)', border: '1px solid var(--border, #e6d6cf)', borderRadius: 16, padding: 32, maxWidth: 380, width: '90%', textAlign: 'center', boxShadow: '0 8px 32px rgba(196,96,122,0.12)' }}>
-            <h3 style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 20, fontWeight: 300, fontStyle: 'italic', color: '#c4607a', marginBottom: 10 }}>{gv('בחרי','בחר','בחר/י')} תיאורטיקן</h3>
-            <p style={{ fontSize: 13, color: 'var(--muted, #74645e)', lineHeight: 1.8, marginBottom: 24 }}>לחצי על אחד מהשמות למעלה כדי להפעיל את הסוכן עם הידע המעמיק של אותה גישה.</p>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: 32, maxWidth: 380, width: '90%', textAlign: 'center', boxShadow: '0 8px 32px rgba(196,96,122,0.12)' }}>
+            <h3 style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 22, fontWeight: 300, color: '#c4607a', marginBottom: 10 }}>{gv('בחרי','בחר','בחר/י')} תיאורטיקן</h3>
+            <p style={{ fontSize: 16, color: 'var(--muted, #74645e)', lineHeight: 1.8, marginBottom: 24 }}>לחצי על אחד מהשמות למעלה כדי להפעיל את הסוכן עם הידע המעמיק של אותה גישה.</p>
             <button onClick={() => { const p = document.getElementById('choose-popup'); if(p) p.style.display='none'; }}
-              style={{ background: '#c4607a', border: 'none', color: '#fff', padding: '10px 28px', borderRadius: 20, fontSize: 14, fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer' }}>הבנתי</button>
+              style={{ background: '#c4607a', border: 'none', color: '#fff', padding: '10px 28px', borderRadius: 6, fontSize: 16, fontFamily: 'var(--font-rubik), sans-serif', cursor: 'pointer' }}>הבנתי</button>
           </div>
         </div>
       </div>
@@ -2036,26 +2612,26 @@ export default function Home() {
           <div style={{
             position: 'fixed', top: tooltip.top, left: tooltip.left,
             pointerEvents: 'none', zIndex: 1000,
-            background: 'var(--surface, #fff)', border: '1px solid var(--border, #e6d6cf)',
-            borderRadius: 12, padding: '14px 16px', width: 240,
+            background: 'var(--surface, #fff)', border: '1px solid var(--border)',
+            borderRadius: 6, padding: '14px 16px', width: 240,
             boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
             fontFamily: 'var(--font-rubik), sans-serif',
             direction: isRtl ? 'rtl' : 'ltr', textAlign: isRtl ? 'right' : 'left',
           }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent, #c4607a)', marginBottom: 10 }}>
+            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--accent, #c4607a)', marginBottom: 10 }}>
               {name}
             </div>
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--muted, #74645e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.approach}</div>
-              <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{card.approach}</div>
+              <div style={{ fontSize: 13, color: 'var(--muted, #74645e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.approach}</div>
+              <div style={{ fontSize: 15, color: 'var(--text)', lineHeight: 1.6 }}>{card.approach}</div>
             </div>
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--muted, #74645e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.concepts}</div>
-              <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{card.concepts}</div>
+              <div style={{ fontSize: 13, color: 'var(--muted, #74645e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.concepts}</div>
+              <div style={{ fontSize: 15, color: 'var(--text)', lineHeight: 1.6 }}>{card.concepts}</div>
             </div>
             <div>
-              <div style={{ fontSize: 10, color: 'var(--muted, #74645e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.forWhom}</div>
-              <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.6 }}>{card.forWhom}</div>
+              <div style={{ fontSize: 13, color: 'var(--muted, #74645e)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>{labels.forWhom}</div>
+              <div style={{ fontSize: 15, color: 'var(--text)', lineHeight: 1.6 }}>{card.forWhom}</div>
             </div>
           </div>
         );
@@ -2075,10 +2651,10 @@ export default function Home() {
             <button
               onClick={() => setAnalysisModalOpen(false)}
               title={isHe ? 'סגירה' : 'Close'}
-              style={{ position: 'absolute', top: 'var(--space-sm)', insetInlineEnd: 'var(--space-sm)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'transparent', color: 'var(--muted)', fontSize: 18, lineHeight: 1, cursor: 'pointer' }}
+              style={{ position: 'absolute', top: 'var(--space-sm)', insetInlineEnd: 'var(--space-sm)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'transparent', color: 'var(--muted)', fontSize: 20, lineHeight: 1, cursor: 'pointer' }}
             >×</button>
-            <div style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 'var(--fs-heading-card)', color: 'var(--text)', marginBottom: 'var(--space-xs)' }}>
-              {isHe ? 'מה יש כאן' : "What's here"}
+            <div style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 'var(--fs-heading-card)', color: 'var(--text)', marginBottom: 'var(--space-xs)' }}>
+              {isHe ? 'נתח' : 'Analyse'}
             </div>
             {renderNoteAnalysisBody(noteAnalysis['draft'])}
           </div>
