@@ -163,6 +163,10 @@ export default function Home() {
   const [casesLoaded, setCasesLoaded] = useState(false);
   const [newCaseLabel, setNewCaseLabel] = useState('');
   const [showNewCase, setShowNewCase] = useState(false);
+  // המתנה ליצירה · הקריאה לשרת ואחריה פתיחת המקרה לוקחות רגע, ובלי סימן
+  // הכפתור נקרא כמת ונלחץ שוב. איה דיווחה על זה 29.08.
+  const [creatingCase, setCreatingCase] = useState(false);
+  const [newCaseError, setNewCaseError] = useState('');
   // הרשימה הנפתחת של בורר הגישה · העיצוב החדש, 28.08
   const [selOpen, setSelOpen] = useState(false);
   // תפריט החשבון · נפתח בזרימה מעל הכרטיס ודוחף את הרשימה, ראה globals.css
@@ -630,7 +634,9 @@ export default function Home() {
   };
   const createCase = async (label: string) => {
     const l = label.trim();
-    if (!l) return;
+    if (!l || creatingCase) return;   // לחיצה כפולה יוצרת שני מקרים
+    setCreatingCase(true);
+    setNewCaseError('');
     try {
       const gh = (window as any).getAuthHeaders;
       const headers = { 'Content-Type': 'application/json', ...(gh ? await gh() : {}) };
@@ -644,8 +650,15 @@ export default function Home() {
         // מי שיצרה מקרה בשם חדש נחתה במקרה אחר. עכשיו נכנסים אליו.
         const created = await res.json().catch(() => null);
         if (created?.id) openCase(created as TherapistCase);
+      } else {
+        // כישלון נאמר · קודם המודל נשאר פתוח בלי מילה, וזה נראה ככפתור מת
+        setNewCaseError(isHe ? 'המקרה לא נוצר. אפשר לנסות שוב.' : 'The case was not created. Try again.');
       }
-    } catch { /* ignore */ }
+    } catch {
+      setNewCaseError(isHe ? 'אין חיבור לשרת. המקרה לא נוצר.' : 'No connection. The case was not created.');
+    } finally {
+      setCreatingCase(false);
+    }
   };
   // הטעינה אינה מגודרת על מסך המקרים · הסייד-בר מציג את הרשימה בכל מסך,
   // וכשהגידור היה על ‎therapistView === 'cases'‎ מקרה חדש לא הופיע בסייד-בר
@@ -1198,7 +1211,7 @@ export default function Home() {
             הפריסה מיושרת לתחילת השורה ולא ממורכזת, כי בעברית זה נקרא טוב יותר. */}
         <div style={{ textAlign: 'start', maxWidth: 420, width: '90%', padding: '0 20px' }}>
           <h2 id="auth-title" dir="ltr" style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 40, fontWeight: 200, letterSpacing: '.02em', color: 'var(--text)', marginBottom: 10, direction: 'ltr', textAlign: 'start' }} suppressHydrationWarning>Between</h2>
-          <p id="auth-subtitle" style={{ fontSize: 'var(--fs-body-lg)', color: 'var(--muted)', lineHeight: 1.8, marginBottom: 28 }}>מרחב לחשוב על מה שנשאר בין מפגש למפגש.</p>
+          <p id="auth-subtitle" style={{ fontSize: 'var(--fs-body-lg)', color: 'var(--muted)', lineHeight: 1.8, marginBottom: 28 }}>{isHe ? 'מרחב לחשוב על מה שנשאר בין מפגש למפגש.' : 'A space to think about what stays between sessions.'}</p>
 
           {/* BW-111 — login persona CHOICE. The choice is a request; therapist is granted only if the
               account is on the allowlist (server-gated via /api/me in __resolvePersona). Else → patient. */}
@@ -1230,11 +1243,11 @@ export default function Home() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
-            <input id="auth-email" type="email" placeholder="כתובת מייל" dir="ltr"
+            <input id="auth-email" type="email" placeholder={isHe ? 'כתובת מייל' : 'Email address'} dir="ltr"
               style={{ width: '100%', height: 44, padding: '0 14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-rubik), sans-serif', fontSize: 'var(--fs-body-md)', color: 'var(--text)', background: 'var(--field)', outline: 'none', textAlign: 'left' }}
               onKeyDown={undefined}
             />
-            <input id="auth-password" type="password" placeholder="סיסמה" dir="ltr"
+            <input id="auth-password" type="password" placeholder={isHe ? 'סיסמה' : 'Password'} dir="ltr"
               style={{ width: '100%', height: 44, padding: '0 14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-rubik), sans-serif', fontSize: 'var(--fs-body-md)', color: 'var(--text)', background: 'var(--field)', outline: 'none', textAlign: 'left' }}
             />
           </div>
@@ -1244,32 +1257,34 @@ export default function Home() {
             <button id="signin-btn"
               onClick={() => (window as any).signIn?.()}
               style={{ display: authMode === 'signin' ? 'block' : 'none', width: '100%', height: 44, background: 'var(--accent-deep)', border: '1px solid var(--accent-deep)', color: '#fff', fontSize: 'var(--fs-body-md)', fontWeight: 600, fontFamily: 'var(--font-rubik), sans-serif', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}>
-              כניסה
+              {isHe ? 'כניסה' : 'Sign in'}
             </button>
             <button id="signup-btn"
               onClick={() => (window as any).signUp?.()}
               style={{ display: authMode === 'signup' ? 'block' : 'none', width: '100%', height: 44, background: 'var(--accent-deep)', border: '1px solid var(--accent-deep)', color: '#fff', fontSize: 'var(--fs-body-md)', fontWeight: 600, fontFamily: 'var(--font-rubik), sans-serif', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}>
-              הרשמה
+              {isHe ? 'הרשמה' : 'Sign up'}
             </button>
           </div>
           <div id="auth-error" style={{ display: 'none', fontSize: 15, color: '#c06060', marginTop: 8 }}></div>
           <div style={{ marginTop: 14, textAlign: 'start', display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span id="auth-forgot" onClick={() => (window as any).resetPassword?.()}
-              style={{ display: authMode === 'signin' ? 'inline' : 'none', fontSize: 'var(--fs-body-sm)', color: 'var(--muted)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 4 }}>שכחתי סיסמה</span>
+              style={{ display: authMode === 'signin' ? 'inline' : 'none', fontSize: 'var(--fs-body-sm)', color: 'var(--muted)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 4 }}>{isHe ? 'שכחתי סיסמה' : 'Forgot password'}</span>
             <span onClick={() => setAuthMode(m => m === 'signup' ? 'signin' : 'signup')}
               style={{ fontSize: 'var(--fs-body-sm)', color: 'var(--muted)', cursor: 'pointer' }}>
               {authMode === 'signup'
-                ? <>כבר יש לך חשבון? <span style={{ color: 'var(--accent-deep)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: 4 }}>כניסה</span></>
-                : <>אין לך עדיין חשבון? <span style={{ color: 'var(--accent-deep)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: 4 }}>הרשמה</span></>}
+                ? <>{isHe ? 'כבר יש לך חשבון? ' : 'Already have an account? '}<span style={{ color: 'var(--accent-deep)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: 4 }}>{isHe ? 'כניסה' : 'Sign in'}</span></>
+                : <>{isHe ? 'אין לך עדיין חשבון? ' : "Don't have an account yet? "}<span style={{ color: 'var(--accent-deep)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: 4 }}>{isHe ? 'הרשמה' : 'Sign up'}</span></>}
             </span>
           </div>
           <p id="auth-security" style={{ fontSize: 'var(--fs-caption)', color: 'var(--muted)', lineHeight: 1.8, marginTop: 18 }}>
-            השיחות נשמרות רק על המכשיר שלך. אנחנו לא שומרים אותן אצלנו.
+            {isHe ? 'השיחות נשמרות רק על המכשיר שלך. אנחנו לא שומרים אותן אצלנו.' : 'Conversations are kept on your device only. We do not store them.'}
             <br />
-            פרטי הכניסה מוצפנים ומאובטחים.
+            {isHe ? 'פרטי הכניסה מוצפנים ומאובטחים.' : 'Your sign-in details are encrypted and secure.'}
           </p>
           <p id="auth-disclaimer" style={{ fontSize: 'var(--fs-caption)', color: 'var(--muted)', lineHeight: 1.85, marginTop: 22, borderTop: '1px solid var(--border)', paddingTop: 14 }}>
-מרחב לחשיבה בין מפגשים — לא תחליף לטיפול ולא לסופרוויז'ן. העבודה קורית בין שני בני אדם: בנוכחות, בקשר, בזמן.
+{isHe
+              ? "מרחב לחשיבה בין מפגשים, לא תחליף לטיפול ולא לסופרוויז'ן. העבודה קורית בין שני בני אדם: בנוכחות, בקשר, בזמן."
+              : 'A space to think between sessions, not a substitute for therapy or supervision. The work happens between two people: in presence, in relationship, in time.'}
           </p>
         </div>
         </>}
@@ -1301,7 +1316,7 @@ export default function Home() {
                 פותח את "מקרה חדש" ולא מנקה שיחה. הכרעת איה 29.08. בקובץ
                 העיצוב הפריט אחיד לשתי הפרסונות, וזו סטייה מודעת ממנו. */}
             <div className="sb-item" data-persona="both" onClick={() => {
-              if (activePersona === 'therapist') { setResearchPicking(false); setNewCaseLabel(''); setShowNewCase(true); return; }
+              if (activePersona === 'therapist') { setResearchPicking(false); setNewCaseLabel(''); setNewCaseError(''); setShowNewCase(true); return; }
               setResearchPicking(false); setPatientView('write'); (window as any).newChat();
             }}>
               <span className="sb-icon"><PenLine size={15} strokeWidth={1.75} /></span>
@@ -1456,6 +1471,12 @@ export default function Home() {
         {/* ═══ הבר השחור ═══
             נשמר מקובץ העיצוב (‎.proto‎). Between בצד שמאל, ההגדרות בצד ימין.
             ‎direction:ltr‎ על הבר קובע ששמאל הוא שמאל פיזי גם בממשק עברי. */}
+        {/* שורת סביבת הפיתוח · מקובץ העיצוב, ורק ב-localhost. היא מסמנת
+            שמה שרואים כאן אינו האתר החי. ‎--h-devbar‎ נדלק מעצם קיומה
+            (‎:root:has(.bw-devbar)‎), ולכן אין כאן שום חישוב הזחה בקוד. */}
+        {isLocalhost && (
+          <div className="bw-devbar">{isHe ? 'סביבת פיתוח' : 'Dev environment'}</div>
+        )}
         <div className="bw-topbar">
           {/* הלוגו · יונק הדבש עם מילת Between. הבר כהה ולכן נטענת גרסת
               הלבן. אם הקובץ חסר, הדפדפן מסתיר את התמונה והמילה נשארת
@@ -1995,7 +2016,7 @@ export default function Home() {
                   <div className="n-empty">
                     <div className="n-t">{isHe ? 'עדיין אין מקרים' : 'No cases yet'}</div>
                     <div className="n-d">{isHe ? 'מקרה הוא תווית שמארגנת התייעצויות. אפשר לפתוח את הראשון עכשיו, ואפשר גם למחוק אותו אחר כך.' : 'A case is a label that organizes consultations. You can open the first one now, and delete it later.'}</div>
-                    <button className="n-btn n-solid" onClick={() => setShowNewCase(true)}>{isHe ? 'פתיחת מקרה ראשון' : 'Open first case'}</button>
+                    <button className="n-btn n-solid" onClick={() => { setNewCaseError(''); setShowNewCase(true); }}>{isHe ? 'פתיחת מקרה ראשון' : 'Open first case'}</button>
                   </div>
                 ) : (
                   <div>
@@ -2032,7 +2053,7 @@ export default function Home() {
                 {/* בקובץ העיצוב יש כאן פעולה אחת בלבד. "התייעצות חדשה" פתח את
                     מסך ה-hub הישן, שאינו חלק מהעיצוב, והוסר בהכרעת איה 29.08. */}
                 <div className="n-actions">
-                  <button className="n-btn n-ghost" onClick={() => { setNewCaseLabel(''); setShowNewCase(true); }}>{isHe ? 'מקרה חדש' : 'New case'}</button>
+                  <button className="n-btn n-ghost" onClick={() => { setNewCaseLabel(''); setNewCaseError(''); setShowNewCase(true); }}>{isHe ? 'מקרה חדש' : 'New case'}</button>
                   <span className="n-sp" />
                 </div>
                 <div className="n-botbar">{isHe ? 'הערות רפלקציה, לא רשומה קלינית. התוויות הן כינויים, וההתייעצויות מאונמזות לפני שמירה.' : 'Reflection notes, not a clinical record. Labels are pseudonyms; consultations are anonymized before saving.'}</div>
@@ -2478,7 +2499,7 @@ export default function Home() {
             האזהרה על פסבדונים, וסרגל פעולות תחתון. עד כה זו הייתה שורת
             קלט מוטבעת במסך, וזה לא מה שעוצב. */}
         {showNewCase && (
-          <div className="n-ovl n-open" onClick={e => { if (e.target === e.currentTarget) setShowNewCase(false); }}>
+          <div className="n-ovl n-open" onClick={e => { if (e.target === e.currentTarget && !creatingCase) setShowNewCase(false); }}>
             <div className="n-modal" style={{ width: 520 }}>
               <h3>{isHe ? 'מקרה חדש' : 'New case'}</h3>
               <p className="n-lead">{isHe
@@ -2488,7 +2509,7 @@ export default function Home() {
                 <label htmlFor="nc-label">{isHe ? 'תווית למקרה' : 'Case label'}</label>
                 <input className="n-inp" id="nc-label" autoFocus autoComplete="off" value={newCaseLabel}
                   onChange={e => setNewCaseLabel(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter' && newCaseLabel.trim()) createCase(newCaseLabel); if (e.key === 'Escape') setShowNewCase(false); }}
+                  onKeyDown={e => { if (e.key === 'Enter' && newCaseLabel.trim() && !creatingCase) createCase(newCaseLabel); if (e.key === 'Escape' && !creatingCase) setShowNewCase(false); }}
                   placeholder={isHe ? 'למשל: מקרה ו׳' : 'e.g. Case F'} />
                 <div className="n-bound">
                   <div className="n-t">{isHe ? 'פסבדונים, לא שם אמיתי' : 'A pseudonym, not a real name'}</div>
@@ -2497,9 +2518,19 @@ export default function Home() {
                     : 'These are reflection notes, not a clinical record. Do not write a name, initials or any identifying detail. Consultations are anonymized before saving.'}</div>
                 </div>
               </div>
+              {newCaseError && (
+                <p className="n-note" role="alert" style={{ color: 'var(--accent-deep)' }}>{newCaseError}</p>
+              )}
               <div className="n-foot">
                 <button className="n-btn n-ghost" onClick={() => setShowNewCase(false)}>{isHe ? 'ביטול' : 'Cancel'}</button>
-                <button className="n-btn n-solid" disabled={!newCaseLabel.trim()} onClick={() => createCase(newCaseLabel)}>{isHe ? 'צור' : 'Create'}</button>
+                {/* בזמן ההמתנה הכפתור אינו ‎disabled‎ בכוונה: יש בגיליון כלל כללי
+                    ‎button:disabled‎ עם ‎opacity:.32‎ ו-‎pointer-events:none‎, והוא היה
+                    מדהה דווקא את הרגע שבו הכפתור אמור להראות שהוא עובד. הלחיצה
+                    הכפולה נמנעת ב-‎createCase‎ עצמו. */}
+                <button className={`n-btn n-solid${creatingCase ? ' n-busy' : ''}`} disabled={!newCaseLabel.trim() && !creatingCase}
+                  aria-busy={creatingCase} onClick={() => createCase(newCaseLabel)}>
+                  {creatingCase ? (isHe ? 'יוצר…' : 'Creating…') : (isHe ? 'צור' : 'Create')}
+                </button>
               </div>
             </div>
           </div>

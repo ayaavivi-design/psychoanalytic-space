@@ -539,7 +539,13 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
               style="margin-inline-start:auto;width:34px;height:34px">✕</button>
     </div>
 
-        <button class="sb" data-goto="write"><span class="sb-label">שיחה חדשה</span></button>
+    <!-- אצל מטפלת יחידת העבודה היא מקרה ולא שיחה, ולכן הפריט הראשון פותח
+         מקרה חדש. הכרעת איה 29.08.2026. התווית מתחלפת עם הפרסונה. -->
+    <!-- הפריט הראשון תלוי פרסונה, הכרעת איה 29.08.2026: אצל מטפלת יחידת
+         העבודה היא מקרה ולא שיחה, ולכן הוא נקרא "מקרה חדש" ופותח את המודל
+         של מקרה חדש. אצל מטופלת הוא נשאר "שיחה חדשה". -->
+    <button class="sb" id="sbFirst" data-persona-only="patient" data-goto="write"><span class="sb-label">שיחה חדשה</span></button>
+    <button class="sb" id="sbFirstTh" data-persona-only="therapist" data-open="newcase"><span class="sb-label">מקרה חדש</span></button>
 
     <!-- מצב עבודה · מחקר הוא מצב ולא מקרה. הכרעת איה 29.08.2026:
          כשהוא ישב בתחתית קבוצת "מקרים" הוא נקרא כשם של מטופל נוסף
@@ -558,6 +564,9 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
       <button class="sb sb-sub" data-goto="write">מקרה ו׳</button>
       <button class="sb sb-sub" data-goto="write">מקרה ד׳</button>
       <button class="sb sb-sub" data-goto="write">מקרה א׳</button>
+      <!-- הארכיון היה קיים בקוד בלי שום כניסה אליו: "העברה לארכיון" הזיזה
+           מקרה למקום שאי אפשר לראות. נוסף בממשק 29.08 וחסר כאן. -->
+      <button class="sb sb-nav" data-goto="casearchive"><span class="sb-label">ארכיון</span></button>
     </div>
 
     <div data-persona-only="patient">
@@ -615,6 +624,24 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
           <span class="sp"></span>
         </div>
         <div class="botbar">הערות רפלקציה, לא רשומה קלינית. התוויות הן כינויים, וההתייעצויות מאונמזות לפני שמירה.</div>
+      </section>
+
+      <!-- ══ מסך: ארכיון המקרים ══
+           הכניסה למקרים שהועברו לארכיון מתפריט ה-⋯ שבכרטיס. בלי המסך הזה
+           "העברה לארכיון" מזיזה מקרה למקום שאי אפשר לראות. -->
+      <section class="screen" id="screen-casearchive" hidden>
+        <div class="topbar"><span>ארכיון</span><span>29.08</span></div>
+        <div class="hr"></div>
+        <h1 class="h">מקרים שהוצאתי מהשולחן</h1>
+
+        <div class="card archived">
+          <button class="more" aria-label="עוד">⋯</button>
+          <div class="cardmenu"><button data-act="restore">החזרה לרשימה</button></div>
+          <div class="t">מקרה ב׳</div>
+          <div class="m"><span class="tag">5 התייעצויות</span>הועבר לארכיון לפני חודש</div>
+        </div>
+
+        <div class="botbar">הארכיון אינו מחיקה. מה שכאן נשאר קריא, והוא רק יורד מהרשימה הפעילה.</div>
       </section>
 
       <!-- ══ מסך: מחקר ══
@@ -1116,7 +1143,7 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
     $('#side').classList.remove('mobopen');
     $('#scrim').classList.remove('on');
     $('#btnMenu').setAttribute('aria-expanded','false');
-    var titles={cases:'המקרים שלי',research:'מחקר',write:'כתיבה',talk:'שיחה',archive:'מה כתבתי',system:'מערכת העיצוב'};
+    var titles={cases:'המקרים שלי',casearchive:'ארכיון',research:'מחקר',write:'כתיבה',talk:'שיחה',archive:'מה כתבתי',system:'מערכת העיצוב'};
     $('#mobTitle').textContent = titles[id] || 'Between';
     closeAcct();
     window.scrollTo(0,0);
@@ -1133,6 +1160,7 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
     persona=p;
     $$('#personaGrp button').forEach(function(b){ b.classList.toggle('on', b.dataset.persona===p); });
     $$('[data-persona-only]').forEach(function(el){ el.style.display = el.dataset.personaOnly===p ? '' : 'none'; });
+    $('#sbFirst .sb-label').textContent = p==='therapist' ? 'מקרה חדש' : 'שיחה חדשה';
     $('#wHead').textContent = p==='therapist' ? 'מה עלה לך מהפגישה?' : 'מה נשאר לך מהפגישה?';
     $('#wCase').textContent = p==='therapist' ? 'מקרה ו׳' : 'הפגישה האחרונה';
     $('#wFoot').textContent = p==='therapist'

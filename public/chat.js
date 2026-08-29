@@ -5213,27 +5213,10 @@ function applyUITranslation(code) {
   if (sbFeedback) sbFeedback.textContent = t.userFeedback || 'User feedback';
   const sbBoard = document.getElementById('sb-board-label');
   if (sbBoard) sbBoard.textContent = t.boardRoom || 'Board room';
-  // Auth screen translations
-  const authTitle = document.getElementById('auth-title');
-  if (authTitle && t.authTitle) authTitle.textContent = t.authTitle;
-  const authSubtitle = document.getElementById('auth-subtitle');
-  if (authSubtitle && t.authSubtitle) authSubtitle.textContent = t.authSubtitle;
-  // בורר הפרסונה במסך הכניסה בבעלות React · שלושת המזהים שחיפשנו כאן
-  // (auth-persona-label, persona-auth-*) אינם מרונדרים על ידי איש.
-  const authEmailInput = document.getElementById('auth-email');
-  if (authEmailInput && t.authEmail) authEmailInput.placeholder = t.authEmail;
-  const authPasswordInput = document.getElementById('auth-password');
-  if (authPasswordInput && t.authPassword) authPasswordInput.placeholder = t.authPassword;
-  const signinBtn = document.getElementById('signin-btn');
-  if (signinBtn && t.authSignIn) signinBtn.textContent = t.authSignIn;
-  const signupBtn = document.getElementById('signup-btn');
-  if (signupBtn && t.authSignUp) signupBtn.textContent = t.authSignUp;
-  const authForgot = document.getElementById('auth-forgot');
-  if (authForgot && t.authForgot) authForgot.textContent = t.authForgot;
-  const authSecurity = document.getElementById('auth-security');
-  if (authSecurity && t.authSecurity) authSecurity.innerHTML = t.authSecurity.replace('\n', '<br>');
-  const authDisclaimer = document.getElementById('auth-disclaimer');
-  if (authDisclaimer && t.authDisclaimer) authDisclaimer.textContent = t.authDisclaimer;
+  // ⛔ מסך הכניסה כולו בבעלות React · הוא מרנדר כל מחרוזת לפי isHe, כולל
+  // הכותרת, הפלייסהולדרים, שני הכפתורים, שורת המעבר, "שכחתי סיסמה"
+  // והדיסקליימר. הכתיבה שהייתה כאן דרסה אותן, ולכן המסך יצא מעורבב:
+  // חלק אנגלי מ-React וחלק עברי מכאן. אותו דפוס של שני מקורות (פריט 17).
   // ‎#input-disclaimer‎ בבעלות React בלבד (פוטר מסך השיחה, שורת botbar בעיצוב).
   // הכתיבה מכאן דרסה אותו בנוסח ישן בכל החלפת שפה. גבול הבעלות של פריט 17:
   // vanilla מחזיק אלמנטים עם data-key, React מחזיק את השאר.
