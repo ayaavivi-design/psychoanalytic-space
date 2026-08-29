@@ -2168,6 +2168,13 @@ export default function Home() {
                       <div key={c.id} className="n-card" onClick={() => renamingCaseId !== c.id ? openCase(c) : undefined}>
                         <button className="n-more" aria-label={isHe ? 'עוד' : 'More'}
                           onClick={e => { e.stopPropagation(); setOpenMenuCaseId(id => id === c.id ? null : c.id); }}>⋮</button>
+                        {/* התווית לצד הנקודות ובאותו גובה, ולא בשורת המטא: שם היא
+                            נחתה מתחתיהן ונקראה כאילו היא שייכת להן. */}
+                        {!!c.count && (
+                          <span className="n-tag">{isHe
+                            ? (c.count === 1 ? '1 התייעצות' : `${c.count} התייעצויות`)
+                            : (c.count === 1 ? '1 consultation' : `${c.count} consultations`)}</span>
+                        )}
                         {openMenuCaseId === c.id && (<>
                           {/* שכבת הסגירה חייבת לשבת מתחת לתפריט. ב-99 היא ישבה מעליו
                               (התפריט הוא 40), ולכן כל לחיצה אמיתית פגעה בה וסגרה את
@@ -2192,23 +2199,13 @@ export default function Home() {
                             מתי עודכן ודרך איזו גישה. בלי זה הכרטיס אומר שם
                             ותאריך בלבד, ואין ממנו דרך לדעת אם יש למה לחזור. */}
                         <div className="n-m">
-                          {/* הטקסט ראשון והתווית אחרונה · היא נדחפת לקצה הנגדי
-                              דרך ‎margin-inline-start:auto‎. כשהיא הייתה ראשונה
-                              היא נדבקה לטקסט בלי רווח: "3 התייעצויותעודכן". */}
-                          <span>
-                            {c.count
-                              ? <>{isHe ? 'עודכן ' : 'Updated '}{relTime(c.last_at || c.created_at)}
-                                  {c.last_theorist ? (isHe
-                                    ? ` · אחרונה דרך הגישה של ${getHoldTheoristName(c.last_theorist)}`
-                                    : ` · last through ${getHoldTheoristName(c.last_theorist)}'s approach`) : ''}</>
-                              : <>{isHe ? `נפתח ${relTime(c.created_at)} · עוד לא נכתב דבר`
-                                        : `Opened ${relTime(c.created_at)} · nothing written yet`}</>}
-                          </span>
-                          {!!c.count && (
-                            <span className="n-tag">{isHe
-                              ? (c.count === 1 ? '1 התייעצות' : `${c.count} התייעצויות`)
-                              : (c.count === 1 ? '1 consultation' : `${c.count} consultations`)}</span>
-                          )}
+                          {c.count
+                            ? <>{isHe ? 'עודכן ' : 'Updated '}{relTime(c.last_at || c.created_at)}
+                                {c.last_theorist ? (isHe
+                                  ? ` · אחרונה דרך הגישה של ${getHoldTheoristName(c.last_theorist)}`
+                                  : ` · last through ${getHoldTheoristName(c.last_theorist)}'s approach`) : ''}</>
+                            : <>{isHe ? `נפתח ${relTime(c.created_at)} · עוד לא נכתב דבר`
+                                      : `Opened ${relTime(c.created_at)} · nothing written yet`}</>}
                         </div>
                       </div>
                     ))}
