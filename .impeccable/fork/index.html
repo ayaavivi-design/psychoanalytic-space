@@ -264,9 +264,13 @@ h2.h2{font-size:22px;font-weight:300;letter-spacing:-.01em;margin:0 0 var(--s4)}
 
 /* ── תפריט לכל מקרה ── */
 .card{position:relative}
+/* שלוש הנקודות אנכיות · הכרעת איה 29.08.2026. אופקיות הן "עוד טקסט"
+   ואנכיות הן "עוד פעולות", וזה תפריט. הסימן ⋮ קטן מ-⋯ באותו גודל גופן,
+   ולכן 18 ולא 16. */
 .card .more{position:absolute;inset-block-start:12px;inset-inline-end:12px;width:32px;height:32px;
             border:1px solid transparent;border-radius:var(--r-ctl);background:transparent;cursor:pointer;
             color:var(--mut);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center}
+.card .more{font-size:18px}
 .card .more:hover{border-color:var(--line);color:var(--ink)}
 .cardmenu{position:absolute;inset-block-start:46px;inset-inline-end:12px;z-index:40;min-width:170px;
           background:var(--surface);border:1px solid var(--ink);border-radius:var(--r-box);overflow:hidden;display:none}
@@ -611,17 +615,17 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
         <h1 class="h">על מה נעבוד היום?</h1>
 
         <div id="caselist">
-          <div class="card"><button class="more" aria-label="עוד">⋯</button>
+          <div class="card"><button class="more" aria-label="עוד">⋮</button>
             <div class="cardmenu"><button data-act="rename">שינוי שם</button><button data-act="archive">העברה לארכיון</button></div>
             <div class="t" data-goto="write">מקרה ו׳</div>
             <div class="m"><span>עודכן לפני יומיים · אחרונה דרך הגישה של ויניקוט</span><span class="tag">3 התייעצויות</span></div>
           </div>
-          <div class="card"><button class="more" aria-label="עוד">⋯</button>
+          <div class="card"><button class="more" aria-label="עוד">⋮</button>
             <div class="cardmenu"><button data-act="rename">שינוי שם</button><button data-act="archive">העברה לארכיון</button></div>
             <div class="t" data-goto="write">מקרה ד׳</div>
             <div class="m"><span>עודכן לפני שבוע · אחרונה דרך הגישה של קליין</span><span class="tag">1 התייעצות</span></div>
           </div>
-          <div class="card"><button class="more" aria-label="עוד">⋯</button>
+          <div class="card"><button class="more" aria-label="עוד">⋮</button>
             <div class="cardmenu"><button data-act="rename">שינוי שם</button><button data-act="archive">העברה לארכיון</button></div>
             <div class="t" data-goto="write">מקרה א׳</div>
             <div class="m">נפתח היום · עוד לא נכתב דבר</div>
@@ -650,7 +654,7 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
         <h1 class="h">מקרים שהוצאתי מהשולחן</h1>
 
         <div class="card archived">
-          <button class="more" aria-label="עוד">⋯</button>
+          <button class="more" aria-label="עוד">⋮</button>
           <div class="cardmenu"><button data-act="restore">החזרה לרשימה</button></div>
           <div class="t">מקרה ב׳</div>
           <div class="m"><span>הועבר לארכיון לפני חודש</span><span class="tag">5 התייעצויות</span></div>
@@ -1508,7 +1512,7 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
     var v=ncInput.value.trim(); if(!v) return;
     var el=document.createElement('div');
     el.className='card';
-    el.innerHTML='<button class="more" aria-label="עוד">⋯</button>'
+    el.innerHTML='<button class="more" aria-label="עוד">⋮</button>'
       +'<div class="cardmenu"><button data-act="rename">שינוי שם</button><button data-act="archive">העברה לארכיון</button></div>'
       +'<div class="t" data-goto="write"></div><div class="m">נפתח היום · עוד לא נכתב דבר</div>';
     el.querySelector('.t').textContent=v;

@@ -2167,7 +2167,7 @@ export default function Home() {
                     {cases.map(c => (
                       <div key={c.id} className="n-card" onClick={() => renamingCaseId !== c.id ? openCase(c) : undefined}>
                         <button className="n-more" aria-label={isHe ? 'עוד' : 'More'}
-                          onClick={e => { e.stopPropagation(); setOpenMenuCaseId(id => id === c.id ? null : c.id); }}>⋯</button>
+                          onClick={e => { e.stopPropagation(); setOpenMenuCaseId(id => id === c.id ? null : c.id); }}>⋮</button>
                         {openMenuCaseId === c.id && (<>
                           {/* שכבת הסגירה חייבת לשבת מתחת לתפריט. ב-99 היא ישבה מעליו
                               (התפריט הוא 40), ולכן כל לחיצה אמיתית פגעה בה וסגרה את

@@ -1506,6 +1506,9 @@ h2.n-h2{font-size:22px;font-weight:300;letter-spacing:-.01em;margin:0 0 var(--s4
 .n-card .n-more{position:absolute;inset-block-start:12px;inset-inline-end:12px;width:32px;height:32px;
             border:1px solid transparent;border-radius:var(--r-ctl);background:transparent;cursor:pointer;
             color:var(--mut);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center}
+/* שלוש הנקודות אנכיות · הכרעת איה 29.08.2026. אופקיות הן "עוד טקסט"
+   ואנכיות הן "עוד פעולות", וזה תפריט. ⋮ קטן מ-⋯ באותו גודל, ולכן 18. */
+.n-card .n-more{font-size:18px}
 .n-card .n-more:hover{border-color:var(--line);color:var(--ink)}
 .n-cardmenu{position:absolute;inset-block-start:46px;inset-inline-end:12px;z-index:40;min-width:170px;
           background:var(--surface);border:1px solid var(--ink);border-radius:var(--r-box);overflow:hidden;display:none}
