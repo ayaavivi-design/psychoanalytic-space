@@ -399,7 +399,14 @@ export default function Home() {
       // מעליה, כלומר היא שם ואי אפשר לגעת בה. זה נקרא כאילו נמחקה.
       const keepWriting = !!(e as CustomEvent | undefined)?.detail?.keepWriting;
       setDailyText('');
-      setConsultText('');
+      // הכתיבה של המטפלת · חזרה מחזירה אותה, שיחה חדשה מנקה
+      let restoreConsult = '';
+      if (keepWriting) { try { restoreConsult = localStorage.getItem('bw_consult_last') || ''; } catch { /* ignore */ } }
+      setConsultText(restoreConsult);
+      try {
+        if (restoreConsult) localStorage.removeItem('bw_consult_last');
+        else localStorage.removeItem('bw_consult_last');
+      } catch { /* ignore */ }
       setHubTheorists([]);
       setConsultPickerOpen(false);
       // בחירת הגישה מתאפסת גם היא. בלי זה שיחה חדשה נפתחה על התיאורטיקן
@@ -831,6 +838,10 @@ export default function Home() {
         input.style.height = 'auto';
       } else { input.focus(); }
     }
+    // אותו מנגנון של מסלול המטופלת · "חזרה לכתיבה" צריכה מה להחזיר.
+    // הכתיבה של המטפלת היא ‎consultText‎ ולא ה-contentEditable, ולכן
+    // התיקון הקודם לא נגע בה כלל והטקסט שלה נעלם.
+    try { if (material) localStorage.setItem('bw_consult_last', material); } catch { /* ignore */ }
     setConsultText('');
   };
   const archiveCase = async (id: string, archived: boolean) => {
