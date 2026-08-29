@@ -1476,13 +1476,12 @@ export default function Home() {
                 ‎chat.js‎ המשיך להדליק כפתור שאיש לא יכול היה לראות, גם משתמשת
                 חדשה. הכניסה עוברת לסייד-בר, לצד "מה כתבתי", ומוצגת רק למי
                 שטרם עשתה אותה — אותו תנאי בדיוק של ‎checkIntakeStatus‎. */}
-            {activePersona === 'patient' && !intakeDone && (
-              <div className="sb-item" data-persona="patient"
-                onClick={() => { (window as any).startIntake?.(); }}>
-                <span className="sb-icon"><Sparkles size={15} strokeWidth={1.75} /></span>
-                <span className="sb-label">{isHe ? 'שיחת היכרות' : 'Getting to know you'}</span>
-              </div>
-            )}
+            {/* ⛔ "שיחת היכרות" ירדה מכאן 29.08.2026 בהכרעת איה: היא קורית פעם
+                אחת ואז נעלמת, ופריט חד-פעמי אינו ניווט. **היא לא נמחקה** —
+                הכניסה עברה למסך הכתיבה עצמו, שם המשתמשת החדשה נוחתת ממילא,
+                ומוצגת רק למי שטרם עשתה אותה. חשוב: הכניסה הקודמת שלה,
+                ‎#header-intake-btn‎, מוסתרת בעיצוב החדש, ולכן הסרה בלי חלופה
+                הייתה משאירה משתמשת חדשה בלי שום דרך. */}
             {/* הורד PDF וסיכום התייעצות ירדו מכאן לשורת השיחה (שלב 2, הכרעת איה). שניהם נוגעים
                 לשיחה הנוכחית בלבד, ולכן מקומם בתוכה ולא בתפריט שמלווה גם את מסך הבית.
                 בורר הגישה נשאר כאן בכוונה: הוא משנה תיאורטיקן גם לפני שנפתחה שיחה, והסרתו
@@ -2035,6 +2034,18 @@ export default function Home() {
                 {/* ‎h1‎ ולא ‎p‎ · הכלל בקובץ הוא ‎h1.h‎, בורר שמוגבל לסוג האלמנט, ולכן
                     פסקה לא קיבלה אותו וזה היה המסך היחיד עם כותרת קטנה. */}
                 <h1 id="bw-hold-heading" className="n-h" style={{ alignSelf: 'flex-start' }}>{isHe ? 'מה נשאר איתך?' : 'What stayed with you?'}</h1>
+                {/* ההזמנה לשיחת ההיכרות · פעם אחת, כאן, ואז נעלמת לתמיד.
+                    אותו תנאי בדיוק של הפריט שירד מהסייד־בר (‎intake_completed‎),
+                    ולכן מי שכבר עשתה אותה אינה רואה כאן דבר. */}
+                {!intakeDone && (
+                  <p className="n-note" style={{ alignSelf: 'flex-start', margin: '0 0 var(--space-md)' }}>
+                    {isHe ? 'עוד לא הכרנו. ' : "We haven't met yet. "}
+                    <a href="#" className="n-lnk" onClick={e => { e.preventDefault(); (window as any).startIntake?.(); }}>
+                      {isHe ? 'שיחת היכרות קצרה' : 'A short introduction'}
+                    </a>
+                    {isHe ? ' תעזור לתיאורטיקנים לפגוש אותך.' : ' helps the theorists meet you.'}
+                  </p>
+                )}
                 {/* משטח הכתיבה · מבנה העיצוב החדש, 28.08: אזור בחירת גישה מעל,
                     אזור כתיבה מתחת, והכתיבה נעולה עד שנבחרה גישה. */}
                 <div className={`n-plate${activeApproach ? '' : ' n-locked'}${entering ? ' n-leaving' : ''}`} style={{ width: '100%' }}>
