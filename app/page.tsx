@@ -398,16 +398,20 @@ export default function Home() {
       // הכתיבה חוזרת לשדה נעול עם הכיתוב "בחרי גישה כדי להתחיל לכתוב"
       // מעליה, כלומר היא שם ואי אפשר לגעת בה. זה נקרא כאילו נמחקה.
       const keepWriting = !!(e as CustomEvent | undefined)?.detail?.keepWriting;
-      setDailyText('');
-      // הכתיבה של המטפלת · חזרה מחזירה אותה, שיחה חדשה מנקה
+      // ═══ הכתיבה של המטפלת · חזרה מחזירה, שיחה חדשה מנקה ═══
+      // **השדה הוא ‎dailyText‎ ולא ‎consultText‎.** ‎consultText‎ שייך למסך ה-hub
+      // הישן שיצא מהזרימה, ו-‎dailyText‎ הוא הלוח שבמסך המקרה — זה שממנו
+      // ‎startConsultation(dailyText)‎ נקרא בפועל. בפעם הקודמת שמרתי את
+      // הערך הנכון והחזרתי אותו לשדה הלא נכון, ולכן שום דבר לא חזר.
       let restoreConsult = '';
       if (keepWriting) { try { restoreConsult = localStorage.getItem('bw_consult_last') || ''; } catch { /* ignore */ } }
+      setDailyText(restoreConsult);
       setConsultText(restoreConsult);
-      try {
-        if (restoreConsult) localStorage.removeItem('bw_consult_last');
-        else localStorage.removeItem('bw_consult_last');
-      } catch { /* ignore */ }
-      setHubTheorists([]);
+      try { localStorage.removeItem('bw_consult_last'); } catch { /* ignore */ }
+      // בחירת הגישה נשמרת בחזרה · ‎picked‎ נגזר מ-‎hubTheorists‎, וריקון שלו
+      // היה מחזיר את הטקסט לתוך לוח נעול, כלומר "הטקסט שם ואי אפשר לגעת".
+      // אותו לקח בדיוק ממסלול המטופלת.
+      if (!keepWriting) setHubTheorists([]);
       setConsultPickerOpen(false);
       // בחירת הגישה מתאפסת גם היא. בלי זה שיחה חדשה נפתחה על התיאורטיקן
       // האחרון, כלומר על בחירה שהמטופלת לא עשתה הפעם, והלוח נראה פתוח
