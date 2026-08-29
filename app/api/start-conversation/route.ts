@@ -4,6 +4,15 @@ import { createClient } from '@supabase/supabase-js';
 const MAX_CONVERSATIONS = 3;
 const ADMIN_EMAIL = 'ayaavivi@gmail.com';
 
+// הכרעת איה 29.08.2026: רושמים בלי לחסום.
+// שער שלב 0 (OPEN_DECISIONS) צריך נתוני חזרה, ובלי רישום אין לו כלום.
+// אבל תיקון הרישום לבדו היה מדליק גם את גדר שלוש השיחות על משתמשות
+// אמיתיות, כי המונה בשרת היה מתחיל לעלות. לכן השתיים הופרדו:
+// הרישום פועל תמיד, והחסימה מותנית בדגל שכבוי כברירת מחדל.
+// כדי להדליק אותה שוב: BW_ENFORCE_CONV_LIMIT=1 במשתני הסביבה.
+// כשהחסימה כבויה גם המונה אינו עולה, כי מונה שאינו חוסם אינו אומר כלום.
+const ENFORCE_LIMIT = process.env.BW_ENFORCE_CONV_LIMIT === '1';
+
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
   if (!authHeader?.startsWith('Bearer ')) {
@@ -33,12 +42,12 @@ export async function POST(req: NextRequest) {
 
   const used = (user.user_metadata?.conversations_used ?? 0) as number;
 
-  if (!isDev && !isAdmin && used >= MAX_CONVERSATIONS) {
+  if (ENFORCE_LIMIT && !isDev && !isAdmin && used >= MAX_CONVERSATIONS) {
     return NextResponse.json({ allowed: false, used, max: MAX_CONVERSATIONS }, { status: 403 });
   }
 
-  // עדכון מונה ב-user_metadata (לא לאדמין)
-  if (!isAdmin) {
+  // עדכון מונה ב-user_metadata (לא לאדמין, ורק כשהחסימה פעילה)
+  if (ENFORCE_LIMIT && !isAdmin) {
     await supabase.auth.admin.updateUserById(user.id, {
       user_metadata: { ...user.user_metadata, conversations_used: used + 1 }
     });
@@ -50,16 +59,17 @@ export async function POST(req: NextRequest) {
     .insert({
       user_id: user.id,
       theorist,
-      conversation_number: isAdmin ? null : used + 1,
+      conversation_number: (ENFORCE_LIMIT && !isAdmin) ? used + 1 : null,
     })
     .select('id')
     .single();
 
   return NextResponse.json({
     allowed: true,
+    enforcing: ENFORCE_LIMIT || undefined,
     admin: isAdmin || undefined,
-    used: isAdmin ? undefined : used + 1,
-    max: isAdmin ? undefined : MAX_CONVERSATIONS,
+    used: (ENFORCE_LIMIT && !isAdmin) ? used + 1 : undefined,
+    max: (ENFORCE_LIMIT && !isAdmin) ? MAX_CONVERSATIONS : undefined,
     conversation_id: conv?.id ?? null,
   });
 }

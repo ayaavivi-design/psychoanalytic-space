@@ -762,7 +762,12 @@ async function startFlow(flowKey) {
   if (fixedOpening) {
     // Hybrid approach — display Lia-approved fixed text, no API call.
     // System prompt injection (window.activeFlow) persists for all subsequent messages.
-    if (conversationHistory.length === 0) {
+    // הגייט היה ‎conversationHistory.length === 0‎, וההיסטוריה נטענת
+    // מ-localStorage בעליית העמוד. כלומר משתמשת חוזרת שממשיכה שיחה
+    // הגיעה לכאן עם אורך 2 ולא נרשמה מעולם (פריט 4, אומת 29.08).
+    // הסימן הנכון הוא "עוד לא נרשמנו בשיחה הזו": ‎currentConversationId‎
+    // מתאפס בכל שיחה חדשה ובכל טעינת עמוד.
+    if (!currentConversationId) {
       const allowed = await checkConversationLimit();
       if (!allowed) { window.activeFlow = null; renderFlowButtons(); return; }
     }
@@ -782,7 +787,7 @@ async function startFlow(flowKey) {
   }
 
   // Fallback: API call for theorists not yet in ENTRY_OPENING
-  if (conversationHistory.length === 0) {
+  if (!currentConversationId) {
     const allowed = await checkConversationLimit();
     if (!allowed) { window.activeFlow = null; renderFlowButtons(); return; }
   }
@@ -5914,9 +5919,13 @@ async function sendMessage() {
     window.activeFlow = 'something_else';
   }
 
-  // בדיקת מגבלת שיחות — רק בהודעה הראשונה בשיחה חדשה
+  // רישום השיחה · פעם אחת לכל שיחה, לפי ‎currentConversationId‎ ולא לפי
+  // אורך ההיסטוריה. ‎first_message_sent‎ נשאר על התנאי המקורי, כי הוא
+  // באמת מתאר הודעה ראשונה ולא רישום.
   if (conversationHistory.length === 0) {
     window.bwTrack?.('first_message_sent', { theorist: activeTheorists[0] || null });
+  }
+  if (!currentConversationId) {
     const allowed = await checkConversationLimit();
     if (!allowed) return;
   }
@@ -6651,6 +6660,7 @@ function performNewChat() {
   conversationHistory = [];
   sessionMemorySaved = false;
   bwResetApproachChoice(); // אחרי generateInterpretiveMemory, שקורא את activeTheorists
+  currentConversationId = null; // שיחה חדשה נרשמת מחדש
   const _sbNew = document.getElementById('suggestion-bubbles');
   if (_sbNew) _sbNew.classList.remove('subtle');
   saveConversation();
@@ -6696,6 +6706,7 @@ function bwExitChatToHome(opts) {
   conversationHistory = [];
   sessionMemorySaved = false;
   bwResetApproachChoice();
+  currentConversationId = null; // שיחה חדשה נרשמת מחדש
   try { saveConversation(); } catch (e) { /* noop */ }
   const titleEl = document.getElementById('session-title'); if (titleEl) titleEl.textContent = '';
   const chat = document.getElementById('chat');
