@@ -2002,7 +2002,7 @@ export default function Home() {
                 <h1 id="bw-hold-heading" className="n-h" style={{ alignSelf: 'flex-start' }}>{isHe ? 'מה נשאר איתך?' : 'What stayed with you?'}</h1>
                 {/* משטח הכתיבה · מבנה העיצוב החדש, 28.08: אזור בחירת גישה מעל,
                     אזור כתיבה מתחת, והכתיבה נעולה עד שנבחרה גישה. */}
-                <div className={`n-plate${activeApproach ? '' : ' n-locked'}`} style={{ width: '100%' }}>
+                <div className={`n-plate${activeApproach ? '' : ' n-locked'}${entering ? ' n-leaving' : ''}`} style={{ width: '100%' }}>
                   {/* אזור 1 · בחירת הגישה, פעיל תמיד */}
                   <div className="n-zone-head">
                     <span className="n-lbl">{isHe ? 'דרך הגישה של' : 'Through the approach of'}</span>
@@ -2127,8 +2127,13 @@ export default function Home() {
                       שניות עד שהמסך מתחלף. ‎showThinking()‎ מופיע רק אחרי
                       המעבר, כלומר בדיוק בפער הזה לא היה שום סימן שמשהו קורה,
                       והכפתור הזמין לחיצה נוספת. */}
-                  <button className="n-btn n-solid" disabled={entering || !activeApproach || !holdText.trim()}
-                    onClick={async () => { setEntering(true); try { await handleEnterConversation(holdTheorist); } finally { setEntering(false); } }}>
+                  {/* אינו ‎disabled‎ בזמן ההמתנה · הכלל הכללי ‎button:disabled‎ נותן
+                      ‎opacity:.32‎, כלומר דווקא ברגע שבו הכפתור אמור להראות שהוא
+                      עובד הוא היה דוהה ונקרא כמת. ‎n-busy‎ פועם, והלחיצה הכפולה
+                      נמנעת בתנאי שבתוך ה-‎onClick‎. */}
+                  <button className={`n-btn n-solid${entering ? ' n-busy' : ''}`}
+                    disabled={!entering && (!activeApproach || !holdText.trim())} aria-busy={entering}
+                    onClick={async () => { if (entering) return; setEntering(true); try { await handleEnterConversation(holdTheorist); } finally { setEntering(false); } }}>
                     {entering ? (isHe ? 'נכנס לשיחה…' : 'Opening…') : (isHe ? 'המשך לשיחה' : 'Continue')}</button>
                 </div>
                 {/* Ephemerality — stated as a value, not read as a failure. Content is never

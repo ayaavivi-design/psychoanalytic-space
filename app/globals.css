@@ -1413,6 +1413,13 @@ h2.n-h2{font-size:22px;font-weight:300;letter-spacing:-.01em;margin:0 0 var(--s4
 .n-btn.n-solid.n-busy,.n-btn.n-solid.n-busy[disabled]{background:var(--accent-deep);color:#fff}
 .n-btn.n-ghost.n-busy,.n-btn.n-plain.n-busy{border-color:var(--text);color:var(--text)}
 @media (prefers-reduced-motion:reduce){ .n-btn.n-busy{animation:none;opacity:.75} }
+
+/* ══ המסך בדרך החוצה ══
+   הכניסה לשיחה כוללת קריאת מודל, ויש בה כמה שניות שבהן שום דבר על המסך
+   לא זז. תווית על הכפתור לבדה אינה מספיקה: העין מחפשת תנועה. הלוח דוהה
+   ומפסיק לקבל קלט, וזה אומר "המסך הזה נגמר" בלי להבטיח מתי בדיוק. */
+.n-plate.n-leaving{opacity:.45;pointer-events:none;transition:opacity .4s ease}
+@media (prefers-reduced-motion:reduce){ .n-plate.n-leaving{transition:none} }
 .n-btn.n-wake{animation:wake .75s ease-out 1}
 
 .n-sel{height:var(--h-ctl);display:inline-flex;align-items:center;gap:9px;padding:0 15px;font-size:14px;font-weight:600;
