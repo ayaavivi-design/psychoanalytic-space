@@ -2038,13 +2038,14 @@ export default function Home() {
                     אותו תנאי בדיוק של הפריט שירד מהסייד־בר (‎intake_completed‎),
                     ולכן מי שכבר עשתה אותה אינה רואה כאן דבר. */}
                 {!intakeDone && (
-                  <p className="n-note" style={{ alignSelf: 'flex-start', margin: '0 0 var(--space-md)' }}>
-                    {isHe ? 'עוד לא הכרנו. ' : "We haven't met yet. "}
-                    <a href="#" className="n-lnk" onClick={e => { e.preventDefault(); (window as any).startIntake?.(); }}>
-                      {isHe ? 'שיחת היכרות קצרה' : 'A short introduction'}
-                    </a>
-                    {isHe ? ' תעזור לתיאורטיקנים לפגוש אותך.' : ' helps the theorists meet you.'}
-                  </p>
+                  <div style={{ alignSelf: 'flex-start', margin: '0 0 var(--space-md)', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                    <button className="n-btn n-ghost" onClick={() => (window as any).startIntake?.()}>
+                      {isHe ? 'שיחת היכרות' : 'Introduction'}
+                    </button>
+                    <span className="n-note" style={{ margin: 0 }}>
+                      {isHe ? 'כמה שאלות, פעם אחת, מול הגישה שתבחרי.' : 'A few questions, once, with the approach you choose.'}
+                    </span>
+                  </div>
                 )}
                 {/* משטח הכתיבה · מבנה העיצוב החדש, 28.08: אזור בחירת גישה מעל,
                     אזור כתיבה מתחת, והכתיבה נעולה עד שנבחרה גישה. */}

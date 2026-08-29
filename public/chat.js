@@ -170,6 +170,12 @@ function bwSpeakerLabel(t) {
   return (t && t.youLabel) || (window.selectedLang?.code === 'en' ? 'You' : 'את');
 }
 
+// מפת שם התיאורטיקן למפתח · לשלב בחירת הגישה בשיחת ההיכרות
+const INTAKE_THEORIST_KEYS = {
+  'פרויד':'freud','קליין':'klein','ויניקוט':'winnicott','אוגדן':'ogden',
+  'Freud':'freud','Klein':'klein','Winnicott':'winnicott','Ogden':'ogden'
+};
+
 function intakeSpeaker(t) {
   const isEn = (selectedLang?.code || 'he') === 'en';
   const NAMES = isEn
@@ -189,6 +195,10 @@ const INTAKE_TRANSLATIONS = {
     speaker: 'ויניקוט', youLabel: 'את/ה', confirm: 'המשך', skipLabel: 'דלג',
     warningNotInTherapy: 'Between נועד ללוות — לא להחליף. אם את/ה עובר/ת תקופה קשה, שיחה עם איש מקצוע יכולה לעשות הבדל.',
     stepsPatient: [
+      // שיחת ההיכרות נעשית מול תיאורטיקן שנבחר, ולא מול ברירת מחדל.
+      // הכרעת איה 29.08.2026. השאלה הזו נשאלת לפני שיש קול, ולכן היא
+      // היחידה שנושאת ‎speaker‎ משלה ואינה מדברת בשם אף אחד מהם.
+      { key: 'theorist',  q: 'דרך איזו גישה נכיר?', subtext: 'אפשר להחליף בכל שלב אחר כך.', speaker: 'Between', options: ['פרויד', 'קליין', 'ויניקוט', 'אוגדן'] },
       { key: 'name',      q: 'איך אפשר לפנות אליך?' },
       { key: 'gender',    q: 'באיזו לשון פנייה נוח לך?', options: ['נקבה', 'זכר', 'ניטרלי'] },
       { key: 'inTherapy', q: 'האם את/ה נמצא/ת כרגע בטיפול?', options: ['כן', 'לא', 'הייתי בעבר'], warningOnAnswer: 'לא' },
@@ -221,6 +231,7 @@ const INTAKE_TRANSLATIONS = {
     speaker: 'Winnicott', youLabel: 'You', confirm: 'Continue', skipLabel: 'Skip',
     warningNotInTherapy: 'This space is here to accompany — not replace. If you\'re going through a difficult time, speaking with a professional can make a difference.',
     stepsPatient: [
+      { key: 'theorist',  q: 'Through which approach shall we meet?', subtext: 'You can change it later at any point.', speaker: 'Between', options: ['Freud', 'Klein', 'Winnicott', 'Ogden'] },
       { key: 'name',      q: 'What should we call you?' },
       { key: 'gender',    q: 'How would you like to be addressed?', options: ['She/her', 'He/him', 'They/them'] },
       { key: 'inTherapy', q: 'Are you currently in therapy?', options: ['Yes', 'No', 'I was in the past'], warningOnAnswer: 'No' },
@@ -308,27 +319,35 @@ function showIntakeQuestion() {
     : '';
   if (step.options) {
     if (step.multiSelect) {
+      // כל מה שאינו הדובר עטוף ב-‎.message-body‎ אחד · ‎#chat .message‎ הוא
+      // שורת פלקס (עמודת דובר 74 ואחריה הגוף), ובלי העטיפה חמשת הילדים
+      // נעשים חמש עמודות זו לצד זו: השאלה נדחסת לעשרה תווים והצ'יפים
+      // יורדים באלכסון. רק ‎.message-body‎ נושא ‎flex:1‎.
       msgDiv.innerHTML = `
-        <div class="message-role">${intakeSpeaker(t)}</div>
-        <div class="message-content">${step.q}</div>
-        ${subtextHtml}
-        <div class="intake-options" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;">
-          ${step.options.map(opt => `<div class="theorist-tag" onclick="toggleIntakeOption(this);" style="cursor:pointer;">${opt}</div>`).join('')}
-        </div>
-        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
-          <div onclick="confirmIntakeMulti(this);" class="theorist-tag" style="cursor:pointer;opacity:0.4;pointer-events:none;">${t.confirm}</div>
-          ${skipBtnHtml}
+        <div class="message-role">${step.speaker || intakeSpeaker(t)}</div>
+        <div class="message-body">
+          <div class="message-content">${step.q}</div>
+          ${subtextHtml}
+          <div class="intake-options" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;">
+            ${step.options.map(opt => `<div class="theorist-tag" onclick="toggleIntakeOption(this);" style="cursor:pointer;">${opt}</div>`).join('')}
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
+            <div onclick="confirmIntakeMulti(this);" class="theorist-tag" style="cursor:pointer;opacity:0.4;pointer-events:none;">${t.confirm}</div>
+            ${skipBtnHtml}
+          </div>
         </div>
       `;
     } else {
       msgDiv.innerHTML = `
-        <div class="message-role">${intakeSpeaker(t)}</div>
-        <div class="message-content">${step.q}</div>
-        ${subtextHtml}
-        <div class="intake-options" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;">
-          ${step.options.map(opt => `<div class="theorist-tag" onclick="selectIntakeOption(this,'${opt.replace(/'/g,"\\'")}');" style="cursor:pointer;">${opt}</div>`).join('')}
+        <div class="message-role">${step.speaker || intakeSpeaker(t)}</div>
+        <div class="message-body">
+          <div class="message-content">${step.q}</div>
+          ${subtextHtml}
+          <div class="intake-options" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;">
+            ${step.options.map(opt => `<div class="theorist-tag" onclick="selectIntakeOption(this,'${opt.replace(/'/g,"\\'")}');" style="cursor:pointer;">${opt}</div>`).join('')}
+          </div>
+          ${skipBtnHtml ? `<div style="margin-top:10px;">${skipBtnHtml}</div>` : ''}
         </div>
-        ${skipBtnHtml ? `<div style="margin-top:10px;">${skipBtnHtml}</div>` : ''}
       `;
     }
   } else {
@@ -336,11 +355,13 @@ function showIntakeQuestion() {
       ? `<div style="font-size:13px;color:var(--muted);opacity:0.65;margin-top:10px;">${t.typeHint || (selectedLang?.code === 'en' ? 'Type in the text box below, or' : 'כתוב/י בתיבת הטקסט למטה, או')}</div>`
       : '';
     msgDiv.innerHTML = `
-      <div class="message-role">${intakeSpeaker(t)}</div>
-      <div class="message-content">${step.q}</div>
-      ${subtextHtml}
-      ${typeHintHtml}
-      ${skipBtnHtml ? `<div style="margin-top:4px;">${skipBtnHtml}</div>` : ''}
+      <div class="message-role">${step.speaker || intakeSpeaker(t)}</div>
+      <div class="message-body">
+        <div class="message-content">${step.q}</div>
+        ${subtextHtml}
+        ${typeHintHtml}
+        ${skipBtnHtml ? `<div style="margin-top:4px;">${skipBtnHtml}</div>` : ''}
+      </div>
     `;
   }
   chat.appendChild(msgDiv);
@@ -383,10 +404,20 @@ function submitIntakeAnswer(answer) {
   const steps = getIntakeSteps(t, intakeData.persona);
   const step = steps[intakeStep];
   intakeData[step.key] = answer;
+  // הבחירה קובעת את הקול לכל שאר שיחת ההיכרות · ‎intakeSpeaker‎ קורא
+  // מ-‎activeTheorists‎, ולכן די בהצבה כאן.
+  if (step.key === 'theorist') {
+    const _k = INTAKE_THEORIST_KEYS[answer];
+    if (_k) {
+      try { localStorage.setItem('bw_hold_theorist', _k); } catch (e) { /* noop */ }
+      activeTheorists = [_k];
+      if (window.bwSetActiveTheorist) window.bwSetActiveTheorist(_k);
+    }
+  }
   const chat = document.getElementById('chat');
   const userDiv = document.createElement('div');
   userDiv.className = 'message user';
-  userDiv.innerHTML = `<div class="message-role">${bwSpeakerLabel(t)}</div><div class="message-content">${answer}</div>`;
+  userDiv.innerHTML = `<div class="message-role">${bwSpeakerLabel(t)}</div><div class="message-body"><div class="message-content">${answer}</div></div>`;
   chat.appendChild(userDiv);
   chat.scrollTop = chat.scrollHeight;
   intakeStep++;
@@ -442,7 +473,7 @@ function completeIntake() {
   const chat = document.getElementById('chat');
   const closeDiv = document.createElement('div');
   closeDiv.className = 'message agent';
-  closeDiv.innerHTML = `<div class="message-role">${intakeSpeaker(t)}</div><div class="message-content" style="">${t.closing}</div>`;
+  closeDiv.innerHTML = `<div class="message-role">${step.speaker || intakeSpeaker(t)}</div><div class="message-content" style="">${t.closing}</div>`;
   chat.appendChild(closeDiv);
   chat.scrollTop = chat.scrollHeight;
   setTimeout(enterMainSpace, 2200);
