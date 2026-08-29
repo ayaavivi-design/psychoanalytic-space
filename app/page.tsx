@@ -169,6 +169,13 @@ export default function Home() {
   // הכפתור נקרא כמת ונלחץ שוב. איה דיווחה על זה 29.08.
   const [creatingCase, setCreatingCase] = useState(false);
   const [newCaseError, setNewCaseError] = useState('');
+  // שמירת ההתייעצות · השורה נפתחת בתחילת ההתייעצות עם החומר הפותח, והשמירה
+  // ממלאת אותה בתמליל המלא. לכן ‎PATCH‎ ולא ‎POST‎: שורה אחת להתייעצות, ו"3
+  // התייעצויות" הן שלוש שיחות שאפשר לחזור ולקרוא, ולא שלוש פתיחות.
+  const [consultRowId, setConsultRowId] = useState<string | null>(null);
+  const [savingConsult, setSavingConsult] = useState(false);
+  const [consultSaved, setConsultSaved] = useState(false);
+  const [consultSaveError, setConsultSaveError] = useState('');
   // הרשימה הנפתחת של בורר הגישה · העיצוב החדש, 28.08
   const [selOpen, setSelOpen] = useState(false);
   // תפריט החשבון · נפתח בזרימה מעל הכרטיס ודוחף את הרשימה, ראה globals.css
@@ -410,6 +417,8 @@ export default function Home() {
       // מסך "מה כתבתי" נסגר · בלעדיו הוא נשאר פתוח אחרי שיחה חדשה, מסך
       // הכתיבה נשאר מוסתר, והכפתורים שבתוכו נראים כמתים.
       setPatientView('write');
+      // ההתייעצות נסגרה · השורה הבאה תיפתח בהתייעצות הבאה
+      setConsultRowId(null); setConsultSaved(false); setConsultSaveError('');
       if (holdDraftTimerRef.current) clearTimeout(holdDraftTimerRef.current);
       // חזרה לכתיבה מחזירה את מה שנכתב · שיחה חדשה מנקה
       let restore = '';
@@ -779,7 +788,12 @@ export default function Home() {
         const gh = (window as any).getAuthHeaders;
         const headers = { 'Content-Type': 'application/json', ...(gh ? await gh() : {}) };
         const res = await fetch('/api/consultations', { method: 'POST', headers, body: JSON.stringify({ case_id: selectedCase.id, mode: 'consult', theorists: [key], text: material }) });
-        if (res.ok) { const d = await res.json(); if (typeof d.anonymized_text === 'string') seed = d.anonymized_text; }
+        if (res.ok) {
+          const d = await res.json();
+          if (typeof d.anonymized_text === 'string') seed = d.anonymized_text;
+          setConsultRowId(typeof d.id === 'string' ? d.id : null);
+          setConsultSaved(false); setConsultSaveError('');
+        }
       }
     } catch { /* ignore */ }
     if ((window as any).bwSetActiveTheorist) (window as any).bwSetActiveTheorist(key);
@@ -1176,6 +1190,45 @@ export default function Home() {
       if (_lastHtml.trim()) localStorage.setItem('bw_hold_last', _lastHtml);
       localStorage.removeItem('bw_hold_draft');
     } catch { /* ignore */ }
+  };
+
+  // שמירת ההתייעצות תחת המקרה · התמליל המלא, מאונמז בשרת לפני הכתיבה.
+  const saveConsultation = async () => {
+    if (savingConsult) return;
+    const transcript = (window as any).bwConsultTranscript?.() || '';
+    if (!transcript.trim()) {
+      setConsultSaveError(isHe ? 'אין עדיין שיחה לשמור.' : 'There is no conversation to save yet.');
+      return;
+    }
+    setSavingConsult(true); setConsultSaveError('');
+    try {
+      const gh = (window as any).getAuthHeaders;
+      const headers = { 'Content-Type': 'application/json', ...(gh ? await gh() : {}) };
+      const res = consultRowId
+        ? await fetch('/api/consultations', { method: 'PATCH', headers, body: JSON.stringify({ id: consultRowId, text: transcript }) })
+        : selectedCase
+          ? await fetch('/api/consultations', { method: 'POST', headers, body: JSON.stringify({ case_id: selectedCase.id, mode: 'consult', theorists: hubTheorists.slice(0, 1), text: transcript }) })
+          : null;
+      if (!res) {
+        setConsultSaveError(isHe ? 'אין מקרה פתוח, ולכן אין לאן לשמור.' : 'No case is open, so there is nowhere to save.');
+      } else if (res.ok) {
+        const d = await res.json().catch(() => null);
+        if (!consultRowId && d?.id) setConsultRowId(d.id);
+        setConsultSaved(true);
+        setCasesLoaded(false);   // הספירה בכרטיס מתעדכנת
+        setConsultsLoaded(false);
+      } else if (res.status === 401) {
+        setConsultSaveError(isHe ? 'את לא מחוברת, ולכן אין לאן לשמור.' : 'You are not signed in, so there is nowhere to save.');
+      } else if (res.status === 502) {
+        // fail-safe של האנונימיזציה · טקסט גולמי לעולם אינו נכתב
+        setConsultSaveError(isHe ? 'האנונימיזציה נכשלה, ולכן לא נשמר דבר. אפשר לנסות שוב.' : 'Anonymization failed, so nothing was saved. Try again.');
+      } else {
+        setConsultSaveError(isHe ? 'ההתייעצות לא נשמרה. אפשר לנסות שוב.' : 'The consultation was not saved. Try again.');
+      }
+    } catch {
+      setConsultSaveError(isHe ? 'אין חיבור לשרת. ההתייעצות לא נשמרה.' : 'No connection. The consultation was not saved.');
+    }
+    setSavingConsult(false);
   };
 
   const handleToggleVoice = () => {
@@ -2139,18 +2192,23 @@ export default function Home() {
                             מתי עודכן ודרך איזו גישה. בלי זה הכרטיס אומר שם
                             ותאריך בלבד, ואין ממנו דרך לדעת אם יש למה לחזור. */}
                         <div className="n-m">
+                          {/* הטקסט ראשון והתווית אחרונה · היא נדחפת לקצה הנגדי
+                              דרך ‎margin-inline-start:auto‎. כשהיא הייתה ראשונה
+                              היא נדבקה לטקסט בלי רווח: "3 התייעצויותעודכן". */}
+                          <span>
+                            {c.count
+                              ? <>{isHe ? 'עודכן ' : 'Updated '}{relTime(c.last_at || c.created_at)}
+                                  {c.last_theorist ? (isHe
+                                    ? ` · אחרונה דרך הגישה של ${getHoldTheoristName(c.last_theorist)}`
+                                    : ` · last through ${getHoldTheoristName(c.last_theorist)}'s approach`) : ''}</>
+                              : <>{isHe ? `נפתח ${relTime(c.created_at)} · עוד לא נכתב דבר`
+                                        : `Opened ${relTime(c.created_at)} · nothing written yet`}</>}
+                          </span>
                           {!!c.count && (
                             <span className="n-tag">{isHe
                               ? (c.count === 1 ? '1 התייעצות' : `${c.count} התייעצויות`)
                               : (c.count === 1 ? '1 consultation' : `${c.count} consultations`)}</span>
                           )}
-                          {c.count
-                            ? <>{isHe ? 'עודכן ' : 'Updated '}{relTime(c.last_at || c.created_at)}
-                                {c.last_theorist ? (isHe
-                                  ? ` · אחרונה דרך הגישה של ${getHoldTheoristName(c.last_theorist)}`
-                                  : ` · last through ${getHoldTheoristName(c.last_theorist)}'s approach`) : ''}</>
-                            : <>{isHe ? `נפתח ${relTime(c.created_at)} · עוד לא נכתב דבר`
-                                      : `Opened ${relTime(c.created_at)} · nothing written yet`}</>}
                         </div>
                       </div>
                     ))}
@@ -2584,6 +2642,17 @@ export default function Home() {
               {activePersona === 'therapist' && (
                 <button className="n-btn n-plain n-sm" onClick={openSummary}>{isHe ? 'סיכום התייעצות' : 'Consultation summary'}</button>
               )}
+              {/* שמירת ההתייעצות · עד 29.08.2026 לא הייתה כאן שמירה בכלל: החומר
+                  הפותח נשמר אוטומטית והשיחה עצמה נעלמה. הכפתור ממלא את אותה
+                  שורה בתמליל המלא, ולכן הספירה בכרטיס נשארת נכונה. */}
+              {activePersona === 'therapist' && (
+                <button className={`n-btn n-plain n-sm${savingConsult ? ' n-busy' : ''}`}
+                  aria-busy={savingConsult} onClick={saveConsultation}>
+                  {savingConsult ? (isHe ? 'שומר…' : 'Saving…')
+                    : consultSaved ? (isHe ? 'נשמר ✓' : 'Saved ✓')
+                    : (isHe ? 'שמור למקרה' : 'Save to case')}
+                </button>
+              )}
               {activePersona === 'patient' && (
                 <button className="n-btn n-plain n-sm" id="patient-reflection-btn" style={{ display: 'none' }}
                   onClick={() => (window as any).openPatientReflection?.()}>{isHe ? 'מה לקחתי' : 'What I took'}</button>
@@ -2592,6 +2661,9 @@ export default function Home() {
               <button className="n-btn n-ghost" onClick={() => (window as any).bwExitChatToHome?.({ keepWriting: true })}>{isHe ? 'חזרה לכתיבה' : 'Back to writing'}</button>
               <button className="n-btn n-solid" id="send-btn" onClick={() => (window as any).sendMessage()}>{isHe ? 'שלח' : 'Send'}</button>
             </div>
+            {consultSaveError && (
+              <p className="n-note" role="alert" style={{ color: 'var(--accent-deep)', marginTop: 8 }}>{consultSaveError}</p>
+            )}
             <div className="n-botbar" id="input-disclaimer">
               {isHe
                 ? 'השיחה חיה בדפדפן הזה בלבד ואינה נשמרת בשרת. ה-PDF הוא הדרך היחידה לשמור אותה.'

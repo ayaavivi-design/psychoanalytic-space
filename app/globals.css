@@ -1485,8 +1485,12 @@ h2.n-h2{font-size:22px;font-weight:300;letter-spacing:-.01em;margin:0 0 var(--s4
 .n-card:hover{border-color:var(--p-500)}
 .n-card + .n-card{margin-top:10px}
 .n-card .n-t{font-size:15px;font-weight:600}
-.n-card .n-m{font-size:12px;color:var(--mut);margin-top:3px;display:flex;align-items:baseline;flex-wrap:wrap}
-.n-card .n-tag{float:inline-end;font-size:10.5px;letter-spacing:.14em;font-weight:700;color:var(--p-700)}
+.n-card .n-m{font-size:12px;color:var(--mut);margin-top:3px;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px}
+/* התווית נדחפת לקצה הנגדי · ‎float‎ אינו חל על פריט פלקס, ולכן הכלל
+   ‎float:inline-end‎ שהיה כאן היה מת: התווית נדבקה לטקסט בלי רווח
+   ("3 התייעצויותעודכן"). ‎margin-inline-start:auto‎ עושה את מה שה-float
+   התכוון לו, והתווית עוברת בעץ לסוף השורה. */
+.n-card .n-tag{margin-inline-start:auto;white-space:nowrap;font-size:10.5px;letter-spacing:.14em;font-weight:700;color:var(--p-700)}
 .n-empty{border:1px dashed var(--line);border-radius:var(--r-box);padding:var(--s7) var(--s6);text-align:center}
 .n-empty .n-t{font-size:19px;font-weight:300;color:var(--ink);margin-bottom:9px}
 .n-empty .n-d{font-size:14px;color:var(--mut);line-height:1.8;max-width:44ch;margin:0 auto var(--s5)}

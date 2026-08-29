@@ -246,8 +246,12 @@ h2.h2{font-size:22px;font-weight:300;letter-spacing:-.01em;margin:0 0 var(--s4)}
 .card:hover{border-color:var(--p-500)}
 .card + .card{margin-top:10px}
 .card .t{font-size:15px;font-weight:600}
-.card .m{font-size:12px;color:var(--mut);margin-top:3px;display:flex;align-items:baseline;flex-wrap:wrap}
-.card .tag{float:inline-end;font-size:10.5px;letter-spacing:.14em;font-weight:700;color:var(--p-700)}
+.card .m{font-size:12px;color:var(--mut);margin-top:3px;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px}
+/* התווית נדחפת לקצה הנגדי · ‎float‎ אינו חל על פריט פלקס, ולכן הכלל
+   ‎float:inline-end‎ שהיה כאן היה מת: התווית נדבקה לטקסט בלי רווח
+   ("3 התייעצויותעודכן"). ‎margin-inline-start:auto‎ עושה את מה שה-float
+   התכוון לו, והתווית עוברת בעץ לסוף השורה. */
+.card .tag{margin-inline-start:auto;white-space:nowrap;font-size:10.5px;letter-spacing:.14em;font-weight:700;color:var(--p-700)}
 .empty{border:1px dashed var(--line);border-radius:var(--r-box);padding:var(--s7) var(--s6);text-align:center}
 .empty .t{font-size:19px;font-weight:300;color:var(--ink);margin-bottom:9px}
 .empty .d{font-size:14px;color:var(--mut);line-height:1.8;max-width:44ch;margin:0 auto var(--s5)}
@@ -610,12 +614,12 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
           <div class="card"><button class="more" aria-label="עוד">⋯</button>
             <div class="cardmenu"><button data-act="rename">שינוי שם</button><button data-act="archive">העברה לארכיון</button></div>
             <div class="t" data-goto="write">מקרה ו׳</div>
-            <div class="m"><span class="tag">3 התייעצויות</span>עודכן לפני יומיים · אחרונה דרך הגישה של ויניקוט</div>
+            <div class="m"><span>עודכן לפני יומיים · אחרונה דרך הגישה של ויניקוט</span><span class="tag">3 התייעצויות</span></div>
           </div>
           <div class="card"><button class="more" aria-label="עוד">⋯</button>
             <div class="cardmenu"><button data-act="rename">שינוי שם</button><button data-act="archive">העברה לארכיון</button></div>
             <div class="t" data-goto="write">מקרה ד׳</div>
-            <div class="m"><span class="tag">1 התייעצות</span>עודכן לפני שבוע · אחרונה דרך הגישה של קליין</div>
+            <div class="m"><span>עודכן לפני שבוע · אחרונה דרך הגישה של קליין</span><span class="tag">1 התייעצות</span></div>
           </div>
           <div class="card"><button class="more" aria-label="עוד">⋯</button>
             <div class="cardmenu"><button data-act="rename">שינוי שם</button><button data-act="archive">העברה לארכיון</button></div>
@@ -649,7 +653,7 @@ textarea.inp{height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
           <button class="more" aria-label="עוד">⋯</button>
           <div class="cardmenu"><button data-act="restore">החזרה לרשימה</button></div>
           <div class="t">מקרה ב׳</div>
-          <div class="m"><span class="tag">5 התייעצויות</span>הועבר לארכיון לפני חודש</div>
+          <div class="m"><span>הועבר לארכיון לפני חודש</span><span class="tag">5 התייעצויות</span></div>
         </div>
 
         <div class="botbar">הארכיון אינו מחיקה. מה שכאן נשאר קריא, והוא רק יורד מהרשימה הפעילה.</div>
