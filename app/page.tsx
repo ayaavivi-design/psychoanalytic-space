@@ -1376,7 +1376,10 @@ export default function Home() {
             {/* BW-113 — מחקר הוא מצב עבודה ולא מקרה. הכרעת איה 29.08: הוא ישב
                 בתחתית קבוצת "מקרים" ונקרא כשם של מטופל נוסף ברשימה. הועבר
                 לקבוצה משלו, מעל הרשימה. */}
-            {isLocalhost && activePersona === 'therapist' && (
+            {/* ⛔ הגידור ל-localhost הוסר 29.08.2026 בהכרעת איה. מצב מחקר
+                גלוי עכשיו למטפלת גם בפרודקשן. הוא נשאר כלי של מטפלת בלבד,
+                ומטופלת אינה רואה אותו. */}
+            {activePersona === 'therapist' && (
               <>
                 <div className="sb-section-label">{isHe ? 'מצב עבודה' : 'Mode'}</div>
                 <div id="sb-explore-btn" className={`sb-item${researchPicking || researchOn ? ' active' : ''}`} data-persona="therapist"
