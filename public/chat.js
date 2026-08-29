@@ -5177,9 +5177,8 @@ function applyUITranslation(code) {
   // Hint text
   const hint = document.getElementById('input-hint');
   if (hint && t.hint) hint.textContent = t.hint;
-  // Sidebar items
-  const sbNewChat = document.getElementById('sb-new-chat-label');
-  if (sbNewChat) sbNewChat.textContent = t.newChat || 'New chat';
+  // ‎#sb-new-chat-label‎ בבעלות React · הוא מתחלף לפי הפרסונה ("מקרה חדש"
+  // אצל מטפלת), והכתיבה מכאן דרסה אותו ל"שיחה חדשה" בכל החלפת שפה.
   // Re-sync End Session label (language change may have been called while session is active)
   updateEndSessionBtn();
   const sbRecentLabel = document.querySelector('.sb-recent-text');

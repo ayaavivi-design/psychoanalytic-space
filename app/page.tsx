@@ -1275,9 +1275,17 @@ export default function Home() {
           {/* BW-104 · מתג הפרסונות עבר לבר העליון, כמו בקובץ העיצוב. */}
           <div style={{ padding: '16px 8px 6px', display: 'flex', flexDirection: 'column', gap: 1 }}>
             {/* end-session moved out of sidebar — appears inline at bottom of chat */}
-            <div className="sb-item" data-persona="both" onClick={() => { setResearchPicking(false); setPatientView('write'); (window as any).newChat(); }}>
+            {/* אצל מטפלת יחידת העבודה היא מקרה ולא שיחה, ולכן הפריט הראשון
+                פותח את "מקרה חדש" ולא מנקה שיחה. הכרעת איה 29.08. בקובץ
+                העיצוב הפריט אחיד לשתי הפרסונות, וזו סטייה מודעת ממנו. */}
+            <div className="sb-item" data-persona="both" onClick={() => {
+              if (activePersona === 'therapist') { setResearchPicking(false); setNewCaseLabel(''); setShowNewCase(true); return; }
+              setResearchPicking(false); setPatientView('write'); (window as any).newChat();
+            }}>
               <span className="sb-icon"><PenLine size={15} strokeWidth={1.75} /></span>
-              <span className="sb-label" id="sb-new-chat-label">שיחה חדשה</span>
+              <span className="sb-label" id="sb-new-chat-label">{activePersona === 'therapist'
+                ? (isHe ? 'מקרה חדש' : 'New case')
+                : (isHe ? 'שיחה חדשה' : 'New conversation')}</span>
             </div>
             {/* חיפוש רשת ירד מכאן לתפריט הפרופיל (הכרעת איה, פריט 2) — הוא הגדרה נמשכת, לא פעולה. */}
             {activePersona === 'patient' && <div className="sb-section-label">{isHe ? 'שלי' : 'Mine'}</div>}

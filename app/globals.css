@@ -2205,8 +2205,13 @@ button, input, textarea, select { font-family: inherit; }
 .bw-topbar-btn.on:hover { border-color: var(--accent-deep); color: #fff; }
 /* המותג לבדו בקצה שלו · מתג הפרסונות וההגדרות נדחפים יחד לקצה הנגדי,
    כדי שהמתג לא ייצמד ללוגו ולא יזיז אותו. */
+/* הלוגו דוחף את כל השאר לקצה הנגדי. קודם המרווח האוטומטי ישב על קבוצת
+   הפרסונות, שמגודרת ל-localhost, ולכן בפרודקשן שום דבר לא דחף וההגדרות
+   נמדדו באמצע הבר (939 מתוך 1280) במקום בקצה. עכשיו הדחיפה יוצאת
+   מהלוגו, שקיים תמיד, וההגדרות בקצה בשני המצבים. */
 .bw-topbar { justify-content: flex-start; }
-.bw-topbar-grp { margin-inline-start: auto; }
+.bw-topbar-mark { margin-inline-end: auto; }
+.bw-topbar-grp { margin-inline-start: 0; }
 .bw-topbar-end { margin-inline-start: 0; }
 
 /* ══════════════════════════════════════════════════════════════════════
