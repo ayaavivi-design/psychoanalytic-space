@@ -24,9 +24,14 @@ Return ONLY valid JSON, no prose outside it:
 
 export async function anonymizeText(text: string): Promise<string> {
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  // התקרה נגזרת מאורך הקלט · הפלט הוא הטקסט כולו, ולכן תקרה קבועה של 2000
+  // הספיקה לחומר פותח קצר וחתכה תמליל שלם של התייעצות באמצע. חיתוך פירושו
+  // JSON פגום, כלומר ‎anonymize_failed‎, כלומר "לא נשמר דבר" על שיחה ארוכה
+  // דווקא. תקרה עליונה נשארת, כי מעבר לה צריך פיצול ולא עוד טוקנים.
+  const budget = Math.min(16000, Math.max(2000, Math.ceil(text.length * 1.4)));
   const res = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 2000,
+    max_tokens: budget,
     system: ANONYMIZE_SYSTEM,
     messages: [{ role: 'user', content: `אנא אנונם את הטקסט הבא:\n\n${text}` }],
   });

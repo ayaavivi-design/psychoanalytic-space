@@ -7812,6 +7812,23 @@ function buildSessionSummaryTranscript() {
   return turns.join('\n\n');
 }
 
+// התמליל המלא לשמירה תחת המקרה · מיוצא כי הכפתור יושב ב-React
+// ו-‎conversationHistory‎ חי כאן בלבד.
+// **התוויות אינן אלה של הסיכום.** ‎buildSessionSummaryTranscript‎ כותב
+// "מטופל" ו"מטפל", כי הוא נכתב לסיכום של פגישה קלינית. בהתייעצות האדם
+// הוא המטפלת והקול הוא התיאורטיקן, ולכן שימוש חוזר בו היה מתייק בארכיון
+// תמליל שבו מה שהמטפלת כתבה מסומן כדברי המטופל.
+window.bwConsultTranscript = function () {
+  if (!Array.isArray(conversationHistory) || conversationHistory.length < 2) return '';
+  var voice = intakeSpeaker() || 'התיאורטיקן';   // שם התיאורטיקן הפעיל, מאותו מקור של התמליל במסך
+  var turns = [];
+  for (var i = 0; i + 1 < conversationHistory.length; i += 2) {
+    turns.push('[תור ' + (Math.floor(i / 2) + 1) + ']\nמטפלת: ' + conversationHistory[i].content +
+               '\n' + voice + ': ' + conversationHistory[i + 1].content);
+  }
+  return turns.join('\n\n');
+};
+
 function openSessionSummary() {
   requireTherapistConsent(() => _openSessionSummary());
 }
