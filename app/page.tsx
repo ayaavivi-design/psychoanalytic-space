@@ -22,6 +22,14 @@ export default function Home() {
   const [userGender, setUserGender] = useState('');
   // המייל בכרטיס החשבון · בבעלות React, ראה ההערה ב-chat.js ליד bw-user-email
   const [userEmail, setUserEmail] = useState('');
+  // ═══ מסך ראשון · לשון פנייה ═══
+  // נפתח פעם אחת, אחרי אימות מוצלח, כשאין עדיין לשון פנייה שמורה. הוא
+  // קיים בגלל דקדוק עברי: הקול פונה בכל משפט, ובלי הערך הוא מנחש. באנגלית
+  // ‎you‎ אינו מגדרי וההוראה בשרת מנוסחת על צורות עבריות, ולכן המסך אינו
+  // מוצג כלל בממשק אנגלי — הכרעת איה 29.08.2026.
+  const [firstRunOpen, setFirstRunOpen] = useState(false);
+  const [firstRunName, setFirstRunName] = useState('');
+  const [firstRunGender, setFirstRunGender] = useState('');
   const gv = (fem: string, masc: string, both: string) =>
     userGender === 'male' ? masc : userGender === 'female' ? fem : both;
   const [showHoldTheoristPicker, setShowHoldTheoristPicker] = useState(false);
@@ -475,6 +483,35 @@ export default function Home() {
     if (now) setUserEmail(now);
     return () => window.removeEventListener('bw-user-email', take);
   }, []);
+
+  // המסך הראשון · אותו אירוע של האימות, כי רק שם ידוע שהכניסה הצליחה.
+  // התנאי הוא היעדר ערך ולא "משתמשת חדשה": מי שנרשמה קודם ומעולם לא
+  // הגדירה לשון פנייה תישאל פעם אחת, וזה בדיוק מה שצריך לקרות.
+  useEffect(() => {
+    if (!mounted) return;
+    const maybeAsk = () => {
+      if (currentLang !== 'he') return;   // אנגלית · המסך אינו מוצג כלל
+      let g = '';
+      try { g = JSON.parse(localStorage.getItem('user_prefs') || '{}').gender || ''; } catch { /* ignore */ }
+      if (!g) setFirstRunOpen(true);
+    };
+    window.addEventListener('bw-user-email', maybeAsk);
+    if ((window as any)._userEmail) maybeAsk();
+    return () => window.removeEventListener('bw-user-email', maybeAsk);
+  }, [mounted, currentLang]);
+
+  const saveFirstRun = () => {
+    if (!firstRunGender) return;
+    try {
+      const prefs = JSON.parse(localStorage.getItem('user_prefs') || '{}');
+      prefs.gender = firstRunGender;
+      const n = firstRunName.trim();
+      if (n) prefs.name = n;
+      localStorage.setItem('user_prefs', JSON.stringify(prefs));
+    } catch { /* private mode · המסך נסגר בכל מקרה, לא נועלים אותה בחוץ */ }
+    setUserGender(firstRunGender);
+    setFirstRunOpen(false);
+  };
   // במה כל תיאורטיקן עוסק · מוצג לצד השם, כי מטופלת אינה מכירה את השמות (פריט 18)
   const THEORIST_DESC: Record<string, string> = isHe
     ? { freud: 'מה שלא נאמר', klein: 'מה שקשה לגעת בו', winnicott: 'המרחב להיות', ogden: 'מה שנוצר בין שנינו' }
@@ -1319,6 +1356,58 @@ export default function Home() {
   return (
     <>
       {/* Auth screen */}
+      {/* ═══ המסך הראשון · לשון פנייה ═══
+          שכבה מעל הכל, כמו מסך הכניסה, ובכרום של מסך: בר עליון, קו, כותרת
+          38/200, ופוטר. אין דילוג בכוונה — בלי הערך הקול מנחש מגדר בשיחה
+          הראשונה, וזו השיחה שקובעת אם היא נשארת.
+          ‎z-index‎ 210 · מעל מסך הכניסה (200), כי הוא נפתח מיד אחריו. */}
+      {mounted && firstRunOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 210, background: 'var(--bg)', overflowY: 'auto' }}>
+          <div className="n-wrap" style={{ maxWidth: 760, margin: '0 auto', padding: '48px 32px 32px' }}>
+            <div className="n-topbar">
+              <span>ברוכה הבאה</span>
+              <span>שלב אחד</span>
+            </div>
+            <div className="n-hr" />
+            <h1 className="n-h">איך לפנות אלייך?</h1>
+            <p className="n-note" style={{ margin: '-8px 0 24px', maxWidth: '56ch' }}>
+              הקול פונה אלייך בכל משפט, ובעברית זה לא פרט. אפשר לשנות בכל רגע בהגדרות.
+            </p>
+
+            <div className="n-fieldrow" style={{ maxWidth: 420 }}>
+              <label htmlFor="fr-name">שם או כינוי · לא חובה</label>
+              <input className="n-inp" id="fr-name" autoComplete="off" value={firstRunName}
+                placeholder="איך שנוח לך שיפנו אלייך"
+                onChange={e => setFirstRunName(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && firstRunGender) saveFirstRun(); }} />
+            </div>
+
+            <div className="n-fieldrow" style={{ maxWidth: 420 }}>
+              <label>לשון פנייה</label>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {([['female', 'נקבה'], ['male', 'זכר'], ['neutral', 'ניטרלי']] as [string, string][]).map(([val, label]) => (
+                  <button key={val} onClick={() => setFirstRunGender(val)}
+                    style={{
+                      flex: 1, height: 44, borderRadius: 'var(--radius-sm)', cursor: 'pointer',
+                      fontFamily: 'var(--font-rubik), sans-serif', fontSize: 14,
+                      border: '1px solid ' + (firstRunGender === val ? 'var(--accent-deep)' : 'var(--border)'),
+                      background: firstRunGender === val ? 'var(--accent-deep)' : 'transparent',
+                      color: firstRunGender === val ? '#fff' : 'var(--text)',
+                      fontWeight: firstRunGender === val ? 600 : 500,
+                    }}>{label}</button>
+                ))}
+              </div>
+            </div>
+
+            <div className="n-actions">
+              <button className="n-btn n-solid" disabled={!firstRunGender} onClick={saveFirstRun}>אפשר להתחיל</button>
+              <span className="n-sp" />
+            </div>
+            <div className="n-botbar">מה שנכתב כאן נשמר על המכשיר שלך. אין כאן שאלות על הטיפול עצמו.</div>
+          </div>
+        </div>
+      )}
+
       <div id="auth-screen" style={{
         position: 'fixed', inset: 0, zIndex: 200, background: 'var(--bg)',
         display: 'flex', alignItems: 'center', justifyContent: 'center'
