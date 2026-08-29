@@ -404,10 +404,17 @@ export default function Home() {
       // הכתיבה נשאר מוסתר, והכפתורים שבתוכו נראים כמתים.
       setPatientView('write');
       if (holdDraftTimerRef.current) clearTimeout(holdDraftTimerRef.current);
-      if (holdTextareaRef.current) holdTextareaRef.current.innerHTML = '';
-      setHoldText('');
+      // חזרה לכתיבה מחזירה את מה שנכתב · שיחה חדשה מנקה
+      let restore = '';
+      const keep = !!(e as CustomEvent)?.detail?.keepWriting;
+      if (keep) { try { restore = localStorage.getItem('bw_hold_last') || ''; } catch { /* ignore */ } }
+      if (holdTextareaRef.current) holdTextareaRef.current.innerHTML = restore;
+      setHoldText(restore ? (holdTextareaRef.current?.innerText?.trim() || '') : '');
       setHoldSaveStatus('');
-      try { localStorage.removeItem('bw_hold_draft'); } catch { /* ignore */ }
+      try {
+        if (restore) { localStorage.setItem('bw_hold_draft', restore); localStorage.removeItem('bw_hold_last'); }
+        else localStorage.removeItem('bw_hold_draft');
+      } catch { /* ignore */ }
     };
     window.addEventListener('bwnewchat', clearWritingSurface);
     return () => window.removeEventListener('bwnewchat', clearWritingSurface);
@@ -650,6 +657,14 @@ export default function Home() {
         // מי שיצרה מקרה בשם חדש נחתה במקרה אחר. עכשיו נכנסים אליו.
         const created = await res.json().catch(() => null);
         if (created?.id) openCase(created as TherapistCase);
+      } else if (res.status === 401) {
+        // 401 הוא המצב השכיח בלוקאל: ‎getAuthHeaders‎ מחזיר אובייקט ריק כשאין
+        // סשן, בשקט, והבקשה יוצאת בלי טוקן. בלוקאל הפרסונה נקבעת ממתג הפיתוח
+        // ולא מהשרת, ולכן רואים את כל ממשק המטפלת גם כשמנותקים. "לא נוצר"
+        // גנרי שלח לחפש באג במקרים, והמצב האמיתי הוא שאין למי לשמור.
+        setNewCaseError(isHe
+          ? 'את לא מחוברת, ולכן אין לאן לשמור. צריך להיכנס מחדש.'
+          : 'You are not signed in, so there is nowhere to save. Please sign in again.');
       } else {
         // כישלון נאמר · קודם המודל נשאר פתוח בלי מילה, וזה נראה ככפתור מת
         setNewCaseError(isHe ? 'המקרה לא נוצר. אפשר לנסות שוב.' : 'The case was not created. Try again.');
@@ -1114,12 +1129,19 @@ export default function Home() {
     if (full) (window as any).saveWriteEntry?.(full, pub);
     (window as any).enterHoldConversation?.(theorist, pub, display);
     window.bwTrack?.('conversation_entered', { theorist });
+    // ‎bw_hold_last‎ שומר עותק אחד בצד, כדי ש"חזרה לכתיבה" תוכל להחזיר את
+    // מה שנכתב. **הקריאה חייבת לקרות לפני הניקוי** — קודם היא ישבה אחריו
+    // וקראה שדה ריק, ולכן ההחזרה לא הייתה לה מה להחזיר.
+    const _lastHtml = holdTextareaRef.current?.innerHTML || '';
     if (holdTextareaRef.current) holdTextareaRef.current.innerHTML = '';
     setHoldText('');
     setHoldSaveStatus('');
     // Clear the working draft — it has now been archived.
     if (holdDraftTimerRef.current) clearTimeout(holdDraftTimerRef.current);
-    try { localStorage.removeItem('bw_hold_draft'); } catch { /* ignore */ }
+    try {
+      if (_lastHtml.trim()) localStorage.setItem('bw_hold_last', _lastHtml);
+      localStorage.removeItem('bw_hold_draft');
+    } catch { /* ignore */ }
   };
 
   const handleToggleVoice = () => {
@@ -1912,6 +1934,26 @@ export default function Home() {
                       contentEditable={!!activeApproach}
                       suppressContentEditableWarning
                       ref={holdTextareaRef}
+                      // הדבקה כטקסט בלבד · השדה הוא contentEditable, ולכן הדבקה
+                      // מוורד או מדף אינטרנט מכניסה את ה-HTML של המקור על הפונט,
+                      // הגודל והצבע שלו, והשורה המודבקת נראית זרה לשאר הכתיבה.
+                      // ‎insertText‎ שומר על היסטוריית הביטול ויורה ‎input‎, ולכן
+                      // שמירת הטיוטה שלמטה ממשיכה לעבוד בלי שינוי.
+                      onPaste={e => {
+                        e.preventDefault();
+                        const text = e.clipboardData?.getData('text/plain') ?? '';
+                        if (!text) return;
+                        if (!document.execCommand('insertText', false, text)) {
+                          // נתיב חלופי לדפדפן שאינו תומך · בלי ביטול נייטיב
+                          const sel = window.getSelection();
+                          if (!sel?.rangeCount) return;
+                          const range = sel.getRangeAt(0);
+                          range.deleteContents();
+                          range.insertNode(document.createTextNode(text));
+                          sel.collapseToEnd();
+                          e.currentTarget.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
+                      }}
                       onInput={e => {
                         const el = e.currentTarget as HTMLDivElement;
                         setHoldText(el.innerText?.trim() || '');
@@ -2482,7 +2524,7 @@ export default function Home() {
                   onClick={() => (window as any).openPatientReflection?.()}>{isHe ? 'מה לקחתי' : 'What I took'}</button>
               )}
               <span className="n-sp" />
-              <button className="n-btn n-ghost" onClick={() => (window as any).bwExitChatToHome?.()}>{isHe ? 'חזרה לכתיבה' : 'Back to writing'}</button>
+              <button className="n-btn n-ghost" onClick={() => (window as any).bwExitChatToHome?.({ keepWriting: true })}>{isHe ? 'חזרה לכתיבה' : 'Back to writing'}</button>
               <button className="n-btn n-solid" id="send-btn" onClick={() => (window as any).sendMessage()}>{isHe ? 'שלח' : 'Send'}</button>
             </div>
             <div className="n-botbar" id="input-disclaimer">
