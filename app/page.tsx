@@ -635,13 +635,25 @@ export default function Home() {
       const gh = (window as any).getAuthHeaders;
       const headers = { 'Content-Type': 'application/json', ...(gh ? await gh() : {}) };
       const res = await fetch('/api/cases', { method: 'POST', headers, body: JSON.stringify({ label: l }) });
-      if (res.ok) { setNewCaseLabel(''); setShowNewCase(false); setCasesLoaded(false); }
+      if (res.ok) {
+        setNewCaseLabel('');
+        setShowNewCase(false);
+        setCasesLoaded(false);
+        // הראוט מחזיר את המקרה שנוצר, וקודם התעלמנו ממנו: המודל נסגר,
+        // הרשימה נטענה מחדש, והמסך נשאר על ‎selectedCase‎ הקודם. כלומר
+        // מי שיצרה מקרה בשם חדש נחתה במקרה אחר. עכשיו נכנסים אליו.
+        const created = await res.json().catch(() => null);
+        if (created?.id) openCase(created as TherapistCase);
+      }
     } catch { /* ignore */ }
   };
+  // הטעינה אינה מגודרת על מסך המקרים · הסייד-בר מציג את הרשימה בכל מסך,
+  // וכשהגידור היה על ‎therapistView === 'cases'‎ מקרה חדש לא הופיע בסייד-בר
+  // עד שחוזרים ל"כל המקרים", כי היצירה מעבירה ישר למסך המקרה.
   useEffect(() => {
-    if (activePersona === 'therapist' && therapistView === 'cases' && !casesLoaded) loadCases();
+    if (activePersona === 'therapist' && !casesLoaded) loadCases();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePersona, therapistView, casesLoaded]);
+  }, [activePersona, casesLoaded]);
   const loadConsultations = async (caseId: string) => {
     try {
       const gh = (window as any).getAuthHeaders;
@@ -759,8 +771,10 @@ export default function Home() {
     try {
       const gh = (window as any).getAuthHeaders;
       const headers = { 'Content-Type': 'application/json', ...(gh ? await gh() : {}) };
-      await fetch('/api/cases', { method: 'PATCH', headers, body: JSON.stringify({ id, archived }) });
-    } catch { /* ignore */ }
+      const res = await fetch('/api/cases', { method: 'PATCH', headers, body: JSON.stringify({ id, archived }) });
+      if (!res.ok) { window.alert(isHe ? 'העברה לארכיון לא הושלמה בשרת. נסי שוב.' : 'Archiving did not complete on the server.'); return false; }
+    } catch { window.alert(isHe ? 'העברה לארכיון לא הושלמה בשרת. נסי שוב.' : 'Archiving did not complete on the server.'); return false; }
+    return true;
   };
   const loadArchived = async () => {
     try {
@@ -809,9 +823,12 @@ export default function Home() {
     try {
       const gh = (window as any).getAuthHeaders;
       const headers = gh ? await gh() : {};
-      await fetch(`/api/cases?id=${encodeURIComponent(selectedCase.id)}`, { method: 'DELETE', headers });
+      const res = await fetch(`/api/cases?id=${encodeURIComponent(selectedCase.id)}`, { method: 'DELETE', headers });
+      // בלי הבדיקה הזו מחיקה שנכשלה בשרת נראית כמוצלחת: המקרה נעלם מהמסך
+      // וחוזר בטעינה הבאה. זה בדיוק מה שקרה עם מחיקת כתיבות.
+      if (!res.ok) { window.alert(isHe ? 'המחיקה לא הושלמה בשרת. המקרה עדיין קיים.' : 'The delete did not complete. The case still exists.'); return; }
       localStorage.removeItem(`bw_case_updates_${selectedCase.id}`);
-    } catch { /* ignore */ }
+    } catch { window.alert(isHe ? 'המחיקה לא הושלמה בשרת. המקרה עדיין קיים.' : 'The delete did not complete. The case still exists.'); return; }
     setCasesLoaded(false);
     setTherapistView('cases');
   };
@@ -820,9 +837,10 @@ export default function Home() {
     try {
       const gh = (window as any).getAuthHeaders;
       const headers = gh ? await gh() : {};
-      await fetch(`/api/cases?id=${encodeURIComponent(id)}`, { method: 'DELETE', headers });
+      const res = await fetch(`/api/cases?id=${encodeURIComponent(id)}`, { method: 'DELETE', headers });
+      if (!res.ok) { window.alert(isHe ? 'המחיקה לא הושלמה בשרת. המקרה עדיין קיים.' : 'The delete did not complete. The case still exists.'); return; }
       localStorage.removeItem(`bw_case_updates_${id}`);
-    } catch { /* ignore */ }
+    } catch { window.alert(isHe ? 'המחיקה לא הושלמה בשרת. המקרה עדיין קיים.' : 'The delete did not complete. The case still exists.'); return; }
     setCasesLoaded(false);
   };
   const renameCase = async (id: string, newLabel: string) => {
@@ -831,10 +849,13 @@ export default function Home() {
     try {
       const gh = (window as any).getAuthHeaders;
       const headers = { 'Content-Type': 'application/json', ...(gh ? await gh() : {}) };
-      await fetch('/api/cases', { method: 'PATCH', headers, body: JSON.stringify({ id, label: t }) });
+      const res = await fetch('/api/cases', { method: 'PATCH', headers, body: JSON.stringify({ id, label: t }) });
+      // השם מתעדכן על המסך רק אחרי שהשרת אישר. קודם הוא התעדכן תמיד,
+      // וחזר לשם הישן בטעינה הבאה בלי שאיש יידע למה.
+      if (!res.ok) { window.alert(isHe ? 'שינוי השם לא הושלם בשרת.' : 'The rename did not complete on the server.'); setRenamingCaseId(null); return; }
       setCases(prev => prev.map(c => c.id === id ? { ...c, label: t } : c));
       if (selectedCase?.id === id) setSelectedCase(prev => prev ? { ...prev, label: t } : prev);
-    } catch { /* ignore */ }
+    } catch { window.alert(isHe ? 'שינוי השם לא הושלם בשרת.' : 'The rename did not complete on the server.'); }
     setRenamingCaseId(null);
   };
   const saveDailyEdit = (id: string) => {
@@ -850,9 +871,10 @@ export default function Home() {
     try {
       const gh = (window as any).getAuthHeaders;
       const headers = gh ? await gh() : {};
-      await fetch(`/api/consultations?id=${encodeURIComponent(id)}`, { method: 'DELETE', headers });
+      const res = await fetch(`/api/consultations?id=${encodeURIComponent(id)}`, { method: 'DELETE', headers });
+      if (!res.ok) { window.alert(isHe ? 'המחיקה לא הושלמה בשרת. הרשומה עדיין קיימת.' : 'The delete did not complete. The record still exists.'); return; }
       setConsultations(prev => prev.filter(c => c.id !== id));
-    } catch { /* ignore */ }
+    } catch { window.alert(isHe ? 'המחיקה לא הושלמה בשרת. הרשומה עדיין קיימת.' : 'The delete did not complete. The record still exists.'); }
   };
   // BW-116 — "Consult" = take text to the hub (theorist conversation)
   const consultFromText = (text: string) => {
@@ -1363,9 +1385,17 @@ export default function Home() {
             {/* אנונימיזציה ופידבק — גלויים רק ב-localhost */}
             {/* anonymization removed from UI */}
             {/* פריטי פיתוח · אותו נימוק כמו מחקר, אסור שייקראו כפריט ברשימת המקרים */}
+            {/* הכותרת גדורה ב-‎isLocalhost‎ בדיוק כמו "פידבק משתמש" שתחתיה, ולכן
+                השתיים נופלות יחד. אין להוסיף לה ‎data-persona="admin"‎: היא
+                הייתה נסגרת בעוד הפריט נשאר, וזו הכותרת היתומה בהיפוך. */}
             {isLocalhost && <div className="sb-section-label">{isHe ? 'פיתוח' : 'Dev'}</div>}
+            {/* ‎data-persona="admin"‎ הוסר מ"פידבק משתמש" 29.08.2026 בבקשת איה. כלל
+                BW-112 מסתיר ‎[data-persona="admin"]‎ בשתי הפרסונות, ומכיוון שהסייד־בר
+                תמיד נושא אחת מהן הפריט לא הופיע גם ב-localhost. הגידור היחיד שנשאר
+                הוא ‎isLocalhost‎, ולכן בפרודקשן הוא אינו מרונדר כלל. אין להחזיר את
+                המאפיין בלי להחזיר גם את הכותרת שמעליו לאותו גידור. */}
             {isLocalhost && (
-              <div className="sb-item admin-only" data-persona="admin" onClick={() => (window as any).openUserFeedback()}>
+              <div className="sb-item admin-only" onClick={() => (window as any).openUserFeedback()}>
                 <span className="sb-icon" style={{ fontSize: 16, lineHeight: 1 }}>◈</span>
                 <span className="sb-label" id="sb-feedback-label">פידבק משתמש</span>
                 <span style={{ fontSize: 13, opacity: 0.5, fontWeight: 400, letterSpacing: 0.3, marginRight: 4 }}>{currentLang === 'he' ? '(בטא)' : '(Beta)'}</span>

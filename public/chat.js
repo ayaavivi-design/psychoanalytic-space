@@ -5266,9 +5266,6 @@ function applyUITranslation(code) {
     const stF = document.getElementById('st-female'); if (stF) stF.textContent = t.settingsFemale || 'נקבה';
     const stM = document.getElementById('st-male'); if (stM) stM.textContent = t.settingsMale || 'זכר';
     const stN = document.getElementById('st-neutral'); if (stN) stN.textContent = t.settingsNeutral || 'ניטרלי';
-    const stB = document.getElementById('st-beginner'); if (stB) stB.textContent = t.settingsBeginner || 'מתחיל/ה';
-    const stI = document.getElementById('st-intermediate'); if (stI) stI.textContent = t.settingsIntermediate || 'בינוני/ת';
-    const stA = document.getElementById('st-advanced'); if (stA) stA.textContent = t.settingsAdvanced || 'מנוסה';
     const stPL = document.getElementById('st-purpose-label'); if (stPL) stPL.textContent = t.settingsPurpose || 'מה מביא?';
     const stC = document.getElementById('st-curiosity'); if (stC) stC.textContent = t.settingsCuriosity || 'סקרנות';
     const stSt = document.getElementById('st-study'); if (stSt) stSt.textContent = t.settingsStudy || 'לימודים';
