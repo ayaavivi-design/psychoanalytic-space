@@ -19,6 +19,9 @@ const tokenHex = new Set(
 const APPROVED_EXCEPTIONS = new Set([
   "#5b3a5e", "#7a5080", "#8a6a95", // לבנדר — כלים פנימיים
   "#b0506a", "#c06060", "#c0a0a0", // hover / variant shades
+  // כרום כלי הפיתוח מקובץ העיצוב (‎.proto‎ ו-‎.protonav‎). אינם טוקנים של
+  // המוצר, הם הבר השחור של אב הטיפוס, ומגודרים ל-localhost.
+  "#151515", "#0d0d0d", "#1e1e1e", "#2a2a2a",
 ]);
 
 const allowed = new Set([...tokenHex, ...APPROVED_EXCEPTIONS]);
