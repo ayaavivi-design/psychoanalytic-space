@@ -1410,7 +1410,7 @@ async function openWriteSummary() {
           <div style="color:var(--text);line-height:1.75;">${esc(t.what)}</div>
         </div>`).join('')
       : '';
-    el.innerHTML = `
+    const bodyHtml = `
       ${data.what_came_up ? block(data.what_came_up) : ''}
       ${threadsHtml}
       ${data.core_insight ? `<div style="border-top:1px solid var(--border);padding-top:14px;margin-top:2px;">${block(data.core_insight)}</div>` : ''}
@@ -1418,6 +1418,26 @@ async function openWriteSummary() {
         <div style="font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">${isEn ? 'Bring to session' : 'להביא לפגישה'}</div>
         <div style="color:var(--text);line-height:1.75;">${esc(data.bring_to_session)}</div>
       </div>` : ''}`;
+
+    // ═══ מצב ריק · איה, 30.08.2026 ═══
+    // ארבעת השדות מותנים כל אחד לחוד, ולכן תשובה שכולה null בונה מחרוזת ריקה.
+    // עד כאן זה לא נראה: הפוטר נוסף אחרי הגוף ובלי תנאי, ולכן המסך שנפתח היה
+    // כותרת, קו מפריד וכפתורים — בלי מילה אחת של ניתוח. זה נקרא כתקלה, וזה
+    // המצב שאיה נתקלה בו.
+    // לשגיאה ולחומר טעון כבר היה מסלול משלהם. למקרה שבו הניתוח פשוט לא מצא
+    // מה לומר לא היה, ולכן הוא נפל בין השניים.
+    // הניסוח אינו מתנצל ואינו ממציא ממצא: הפרומפט עצמו קובע ש"פתק דל שנאמר
+    // עליו בכנות שווה יותר מתובנה שהומצאה" (analyze-note-prompt.ts), וזו
+    // בדיוק אותה עמדה על המסך.
+    if (!bodyHtml.trim()) {
+      el.innerHTML = `<div style="color:var(--text);line-height:1.8;">${
+        isEn
+          ? "Nothing here has settled enough to name yet. That is not a failure of the writing — sometimes it is still moving."
+          : 'עוד לא נאמר כאן משהו שהתייצב מספיק כדי לנסח אותו. זה לא כישלון של הכתיבה, לפעמים היא עוד בתנועה.'
+      }</div>`;
+      return;
+    }
+    el.innerHTML = bodyHtml;
 
     // Footer actions
     const modalInner = el.parentElement;
