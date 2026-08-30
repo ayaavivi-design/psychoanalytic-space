@@ -1277,9 +1277,25 @@ export default function Home() {
   // שמירת ההתייעצות תחת המקרה · התמליל המלא, מאונמז בשרת לפני הכתיבה.
   const saveConsultation = async () => {
     if (savingConsult) return;
-    const transcript = (window as any).bwConsultTranscript?.() || '';
+    // ═══ בניית התמליל · מחוץ ל-try הייתה נקודה עיוורת ═══
+    // הקריאה ישבה לפני ה-try, ולכן חריגה בתוכה הפילה את הפונקציה כולה בלי
+    // ✓ ובלי שורה אדומה: המסך פשוט לא הגיב. וההודעה היחידה שכן הופיעה,
+    // "אין עדיין שיחה לשמור", אמרה את אותו דבר על שלושה מצבים שונים —
+    // הפונקציה חסרה, היא נפלה, או שבאמת אין שיחה. שלושתם מופרדים עכשיו,
+    // כי איה מדווחת מהמסך ואני מאבחן מהמילים שהיא מוסרת.
+    let transcript = '';
+    const builder = (window as any).bwConsultTranscript;
+    if (typeof builder !== 'function') {
+      setConsultSaveError(isHe ? 'כלי השמירה לא נטען. רענני את הדף. (transcript-missing)' : 'The save helper did not load. Reload the page. (transcript-missing)');
+      return;
+    }
+    try { transcript = builder() || ''; }
+    catch {
+      setConsultSaveError(isHe ? 'בניית התמליל נכשלה. (transcript-threw)' : 'Building the transcript failed. (transcript-threw)');
+      return;
+    }
     if (!transcript.trim()) {
-      setConsultSaveError(isHe ? 'אין עדיין שיחה לשמור.' : 'There is no conversation to save yet.');
+      setConsultSaveError(isHe ? 'אין עדיין שיחה לשמור. (transcript-empty)' : 'There is no conversation to save yet. (transcript-empty)');
       return;
     }
     setSavingConsult(true); setConsultSaveError('');

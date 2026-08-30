@@ -7912,14 +7912,33 @@ function buildSessionSummaryTranscript() {
 // הוא המטפלת והקול הוא התיאורטיקן, ולכן שימוש חוזר בו היה מתייק בארכיון
 // תמליל שבו מה שהמטפלת כתבה מסומן כדברי המטופל.
 window.bwConsultTranscript = function () {
+  // ═══ תויות לפי role, לא לפי מיקום · איה, 30.08.2026 ═══
+  // הגרסה הקודמת זיווגה באינדקסים: [0] תמיד "מטפלת", [1] תמיד התיאורטיקן,
+  // ובקפיצות של שתיים. זה נכון רק אם ההיסטוריה מתחילה בתור של המטפלת
+  // ומתחלפת בקפדנות, **ויש לפחות מסלול אחד שבו זה לא כך**: פתיחת
+  // התיאורטיקן נדחפת ראשונה כ-assistant בלי שקדם לה user (chat.js:812).
+  // במקרה הזה כל התמליל נשמר עם התוויות הפוכות, כלומר מה שהמטפלת כתבה
+  // מתויק בארכיון כדברי התיאורטיקן. וכשמספר ההודעות אי-זוגי, ההודעה
+  // האחרונה נשמטה בשקט מהתנאי ‎i + 1 < length‎.
+  // התיוג לפי ‎role‎ נכון בכל סדר, ואינו משמיט הודעה.
   if (!Array.isArray(conversationHistory) || conversationHistory.length < 2) return '';
-  var voice = intakeSpeaker() || 'התיאורטיקן';   // שם התיאורטיקן הפעיל, מאותו מקור של התמליל במסך
-  var turns = [];
-  for (var i = 0; i + 1 < conversationHistory.length; i += 2) {
-    turns.push('[תור ' + (Math.floor(i / 2) + 1) + ']\nמטפלת: ' + conversationHistory[i].content +
-               '\n' + voice + ': ' + conversationHistory[i + 1].content);
+  var voice = (typeof intakeSpeaker === 'function' && intakeSpeaker()) || 'התיאורטיקן';
+  var flat = function (c) {
+    if (typeof c === 'string') return c;
+    if (Array.isArray(c)) return c.filter(function (b) { return b && b.type === 'text'; })
+                                  .map(function (b) { return b.text || ''; }).join(' ');
+    return String(c == null ? '' : c);
+  };
+  var lines = [], turn = 0;
+  for (var i = 0; i < conversationHistory.length; i++) {
+    var m = conversationHistory[i];
+    if (!m) continue;
+    var body = flat(m.content).trim();
+    if (!body) continue;
+    if (m.role === 'user') { turn++; lines.push('[תור ' + turn + ']\nמטפלת: ' + body); }
+    else { lines.push((turn === 0 ? '[פתיחה]\n' : '') + voice + ': ' + body); }
   }
-  return turns.join('\n\n');
+  return lines.length ? lines.join('\n\n') : '';
 };
 
 function openSessionSummary() {
