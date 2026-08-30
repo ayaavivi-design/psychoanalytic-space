@@ -1691,10 +1691,22 @@ function bwUpdateModeLabels() {
 
 async function confirmTheoristEntry() {
   const mode = localStorage.getItem('bw_mode') || 'session';
-  // Write mode: skip theorist selection entirely
+  // ═══ מסלול 'write' מנוטרל · איה, 30.08.2026 ═══
+  // showWriteInterface בונה מסך כתיבה משלו, ‎#bw-write-textarea‎, עם
+  // ‎contenteditable="true"‎ קבוע ו**בלי שום נעילה על בחירת גישה** — הוא
+  // נכתב לפני שהיה בורר. ‎getAllWriteContent()‎ אף מעדיף אותו על פני השדה
+  // של React, ולכן כשהוא על הדף הוא זה שמקבל את הכתיבה.
+  //
+  // אין בבסיס הקוד שורה אחת שכותבת ‎bw_mode='write'‎ (הכותבת היחידה כותבת
+  // 'explore', מכפתור localhost). כלומר הערך יכול להגיע רק כשארית ישנה
+  // ב-localStorage — וזה בדיוק פריט 11, המפתח הדביק שאינו מתאפס לעולם.
+  // איה נתקלה בזה: בלוקאל בלבד, במצב מטופלת בלבד, אפשר היה להדביק טקסט
+  // לפני שנבחרה גישה. בפרודקשן לא, כי שם הערך הזה מעולם לא נכתב.
+  //
+  // הערך מנורמל כאן במקום להיבדק, כדי שהשארית תיעלם בכניסה הבאה במקום
+  // לחכות לתקלה הבאה. ‎showWriteInterface‎ נשאר בקובץ ואינו נקרא.
   if (mode === 'write') {
-    showWriteInterface();
-    return;
+    try { localStorage.setItem('bw_mode', 'session'); } catch (e) { /* noop */ }
   }
   // Default is always winnicott (Vera/Elliot frozen — session mode uses theorist cards)
   const defaultKey = 'winnicott';

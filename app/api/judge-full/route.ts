@@ -5,6 +5,7 @@ import { THEORIST_VOICE } from '@/lib/theorist-voices';
 import { JUDGE_SYSTEM_PROMPT, JUDGE_RULES, JUDGE_USER_TEMPLATE } from '@/lib/judge-prompt';
 import { searchKnowledge } from '@/lib/rag';
 import { saveReportToGithub } from '@/lib/github-report';
+import { qaSecretOk, QA_SECRET_HINT } from '@/lib/qa-secret';
 
 // /api/judge-full — Vercel-native cron endpoint
 // מריץ שיחה + שיפוט לכל 8 תיאורטיקנים ב-2 קבוצות מקביליות ושולח דוח
@@ -402,8 +403,8 @@ async function runJudge(theorist: string, APP_URL: string): Promise<JudgeResult>
 
 export async function GET(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get('secret');
-  if (secret !== process.env.QA_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!qaSecretOk(secret)) {
+    return NextResponse.json({ error: 'Unauthorized', hint: QA_SECRET_HINT }, { status: 401 });
   }
 
   const globalStart = Date.now();

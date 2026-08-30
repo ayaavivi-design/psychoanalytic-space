@@ -5,6 +5,7 @@ import { THEORIST_VOICE } from '@/lib/theorist-voices';
 import { searchKnowledge } from '@/lib/rag';
 import { saveReportToGithub } from '@/lib/github-report';
 import { classifyIssues, severityOf } from '@/lib/qa-fixer-map';
+import { qaSecretOk, QA_SECRET_HINT } from '@/lib/qa-secret';
 
 // /api/qa-full — endpoint קל לcron של Vercel
 // מריץ 3 תורות לכל תיאורטיקן במקביל (~10s) ושולח email
@@ -180,8 +181,8 @@ async function runTheorist(theorist: string, APP_URL: string): Promise<{
 
 export async function GET(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get('secret');
-  if (secret !== process.env.QA_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!qaSecretOk(secret)) {
+    return NextResponse.json({ error: 'Unauthorized', hint: QA_SECRET_HINT }, { status: 401 });
   }
 
   const start = Date.now();
