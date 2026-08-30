@@ -17,5 +17,12 @@ export async function GET(req: NextRequest) {
     .filter(Boolean);
 
   const isTherapist = !!email && allow.includes(email);
-  return NextResponse.json({ isTherapist });
+
+  // ‎isAdmin‎ · אותו מייל שכבר משמש כאדמין ב-/api/admin/stats וב-
+  // /api/start-conversation, ולא מקור אמת חדש. הוא נשלח כדי שהממשק יוכל
+  // להציג את מתג הפרסונות בפרודקשן **לחשבון הזה בלבד**, לצורך בדיקות.
+  // ההכרעה נשארת בשרת: המתג משנה בחירה, והבחירה עדיין נחתכת מול רשימת
+  // ההיתר למעלה. מטופלת אמיתית מקבלת ‎false‎ ואינה רואה אותו.
+  const isAdmin = !!email && email === 'ayaavivi@gmail.com';
+  return NextResponse.json({ isTherapist, isAdmin });
 }

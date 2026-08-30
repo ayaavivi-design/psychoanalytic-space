@@ -137,6 +137,8 @@ export default function Home() {
   // Local: driven by the dev tabs below so Aya can preview both interfaces.
   const [devPersona, setDevPersona] = useState<'patient' | 'therapist'>('patient');
   const [prodPersona, setProdPersona] = useState<'patient' | 'therapist'>('patient');
+  // אדמין בפרודקשן · מתג הפרסונות לבדיקות. השרת מחליט, לא הלקוח.
+  const [isAdmin, setIsAdmin] = useState(false);
   // BW-111 — shown when a user chose "therapist" at login but is not on the allowlist.
   const [personaNotice, setPersonaNotice] = useState(false);
   // BW-112 — therapist hub: mode selection + theorist selection (UI state; send-wiring is step 1b).
@@ -312,6 +314,7 @@ export default function Home() {
         const r = await fetch('/api/me', { headers });
         const d = await r.json();
         const allowed = !!d?.isTherapist;
+        setIsAdmin(!!d?.isAdmin);
         // Therapist mode only when the user CHOSE it AND is on the allowlist. Fail-closed to patient.
         const p = (choice === 'therapist' && allowed) ? 'therapist' : 'patient';
         setProdPersona(p);
@@ -1774,16 +1777,34 @@ export default function Home() {
             )}
             {logoFailed && <span className="bw-topbar-wordmark">Between</span>}
           </span>
-          {isLocalhost && (
-            <div className="bw-topbar-grp">
-              {([['patient', isHe ? 'מטופלת' : 'Patient'], ['therapist', isHe ? 'מטפלת' : 'Therapist']] as ['patient' | 'therapist', string][]).map(([key, label]) => (
-                <button key={key} className={`bw-topbar-btn${devPersona === key ? ' on' : ''}`}
-                  onClick={() => { if (key !== devPersona) { (window as any).bwExitChatToHome?.(); setDevPersona(key); } }}>
-                  {label}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* מתג הפרסונות · ‎localhost‎ לכל מי שמריץ מקומית, ובפרודקשן
+              **לחשבון האדמין בלבד**, לפי ‎isAdmin‎ שמגיע מ-/api/me.
+              איה חייבת לבדוק את שני הממשקים על הסביבה החיה, וללא זה
+              הדרך היחידה הייתה לערוך ‎localStorage‎ ביד בכל מעבר.
+              **הגידור לא זז לשום מקום:** בפרודקשן המתג משנה את הבחירה
+              בלבד, והבחירה עדיין נחתכת מול רשימת ההיתר בשרת
+              (‎choice === 'therapist' && allowed‎). מטופלת אמיתית מקבלת
+              ‎isAdmin:false‎ ואינה רואה אותו כלל. */}
+          {(isLocalhost || isAdmin) && (() => {
+            const cur = isLocalhost ? devPersona : prodPersona;
+            const pick = (key: 'patient' | 'therapist') => {
+              if (key === cur) return;
+              (window as any).bwExitChatToHome?.();
+              if (isLocalhost) { setDevPersona(key); return; }
+              // בפרודקשן הבחירה נשמרת, כי היא זו שנחתכת מול רשימת ההיתר
+              try { localStorage.setItem('bw_persona_choice', key); } catch { /* ignore */ }
+              (window as any).__resolvePersona?.();
+            };
+            return (
+              <div className="bw-topbar-grp">
+                {([['patient', isHe ? 'מטופלת' : 'Patient'], ['therapist', isHe ? 'מטפלת' : 'Therapist']] as ['patient' | 'therapist', string][]).map(([key, label]) => (
+                  <button key={key} className={`bw-topbar-btn${cur === key ? ' on' : ''}`} onClick={() => pick(key)}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            );
+          })()}
           <div className="bw-topbar-end">
             <button className="bw-topbar-btn" aria-haspopup="menu" aria-expanded={headerMenuOpen}
               onClick={() => setHeaderMenuOpen(v => !v)}>
