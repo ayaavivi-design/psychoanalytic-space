@@ -61,3 +61,6 @@ public/Gemini_Generated_Image_*.jpeg
 
 # קבצי המקור של הלוגו · נשמרים מקומית, אינם נטענים ואינם מוגשים
 public/Between_logo_*_on_transparent.svg
+
+# עצי עבודה זמניים של קלוד · מקומיים בלבד
+.claude/worktrees/
