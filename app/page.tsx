@@ -942,6 +942,7 @@ export default function Home() {
   }, [activePersona, therapistView, archivedLoaded]);
 
   // BW-116 — daily update actions
+  const [dailySaved, setDailySaved] = useState(false);
   const saveDailyUpdate = () => {
     const t = dailyText.trim();
     if (!t || !selectedCase) return;
@@ -952,7 +953,11 @@ export default function Home() {
     const updated = [entry, ...caseUpdates];
     localStorage.setItem(`bw_case_updates_${selectedCase.id}`, JSON.stringify(updated));
     setCaseUpdates(updated);
+    // השדה מתרוקן, וזה נכון: הפתק עבר לרשימה שמתחת. מה שחסר היה הסימן
+    // שזה קרה, ובלעדיו ריקון נקרא כמחיקה.
     setDailyText('');
+    setDailySaved(true);
+    setTimeout(() => setDailySaved(false), 2200);
     // move the draft analysis onto the saved note, clear the draft
     setNoteAnalysis(prev => {
       const next = { ...prev };
@@ -2540,7 +2545,7 @@ export default function Home() {
                         disabled={!picked || !dailyText.trim() || !selectedCase}
                         onClick={saveDailyUpdate}
                         className="n-btn n-ghost">
-                        {isHe ? 'שמור' : 'Save'}
+                        {dailySaved ? (isHe ? 'נשמר ✓' : 'Saved ✓') : (isHe ? 'שמור' : 'Save')}
                       </button>
                       {!isRoundtable && (
                         <button
@@ -2567,7 +2572,13 @@ export default function Home() {
                     ephemeral promise. The reading/writing code and the localStorage keys are left
                     intact — flip `false` back to `caseUpdates.length > 0` to restore. Existing
                     entries on a device are not deleted, only no longer shown. */}
-                {false && caseUpdates.length > 0 && (
+                {/* מה שנשמר במקרה הזה · הגידור הוסר 30.08.2026 בהכרעת איה.
+                    הכפתור "שמור" הוחזר למסך בהתאמה לקובץ העיצוב, והמקום שבו
+                    התוצאה שלו מוצגת נשאר מגודר מ-23.08. כלומר הכתיבה נשמרה
+                    ל-localStorage, השדה התרוקן, ולא היה בממשק שום מקום שמראה
+                    אותה. איה: "עשיתי שמור ... וזה לא נשמר" — והיא צדקה במה
+                    שראתה גם אם המידע כן נכתב. */}
+                {caseUpdates.length > 0 && (
                   <div style={{ marginBottom: 24 }}>
                     <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{isHe ? 'עדכונים קודמים' : 'Past updates'}</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
