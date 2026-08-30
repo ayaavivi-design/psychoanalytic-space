@@ -406,6 +406,20 @@ export default function Home() {
       // "חזרה לכתיבה" מתוך מחקר מחזירה למסך הכתיבה של המחקר. היעד מגיע
       // מ-chat.js על האירוע עצמו, כי הוא זה שיודע באיזה מצב היינו.
       setResearchPicking((e as CustomEvent | undefined)?.detail?.back === 'research');
+      // ═══ שורת ההקלדה נסגרת בחזרה לכתיבה · איה, 30.08.2026 ═══
+      // איה: "עשיתי חזרה לכתיבה והכפתור להמשיך להתייעצות השתנה לכפתור שלח."
+      // שני הכפתורים אינם אותו כפתור: "המשך לשיחה" הוא הפעולה הראשית של
+      // **מסך הכתיבה**, ו"שלח" הוא הפעולה הראשית של **שורת ההקלדה** שבמסך
+      // השיחה. מה שהיא ראתה הוא ששורת ההקלדה נשארה על מסך הכתיבה.
+      //
+      // ההסתרה נעשית ב-CSS דרך ‎body.bw-selecting .input-area‎, והמחלקה
+      // הוצבה **רק** ב-‎chat.js‎, שקורא לשם כך את ‎persona-therapist‎ מתוך
+      // ‎#sidebar‎ — כלומר מחלקה ש-React מרנדר. זה בדיוק הדפוס של פריט 17:
+      // הצד שאינו הבעלים מסיק מצב מתוך ה-DOM של הבעלים, וכל הפרש בתזמון או
+      // ברינדור מפיל אותו בשקט.
+      // React יודע מי הפרסונה בוודאות, ולכן הוא מציב את המחלקה כאן. השורה
+      // ב-‎chat.js‎ נשארה, והיא עכשיו גיבוי ולא המקור.
+      if (personaRef.current === 'therapist') document.body.classList.add('bw-selecting');
       // "חזרה לכתיבה" היא חזרה, לא התחלה מחדש. אם מאפסים גם את הגישה,
       // הכתיבה חוזרת לשדה נעול עם הכיתוב "בחרי גישה כדי להתחיל לכתוב"
       // מעליה, כלומר היא שם ואי אפשר לגעת בה. זה נקרא כאילו נמחקה.
@@ -534,6 +548,10 @@ export default function Home() {
   const isDev = process.env.NODE_ENV !== 'production';
   // Local preview uses the dev tabs; production follows the login choice.
   const activePersona = isLocalhost ? devPersona : prodPersona;
+  // ‎clearWritingSurface‎ נרשם פעם אחת ב-‎useEffect([])‎, ולכן ‎activePersona‎
+  // שבתוכו קפוא על הרינדור הראשון. ה-ref הוא הדרך לקרוא את הערך העדכני משם.
+  const personaRef = useRef(activePersona);
+  personaRef.current = activePersona;
 
   // רענון השם בכל פתיחה של התפריט
   useEffect(() => {
