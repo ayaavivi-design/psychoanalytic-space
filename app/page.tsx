@@ -463,6 +463,17 @@ export default function Home() {
   }, []);
 
   const isHe = currentLang === 'he';
+
+  // התאריך בשורה העליונה · נחשב אחרי העלייה בלבד, ולא בזמן הרינדור בשרת.
+  // שגיאת React #418 בפרודקשן הייתה זה: השרת של Vercel רץ ב-UTC והדפדפן
+  // בשעון ישראל, שלוש שעות הפרש, ולכן בין חצות ל-03:00 השרת כתב את אתמול
+  // והדפדפן את היום. אותו ‎<span>‎ בשני ערכים הוא אי-התאמת הידרציה, ו-React
+  // זורק את מה שהשרת שלח ומצייר הכל מחדש. אלו בדיוק השעות שבהן איה עובדת.
+  // המחרוזת ריקה ברינדור הראשון, ולכן השרת והדפדפן מסכימים תמיד.
+  const [todayLabel, setTodayLabel] = useState('');
+  useEffect(() => {
+    setTodayLabel(new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' }));
+  }, [isHe]);
   useEffect(() => {
     const take = (e: Event) => setResearchOn(!!(e as CustomEvent).detail);
     window.addEventListener('bw-explore-mode', take);
@@ -1980,7 +1991,7 @@ export default function Home() {
         <div className="n-topbar" id="bw-talk-topbar">
           <span>{isHe ? '\u05e9\u05d9\u05d7\u05d4 \u05e2\u05dd ' : 'A conversation with '}{(activeApproach && THEORIST_LABELS[activeApproach]?.[0]) || (isHe ? '\u05ea\u05d9\u05d0\u05d5\u05e8\u05d8\u05d9\u05e7\u05df' : 'a theorist')}</span>
           {selectedCase && <span className="n-ix">{selectedCase.label}</span>}
-          <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+          <span>{todayLabel}</span>
         </div>
         <div className="n-hr" id="bw-talk-hr" />
         <div id="chat">
@@ -2002,7 +2013,7 @@ export default function Home() {
               <div style={{ width: '100%' }}>
                 <div className="n-topbar">
                   <span>{isHe ? 'מחקר' : 'Research'}</span>
-                  <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+                  <span>{todayLabel}</span>
                 </div>
                 <div className="n-hr" />
                 <h1 className="n-h">{isHe ? 'דרך איזו גישה נחקור?' : 'Through which approach?'}</h1>
@@ -2080,7 +2091,7 @@ export default function Home() {
               <div style={{ width: '100%' }}>
                 <div className="n-topbar">
                   <span>{isHe ? 'מה כתבתי' : 'What I wrote'}</span>
-                  <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+                  <span>{todayLabel}</span>
                 </div>
                 <div className="n-hr" />
                 <h1 className="n-h">{isHe ? 'מה שכבר עלה' : 'What has already come up'}</h1>
@@ -2133,7 +2144,7 @@ export default function Home() {
                 {/* בר עליון וקו שחור · מהעיצוב החדש, 28.08 */}
                 <div className="n-topbar" style={{ width: '100%' }}>
                   <span>{isHe ? 'הפגישה האחרונה' : 'Last session'}</span>
-                  <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+                  <span>{todayLabel}</span>
                 </div>
                 <div className="n-hr" style={{ width: '100%' }}></div>
                 {/* ‎h1‎ ולא ‎p‎ · הכלל בקובץ הוא ‎h1.h‎, בורר שמוגבל לסוג האלמנט, ולכן
@@ -2308,7 +2319,7 @@ export default function Home() {
                 {/* מסך המקרים · מבנה העיצוב החדש, 28.08 */}
                 <div className="n-topbar">
                   <span>{isHe ? 'המקרים שלי' : 'My cases'}</span>
-                  <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+                  <span>{todayLabel}</span>
                 </div>
                 <div className="n-hr" />
                 <h1 className="n-h">{isHe ? 'על מה נעבוד היום?' : 'What are we working on today?'}</h1>
@@ -2384,7 +2395,7 @@ export default function Home() {
                 {/* בר עליון וקו שחור · מהעיצוב החדש, 28.08 */}
                 <div className="n-topbar">
                   <span>{selectedCase?.label}</span>
-                  <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+                  <span>{todayLabel}</span>
                 </div>
                 <div className="n-hr"></div>
                 <h1 className="n-h">{isHe ? 'מה עלה לך מהפגישה?' : 'What came up in the session?'}</h1>
@@ -2595,7 +2606,7 @@ export default function Home() {
               <div className="n-wrap">
                 <div className="n-topbar">
                   <span>{isHe ? 'ארכיון' : 'Archive'}</span>
-                  <span>{new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}</span>
+                  <span>{todayLabel}</span>
                 </div>
                 <div className="n-hr" />
                 <h1 className="n-h">{isHe ? 'מקרים שנסגרו' : 'Closed cases'}</h1>
@@ -2918,7 +2929,7 @@ export default function Home() {
               {summaryData && (<>
                 <p className="n-lead">
                   {selectedCase ? selectedCase.label + ' · ' : ''}
-                  {new Date().toLocaleDateString(isHe ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' })}
+                  {todayLabel}
                   {summaryData.theorist ? ' · ' + (isHe ? 'דרך הגישה של ' : 'through the approach of ') : ''}
                   {summaryData.theorist ? <b>{summaryData.theorist}</b> : null}
                 </p>

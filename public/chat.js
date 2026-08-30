@@ -1758,6 +1758,15 @@ let conversationHistory = [];
 
 // ── Interpretive Memory ───────────────────────────────────────
 const INTERPRET_MEMORY_KEY = 'between_interpret_v1';
+// ⛔ כבוי 30.08.2026 בהכרעת איה. הפיצ'ר היה חי בפרודקשן והגיע למודל, והתנאי
+// שנקבע כשהודלק — לקרוא עשרה סיכומים אמיתיים — לא היה בר-מימוש: הסיכומים
+// נשמרים ב-localStorage בלבד, השרת רושם רק את מספר התווים, ואין שום מסך
+// שמציג אותם. כלומר זה היה הפלט היחיד במערכת שאיש אינו יכול לראות, והיחיד
+// שמדבר על המטופלת אל המודל.
+// ומעבר לכך: שורת "להמשיך" נתנה לתיאורטיקן חוט לחזור אליו לפני שהיא אמרה
+// מילה, כלומר אג'נדה. CORE קובע שהוא מציע התבוננות ואינו מכוון.
+// הכיבוי הוא בדגל אחד, וההחזרה היא החלפתו ל-true. שום קוד לא נמחק.
+const BW_INTERPRET_MEMORY_ENABLED = false;
 
 function loadInterpretiveMemories() {
   try {
@@ -1775,6 +1784,7 @@ function saveInterpretiveMemory(theorist, summary) {
 
 // Fire-and-forget: called before history is cleared. Never blocks UX.
 async function generateInterpretiveMemory(theorist, history) {
+  if (!BW_INTERPRET_MEMORY_ENABLED) return;
   if (!theorist || !history || history.length < 6) return;
   const snapshot = history.slice(-20); // truncate before sending
   fetch('/api/interpret-session', {
@@ -3461,7 +3471,7 @@ function buildUserContext() {
     // Interpretive memory — same gating as regular memories, plus the diagnostic-term gate
     // applied server-side when it was created. Enabled 24.08 (Lia's ruling, Aya's decision).
     let interpret = [];
-    if (mode !== 'explore' && !isTherapist) {
+    if (BW_INTERPRET_MEMORY_ENABLED && mode !== 'explore' && !isTherapist) {
       const activeT = (Array.isArray(activeTheorists) && activeTheorists.length === 1) ? activeTheorists[0] : null;
       const all = (typeof loadInterpretiveMemories === 'function' ? loadInterpretiveMemories() : []) || [];
       interpret = (activeT ? all.filter(m => m.theorist === activeT) : []).slice(-3).map(m => m.summary).filter(Boolean);
@@ -3530,7 +3540,7 @@ function buildSystemPrompt() {
   // Therapist persona: never inject (ephemeral model + prevents cross-case clinical bleed)
   const _isTherapistPersona = document.getElementById('sidebar')?.classList.contains('persona-therapist');
   const interpretMemories = loadInterpretiveMemories();
-  const filteredInterpret = (activeT && !_isTherapistPersona)
+  const filteredInterpret = (BW_INTERPRET_MEMORY_ENABLED && activeT && !_isTherapistPersona)
     ? interpretMemories.filter(m => m.theorist === activeT).slice(-3)
     : [];
   const interpretContext = filteredInterpret.length > 0
@@ -6955,7 +6965,7 @@ function openSettings() {
             </div>
             <button onclick="clearInterpretiveMemory()" id="st-interpret-clear" style="background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:6px;font-family:var(--font-assistant),sans-serif;font-size:13px;cursor:pointer;white-space:nowrap;flex-shrink:0;">מחק</button>
           </div>
-          <p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0;">אחרי כל שיחה נרשמות שתי שורות: מה נגע, ומה כדאי להמשיך ממנו. הן משמשות הקשר בשיחה הבאה, כדי שלא תתחילי מאפס. המידע נשמר בדפדפן שלך בלבד ואנחנו לא שומרים אותו אצלנו.</p>
+          <p id="st-interpret-desc" style="font-size:13px;color:var(--muted);line-height:1.7;margin:0;">אחרי כל שיחה נרשמות שתי שורות: מה נגע, ומה כדאי להמשיך ממנו. הן משמשות הקשר בשיחה הבאה, כדי שלא תתחילי מאפס. המידע נשמר בדפדפן שלך בלבד ואנחנו לא שומרים אותו אצלנו.</p>
         </div>
 
       <div style="display:flex;justify-content:space-between;margin-top:24px;">
@@ -7126,8 +7136,17 @@ function loadSettingsForm() {
   // Therapist persona: hide the whole interpretive-memory section (disabled in this mode)
   const interpretSection = document.getElementById('st-interpret-section');
   if (interpretSection) {
+    // כבוי: הסעיף מוצג רק כשנשאר מידע ישן למחוק
+    const _hasOld = loadInterpretiveMemories().length > 0;
     interpretSection.style.display =
-      document.getElementById('sidebar')?.classList.contains('persona-therapist') ? 'none' : '';
+      (document.getElementById('sidebar')?.classList.contains('persona-therapist')
+       || (!BW_INTERPRET_MEMORY_ENABLED && !_hasOld)) ? 'none' : '';
+    const _desc = document.getElementById('st-interpret-desc');
+    if (_desc && !BW_INTERPRET_MEMORY_ENABLED) {
+      _desc.textContent = (window._lang === 'en')
+        ? 'Turned off. What was saved before stays in your browser until you delete it.'
+        : 'הכתיבה הופסקה. מה שנשמר עד אז נשאר בדפדפן שלך עד שתמחקי אותו.';
+    }
   }
   // Update interpretive memory count
   const interpretCountEl = document.getElementById('st-interpret-count');
