@@ -2,9 +2,21 @@ import { createClient } from '@supabase/supabase-js';
 
 const HF_ENDPOINT = 'https://router.huggingface.co/hf-inference/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/pipeline/feature-extraction';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// מדידה · 31.08.2026
+// searchKnowledgeHybrid נכשל ב-AbortError בכל קריאה ונופל לגיבוי שמצליח, ולכן
+// יש גם תוצאות וגם שגיאה. שלושת החשודים נבדקו ונקיים: HuggingFace מחזיר 200
+// בין 0.22 ל-0.52 שניות, ‎match_knowledge_chunks_hybrid‎ רץ ב-838ms, ושתי
+// פונקציות ה-RPC קיימות. ומעל הכל: התורים לקחו כעשר שניות, כלומר **הקטיעה
+// אינה לוקחת 25 שניות והיא מיידית** — ולכן היא כנראה אינה הטיימר הזה בכלל.
+// אין לי הסבר, ולכן במקום לנחש: הלוג אומר עכשיו כמה זמן חלף, מי קטע, ובאיזה
+// שלב. הריצה הבאה תכריע.
+// ─────────────────────────────────────────────────────────────────────────────
 async function getEmbedding(text: string, attempt = 0): Promise<number[]> {
+  const t0 = Date.now();
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25000); // 25s — מספיק ל-HF cold start
+  let firedByTimer = false;
+  const timeout = setTimeout(() => { firedByTimer = true; controller.abort(); }, 25000);
 
   let response: Response;
   try {
@@ -17,9 +29,15 @@ async function getEmbedding(text: string, attempt = 0): Promise<number[]> {
       body: JSON.stringify({ inputs: text }),
       signal: controller.signal,
     });
+  } catch (e) {
+    const ms = Date.now() - t0;
+    const name = e instanceof Error ? e.name : String(e);
+    console.error(`[RAG:embed] נפל אחרי ${ms}ms · ${name} · הטיימר שלנו: ${firedByTimer ? 'כן' : 'לא'} · ניסיון ${attempt + 1}`);
+    throw e;
   } finally {
     clearTimeout(timeout);
   }
+  console.log(`[RAG:embed] ${Date.now() - t0}ms · ${response.status}`);
 
   // rate limit — retry with backoff
   if (response.status === 429 && attempt < 3) {
@@ -73,7 +91,7 @@ export async function searchKnowledge(
     }
     return data;
   } catch (e) {
-    console.error('RAG search error:', e);
+    console.error(`[RAG:vector] נפל · ${e instanceof Error ? `${e.name}: ${e.message}` : String(e)}`);
     return [];
   }
 }
@@ -115,7 +133,9 @@ export async function searchKnowledgeHybrid(
 
     return data;
   } catch (e) {
-    console.error('RAG hybrid search error:', e);
+    // ‎e.name‎ בלבד, לא האובייקט: DOMException מדפיסה עשרים וחמישה קבועים
+    // בכל שורת לוג ומציפה את הפלט בלי להוסיף מידע.
+    console.error(`[RAG:hybrid] נפל · ${e instanceof Error ? `${e.name}: ${e.message}` : String(e)} · נופל לגיבוי`);
     return searchKnowledge(query, theorist, count);   // fallback
   }
 }
