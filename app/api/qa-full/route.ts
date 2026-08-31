@@ -57,14 +57,25 @@ const SCENARIO_POOL: string[][] = [
 ];
 
 // בחירה לפי יום השנה — כל יום תרחיש אחר, ללא חזרה במשך חודש
-function todayScenario(): string[] {
+// ═══ שלושה תרחישים ולא אחד · 31.08.2026 ═══
+// שתי ריצות באותו ערב על אותו תרחיש נתנו שתי תוצאות הפוכות: פרויד נחת באחת
+// ולא באחרת. כלומר כלל שמחזיק בחלק מהמקרים נמדד כ"עבר" או "נכשל" לפי מזל,
+// ופסק דין בינארי על מדגם של אחד הוא מה שהטעה אותנו.
+// שלושה תרחישים שונים ביום נותנים שלושה מדגמים בלחיצה אחת, והשונות **ביניהם**
+// משמעותית יותר משונות חוזרת על אותו חומר.
+const SCENARIOS_PER_RUN = 3;
+
+function todayScenarios(): string[][] {
   const now = new Date();
   const start = new Date(now.getFullYear(), 0, 0);
   const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86_400_000);
-  return SCENARIO_POOL[dayOfYear % SCENARIO_POOL.length];
+  const out: string[][] = [];
+  for (let k = 0; k < SCENARIOS_PER_RUN; k++) {
+    // קפיצה זרה לאורך המאגר, כדי ששלושת התרחישים לא יהיו שכנים בו
+    out.push(SCENARIO_POOL[(dayOfYear + k * 7) % SCENARIO_POOL.length]);
+  }
+  return out;
 }
-
-const CONVERSATION_TURNS = todayScenario();
 
 const FORBIDDEN_OPENERS = ['יום טוב', 'שלום,', 'Good day', 'אני כאן', 'אני שומע ש', 'מעניין,', 'מעניין.', 'אה,'];
 
@@ -90,7 +101,7 @@ function checkTurn(text: string, turnIndex: number, prevOpener: string | null): 
   return { issues, opener };
 }
 
-async function runTheorist(theorist: string, APP_URL: string): Promise<{
+async function runTheorist(theorist: string, APP_URL: string, CONVERSATION_TURNS: string[], scenarioIdx: number): Promise<{
   theorist: string; name: string; ok: boolean;
   severity: 'pass' | 'warning' | 'fail';
   realFails: string[]; caught: string[]; unknownCodes: string[];
@@ -186,7 +197,7 @@ async function runTheorist(theorist: string, APP_URL: string): Promise<{
       issues: allIssues, totalIssues: allIssues,
       timeMs: Date.now() - start,
       ragChunks: chunks.length,
-      questionLabel: 'בדיקת בוקר — פתיחה קלינית (3 תורות)',
+      questionLabel: `תרחיש ${scenarioIdx + 1}`,
       turns,
     };
   } catch (err) {
@@ -197,7 +208,7 @@ async function runTheorist(theorist: string, APP_URL: string): Promise<{
       realFails: [msg], caught: [], unknownCodes: [],
       issues: [msg], totalIssues: [msg],
       timeMs: Date.now() - start, ragChunks: 0,
-      questionLabel: 'בדיקת בוקר',
+      questionLabel: `תרחיש ${scenarioIdx + 1}`,
       turns,
     };
   }
@@ -214,7 +225,47 @@ export async function GET(req: NextRequest) {
   const host = req.headers.get('host') || 'localhost:3000';
   const APP_URL = host.includes('localhost') ? `http://${host}` : `https://${host}`;
 
-  const results = await Promise.all(THEORISTS.map(t => runTheorist(t, APP_URL)));
+  // ═══ שיעור, לא פסק דין · 31.08.2026 ═══
+  // כל תיאורטיקן רץ על שלושה תרחישים. התיאורטיקנים במקביל, התרחישים בטור,
+  // כדי לא לפתוח שתים-עשרה שיחות בו-זמנית מול המודל.
+  const SCENARIOS = todayScenarios();
+  const perTheorist = await Promise.all(THEORISTS.map(async t => {
+    const runs = [];
+    for (let k = 0; k < SCENARIOS.length; k++) {
+      runs.push(await runTheorist(t, APP_URL, SCENARIOS[k], k));
+    }
+    return runs;
+  }));
+  const runsFlat = perTheorist.flat();
+
+  // איחוד לשורה אחת לכל תיאורטיקן, ובה **שיעור** ולא כן/לא.
+  // ok נקבע לפי כל שלושת התרחישים: כשל באחד מהם הוא כשל, כי כלל שמחזיק
+  // בשניים משלושה אינו כלל. זה בדיוק מה שהריצה הכפולה של הערב הראתה.
+  const results = THEORISTS.map((t, i) => {
+    const rs = perTheorist[i];
+    const clean = rs.filter(r => r.severity === 'pass').length;
+    const merged = {
+      ...rs[0],
+      rate: `${clean}/${rs.length}`,
+      cleanCount: clean,
+      runCount: rs.length,
+      scenarios: rs,
+      realFails: Array.from(new Set(rs.flatMap((r, k) => r.realFails.map(f => `[תרחיש ${k + 1}] ${f}`)))),
+      caught:    Array.from(new Set(rs.flatMap((r, k) => r.caught.map(f => `[תרחיש ${k + 1}] ${f}`)))),
+      unknownCodes: Array.from(new Set(rs.flatMap(r => r.unknownCodes))),
+      issues: rs.flatMap((r, k) => r.issues.map(f => `[תרחיש ${k + 1}] ${f}`)),
+      timeMs: rs.reduce((n, r) => n + r.timeMs, 0),
+      ragChunks: rs[0].ragChunks,
+      turns: rs[0].turns,
+    };
+    return {
+      ...merged,
+      ok: merged.realFails.length === 0,
+      severity: (merged.realFails.length > 0 ? 'fail' : merged.caught.length > 0 ? 'warning' : 'pass') as 'pass' | 'warning' | 'fail',
+      totalIssues: merged.issues,
+    };
+  });
+  void runsFlat;
 
   const passed = results.filter(r => r.ok).length; // ok = אין כשל שהמשתמש רואה
   const allOk = passed === results.length;
@@ -226,6 +277,7 @@ export async function GET(req: NextRequest) {
   const allClean      = results.every(r => r.severity === 'pass');
 
   const sevIcon = (s: string) => (s === 'fail' ? '🔴' : s === 'warning' ? '🟡' : '✅');
+  const rateCell = (r: typeof results[number]) => `${r.cleanCount}/${r.runCount}`;
   // תא דגלים: כשלים שהמשתמש רואה באדום, נתפסים בפרודקשן בכתום
   const flagsCell = (r: typeof results[number]) => {
     const parts = [
@@ -243,6 +295,7 @@ export async function GET(req: NextRequest) {
   const summaryRows = results.map(r => `
     <tr style="border-bottom:1px solid #f0e8e4;">
       <td style="padding:10px 8px;font-family:sans-serif;font-size:14px;">${sevIcon(r.severity)} ${r.name}</td>
+      <td style="padding:10px 8px;font-size:14px;font-weight:600;color:${r.cleanCount === r.runCount ? '#2e7d32' : '#c4607a'};">${rateCell(r)}</td>
       <td style="padding:10px 8px;font-size:13px;color:#888;">${(r.timeMs / 1000).toFixed(0)}s</td>
       <td style="padding:10px 8px;font-size:13px;color:#888;">${r.ragChunks} קטעים</td>
       <td style="padding:10px 8px;font-size:12px;">${flagsCell(r)}</td>
@@ -252,7 +305,7 @@ export async function GET(req: NextRequest) {
     <div style="margin-bottom:24px;border:1px solid #ede4e0;border-radius:8px;overflow:hidden;">
       <div style="background:${r.severity === 'fail' ? '#fff5f5' : r.severity === 'warning' ? '#fffaf0' : '#f0faf4'};padding:10px 16px;">
         <span style="font-size:14px;font-weight:600;">${sevIcon(r.severity)} ${r.name}</span>
-        <span style="font-size:12px;color:#888;margin-right:12px;">${r.turns.length} תורות • ${(r.timeMs / 1000).toFixed(0)}s</span>
+        <span style="font-size:12px;color:#888;margin-right:12px;">${r.turns.length} תורות • ${(r.timeMs / 1000).toFixed(0)}s • תרחיש 1 מתוך ${r.runCount}</span>
       </div>
       <table style="width:100%;border-collapse:collapse;">
         <thead><tr style="background:#faf7f5;">
@@ -294,6 +347,7 @@ export async function GET(req: NextRequest) {
       <table style="width:100%;border-collapse:collapse;margin-bottom:32px;">
         <thead><tr style="background:#faf7f5;">
           <th style="padding:8px;font-size:12px;color:#a89;text-align:right;">תיאורטיקן</th>
+          <th style="padding:8px;font-size:12px;color:#a89;text-align:right;">נקי מתוך</th>
           <th style="padding:8px;font-size:12px;color:#a89;text-align:right;">זמן</th>
           <th style="padding:8px;font-size:12px;color:#a89;text-align:right;">RAG</th>
           <th style="padding:8px;font-size:12px;color:#a89;text-align:right;">דגלים</th>
@@ -314,7 +368,7 @@ export async function GET(req: NextRequest) {
     r.caught.map(issue => `- **${r.name}**: ${issue}`)
   );
   const tableRows = results.map(r =>
-    `| ${r.name} | ${sevIcon(r.severity)} | ${r.ragChunks} | ${r.realFails.join(', ') || '—'} | ${r.caught.join(', ') || '—'} |`
+    `| ${r.name} | ${sevIcon(r.severity)} | **${rateCell(r)}** | ${r.ragChunks} | ${r.realFails.join(', ') || '—'} | ${r.caught.join(', ') || '—'} |`
   ).join('\n');
 
   const qaMarkdown = `# דוח QA — ${date}
@@ -327,8 +381,12 @@ ${realFailCount > 0
   : `🟡 **הכל נתפס בפרודקשן** · ${caughtTotal} תיקונים רצו (חולשת פרומפט = עלות)`}
 
 ## לפי תיאורטיקן
-| תיאורטיקן | תוצאה | RAG | כשל (משתמש רואה) | נתפס בפרודקשן |
-|---|---|---|---|---|
+
+_עמודת **נקי מתוך** היא שיעור ולא פסק דין. כל קול רץ על שלושה תרחישים שונים באותה ריצה._
+_**2/3 אינו "עבר".** כלל שמחזיק בשניים משלושה אינו כלל, וזו בדיוק הסיבה שהעמודה הזו נוספה: ב-31.08 שתי ריצות על אותו תרחיש נתנו תוצאות הפוכות לאותו קול._
+
+| תיאורטיקן | תוצאה | נקי מתוך | RAG | כשל (משתמש רואה) | נתפס בפרודקשן |
+|---|---|---|---|---|---|
 ${tableRows}
 
 ## כשלים שהמשתמש רואה
@@ -344,7 +402,7 @@ ${caughtLines.length ? caughtLines.join('\n') : 'אין תיקונים — הפ�
 _נוסף 31.08.2026. עד כאן הדוח נשא סיכום בלבד, והתמלילים היו רק במייל, ולכן כשקול נכשל לא הייתה דרך לראות **למה** בלי לבקש את המייל. וזה חשוב במיוחד כי AGENTS.md קובע שפריט קול נסגר בריצה חיה: בלי התמליל בריפו אין על מה לסגור._
 _התרחישים סינתטיים ומגיעים מ-SCENARIO POOL. אין כאן חומר של אדם אמיתי._
 
-${results.map(r => `### ${r.name}${r.realFails.length ? ' 🔴' : ''}
+${results.map(r => `### ${r.name}${r.realFails.length ? ' 🔴' : ''} · ${r.cleanCount}/${r.runCount} נקי\n\n_התמליל שלהלן הוא תרחיש 1 מתוך ${r.runCount}._
 
 ${r.turns.map(t => `**[תור ${t.turn}] מטופלת:** ${t.patient}
 
@@ -371,7 +429,10 @@ ${r.turns.map(t => `**[תור ${t.turn}] מטופלת:** ${t.patient}
     passed, total: results.length, ok: allOk,
     realFailCount, warnCount, caughtTotal, allClean,
     timeMs: Date.now() - start,
+    scenariosPerRun: SCENARIOS_PER_RUN,
     results: results.map(r => ({
+      rate: `${r.cleanCount}/${r.runCount}`,
+      perScenario: r.scenarios.map((x, k) => ({ scenario: k + 1, severity: x.severity, issues: x.issues })),
       theorist: r.theorist, name: r.name, ok: r.ok,
       severity: r.severity,
       realFails: r.realFails,
