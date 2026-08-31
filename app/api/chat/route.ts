@@ -501,6 +501,41 @@ The passages you are given, and the notes that shape your voice, are written ABO
 Before sending: scan your response for your own surname. If it appears anywhere except that final reference line — rewrite the sentence in the first person.
 ══════════════════════════════════════`;
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // DECISION_GUARD · הכרעת איה 31.08.2026
+    //
+    // מקור: ביקורת קלינית על תמליל חי של קליין. אחרי חמישה תורים שחקרו מה עומד
+    // מאחורי הדחף לכתוב, המטופלת שאלה "את חושבת שכדאי לכתוב לה?" והקול ענה
+    // "כן". תשובה אחת סגרה את כל מה שנפתח לפניה.
+    //
+    // סריקה של שמונת הקולות ושל השכבות הגלובליות מצאה **אפס** איסורים על מתן
+    // עצה. ‎WHAT YOU ARE NOT‎ של קליין מונה את פרויד, ויניקוט, קוהוט ואנליטיקאי
+    // יחסים, ואינו מונה יועצת. זה אינו כשל של קליין, הוא חור בכל שמונת הקולות.
+    //
+    // **האיסור כאן, הסירוב בבלוק של כל אחד.** איה: "זה כלל רלוונטי לכולם אבל
+    // כל אחד יגיד את הדוגמאות אחרת." שכבה גלובלית עם דוגמה אחת הייתה גורמת
+    // לשמונה קולות לסרב באותן מילים, וזה משטח בדיוק את מה ש-CORE קיים בשבילו:
+    // "נוכחות של תיאורטיקן ספציפי" ולא "AI עם ידע".
+    //
+    // המיקום הוא ליד ‎SELF_REFERENCE_GUARD‎ ומאותה סיבה: הוא נקרא **אחרי** בלוק
+    // הקול, ולכן הוא גובר. סדר ההרכבה קובע (AGENTS.md).
+    // ─────────────────────────────────────────────────────────────────────────
+    const DECISION_GUARD = `
+
+══════════════════════════════════════
+NEVER DECIDE FOR THE PATIENT
+══════════════════════════════════════
+You do not tell her what to do. Not "write to her", not "don't send it", not "wait", not "tell him". If asked directly — "do you think I should?", "what would you do?", "just tell me yes or no" — you do not answer yes or no.
+
+THE ASKING IS THE MATERIAL. Being asked to decide is being asked to carry something. Attend to what the asking is doing, not to the decision.
+
+THIS HOLDS EVEN WHEN THE ANSWER SEEMS OBVIOUS, and even after many exchanges. An answer ends the work that everything before it opened.
+
+NOT the same as refusing to speak. You may say what you see, name what is happening, and be direct about it. What you may not do is choose for her.
+
+HOW YOU DECLINE IS YOURS. Your own block carries the way you do this. Refuse in your voice — never in a neutral, shared formula.
+══════════════════════════════════════`;
+
     // ─── END SESSION CLOSING INSTRUCTION ─────────────────────────────────────
     const END_SESSION_SUFFIX = bw_end_session ? `
 
@@ -561,7 +596,7 @@ LANGUAGE — ABSOLUTE, OVERRIDES EVERYTHING BELOW
     // it must be present on EVERY turn regardless of RAG (UNIVERSAL_SCOPE_INSTRUCTION
     // lives in the dynamic tail and is dropped when RAG succeeds — this block is not).
     const staticSystem = (theorist && THEORIST_VOICE[theorist])
-      ? LANGUAGE_ANCHOR + CONSULT_PREFIX + EXPLORE_PREFIX + THEORIST_VOICE[theorist] + EXPLORE_SUFFIX + CONSULT_SUFFIX + HEBREW_TERMINOLOGY + SELF_REFERENCE_GUARD + MEMORY_TAG_INSTRUCTION + CORE_GUARDRAILS
+      ? LANGUAGE_ANCHOR + CONSULT_PREFIX + EXPLORE_PREFIX + THEORIST_VOICE[theorist] + EXPLORE_SUFFIX + CONSULT_SUFFIX + HEBREW_TERMINOLOGY + SELF_REFERENCE_GUARD + DECISION_GUARD + MEMORY_TAG_INSTRUCTION + CORE_GUARDRAILS
       : '';
     if (!staticSystem) {
       console.warn(`[SECURITY] theorist "${theorist}" not found in THEORIST_VOICE — empty base system`);
