@@ -402,11 +402,13 @@ ${caughtLines.length ? caughtLines.join('\n') : 'אין תיקונים — הפ�
 _נוסף 31.08.2026. עד כאן הדוח נשא סיכום בלבד, והתמלילים היו רק במייל, ולכן כשקול נכשל לא הייתה דרך לראות **למה** בלי לבקש את המייל. וזה חשוב במיוחד כי AGENTS.md קובע שפריט קול נסגר בריצה חיה: בלי התמליל בריפו אין על מה לסגור._
 _התרחישים סינתטיים ומגיעים מ-SCENARIO POOL. אין כאן חומר של אדם אמיתי._
 
-${results.map(r => `### ${r.name}${r.realFails.length ? ' 🔴' : ''} · ${r.cleanCount}/${r.runCount} נקי\n\n_התמליל שלהלן הוא תרחיש 1 מתוך ${r.runCount}._
+${results.map(r => `### ${r.name}${r.realFails.length ? ' 🔴' : ''} · ${r.cleanCount}/${r.runCount} נקי
 
-${r.turns.map(t => `**[תור ${t.turn}] מטופלת:** ${t.patient}
+${r.scenarios.map((sc, k) => `#### תרחיש ${k + 1}${sc.severity === 'pass' ? ' ✅' : ' 🔴'}
 
-**${r.name}:** ${t.therapist}${t.issues.length ? `\n\n> ${t.issues.join(' · ')}` : ''}`).join('\n\n')}`).join('\n\n---\n\n')}
+${sc.turns.map(t => `**[תור ${t.turn}] מטופלת:** ${t.patient}
+
+**${r.name}:** ${t.therapist}${t.issues.length ? `\n\n> ${t.issues.join(' · ')}` : ''}`).join('\n\n')}`).join('\n\n')}`).join('\n\n---\n\n')}
 `;
 
   await saveReportToGithub('qa-reports', `QA-${isoDate}.md`, qaMarkdown);

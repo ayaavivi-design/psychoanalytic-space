@@ -266,6 +266,67 @@ ${hasXorY ? 'במקום "כמו X, או כמו Y?": שאלה אחת פתוחה �
 }
 
 // בדיקה ותיקון של שאלות כפולות — output validation loop
+// ─────────────────────────────────────────────────────────────────────────────
+// enforceLanding · הכרעת איה 31.08.2026
+//
+// למה קיים: הכלל "מהתור השלישי, לפחות תשובה אחת נוחתת בלי סימן שאלה" נכתב
+// בפרומפט של כל שמונת הקולות. הוא מחזיק בחלק מהמקרים. מדידה על שלושה
+// תרחישים באותו ערב: פרויד 3/3, ויניקוט 3/3, **קליין 2/3, אוגדן 2/3**.
+// כלל שמחזיק בשני שלישים אינו כלל, ואי אפשר להגיע לוודאות דרך ניסוח.
+//
+// הצורה זהה ל-‎enforceOneQuestion‎ שכבר עובד כאן מזה חודשים: זיהוי דטרמיניסטי
+// בפלט, ואם יש הפרה — שליחה חוזרת למודל לכתיבה מחדש. הפרומפט מבקש, הפיקסר
+// אוכף.
+//
+// התנאי מצטבר בכוונה, ולכן הוא יורה נדיר: הוא דורש שכל תורות האנליטיקאי עד
+// כה, **וגם** הנוכחי, נגמרו בסימן שאלה, ושכבר היו לפחות שני תורים של המשתמשת.
+// שיחה שנחתה פעם אחת אינה נוגעת בו שוב.
+//
+// ומה שהוא **אינו** עושה: הוא אינו מוחק את השאלה בעצמו. הוא מבקש כתיבה מחדש,
+// כי מחיקה מכנית של המשפט האחרון הופכת תשובה טובה לקטועה.
+async function enforceLanding(
+  anthropic: Anthropic,
+  text: string,
+  system: string,
+  messages: Anthropic.MessageParam[]
+): Promise<string> {
+  const lastChar = (t: string) => t.trim().replace(/["'\u201d\u300f\u300d\s]+$/, '').slice(-1);
+  if (lastChar(text) !== '?') return text;
+
+  const userTurns = messages.filter(m => m.role === 'user').length;
+  if (userTurns < 3) return text;   // "מהתור השלישי"
+
+  const priorAssistant = messages
+    .filter(m => m.role === 'assistant')
+    .map(m => (typeof m.content === 'string' ? m.content : ''))
+    .filter(Boolean);
+  if (priorAssistant.length === 0) return text;
+  const everyPriorAsked = priorAssistant.every(t => lastChar(t) === '?');
+  if (!everyPriorAsked) return text;   // כבר נחת פעם אחת בשיחה הזו
+
+  const fixResponse = await anthropic.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 1200,
+    temperature: 0.6,
+    system,
+    messages: [
+      ...messages,
+      { role: 'assistant', content: text },
+      {
+        role: 'user',
+        content: `עצור. כל תשובה שלך בשיחה הזו נגמרה בסימן שאלה, וגם זו. זו חקירה, לא עבודה.
+כתוב מחדש את התשובה כך שהיא **מסתיימת באמירה** — תצפית אחת שעומדת בפני עצמה, בנקודה.
+אותו תוכן ואותו קול. לא "תצפית ואז שאלה": התו האחרון הוא נקודה.
+אם התגובה המקורית הכילה שורה בפורמט [MEMORY: ...] — שמור אותה כשורה אחרונה בדיוק כפי שהייתה.`,
+      },
+    ],
+  });
+
+  const fixed = fixResponse.content[0].type === 'text' ? fixResponse.content[0].text : text;
+  console.log(`[QA] נחיתה נאכפה: "${lastChar(text)}" → "${lastChar(fixed)}"`);
+  return fixed;
+}
+
 async function enforceOneQuestion(
   anthropic: Anthropic,
   text: string,
@@ -714,10 +775,16 @@ LANGUAGE — ABSOLUTE, OVERRIDES EVERYTHING BELOW
         validatedText = await enforceOneQuestion(anthropic, validatedText, enrichedSystem, messages);
       }
 
-      // 2. מניעת פתיחה חוזרת
+      // 2. אכיפת נחיתה · אחרי "שאלה אחת" ולפני "פתיחה מגוונת", כי הוא עשוי
+      //    לשנות את סוף המשפט ולא את תחילתו, והפתיחה נבדקת אחריו ממילא.
+      if (bw_mode !== 'explore') {
+        validatedText = await enforceLanding(anthropic, validatedText, enrichedSystem, messages);
+      }
+
+      // 3. מניעת פתיחה חוזרת
       validatedText = await enforceVariedOpening(anthropic, validatedText, enrichedSystem, messages);
 
-      // 3. כללים סמנטיים — "אה" opener, X-or-Y alternatives
+      // 4. כללים סמנטיים — "אה" opener, X-or-Y alternatives
       if (bw_mode !== 'explore') {
         validatedText = await enforceSemanticRules(anthropic, validatedText, enrichedSystem, messages, theorist || '');
       }

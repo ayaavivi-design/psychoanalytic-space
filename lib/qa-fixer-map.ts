@@ -14,7 +14,7 @@
 export type ProductionFixer =
   | 'enforceOneQuestion'
   | 'enforceVariedOpening'
-  | 'enforceSemanticRules';
+  | 'enforceSemanticRules' | 'enforceLanding';
 
 export interface QaRule {
   code: string;
@@ -30,6 +30,11 @@ export const QA_RULES: Record<string, QaRule> = {
   'Q-1': { code: 'Q-1', fixer: 'enforceOneQuestion',   label: 'יותר משאלה אחת' },
   'O-7': { code: 'O-7', fixer: 'enforceVariedOpening', label: 'פתיחה חוזרת' },
   'S-1': { code: 'S-1', fixer: null,                   label: 'stage directions' },
+  // 31.08.2026: נוסף enforceLanding ב-chat/route.ts, ובכל זאת Q-3 נשאר null
+  // בכוונה. ה-QA מריץ את השיחה **דרך** נתיב הפרודקשן, כלומר הפיקסרים כבר רצו
+  // לפני שהטקסט נמדד. הפרה ש-QA עדיין רואה אינה "נתפסה", היא **חמקה מהרשת**,
+  // וזה חמור יותר ולא פחות. סימון fixer כאן היה מוריד אותה מאדום לכתום ומסתיר
+  // בדיוק את המקרה שבגללו הפיקסר נכתב.
   'Q-3': { code: 'Q-3', fixer: null,                   label: 'כל התגובות שאלות — אין תצפית' },
   // O = פתיחה אסורה (FORBIDDEN_OPENERS). חלקי: רק "אה" נתפס ב-enforceSemanticRules,
   // שאר הפתיחות ('יום טוב', 'שלום,', 'אני כאן'...) אינן נתפסות. שמרני → FAIL.
