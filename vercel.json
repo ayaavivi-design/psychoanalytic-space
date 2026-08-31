@@ -2,13 +2,13 @@
   "crons": [],
   "functions": {
     "app/api/qa-full/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 300
     },
     "app/api/judge-full/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 300
     },
     "app/api/judge-run/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 300
     }
   }
 }

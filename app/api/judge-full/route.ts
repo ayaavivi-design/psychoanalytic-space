@@ -11,7 +11,7 @@ import { qaSecretOk, QA_SECRET_HINT } from '@/lib/qa-secret';
 // מריץ שיחה + שיפוט לכל 8 תיאורטיקנים ב-2 קבוצות מקביליות ושולח דוח
 // מחליף את הסוכן החיצוני שנחסם ב-403
 
-export const maxDuration = 60;
+export const maxDuration = 300;   // הועלה 31.08.2026 · הריצה חצתה 60ש' והדפדפן קיבל 504 בזמן שהדוח כן נכתב
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 

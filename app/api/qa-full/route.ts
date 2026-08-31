@@ -11,7 +11,7 @@ import { qaSecretOk, QA_SECRET_HINT } from '@/lib/qa-secret';
 // מריץ 3 תורות לכל תיאורטיקן במקביל (~10s) ושולח email
 // אין תלות בסוכן חיצוני, אין בעיית IP
 
-export const maxDuration = 60;
+export const maxDuration = 300;   // הועלה 31.08.2026 · הריצה חצתה 60ש' והדפדפן קיבל 504 בזמן שהדוח כן נכתב
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -144,10 +144,34 @@ async function runTheorist(theorist: string, APP_URL: string): Promise<{
       messages.push({ role: 'assistant', content: text });
     }
 
-    // Q-3: אין ולו משפט אחד (המסתיים ב. או !) בכל השיחה — חקירה טהורה ללא תצפית
-    const fullText = turns.map(t => t.therapist).join(' ');
-    const statementEndings = (fullText.match(/[.!]/g) || []).length;
-    if (statementEndings === 0) allIssues.push('[Q-3] כל התגובות שאלות בלבד — אין תצפית / משפט');
+    // ═══ בדיקות ברמת השיחה · לא ברמת התור ═══
+
+    // Q-3 היה שבור, ותוקן 31.08.2026.
+    // הוא ספר נקודות וסימני קריאה **בכל מקום** בטקסט, ולכן כמעט כל טקסט עבר
+    // אותו: די במשפט אחד באמצע תשובה שנגמרת בשאלה. זו הסיבה שדוחות השיפוט
+    // מצאו "חקירה טהורה" בשלוש ריצות רצופות בזמן ש-QA דיווח נקי.
+    // מה שנבדק עכשיו הוא מה שהכלל באמת דורש: **תור שנוחת**, כלומר שהתו האחרון
+    // בו אינו סימן שאלה. זהה לניסוח של 16b אצל ויניקוט ולמקבילו אצל השלושה.
+    const landings = turns.filter(t => {
+      const end = t.therapist.trim().replace(/["'”』」\s]+$/, '').slice(-1);
+      return end !== '?' && end !== '؟';
+    }).length;
+    if (landings === 0) allIssues.push('[Q-3] אף תור לא נחת — כל תור נגמר בסימן שאלה');
+    // L-1 הוא אותה מדידה בניסוח חיובי, ונרשם רק כשעברה. הוא קיים כדי שהדוח
+    // יאמר גם מה עבד ולא רק מה נכשל, וכדי שנוכל לעקוב אחרי 16b לאורך זמן.
+
+    // A-1 · עצה או הכרעה במקום המטופלת. נגזר מ-DECISION_GUARD שנכנס 31.08.
+    // **מסומן לבדיקה ולא ככשל.** זיהוי מילולי תופס גם ציטוט של המטופלת ומשפט
+    // מותנה, ולכן החלטה אוטומטית כאן הייתה מייצרת רעש. איה קוראת ומכריעה.
+    const ADVICE = [
+      /\bכתבי לה\b/, /\bתכתבי\b/, /\bתשלחי\b/, /\bתגידי לו\b/, /\bתגידי לה\b/,
+      /\bאני ממליץ\b/, /\bאני ממליצה\b/, /\bכדאי ש(את|ך)\b/, /\bעדיף ש(את|ך)\b/,
+      /\bאת צריכה ל/, /\bאתה צריך ל/,
+    ];
+    for (const t of turns) {
+      const hit = ADVICE.find(re => re.test(t.therapist));
+      if (hit) { allIssues.push(`[תור ${t.turn}] A-1: נראה כעצה — ${hit.source}`); break; }
+    }
 
     const cls = classifyIssues(allIssues);
     const severity: 'pass' | 'warning' | 'fail' =
