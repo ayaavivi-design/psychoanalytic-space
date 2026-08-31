@@ -290,7 +290,14 @@ async function enforceLanding(
   system: string,
   messages: Anthropic.MessageParam[]
 ): Promise<string> {
-  const lastChar = (t: string) => t.trim().replace(/["'\u201d\u300f\u300d\s]+$/, '').slice(-1);
+  // שורת ה-[MEMORY: ...] מוסרת לפני המדידה · 31.08.2026
+  // בלעדיה הבדיקה מודדת את הטקסט הגולמי, והתו האחרון בכל תשובה שיש בה שורת
+  // זיכרון הוא "]". כלומר הפיקסר "רואה" שהתשובה נחתה ואינו יורה, בדיוק
+  // בתשובות האלה. הוא היה מושבת בשקט. נמצא בלוג חי: "נחיתה נאכפה: ? → ]".
+  const stripMemory = (t: string) =>
+    t.split('\n').filter(l => !/\[MEMORY/i.test(l)).join('\n');
+  const lastChar = (t: string) =>
+    stripMemory(t).trim().replace(/["'\u201d\u300f\u300d\s]+$/, '').slice(-1);
   if (lastChar(text) !== '?') return text;
 
   const userTurns = messages.filter(m => m.role === 'user').length;
@@ -724,7 +731,7 @@ LANGUAGE — ABSOLUTE, OVERRIDES EVERYTHING BELOW
       if (query) {
         try {
           const chunks = await searchKnowledgeHybrid(query, theorist, 4);
-          console.log(`[RAG] ${theorist} — נמצאו ${chunks.length} קטעים:`, chunks.map(c => `${c.source_title} (${c.source_year}) — דמיון: ${c.similarity?.toFixed(2)}`));
+          console.log(`[RAG] ${theorist} — נמצאו ${chunks.length} קטעים:`, chunks.map(c => `${c.source_title} (${c.source_year}) — ציון: ${c.similarity?.toFixed(3)}`));
           const ragContext = formatChunksForPrompt(chunks, bw_mode !== 'explore');
           if (ragContext) dynamicSystem += ragContext;
           else dynamicSystem += safetyAddition + (bw_mode === 'consult' ? CONSULT_SCOPE_INSTRUCTION : UNIVERSAL_SCOPE_INSTRUCTION);

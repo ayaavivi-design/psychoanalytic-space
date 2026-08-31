@@ -163,8 +163,13 @@ async function runTheorist(theorist: string, APP_URL: string, CONVERSATION_TURNS
     // מצאו "חקירה טהורה" בשלוש ריצות רצופות בזמן ש-QA דיווח נקי.
     // מה שנבדק עכשיו הוא מה שהכלל באמת דורש: **תור שנוחת**, כלומר שהתו האחרון
     // בו אינו סימן שאלה. זהה לניסוח של 16b אצל ויניקוט ולמקבילו אצל השלושה.
+    // שורת ה-[MEMORY: ...] מוסרת לפני המדידה · אותו פגם בדיוק שנמצא ב-
+    // enforceLanding: בלעדיה התו האחרון בכל תשובה שיש בה שורת זיכרון הוא "]",
+    // והבדיקה סופרת אותה כנחיתה. כלומר Q-3 היה מדווח "נחת" על שיחה שכל תור
+    // בה נגמר בשאלה, ובדיוק להפך ממה שהוא נועד לתפוס.
     const landings = turns.filter(t => {
-      const end = t.therapist.trim().replace(/["'”』」\s]+$/, '').slice(-1);
+      const visible = t.therapist.split('\n').filter(l => !/\[MEMORY/i.test(l)).join('\n');
+      const end = visible.trim().replace(/["'”』」\s]+$/, '').slice(-1);
       return end !== '?' && end !== '؟';
     }).length;
     if (landings === 0) allIssues.push('[Q-3] אף תור לא נחת — כל תור נגמר בסימן שאלה');
