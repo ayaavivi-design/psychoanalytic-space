@@ -98,6 +98,15 @@ function checkTurn(text: string, turnIndex: number, prevOpener: string | null): 
   if (text.includes('[') && text.includes(']')) {
     issues.push('S-1: stage directions');
   }
+  // S-2 · צורת לוכסן. נוסף 31.08.2026 אחרי "את/ה נשאר/ת בתוך הבית" בתמליל חי.
+  // האיסור קיים בפרומפט ולא הייתה לו בדיקה. הדפוס דורש אות עברית משני צדי
+  // הלוכסן, כדי לא לתפוס תאריכים, כתובות, או "ו/או" באנגלית.
+  // "ו/או" הוא מילת קישור לגיטימית ולא גידור מגדרי, ולכן הוא יוצא מהדפוס.
+  const slash = text.replace(/ו\/או/g, '').match(/[\u05d0-\u05ea]\/[\u05d0-\u05ea]/);
+  if (slash) {
+    const around = text.slice(Math.max(0, text.indexOf(slash[0]) - 6), text.indexOf(slash[0]) + 8).trim();
+    issues.push(`S-2: צורת לוכסן "${around}"`);
+  }
   return { issues, opener };
 }
 
