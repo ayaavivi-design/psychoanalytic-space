@@ -34,7 +34,6 @@
     "language-lock",
     "no-binary",
     "no-echo-back",
-    "no-self-narration",
     "no-technique",
     "point-back",
     "situation-leak",
