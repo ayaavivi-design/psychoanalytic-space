@@ -336,6 +336,19 @@ ${realFailLines.length ? realFailLines.join('\n') : 'אין — שום בעיה 
 
 ## נתפס בפרודקשן (caught ≠ clean — וגם עולה קריאת תיקון)
 ${caughtLines.length ? caughtLines.join('\n') : 'אין תיקונים — הפלט הגולמי היה נקי ✅'}
+
+---
+
+## התמלילים
+
+_נוסף 31.08.2026. עד כאן הדוח נשא סיכום בלבד, והתמלילים היו רק במייל — ולכן כשקול נכשל לא הייתה דרך לראות **למה** בלי לבקש את המייל. וזה חשוב במיוחד כי `AGENTS.md` קובע שפריט קול נסגר בריצה חיה: בלי התמליל בריפו, אין על מה לסגור._
+_התרחישים סינתטיים ומגיעים מ-`SCENARIO_POOL`. אין כאן חומר של אדם אמיתי._
+
+${results.map(r => `### ${r.name}${r.realFails.length ? ' 🔴' : ''}
+
+${r.turns.map(t => `**[תור ${t.turn}] מטופלת:** ${t.patient}
+
+**${r.name}:** ${t.therapist}${t.issues.length ? `\n\n> ${t.issues.join(' · ')}` : ''}`).join('\n\n')}`).join('\n\n---\n\n')}
 `;
 
   await saveReportToGithub('qa-reports', `QA-${isoDate}.md`, qaMarkdown);
