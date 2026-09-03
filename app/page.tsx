@@ -66,14 +66,6 @@ export default function Home() {
       he: { approach: 'מה שנוצר בין שני האנשים בחדר — לא בתוך האחד ולא בתוך האחר', concepts: 'שלישי אנליטי, רווריה, חלימה משותפת', forWhom: 'מי שרוצה לעבוד עם הדינמיקה בין מטפל למטופל, שפה ותהליך יצירתי' },
       en: { approach: 'What is created between the two people in the room — belonging to neither alone', concepts: 'Analytic third, reverie, co-dreaming', forWhom: 'Those interested in the therapist-patient dynamic, language, and creative process' },
     },
-    vera: {
-      he: { approach: 'נוכחות לפני פרשנות — להיות איתך לפני שעושים משהו עם מה שמביאים', concepts: 'הינכחות, החזקה, שהייה בחשכה, לב שומע', forWhom: 'מי שמעבד משהו מהפגישה האחרונה שעדיין לא שקע' },
-      en: { approach: 'Presence before action — staying with what you carry before making it into meaning', concepts: 'Presencing, holding, staying in the dark, listening heart', forWhom: 'Those processing something from a recent session that has not yet settled' },
-    },
-    elliot: {
-      he: { approach: 'שהייה במה שאין לו עדיין מילים — ללא פרשנות, ללא הסבר', concepts: 'מצב being, מצב doing, החזקה, הימנעות כשפה', forWhom: 'מי שעדיין בתוך הפגישה ולא מוכן לעשות ממנה סיפור' },
-      en: { approach: 'Staying in what has no words yet — no interpretation, no rush toward meaning', concepts: 'Being state, doing state, holding without direction', forWhom: 'Those still inside something from the session, not ready to make it into a story' },
-    },
   };
   const CARD_LABELS: Record<string, { approach: string; concepts: string; forWhom: string }> = {
     he: { approach: 'גישה', concepts: 'מושגים', forWhom: 'מתאים ל' },
@@ -84,8 +76,6 @@ export default function Home() {
     klein:    { he: 'קליין',   en: 'Klein'    },
     winnicott:{ he: 'ויניקוט', en: 'Winnicott'},
     ogden:    { he: 'אוגדן',   en: 'Ogden'    },
-    vera:     { he: 'ורה',     en: 'Vera'     },
-    elliot:   { he: 'אליוט',   en: 'Elliot'   },
   };
   const SESSION_TIP_I18N: Record<string, { title: string; text: string }> = {
     he: { title: 'סשן', text: 'התיאורטיקן הנבחר חושב איתך בין הפגישות — לעבד מה שעלה ולמצוא מה להביא לפגישה הבאה.' },
