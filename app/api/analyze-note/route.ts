@@ -5,6 +5,7 @@ import { THEORIST_VOICE } from '@/lib/theorist-voices';
 import { searchKnowledgeHybrid, formatChunksForPrompt } from '@/lib/rag';
 import { ANALYZE_SYSTEM_PROMPT, ANALYZE_USER_TEMPLATE } from '@/lib/analyze-note-prompt';
 import { enforceClosureContract } from '@/lib/closure-contract';
+import { checkAndStartTrial } from '@/lib/trial';
 
 // BW-130 — Eitan's independent QA (eval-reports/eitan-analyze-note-merged-qa-independent-2026-07-09.md)
 // found that on thin material the model occasionally (1/8 runs) opens the held-path prose with a
@@ -38,6 +39,12 @@ function stripMetaPreamble(text: string): string {
 export async function POST(req: NextRequest) {
   const auth = await requireAuth(req);
   if (auth.errorResponse) return auth.errorResponse;
+
+  // ─── שער נסיון · 06.09.2026 ───────────────────────────────────────────────
+  const gate = await checkAndStartTrial(auth.user.id);
+  if (!gate.allowed) {
+    return NextResponse.json({ error: 'trial_expired', trialEndsAt: gate.trialEndsAt }, { status: 402 });
+  }
 
   const body = await req.json();
   const { text, mode, gender, theorist } = body;

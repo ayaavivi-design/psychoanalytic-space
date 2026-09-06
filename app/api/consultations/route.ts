@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { anonymizeText } from '@/lib/anonymize';
+import { checkAndStartTrial } from '@/lib/trial';
 
 // BW-112 — consultations under a case. Anonymize-at-intake (enforced). Owner-scoped.
 // POST /api/consultations  body: { case_id, mode, theorists[], text }  → anonymize → store
@@ -28,6 +29,12 @@ async function authUser(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const { user, supabase } = await authUser(req);
   if (!user || !supabase) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  // ─── שער נסיון · 06.09.2026 ─── חל גם על ממשק המטפלים, אותו פלואו ──────────
+  const gate = await checkAndStartTrial(user.id);
+  if (!gate.allowed) {
+    return NextResponse.json({ error: 'trial_expired', trialEndsAt: gate.trialEndsAt }, { status: 402 });
+  }
 
   const body = await req.json().catch(() => ({}));
   const case_id = typeof body.case_id === 'string' ? body.case_id : '';
@@ -70,6 +77,12 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const { user, supabase } = await authUser(req);
   if (!user || !supabase) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  // ─── שער נסיון · 06.09.2026 ─── עריכה קוראת ל-anonymizeText, זו קריאת AI לכל דבר ──
+  const gate = await checkAndStartTrial(user.id);
+  if (!gate.allowed) {
+    return NextResponse.json({ error: 'trial_expired', trialEndsAt: gate.trialEndsAt }, { status: 402 });
+  }
 
   const body = await req.json().catch(() => ({}));
   const id = typeof body.id === 'string' ? body.id : '';

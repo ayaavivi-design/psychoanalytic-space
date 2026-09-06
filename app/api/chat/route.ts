@@ -4,6 +4,7 @@ import { searchKnowledgeHybrid, formatChunksForPrompt } from '@/lib/rag';
 import { paraphraseForRetrieval } from '@/lib/query-paraphrase';
 import { requireAuth } from '@/lib/auth';
 import { isFirstTurn, recordConversationStart } from '@/lib/usage';
+import { checkAndStartTrial } from '@/lib/trial';
 import { buildUserContextBlock } from '@/lib/user-context';
 import { THEORIST_VOICE } from '@/lib/theorist-voices';
 import { buildStaticSystem, buildEndSessionSuffix, CONSULT_SCOPE_INSTRUCTION, UNIVERSAL_SCOPE_INSTRUCTION } from '@/lib/system-prompt';
@@ -140,6 +141,14 @@ export async function POST(req: NextRequest) {
       authedUserId = auth.user.id;  // kept for usage recording below
     }
     // ─────────────────────────────────────────────────────────────────────────
+
+    // ─── שער נסיון · 06.09.2026 ─── לא חל על QA פנימי, שאינו משתמשת אמיתית ──
+    if (authedUserId) {
+      const gate = await checkAndStartTrial(authedUserId);
+      if (!gate.allowed) {
+        return NextResponse.json({ error: 'trial_expired', trialEndsAt: gate.trialEndsAt }, { status: 402 });
+      }
+    }
 
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const body = await req.json();

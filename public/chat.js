@@ -1,3 +1,25 @@
+// ── שער נסיון · 06.09.2026 ──────────────────────────────────────
+// עוטף את fetch פעם אחת, במקום לגעת בעשרות מוקדי קריאה ל-/api/chat,
+// /api/analyze-note ו-/api/consultations. תגובת 402 עם error:'trial_expired'
+// משדרת אירוע יחיד ל-React (בעליו של מסך החסימה, לפי כלל הבעלות ב-AGENTS.md).
+// כל קוד הקריאה הקיים ממשיך לקבל את אותה תגובה ולטפל בה כרגיל — זה תוסף,
+// לא מחליף התנהגות.
+(function () {
+  const origFetch = window.fetch.bind(window);
+  window.fetch = async function (...args) {
+    const res = await origFetch(...args);
+    if (res.status === 402) {
+      try {
+        const body = await res.clone().json();
+        if (body && body.error === 'trial_expired') {
+          window.dispatchEvent(new CustomEvent('bw-trial-expired', { detail: { trialEndsAt: body.trialEndsAt || null } }));
+        }
+      } catch (e) { /* לא JSON, או גוף ריק — לא מסלול הנסיון */ }
+    }
+    return res;
+  };
+})();
+
 // ── Supabase Auth ─────────────────────────────────────────────
 const SUPABASE_URL = 'https://zyumcusveksvzihgvjrj.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_ecq0e7Rpk57_iYPa0sp3ew_9DW9zHt5';

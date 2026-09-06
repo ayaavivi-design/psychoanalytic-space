@@ -239,6 +239,19 @@ export default function Home() {
   const [contactMessage, setContactMessage] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [contactState, setContactState] = useState<'' | 'sending' | 'sent' | 'error'>('');
+  // הפופ-אפ עצמו זהה למודל צרי קשר — רק הכותרת והנושא המוצע משתנים.
+  // contactContext מחזיר את שניהם לברירת המחדל בסגירה, כדי שפתיחת "צרי קשר"
+  // הרגילה אחר כך לא תיפול בטעות לכותרת של שער הנסיון.
+  const [contactContext, setContactContext] = useState<'general' | 'trial'>('general');
+  // שער נסיון · 06.09.2026. chat.js עוטף fetch ומשדר את האירוע הזה על 402
+  // עם error:'trial_expired' — לא נוגע ב-DOM ישירות, לפי כלל הבעלות ב-AGENTS.md.
+  const [trialBlocked, setTrialBlocked] = useState(false);
+  const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
+  useEffect(() => {
+    const onExpired = (e: any) => { setTrialBlocked(true); setTrialEndsAt(e?.detail?.trialEndsAt ?? null); };
+    window.addEventListener('bw-trial-expired', onExpired);
+    return () => window.removeEventListener('bw-trial-expired', onExpired);
+  }, []);
   const [selectedCase, setSelectedCase] = useState<TherapistCase | null>(null);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [consultsLoaded, setConsultsLoaded] = useState(false);
@@ -3022,14 +3035,41 @@ export default function Home() {
           </div>
         )}
 
+        {/* ═══ מסך חסימה: שבוע הנסיון נגמר ═══ 06.09.2026
+            React הוא הבעלים היחיד — chat.js רק משדר אירוע, לא כותב ל-DOM.
+            z-index 210: מעל שער הטיפול (190) ומסך הכניסה (200), מתחת ל-.n-ovl
+            (300) כדי שמודל "צרי קשר" הפתוח מכאן ייפתח מעליו כרגיל. */}
+        {trialBlocked && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 210, background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ textAlign: 'center', maxWidth: 400, width: '90%', padding: '0 20px' }}>
+              <h2 style={{ fontFamily: 'var(--font-assistant), sans-serif', fontSize: 28, fontWeight: 300, color: 'var(--accent)', marginBottom: 28 }}>Between</h2>
+              <p style={{ fontSize: 16, color: 'var(--text)', lineHeight: 1.8, marginBottom: 6 }}>
+                {isHe ? 'שבוע הנסיון שלך הסתיים.' : 'Your trial week has ended.'}
+              </p>
+              <p style={{ fontSize: 16, color: 'var(--muted)', lineHeight: 1.8, marginBottom: 32 }}>
+                {isHe ? 'לבקשת המשך גישה, אפשר לפנות אלינו כאן.' : 'To request continued access, reach out to us here.'}
+              </p>
+              <button className="n-btn n-solid" onClick={() => {
+                setContactContext('trial');
+                setContactSubject(isHe ? 'בקשה לרכישת זמן נוסף בממשק' : 'Request to purchase more time in the interface');
+                setContactOpen(true);
+              }}>{isHe ? 'לבקש זמן נוסף' : 'Request more time'}</button>
+            </div>
+          </div>
+        )}
+
         {/* ═══ מודל: צרי קשר ═══
             השדות והמצבים נלקחו מ-/api/support ולא הומצאו. */}
         {contactOpen && (
-          <div className="n-ovl n-open" onClick={e => { if (e.target === e.currentTarget) setContactOpen(false); }}>
+          <div className="n-ovl n-open" onClick={e => { if (e.target === e.currentTarget) { setContactOpen(false); setContactContext('general'); } }}>
             <div className="n-modal">
               {contactState !== 'sent' ? (<>
-                <h3>{isHe ? 'צרי קשר' : 'Contact us'}</h3>
-                <p className="n-lead">{isHe ? 'נשמח לשמוע. נחזור אלייך בהקדם, לכתובת שמופיעה למטה.' : "We'd love to hear from you. We'll get back to you at the address below."}</p>
+                <h3>{contactContext === 'trial'
+                  ? (isHe ? 'בקשה לזמן נוסף בממשק' : 'Request more time')
+                  : (isHe ? 'צרי קשר' : 'Contact us')}</h3>
+                <p className="n-lead">{contactContext === 'trial'
+                  ? (isHe ? 'ספרי לנו קצת, ונחזור אלייך לכתובת שמופיעה למטה.' : "Tell us a bit, and we'll get back to you at the address below.")
+                  : (isHe ? 'נשמח לשמוע. נחזור אלייך בהקדם, לכתובת שמופיעה למטה.' : "We'd love to hear from you. We'll get back to you at the address below.")}</p>
                 <div className="n-fieldrow">
                   <label htmlFor="c-subj">{isHe ? 'נושא' : 'Subject'}</label>
                   <input className="n-inp" id="c-subj" value={contactSubject} onChange={e => setContactSubject(e.target.value)}
@@ -3052,14 +3092,14 @@ export default function Home() {
                   <button className="n-btn n-solid" disabled={!contactSubject.trim() || !contactMessage.trim() || contactState === 'sending'} onClick={sendContact}>
                     {contactState === 'sending' ? (isHe ? 'שולח…' : 'Sending…') : (isHe ? 'שליחה' : 'Send')}
                   </button>
-                  <button className="n-btn n-ghost" onClick={() => setContactOpen(false)}>{isHe ? 'ביטול' : 'Cancel'}</button>
+                  <button className="n-btn n-ghost" onClick={() => { setContactOpen(false); setContactContext('general'); }}>{isHe ? 'ביטול' : 'Cancel'}</button>
                 </div>
               </>) : (<>
                 <div className="n-donemark">✓</div>
                 <h3>{isHe ? 'ההודעה נשלחה' : 'Message sent'}</h3>
                 <p className="n-lead">{isHe ? `נחזור אלייך לכתובת ${contactEmail}. אין צורך לעשות דבר נוסף.` : `We'll get back to you at ${contactEmail}. Nothing else is needed.`}</p>
                 <div className="n-foot">
-                  <button className="n-btn n-ghost" onClick={() => { setContactOpen(false); setContactState(''); setContactSubject(''); setContactMessage(''); }}>{isHe ? 'סגירה' : 'Close'}</button>
+                  <button className="n-btn n-ghost" onClick={() => { setContactOpen(false); setContactContext('general'); setContactState(''); setContactSubject(''); setContactMessage(''); }}>{isHe ? 'סגירה' : 'Close'}</button>
                 </div>
               </>)}
             </div>
