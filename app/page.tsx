@@ -100,7 +100,7 @@ export default function Home() {
         { label: 'שיחות', text: 'מעובדות דרך ממשק ה-API של אנתרופיק בלבד. אינן נשמרות על ידינו, ואינן משמשות לאימון מודלים.' },
         { label: 'זיכרון', text: 'נשמר באופן מקומי בדפדפן שלך בלבד. אנחנו לא רואים אותו ולא מאחסנים אותו.' },
         { label: 'מאגר ידע', text: 'קטעים מהספרות הפסיכואנליטית מאוחסנים אצלנו כמספרים בלבד לצורך חיפוש. תוכן השיחות שלך אינו נשמר שם.' },
-        { label: 'זיהוי', text: 'אין שמירה של כתובות IP, זהות משתמש, או כל מידע מזהה אישי מעבר לנדרש לניהול החשבון.' },
+        { label: 'זיהוי', text: 'כתובת IP נשמרת על ידי ספקי התשתית שלנו (Supabase, Vercel) לצורך אבטחה ותפעול השירות. אנחנו לא אוספים או משתמשים בה מעבר לכך.' },
       ],
       btnOk: 'הבנתי',
     },
@@ -110,7 +110,7 @@ export default function Home() {
         { label: 'Conversations', text: "Processed exclusively through Anthropic's API. Not stored by us and not used for model training." },
         { label: 'Memory', text: 'Stored locally in your browser only. We cannot see or store it.' },
         { label: 'Knowledge base', text: 'Excerpts from psychoanalytic literature are stored as numbers only for search purposes. Your conversation content is not stored there.' },
-        { label: 'Identity', text: 'No storage of IP addresses, user identity, or any personally identifying information beyond what is required for account management.' },
+        { label: 'Identity', text: 'Your IP address is retained by our infrastructure providers (Supabase, Vercel) for security and operations. We do not collect or use it beyond that.' },
       ],
       btnOk: 'Got it',
     },
@@ -120,6 +120,9 @@ export default function Home() {
      לנסות כניסה לפני שנרשמו (דיווח איה, 28.08). דפדפן שכבר התחבר פעם נושא
      את bw_has_account, וכל השאר נחשב חדש. */
   const [authMode, setAuthMode] = useState<'signup' | 'signin'>('signup');
+  // הסכמה לתנאים · 06.09.2026. רק בהרשמה — משתמשת חוזרת כבר הסכימה פעם.
+  // חוזר ל-false בכל מעבר בין הרשמה לכניסה, כדי שלא יישאר מסומן אחרי חזרה.
+  const [termsAccepted, setTermsAccepted] = useState(false);
   useEffect(() => {
     try { if (localStorage.getItem('bw_has_account') === '1') setAuthMode('signin'); } catch {}
   }, []);
@@ -1553,6 +1556,19 @@ export default function Home() {
             />
           </div>
 
+          {/* הסכמה לתנאים · רק בהרשמה, לפני הכפתור שהיא נועלת. קישורים נפתחים
+              בכרטיסייה חדשה כדי לא לאבד את מה שכבר מולא בטופס. */}
+          <div style={{ display: authMode === 'signup' ? 'flex' : 'none', alignItems: 'flex-start', gap: 8, marginBottom: 12, textAlign: 'start' }}>
+            <input type="checkbox" id="terms-accept" checked={termsAccepted} onChange={e => setTermsAccepted(e.target.checked)}
+              style={{ marginTop: 3, width: 14, height: 14, accentColor: 'var(--accent)', cursor: 'pointer', flexShrink: 0 }} />
+            <label htmlFor="terms-accept" style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.6, cursor: 'pointer' }}>
+              {isHe ? <>קראתי ומסכימ/ה ל<a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-deep)' }}>תנאי השימוש</a>{' '}
+                ול<a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-deep)' }}>מדיניות הפרטיות</a></>
+                : <>I&apos;ve read and agree to the <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-deep)' }}>Terms of Use</a>{' '}
+                and <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-deep)' }}>Privacy Policy</a></>}
+            </label>
+          </div>
+
           {/* פעולה ראשית אחת. השנייה נשארת ב-DOM כי chat.js כותב לתוכה בהחלפת שפה. */}
           <div style={{ marginBottom: 12 }}>
             <button id="signin-btn"
@@ -1560,9 +1576,9 @@ export default function Home() {
               style={{ display: authMode === 'signin' ? 'block' : 'none', width: '100%', height: 44, background: 'var(--accent-deep)', border: '1px solid var(--accent-deep)', color: '#fff', fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-assistant), sans-serif', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}>
               {isHe ? 'כניסה' : 'Sign in'}
             </button>
-            <button id="signup-btn"
+            <button id="signup-btn" disabled={!termsAccepted}
               onClick={() => (window as any).signUp?.()}
-              style={{ display: authMode === 'signup' ? 'block' : 'none', width: '100%', height: 44, background: 'var(--accent-deep)', border: '1px solid var(--accent-deep)', color: '#fff', fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-assistant), sans-serif', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}>
+              style={{ display: authMode === 'signup' ? 'block' : 'none', width: '100%', height: 44, background: 'var(--accent-deep)', border: '1px solid var(--accent-deep)', color: '#fff', fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-assistant), sans-serif', borderRadius: 'var(--radius-sm)', cursor: termsAccepted ? 'pointer' : 'not-allowed', opacity: termsAccepted ? 1 : 0.45 }}>
               {isHe ? 'הרשמה' : 'Sign up'}
             </button>
           </div>
@@ -1571,7 +1587,7 @@ export default function Home() {
           <div style={{ marginTop: 14, textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span id="auth-forgot" onClick={() => (window as any).resetPassword?.()}
               style={{ display: authMode === 'signin' ? 'inline' : 'none', fontSize: 12.5, color: 'var(--muted)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 4 }}>{isHe ? 'שכחתי סיסמה' : 'Forgot password'}</span>
-            <span onClick={() => setAuthMode(m => m === 'signup' ? 'signin' : 'signup')}
+            <span onClick={() => { setAuthMode(m => m === 'signup' ? 'signin' : 'signup'); setTermsAccepted(false); }}
               style={{ fontSize: 12.5, color: 'var(--muted)', cursor: 'pointer' }}>
               {authMode === 'signup'
                 ? <>{isHe ? 'כבר יש לך חשבון? ' : 'Already have an account? '}<span style={{ color: 'var(--accent-deep)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: 4 }}>{isHe ? 'כניסה' : 'Sign in'}</span></>
