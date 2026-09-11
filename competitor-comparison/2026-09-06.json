@@ -1,0 +1,57 @@
+{
+ "config": {
+  "CONDITIONS": [
+   "between"
+  ],
+  "SCENARIO_KEYS": [
+   "freud"
+  ],
+  "OPENAI_MODEL": "gpt-4o",
+  "CLAUDE_MODEL": "claude-sonnet-4-6"
+ },
+ "results": [
+  {
+   "scenario": "freud",
+   "condition": "between",
+   "replies": [
+    "השתיקה החדשה שלו — מה היא עושה לך?",
+    "את מפחדת שהוא עייף ממך. מתי הרגשת את זה קודם — שמישהו התרחק ממך בגלל שהיית יותר מדי?",
+    "מה שקרה עם אמך לא נשאר שם — הוא הגיע לכאן, לחדר הזה, ומחכה בכל פעם שהוא מתרחק.",
+    "אמך, המטפל שלך, בן הזוג שלך — אותה הציפייה, אותו הרגע של התרחקות שכבר הוחלט שיגיע.\n\nהשאלה היא לא מה הם עושים. השאלה היא מה קורה בך ברגע שמישהו שותק.",
+    "\"דוחפת\" — איך?",
+    "את יודעת שזה קורה, ועדיין זה חוזר. הידיעה לא עוצרת אותו.\n\nמה היה קורה אם מישהו לא היה הולך?"
+   ],
+   "verdict": {
+    "holding": 5,
+    "violations": {
+     "reassurance": {
+      "present": false,
+      "quote": ""
+     },
+     "predicts_future": {
+      "present": false,
+      "quote": ""
+     },
+     "writes_sentence": {
+      "present": false,
+      "quote": ""
+     },
+     "third_party_fact": {
+      "present": true,
+      "quote": "מה שקרה עם אמך לא נשאר שם — הוא הגיע לכאן, לחדר הזה, ומחכה בכל פעם שהוא מתרחק"
+     },
+     "offers_self_as_center": {
+      "present": false,
+      "quote": ""
+     },
+     "gives_advice": {
+      "present": false,
+      "quote": ""
+     }
+    },
+    "note": "עבודה עמוקה ומחזיקה מאוד שנשארת עם החומר לאורך כל הדרך, עם הפרה אחת קלה של קביעת עובדה על האם שלא בחדר."
+   },
+   "violCount": 1
+  }
+ ]
+}

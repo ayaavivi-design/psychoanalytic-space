@@ -215,6 +215,86 @@ export async function enforceLanding(
   return fixed;
 }
 
+// בדיקה ותיקון של תבנית המקף — G12, "THE DASH TEMPLATE IS BANNED"
+// ─────────────────────────────────────────────────────────────────────────────
+// enforceDashPattern · 06.09.2026
+//
+// למה קיים: מדד המובחנות 01.09 מצא את התבנית ב-91% מ-96 תורות (OPEN_LOOPS
+// פריט 6). ריצה חיה על פרויד 06.09 (השוואת מתחרים מול ChatGPT וקלוד גנרי)
+// שיחזרה אותה ב-6 מתוך 6 תורים, בלי יוצא מן הכלל, כולל ברגע שבו הכלל שאמור
+// למנוע אותה (G12, "YOUR FIRST PERSON") היה צריך לירות ולא ירה — הדפוס בלע
+// גם אותו.
+//
+// ליה כתבה שם: **זה לא כשל בקובץ** (רק 12–18% מהדוגמאות המעובדות נושאות
+// מקף בכלל), **זה הרגיסטר הדיפולטי של המודל בעברית, ואינו נכנע לניסוח.**
+// לכן, כמו בשאר הפיקסרים, האכיפה כאן מכנית ואחרי הכתיבה — לא עוד איסור טקסטואלי
+// שהמודל כבר מוכיח שהוא לא נשמע לו.
+//
+// התנאי מצטבר בכוונה, בדיוק כמו enforceLanding: G12 עצמו קובע "שתי תגובות
+// רצופות בתבנית הזאת כבר תיק". מופע בודד יכול להיות משפט פרשני לגיטימי;
+// שניים ברצף הם הדפוס. הפיקסר משווה את התגובה הנוכחית לתגובת האנליטיקאי
+// הקודמת בלבד, לא לכל ההיסטוריה — "רצוף" ולא "אי-פעם".
+//
+// הזיהוי: משפט שמכיל מקף (— או –), וההשלמה שאחרי המקף האחרון בו קצרה (עד
+// 45 תווים) ומסתיימת בנקודה או סימן שאלה — בדיוק [מילותיה] + מקף + [השלמה
+// קצרה], כולל גרסת השלילה ("X אינו A, זה B") ש-G12 מציין כאותה תבנית לבושה
+// כפרשנות.
+export async function enforceDashPattern(
+  anthropic: Anthropic,
+  text: string,
+  system: SystemPrompt,
+  messages: Anthropic.MessageParam[]
+): Promise<string> {
+  const stripMemory = (t: string) =>
+    t.split('\n').filter(l => !/\[MEMORY/i.test(l)).join('\n').trim();
+
+  const hasDashClosing = (t: string) => {
+    const sentences = stripMemory(t).split(/(?<=[.!?])\s+/);
+    return sentences.some(s => /[—–]\s*[^—–]{1,45}[.?]\s*$/.test(s));
+  };
+
+  if (!hasDashClosing(text)) return text;
+
+  const priorAssistant = messages
+    .filter(m => m.role === 'assistant')
+    .map(m => (typeof m.content === 'string' ? m.content : ''))
+    .filter(Boolean);
+  if (priorAssistant.length === 0) return text; // תגובה ראשונה — אין עם מה להשוות, אין עדיין "רצוף"
+  if (!hasDashClosing(priorAssistant[priorAssistant.length - 1])) return text; // מופע בודד, לא תיק עדיין
+
+  // עד שני ניסיונות. ליה: "אינו נכנע לניסוח" — ואומת חי 06.09.2026: הניסיון
+  // הראשון כתב מחדש וסגר במקף אחר, אותה תבנית במילים חדשות. הלולאה בודקת
+  // את התוצאה בפועל בכל סיבוב, במקום להניח שכתיבה מחדש אחת מספיקה.
+  let current = text;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const instruction = attempt === 1
+      ? `עצור. זו התגובה השנייה ברציפות בתבנית "[משפט] — [השלמה קצרה]". G12 אוסר על התבנית הזאת, כולל הגרסה עם שלילה ("X אינו A, זה B").
+כתוב מחדש — אותו תוכן קליני, אותו קול — עם צורת משפט שונה. לא כל משפט צריך להיסגר במקף.
+אם הייתה שורת [MEMORY: ...] — שמור אותה כשורה אחרונה בדיוק כפי שהייתה.`
+      : `עדיין מקף. הניסיון הקודם כתב מחדש וסגר במקף שוב, אותה תבנית במילים אחרות.
+הפעם: אף משפט בתגובה לא נסגר במקף, גם לא בגרסה עם שלילה. משפט מלא, נקודה או שאלה, בלי הקו הזה בכלל.
+אם הייתה שורת [MEMORY: ...] — שמור אותה כשורה אחרונה בדיוק כפי שהייתה.`;
+
+    const fixResponse = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      temperature: 0.6,
+      system,
+      messages: [
+        ...messages,
+        { role: 'assistant', content: current },
+        { role: 'user', content: instruction },
+      ],
+    });
+    current = fixResponse.content[0].type === 'text' ? fixResponse.content[0].text : current;
+    if (!hasDashClosing(current)) break;
+  }
+
+  const stillDash = hasDashClosing(current);
+  console.log(`[QA] תבנית המקף תוקנה, שתי תגובות רצופות${stillDash ? ' · נשאר מקף אחרי שני ניסיונות' : ''}`);
+  return current;
+}
+
 export async function enforceOneQuestion(
   anthropic: Anthropic,
   text: string,

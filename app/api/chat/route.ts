@@ -8,7 +8,7 @@ import { checkAndStartTrial } from '@/lib/trial';
 import { buildUserContextBlock } from '@/lib/user-context';
 import { THEORIST_VOICE } from '@/lib/theorist-voices';
 import { buildStaticSystem, buildEndSessionSuffix, CONSULT_SCOPE_INSTRUCTION, UNIVERSAL_SCOPE_INSTRUCTION } from '@/lib/system-prompt';
-import { enforceOneQuestion, enforceLanding, enforceVariedOpening, enforceSemanticRules } from '@/lib/output-validation';
+import { enforceOneQuestion, enforceLanding, enforceVariedOpening, enforceSemanticRules, enforceDashPattern } from '@/lib/output-validation';
 
 const MAX_USER_MESSAGE_CHARS = 4000;
 
@@ -319,6 +319,10 @@ export async function POST(req: NextRequest) {
       if (bw_mode !== 'explore') {
         validatedText = await enforceSemanticRules(anthropic, validatedText, systemWithCache, messages, theorist || '');
       }
+
+      // 5. תבנית המקף — G12, "every voice, every response". ללא גדר מצב,
+      //    כמו "פתיחה מגוונת" ממש מעליו: זו היגיינת רישום, לא כלל קליני.
+      validatedText = await enforceDashPattern(anthropic, validatedText, systemWithCache, messages);
 
       if (validatedText !== response.content[0].text) {
         finalContent = [{ ...response.content[0], text: validatedText }];

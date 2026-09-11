@@ -37,7 +37,7 @@ for (const line of fs.readFileSync('.env.local', 'utf8').split('\n')) {
 }
 
 const { buildStaticSystem, UNIVERSAL_SCOPE_INSTRUCTION } = loadTs('lib/system-prompt.ts');
-const { enforceOneQuestion, enforceLanding, enforceVariedOpening, enforceSemanticRules } = loadTs('lib/output-validation.ts');
+const { enforceOneQuestion, enforceLanding, enforceVariedOpening, enforceSemanticRules, enforceDashPattern } = loadTs('lib/output-validation.ts');
 const { FIDELITY_SCENARIOS } = loadTs('lib/fidelity-scenarios.ts');
 const { searchKnowledgeHybrid, formatChunksForPrompt } = loadTs('lib/rag.ts');
 const { paraphraseForRetrieval } = loadTs('lib/query-paraphrase.ts');
@@ -146,6 +146,7 @@ async function runConversation(voice, scenario) {
       text = await enforceLanding(anthropic, text, system, messages);
       text = await enforceVariedOpening(anthropic, text, system, messages);
       text = await enforceSemanticRules(anthropic, text, system, messages, voice);
+      text = await enforceDashPattern(anthropic, text, system, messages);
       if (text !== before) fixerHits++;
     }
     messages.push({ role: 'assistant', content: text });
