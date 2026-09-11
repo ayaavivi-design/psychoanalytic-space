@@ -124,20 +124,20 @@ function showTherapyGate() {
     <div style="text-align:center;max-width:400px;width:90%;padding:0 20px;">
       <h2 style="font-family:var(--font-assistant), sans-serif;font-size:28px;font-weight:300;color:var(--accent);margin-bottom:28px;">Between</h2>
       <p style="font-size:16px;color:var(--text);line-height:1.8;margin-bottom:6px;">Between בנוי בשביל הזמן שבין פגישות הטיפול.</p>
-      <p style="font-size:16px;color:var(--text);line-height:1.8;margin-bottom:32px;">זה נכון לגביך?</p>
+      <p style="font-size:16px;color:var(--text);line-height:1.8;margin-bottom:32px;">האם את/ה בטיפול כרגע?</p>
       <div style="display:flex;gap:12px;justify-content:center;">
         <button onclick="therapyGateAnswer('yes')" style="flex:1;max-width:160px;padding:12px 16px;background:var(--accent-deep);color:#fff;border:none;border-radius:6px;font-size:16px;font-family:var(--font-rubik),sans-serif;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">כן</button>
-        <button onclick="therapyGateAnswer('no')" style="flex:1;max-width:160px;padding:12px 16px;background:none;border:1px solid var(--border);border-radius:6px;font-size:16px;font-family:var(--font-rubik),sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">לא ממש</button>
+        <button onclick="therapyGateAnswer('no')" style="flex:1;max-width:160px;padding:12px 16px;background:none;border:1px solid var(--border);border-radius:6px;font-size:16px;font-family:var(--font-rubik),sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">לא</button>
       </div>
     </div>
   ` : `
     <div style="text-align:center;max-width:400px;width:90%;padding:0 20px;">
       <h2 style="font-family:var(--font-assistant), sans-serif;font-size:28px;font-weight:300;color:var(--accent);margin-bottom:28px;">Between</h2>
       <p style="font-size:16px;color:var(--text);line-height:1.8;margin-bottom:6px;">Between is built for the time between therapy sessions.</p>
-      <p style="font-size:16px;color:var(--text);line-height:1.8;margin-bottom:32px;">Does that sound like you?</p>
+      <p style="font-size:16px;color:var(--text);line-height:1.8;margin-bottom:32px;">Are you currently in therapy?</p>
       <div style="display:flex;gap:12px;justify-content:center;">
         <button onclick="therapyGateAnswer('yes')" style="flex:1;max-width:160px;padding:12px 16px;background:var(--accent-deep);color:#fff;border:none;border-radius:6px;font-size:16px;font-family:var(--font-rubik),sans-serif;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Yes</button>
-        <button onclick="therapyGateAnswer('no')" style="flex:1;max-width:160px;padding:12px 16px;background:none;border:1px solid var(--border);border-radius:6px;font-size:16px;font-family:var(--font-rubik),sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">Not quite</button>
+        <button onclick="therapyGateAnswer('no')" style="flex:1;max-width:160px;padding:12px 16px;background:none;border:1px solid var(--border);border-radius:6px;font-size:16px;font-family:var(--font-rubik),sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">No</button>
       </div>
     </div>
   `;
