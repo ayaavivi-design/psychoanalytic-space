@@ -565,6 +565,9 @@ async function signUp() {
   const { data, error } = await supabaseClient.auth.signUp({ email, password });
   if (!error) { try { localStorage.setItem('bw_has_account', '1'); } catch {} }
   if (error) {
+    // ACCESS REQUESTS — ההרשמה לממשק היא בהזמנה בלבד. בקשות התחברות/גישה מהאתר
+    // נאספות דרך טופס Formspree `xwlpvewq` (https://formspree.io/forms/xwlpvewq/overview,
+    // endpoint https://formspree.io/f/xwlpvewq). ההודעה למטה מציעה גם מייל (hello@getbetween.app) כערוץ חלופי.
     const _signupClosed = error.code === 'signup_disabled' || /signup.*not allowed|signups? not allowed/i.test(error.message || '');
     errEl.textContent = _signupClosed
       ? (_at.authErrSignupDisabled || 'Sign-ups are currently closed. To request access, email hello@getbetween.app')

@@ -55,6 +55,7 @@ _כלל: "הקוד קיים" ≠ "הפיצ'ר חי". תמיד לבדוק את ה
 - **GitHub** — repo ציבורי, שמירת דוחות סוכנים
 - **Resend** — אימיילים
 - **HuggingFace** — embeddings
+- **Formspree** — טופס בקשת גישה/התחברות לממשק באתר (הרשמה בהזמנה בלבד). form id: `xwlpvewq` · דשבורד: https://formspree.io/forms/xwlpvewq/overview · endpoint: `https://formspree.io/f/xwlpvewq`
 
 ---
 
